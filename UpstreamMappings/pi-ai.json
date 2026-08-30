@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "upstream": "earendil-works/pi/packages/ai",
+  "mappings": [
+    {
+      "swiftArea": "ProviderRuntime contract and normalized events",
+      "upstreamPaths": [
+        "packages/ai/src/types.ts",
+        "packages/ai/src/models.ts"
+      ]
+    },
+    {
+      "swiftArea": "Credential store and authorization lifecycle",
+      "upstreamPaths": [
+        "packages/ai/src/auth/types.ts",
+        "packages/ai/src/auth/resolve.ts"
+      ]
+    },
+    {
+      "swiftArea": "OpenAI API-key provider",
+      "providerID": "openai",
+      "upstreamPaths": [
+        "packages/ai/src/providers/openai.ts",
+        "packages/ai/src/api/openai-responses.ts",
+        "packages/ai/src/api/openai-completions.ts"
+      ]
+    },
+    {
+      "swiftArea": "ChatGPT Codex subscription provider",
+      "providerID": "openai-codex",
+      "upstreamPaths": [
+        "packages/ai/src/providers/openai-codex.ts",
+        "packages/ai/src/auth/oauth/openai-codex.ts",
+        "packages/ai/src/api/openai-codex-responses.ts"
+      ]
+    },
+    {
+      "swiftArea": "Kimi Coding provider",
+      "providerID": "kimi-coding",
+      "upstreamPaths": [
+        "packages/ai/src/providers/kimi-coding.ts",
+        "packages/ai/src/auth/oauth/kimi-coding.ts",
+        "packages/ai/src/api/anthropic-messages.ts"
+      ]
+    }
+  ]
+}

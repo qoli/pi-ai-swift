@@ -1,0 +1,8 @@
+This project tracks behavioral semantics from earendil-works/pi, which is
+licensed under the MIT License:
+
+https://github.com/earendil-works/pi
+
+Source-derived changes must preserve applicable upstream copyright and license
+notices. Upstream revision and source provenance are recorded in
+Upstream.lock.json and UpstreamMappings/pi-ai.json.

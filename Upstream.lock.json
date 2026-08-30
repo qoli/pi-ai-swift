@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/earendil-works/pi.git",
+  "revision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "syncedAt": "2026-08-30",
+  "package": {
+    "path": "packages/ai",
+    "name": "@earendil-works/pi-ai",
+    "version": "0.84.4"
+  },
+  "allowlistedProviders": [
+    "openai",
+    "openai-codex",
+    "kimi-coding"
+  ],
+  "requiredSourcePaths": [
+    "packages/ai/src/types.ts",
+    "packages/ai/src/models.ts",
+    "packages/ai/src/auth/types.ts",
+    "packages/ai/src/auth/resolve.ts",
+    "packages/ai/src/providers/openai.ts",
+    "packages/ai/src/providers/openai-codex.ts",
+    "packages/ai/src/providers/kimi-coding.ts",
+    "packages/ai/src/auth/oauth/openai-codex.ts",
+    "packages/ai/src/auth/oauth/kimi-coding.ts",
+    "packages/ai/src/api/openai-responses.ts",
+    "packages/ai/src/api/openai-codex-responses.ts",
+    "packages/ai/src/api/openai-completions.ts",
+    "packages/ai/src/api/anthropic-messages.ts"
+  ]
+}
