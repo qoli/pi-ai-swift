@@ -46,6 +46,9 @@ struct PiAILiveProbe {
       print("code=\(error.code.rawValue)")
       print("operation=\(error.operation ?? "unknown")")
       print("message=\(error.message)")
+      if let summary = SafeProviderError.summary(error.causeDescription) {
+        print("provider_error=\(summary)")
+      }
       Foundation.exit(EXIT_FAILURE)
     } catch let error as LiveProbeFailure {
       print("PI_AI_LIVE_PROBE_FAILED")
@@ -75,7 +78,7 @@ struct PiAILiveProbe {
       tools: [],
       options: ProviderGenerationOptions(
         maximumOutputTokens: 64,
-        temperature: 0,
+        temperature: configuration.providerID == "openai-codex" ? nil : 0,
         reasoningEffort: nil,
         responseSchema: nil,
         providerOptions: [:]
@@ -108,8 +111,7 @@ struct PiAILiveProbe {
       toolChoice = .null
       providerOptions = [
         "tool_choice": .object([
-          "type": .string("tool"),
-          "name": .string("echo"),
+          "type": .string("auto")
         ])
       ]
     } else {
@@ -143,7 +145,7 @@ struct PiAILiveProbe {
       ],
       options: ProviderGenerationOptions(
         maximumOutputTokens: 128,
-        temperature: 0,
+        temperature: configuration.providerID == "openai-codex" ? nil : 0,
         reasoningEffort: nil,
         responseSchema: nil,
         providerOptions: providerOptions,
@@ -240,4 +242,35 @@ private struct ToolEvidence {
 private struct LiveProbeFailure: Error {
   let message: String
   init(_ message: String) { self.message = message }
+}
+
+private enum SafeProviderError {
+  static func summary(_ raw: String?) -> String? {
+    guard let raw else { return nil }
+    let candidate =
+      raw.split(separator: "\n")
+      .first(where: { $0.hasPrefix("data:") })
+      .map { String($0.dropFirst("data:".count)) }
+      ?? raw
+    guard let data = candidate.data(using: .utf8),
+      let object = try? JSONSerialization.jsonObject(with: data)
+        as? [String: Any]
+    else { return "unstructured_response" }
+    let error = object["error"] as? [String: Any] ?? object
+    let fields = ["type", "code", "message", "error", "detail"]
+      .compactMap { key -> String? in
+        guard let value = error[key] as? String else { return nil }
+        return "\(key)=\(redact(value))"
+      }
+    return fields.isEmpty ? nil : fields.joined(separator: ";")
+  }
+
+  private static func redact(_ value: String) -> String {
+    let limited = String(value.prefix(300))
+    return limited.replacingOccurrences(
+      of: #"(?:sk-[A-Za-z0-9_-]{8,}|Bearer\s+[A-Za-z0-9._-]{8,})"#,
+      with: "[redacted]",
+      options: .regularExpression
+    )
+  }
 }

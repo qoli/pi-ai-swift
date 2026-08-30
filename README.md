@@ -68,7 +68,7 @@ the [design registry](Docs/README.md),
 
 ## Opt-in live acceptance
 
-`pi-ai-live-probe` runs one text stream and one forced tool-call stream through
+`pi-ai-live-probe` runs one text stream and one required tool-call stream through
 the public `BuiltinProviderRuntime`. It supports the representative
 `kimi-coding` API-key and `openai-codex` OAuth paths. Credentials are accepted
 only through `PI_AI_LIVE_*` environment variables, are never persisted, and

@@ -261,13 +261,14 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#tokenExchangeReturnsCredentialWithoutPersistingTokens",
         "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#refreshRotatesCredentialAndPreservesAccountIdentity",
-        "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#malformedRefreshFailsWithoutRetainingOrInventingTokens"
+        "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#malformedRefreshFailsWithoutRetainingOrInventingTokens",
+        "Sources/PiAILiveProbe/PiAILiveProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRun"
+      "liveVerificationStatus": "passed"
     },
     {
       "id": "provider-amazon-bedrock",
@@ -807,13 +808,14 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
+        "Sources/PiAILiveProbe/PiAILiveProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRun"
+      "liveVerificationStatus": "passed"
     },
     {
       "id": "provider-minimax",
@@ -1076,13 +1078,14 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
+        "Sources/PiAILiveProbe/PiAILiveProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRun"
+      "liveVerificationStatus": "passed"
     },
     {
       "id": "provider-opencode",
