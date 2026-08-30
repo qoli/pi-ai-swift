@@ -176,13 +176,13 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         }
         if !calls.isEmpty {
           object["tool_calls"] = .array(
-            calls.map {
+            try calls.map {
               .object([
                 "id": .string($0.id),
                 "type": .string("function"),
                 "function": .object([
                   "name": .string($0.name),
-                  "arguments": .string(jsonString($0.arguments)),
+                  "arguments": .string(try jsonString($0.arguments)),
                 ]),
               ])
             }
@@ -222,10 +222,16 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     }
   }
 
-  private func jsonString(_ value: JSONValue) -> String {
-    guard let data = try? JSONEncoder().encode(value),
-      let string = String(data: data, encoding: .utf8)
-    else { return "{}" }
+  private func jsonString(_ value: JSONValue) throws -> String {
+    let data = try JSONEncoder().encode(value)
+    guard let string = String(data: data, encoding: .utf8) else {
+      throw failure(
+        .invalidRequest,
+        providerID: nil,
+        operation: "openai-completions.request.tool-call",
+        message: "tool call arguments are not valid UTF-8 JSON"
+      )
+    }
     return string
   }
 
@@ -304,7 +310,7 @@ private struct OpenAICompletionsReducer {
         throw invalid("completion choice is not an object")
       }
       if let reason = choice.string("finish_reason") {
-        finishReason = mapFinishReason(reason)
+        finishReason = try mapFinishReason(reason)
       }
       guard let delta = choice.object("delta") else { continue }
       if let text = delta.string("content"), !text.isEmpty {
@@ -364,16 +370,20 @@ private struct OpenAICompletionsReducer {
         )
       )
     }
-    events.append(.completed(finishReason ?? (toolCalls.isEmpty ? .stop : .toolCalls)))
+    guard let finishReason else {
+      throw invalid("OpenAI Completions stream ended without a finish reason")
+    }
+    events.append(.completed(finishReason))
     return events
   }
 
-  private func mapFinishReason(_ value: String) -> ProviderFinishReason {
+  private func mapFinishReason(_ value: String) throws -> ProviderFinishReason {
     switch value {
     case "length": .length
     case "tool_calls", "function_call": .toolCalls
     case "content_filter": .contentFilter
-    default: .stop
+    case "stop": .stop
+    default: throw invalid("unsupported OpenAI finish reason: \(value)")
     }
   }
 

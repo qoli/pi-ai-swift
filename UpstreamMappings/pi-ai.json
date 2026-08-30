@@ -198,8 +198,10 @@
       "id": "kimi-coding-oauth",
       "providerID": "kimi-coding",
       "responsibility": "Kimi Coding subscription device authorization, token refresh, and credential state.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Authorization/KimiCodingOAuthAuthorizationAdapter.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Authorization/KimiCodingAuthorizationAdapter.swift"
       ],
@@ -214,7 +216,9 @@
         "credential-store-auth-resolution",
         "http-transport"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/KimiCodingOAuthAuthorizationAdapterTests.swift#deviceFlowPreservesPendingSlowDownAndStoresCredential"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1558,7 +1562,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1569,8 +1575,11 @@
       "id": "wire-bedrock-converse-stream",
       "protocolID": "bedrock-converse-stream",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for bedrock-converse-stream.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/Bedrock/AWSEventStream.swift",
+        "Sources/PiAIProviderRuntime/Wire/Bedrock/BedrockConverseStreamAdapter.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/BedrockConverseStream/BedrockConverseStreamAdapter.swift"
       ],
@@ -1586,7 +1595,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1647,8 +1658,10 @@
       "id": "wire-google-generative-ai",
       "protocolID": "google-generative-ai",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for google-generative-ai.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/Google/GoogleGenerativeAIAdapter.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/GoogleGenerativeAi/GoogleGenerativeAiAdapter.swift"
       ],
@@ -1665,7 +1678,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1676,8 +1691,10 @@
       "id": "wire-google-vertex",
       "protocolID": "google-vertex",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for google-vertex.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/Google/GoogleGenerativeAIAdapter.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/GoogleVertex/GoogleVertexAdapter.swift"
       ],
@@ -1694,7 +1711,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#vertexBuildsScopedOAuthRequestAndNormalizesLengthFinish"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1705,8 +1724,10 @@
       "id": "wire-mistral-conversations",
       "protocolID": "mistral-conversations",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for mistral-conversations.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/Mistral/MistralConversationsAdapter.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/MistralConversations/MistralConversationsAdapter.swift"
       ],
@@ -1722,7 +1743,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#encodesConversationAndNormalizesTextReasoningToolUsageAndTerminal"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1762,7 +1785,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1799,7 +1824,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1847,11 +1874,11 @@
       "id": "wire-openrouter-images",
       "protocolID": "openrouter-images",
       "responsibility": "OpenRouter image-generation request encoding, response decoding, assets, usage, errors, and cancellation.",
-      "status": "missing",
-      "swiftPaths": [],
-      "plannedSwiftPaths": [
+      "status": "partial",
+      "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenRouterImages/OpenRouterImagesAdapter.swift"
       ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/openrouter-images.ts",
         "packages/ai/src/api/openrouter-images.lazy.ts",
@@ -1866,7 +1893,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/OpenRouterImagesAdapterTests.swift#encodesImageRequestAndNormalizesTextAssetsUsageAndTerminal"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1877,11 +1906,11 @@
       "id": "wire-pi-messages",
       "protocolID": "pi-messages",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for pi-messages.",
-      "status": "missing",
-      "swiftPaths": [],
-      "plannedSwiftPaths": [
+      "status": "partial",
+      "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/PiMessages/PiMessagesAdapter.swift"
       ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/pi-messages.ts",
         "packages/ai/src/api/pi-messages.lazy.ts"
@@ -1894,7 +1923,9 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#encodesContextAndNormalizesTextReasoningToolUsageAndTerminal"
+      ],
       "requiredGates": [
         "swift-test"
       ],

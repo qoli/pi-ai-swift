@@ -1,0 +1,269 @@
+import Foundation
+import Testing
+
+@testable import PiAIProviderRuntime
+
+@Suite
+struct BedrockConverseStreamAdapterTests {
+  @Test
+  func bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop() async throws {
+    let stream = try bedrockFrames()
+    let bytes = Array(stream)
+    let transport = BedrockFixtureTransport(
+      chunks: [
+        Data(bytes[0..<11]),
+        Data(bytes[11..<117]),
+        Data(bytes[117..<501]),
+        Data(bytes[501...]),
+      ],
+      headers: ["x-amzn-requestid": "aws-request-1"]
+    )
+    let adapter = BedrockConverseStreamAdapter()
+    var events: [ProviderEvent] = []
+    for try await event in adapter.stream(
+      bedrockRequest(),
+      context: bedrockContext(),
+      transport: transport
+    ) {
+      events.append(event)
+    }
+
+    #expect(events.count == 8)
+    #expect(
+      events[0]
+        == .responseStarted(
+          ProviderResponseMetadata(
+            responseID: "aws-request-1",
+            providerID: "amazon-bedrock",
+            modelID: "amazon.nova-lite-v1:0",
+            providerMetadata: [:]
+          )
+        )
+    )
+    #expect(events[1] == .textDelta("Checking"))
+    #expect(events[2] == .toolCallStarted(id: "tool-1", name: "weather"))
+    #expect(events[3] == .toolInputDelta(id: "tool-1", delta: #"{"city":"Tai"#))
+    #expect(events[4] == .toolInputDelta(id: "tool-1", delta: #"pei"}"#))
+    #expect(
+      events[5]
+        == .toolCallCompleted(
+          ProviderToolCall(
+            id: "tool-1",
+            name: "weather",
+            arguments: .object(["city": .string("Taipei")])
+          )
+        )
+    )
+    #expect(
+      events[6]
+        == .usage(
+          ProviderUsage(
+            inputTokens: 12,
+            outputTokens: 8,
+            reasoningTokens: nil,
+            cachedInputTokens: 2,
+            providerMetadata: [
+              "inputTokens": .integer(12),
+              "outputTokens": .integer(8),
+              "cacheReadInputTokens": .integer(2),
+              "totalTokens": .integer(20),
+            ]
+          )
+        )
+    )
+    #expect(events[7] == .completed(.toolCalls))
+
+    let sent = try #require(await transport.request())
+    #expect(
+      sent.url?.absoluteString
+        == "https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-lite-v1%3A0/converse-stream"
+    )
+    #expect(sent.value(forHTTPHeaderField: "Authorization") == "Bearer fixture-bearer")
+    #expect(sent.value(forHTTPHeaderField: "Accept") == "application/vnd.amazon.eventstream")
+    #expect(sent.value(forHTTPHeaderField: "X-Amz-Unsafe") == nil)
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody),
+      providerID: "fixture",
+      operation: "fixture"
+    )
+    #expect(body.object("inferenceConfig")?.int("maxTokens") == 512)
+    #expect(body.object("inferenceConfig")?["temperature"] == .number(0.2))
+    #expect(body.object("toolConfig")?.array("tools")?.count == 1)
+  }
+
+  @Test
+  func corruptEventStreamCRCAndUnsupportedSigV4ShapeFailExplicitly() async {
+    var corrupt = try! bedrockFrames()
+    corrupt[corrupt.index(before: corrupt.endIndex)] ^= 0xff
+    await #expect(throws: ProviderRuntimeFailure.self) {
+      for try await _ in BedrockConverseStreamAdapter().stream(
+        bedrockRequest(),
+        context: bedrockContext(),
+        transport: BedrockFixtureTransport(
+          chunks: [corrupt],
+          headers: ["x-amzn-requestid": "aws-request-1"]
+        )
+      ) {}
+    }
+
+    let oauthContext = bedrockContext(
+      credential: .oauth(
+        OAuthCredential(
+          accessToken: "access",
+          refreshToken: "refresh",
+          expiresAt: Date().addingTimeInterval(3_600),
+          metadata: [:]
+        )
+      )
+    )
+    do {
+      for try await _ in BedrockConverseStreamAdapter().stream(
+        bedrockRequest(),
+        context: oauthContext,
+        transport: BedrockFixtureTransport(chunks: [], headers: [:])
+      ) {}
+      Issue.record("OAuth credential unexpectedly selected a Bedrock auth fallback")
+    } catch let error as ProviderRuntimeFailure {
+      #expect(error.code == .unsupportedCapability)
+      #expect(error.operation == "bedrock.request.auth")
+    } catch {
+      Issue.record("unexpected error: \(error)")
+    }
+  }
+}
+
+private actor BedrockFixtureTransport: ProviderHTTPStreamingTransport {
+  let chunks: [Data]
+  let headers: [String: String]
+  private var captured: URLRequest?
+
+  init(chunks: [Data], headers: [String: String]) {
+    self.chunks = chunks
+    self.headers = headers
+  }
+
+  func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    captured = request
+    let chunks = chunks
+    return ProviderHTTPStreamingResponse(
+      statusCode: 200,
+      headers: headers,
+      body: AsyncThrowingStream { continuation in
+        for chunk in chunks { continuation.yield(chunk) }
+        continuation.finish()
+      }
+    )
+  }
+
+  func request() -> URLRequest? { captured }
+}
+
+private func bedrockRequest() -> ProviderRequest {
+  ProviderRequest(
+    id: "bedrock-request",
+    providerID: "amazon-bedrock",
+    modelID: "amazon.nova-lite-v1:0",
+    messages: [
+      .system("Be concise"),
+      .user([.text("Use weather")]),
+    ],
+    tools: [
+      ProviderToolDefinition(
+        name: "weather",
+        description: "Read weather",
+        inputSchema: .object([
+          "type": .string("object"),
+          "properties": .object([
+            "city": .object(["type": .string("string")])
+          ]),
+        ])
+      )
+    ],
+    options: ProviderGenerationOptions(
+      maximumOutputTokens: 512,
+      temperature: 0.2,
+      reasoningEffort: nil,
+      responseSchema: nil,
+      providerOptions: [:]
+    )
+  )
+}
+
+private func bedrockContext(
+  credential: ProviderCredential = .apiKey(
+    APIKeyCredential(key: "fixture-bearer", metadata: [:])
+  )
+) -> WireProtocolContext {
+  let model = ProviderModel(
+    id: "amazon.nova-lite-v1:0",
+    providerID: "amazon-bedrock",
+    name: "Nova Lite",
+    protocolID: "bedrock-converse-stream",
+    capabilities: ProviderCapabilities(
+      textInput: true,
+      imageInput: true,
+      toolCalling: true,
+      reasoning: false,
+      structuredOutput: false,
+      imageGeneration: false
+    ),
+    contextWindow: 300_000,
+    maximumOutputTokens: 8_192
+  )
+  return WireProtocolContext(
+    provider: ProviderDescriptor(
+      id: "amazon-bedrock",
+      name: "Amazon Bedrock",
+      authorizationMethods: [],
+      models: [model]
+    ),
+    model: model,
+    baseURL: URL(string: "https://bedrock-runtime.us-east-1.amazonaws.com")!,
+    headers: [
+      "X-Fixture": "true",
+      "X-Amz-Unsafe": "must-not-override",
+      "Authorization": "must-not-override",
+    ],
+    credential: credential,
+    modelConfiguration: ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+  )
+}
+
+private func bedrockFrames() throws -> Data {
+  let events: [(String, String)] = [
+    ("messageStart", #"{"role":"assistant"}"#),
+    ("contentBlockStart", #"{"contentBlockIndex":0,"start":{}}"#),
+    ("contentBlockDelta", #"{"contentBlockIndex":0,"delta":{"text":"Checking"}}"#),
+    ("contentBlockStop", #"{"contentBlockIndex":0}"#),
+    (
+      "contentBlockStart",
+      #"{"contentBlockIndex":1,"start":{"toolUse":{"toolUseId":"tool-1","name":"weather"}}}"#
+    ),
+    (
+      "contentBlockDelta",
+      #"{"contentBlockIndex":1,"delta":{"toolUse":{"input":"{\"city\":\"Tai"}}}"#
+    ),
+    (
+      "contentBlockDelta",
+      #"{"contentBlockIndex":1,"delta":{"toolUse":{"input":"pei\"}"}}}"#
+    ),
+    ("contentBlockStop", #"{"contentBlockIndex":1}"#),
+    ("messageStop", #"{"stopReason":"tool_use"}"#),
+    (
+      "metadata",
+      #"{"usage":{"inputTokens":12,"outputTokens":8,"cacheReadInputTokens":2,"totalTokens":20}}"#
+    ),
+  ]
+  return try events.reduce(into: Data()) { data, event in
+    data.append(
+      try AWSEventStreamDecoder.encode(
+        headers: [
+          ":message-type": "event",
+          ":event-type": event.0,
+          ":content-type": "application/json",
+        ],
+        payload: Data(event.1.utf8)
+      )
+    )
+  }
+}

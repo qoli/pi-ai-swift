@@ -11,6 +11,32 @@ protocol ProviderAuthorizationAdapter: Sendable {
     interaction: @escaping AuthorizationInteraction,
     credentialStore: any ProviderCredentialStore
   ) async throws -> AuthorizationState
+
+  func resolveCredential(
+    providerID: String,
+    credentialStore: any ProviderCredentialStore
+  ) async throws -> ProviderCredential?
+}
+
+extension ProviderAuthorizationAdapter {
+  func resolveCredential(
+    providerID: String,
+    credentialStore: any ProviderCredentialStore
+  ) async throws -> ProviderCredential? {
+    let credential = try await credentialStore.read(providerID: providerID)
+    if case .oauth(let oauth) = credential, oauth.expiresAt <= Date() {
+      throw ProviderRuntimeFailure(
+        code: .invalidCredential,
+        message:
+          "OAuth credential expired and this authorization adapter has no refresh implementation",
+        providerID: providerID,
+        operation: "credential.resolve",
+        causeDescription: nil
+      )
+    }
+    return credential
+  }
+
 }
 
 struct ProviderDefinition: Sendable {
@@ -148,8 +174,9 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       )
     }
 
-    let credential = try await credentialStore.read(
-      providerID: request.providerID
+    let credential = try await provider.authorization.resolveCredential(
+      providerID: request.providerID,
+      credentialStore: credentialStore
     )
     if provider.credentialRequirement == .required, credential == nil {
       throw failure(

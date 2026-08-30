@@ -39,6 +39,30 @@ struct CompositeAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  func resolveCredential(
+    providerID requestedProviderID: String,
+    credentialStore: any ProviderCredentialStore
+  ) async throws -> ProviderCredential? {
+    guard requestedProviderID == providerID else {
+      throw failure("credential provider mismatch")
+    }
+    guard let credential = try await credentialStore.read(providerID: providerID) else {
+      return nil
+    }
+    let methodID: String
+    switch credential {
+    case .apiKey: methodID = "api-key"
+    case .oauth: methodID = "oauth"
+    }
+    guard let adapter = methods[methodID] else {
+      throw failure("stored credential has no authorization adapter: \(methodID)")
+    }
+    return try await adapter.resolveCredential(
+      providerID: providerID,
+      credentialStore: credentialStore
+    )
+  }
+
   private func failure(_ message: String) -> ProviderRuntimeFailure {
     ProviderRuntimeFailure(
       code: .authorizationFailed,

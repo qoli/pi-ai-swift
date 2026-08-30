@@ -309,6 +309,7 @@ private struct OpenAIResponsesReducer {
   private var started = false
   private var terminal = false
   private var tools: [String: ToolState] = [:]
+  private var completedToolCall = false
 
   init(providerID: String, requestedModelID: String) {
     self.providerID = providerID
@@ -380,6 +381,7 @@ private struct OpenAIResponsesReducer {
       } catch {
         throw invalid("function call arguments are malformed")
       }
+      completedToolCall = true
       return [
         .toolCallCompleted(
           ProviderToolCall(id: id, name: state.name, arguments: arguments)
@@ -404,7 +406,7 @@ private struct OpenAIResponsesReducer {
           )
         )
       }
-      events.append(.completed(.stop))
+      events.append(.completed(completedToolCall ? .toolCalls : .stop))
       return events
     case "response.incomplete":
       terminal = true

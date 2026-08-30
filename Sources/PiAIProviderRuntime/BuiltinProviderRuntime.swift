@@ -31,6 +31,15 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
           protocolID: "openai-codex-responses",
           flavor: .codex
         ),
+        GoogleGenerativeAIAdapter(),
+        GoogleGenerativeAIAdapter(
+          protocolID: "google-vertex",
+          flavor: .vertex
+        ),
+        MistralConversationsAdapter(),
+        PiMessagesAdapter(),
+        BedrockConverseStreamAdapter(),
+        OpenRouterImagesAdapter(),
       ],
       credentialStore: credentialStore,
       transport: streamingTransport
@@ -91,6 +100,10 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
         )
       case "oauth" where record.id == OpenAICodexOAuthClient.providerID:
         adapters[method.id] = OpenAICodexAuthorizationAdapter(
+          transport: authorizationTransport
+        )
+      case "oauth" where record.id == KimiCodingOAuthAuthorizationAdapter.providerID:
+        adapters[method.id] = KimiCodingOAuthAuthorizationAdapter(
           transport: authorizationTransport
         )
       default:

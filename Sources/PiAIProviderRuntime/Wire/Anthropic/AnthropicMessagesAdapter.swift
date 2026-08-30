@@ -101,11 +101,21 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
+    guard
+      let maximumOutputTokens = request.options.maximumOutputTokens
+        ?? context.model.maximumOutputTokens
+    else {
+      throw failure(
+        .invalidRequest,
+        providerID: request.providerID,
+        operation: "anthropic.request.options",
+        message: "maximum output tokens are required"
+      )
+    }
     var body: [String: JSONValue] = [
       "model": .string(request.modelID),
       "messages": .array(try makeMessages(request.messages)),
-      "max_tokens": .integer(
-        Int64(request.options.maximumOutputTokens ?? context.model.maximumOutputTokens ?? 4_096)),
+      "max_tokens": .integer(Int64(maximumOutputTokens)),
       "stream": .bool(true),
     ]
     let systems = request.messages.compactMap { message -> String? in
@@ -268,7 +278,7 @@ private struct AnthropicEventReducer {
   private var inputTokens: Int?
   private var cachedInputTokens: Int?
   private var toolBlocks: [Int: ToolBlock] = [:]
-  private var finishReason: ProviderFinishReason = .stop
+  private var finishReason: ProviderFinishReason?
   private var terminal = false
 
   init(providerID: String, requestedModelID: String) {
@@ -368,7 +378,7 @@ private struct AnthropicEventReducer {
       ]
     case "message_delta":
       if let delta = object.object("delta"), let reason = delta.string("stop_reason") {
-        finishReason = mapFinishReason(reason)
+        finishReason = try mapFinishReason(reason)
       }
       let usage = object.object("usage")
       return [
@@ -386,6 +396,9 @@ private struct AnthropicEventReducer {
       guard responseID != nil else { throw invalid("message_stop arrived before message_start") }
       guard toolBlocks.isEmpty else {
         throw invalid("message_stop arrived with incomplete tool calls")
+      }
+      guard let finishReason else {
+        throw invalid("message_stop arrived without a stop reason")
       }
       terminal = true
       return [.completed(finishReason)]
@@ -407,12 +420,13 @@ private struct AnthropicEventReducer {
     guard terminal else { throw invalid("Anthropic stream ended without message_stop") }
   }
 
-  private func mapFinishReason(_ value: String) -> ProviderFinishReason {
+  private func mapFinishReason(_ value: String) throws -> ProviderFinishReason {
     switch value {
     case "max_tokens": .length
     case "tool_use": .toolCalls
     case "refusal": .contentFilter
-    default: .stop
+    case "end_turn", "stop_sequence": .stop
+    default: throw invalid("unsupported Anthropic stop reason: \(value)")
     }
   }
 
