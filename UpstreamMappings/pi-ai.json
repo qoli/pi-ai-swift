@@ -11,14 +11,12 @@
     {
       "id": "builtin-provider-registry",
       "responsibility": "Complete built-in provider inventory and generated model-catalog registration.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/BuiltinProviderRegistry.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/image-models.generated.ts",
         "packages/ai/src/images-models.ts",
@@ -39,13 +37,13 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "canonical-request-event-dtos",
       "responsibility": "Provider-neutral request, message, tool, image, event, usage, and completion values.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/JSONValue.swift",
         "Sources/PiAIProviderRuntime/ProviderRequest.swift",
@@ -62,11 +60,15 @@
         "packages/ai/test/unicode-surrogate.test.ts"
       ],
       "dependsOn": [],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#structuredRequestRoundTripsWithoutFlatteningRolesOrTools",
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#normalizedEventsRoundTripWithPartialToolInput",
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#unknownEventFailsDecodingInsteadOfProducingSubstituteOutput"
+      ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
@@ -1682,14 +1684,12 @@
     {
       "id": "runtime-provider-dispatch",
       "responsibility": "Resolve provider and model, apply authorization, and dispatch by model wire protocol.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Runtime/PiAIRuntime.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/models.ts",
         "packages/ai/src/api/lazy.ts"
@@ -1709,7 +1709,7 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
