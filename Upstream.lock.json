@@ -14,6 +14,7 @@
     "kimi-coding"
   ],
   "requiredSourcePaths": [
+    "packages/ai/CHANGELOG.md",
     "packages/ai/src/types.ts",
     "packages/ai/src/models.ts",
     "packages/ai/src/auth/types.ts",
@@ -26,6 +27,19 @@
     "packages/ai/src/api/openai-responses.ts",
     "packages/ai/src/api/openai-codex-responses.ts",
     "packages/ai/src/api/openai-completions.ts",
-    "packages/ai/src/api/anthropic-messages.ts"
+    "packages/ai/src/api/anthropic-messages.ts",
+    "packages/ai/test/abort.test.ts",
+    "packages/ai/test/models-runtime.test.ts",
+    "packages/ai/test/oauth-auth.test.ts",
+    "packages/ai/test/oauth-device-code.test.ts",
+    "packages/ai/test/openai-codex-oauth.test.ts",
+    "packages/ai/test/openai-codex-stream.test.ts",
+    "packages/ai/test/openai-codex-cache-affinity-e2e.test.ts",
+    "packages/ai/test/openai-responses-compat.test.ts",
+    "packages/ai/test/openai-responses-terminal-event.test.ts",
+    "packages/ai/test/openai-completions-empty-tools.test.ts",
+    "packages/ai/test/openai-completions-reasoning-details.test.ts",
+    "packages/ai/test/kimi-coding-oauth.test.ts",
+    "packages/ai/test/provider-error-body-regression.test.ts"
   ]
 }

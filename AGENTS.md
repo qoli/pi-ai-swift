@@ -15,13 +15,24 @@ must not leak merely to make tests easier.
 
 ## Upstream work
 
+Read `Docs/AI_MAINTENANCE.md` before changing the upstream pin, a provider
+adapter, authentication, normalized events, or reconstruction logic. Its sync
+terminal states and change classes are mandatory.
+
 1. Read `Upstream.lock.json` and the provider's entry in
    `UpstreamMappings/pi-ai.json`.
 2. Compare the pinned revision with the proposed upstream revision.
-3. Inspect only the allowlisted provider, auth, protocol, and event paths first.
-4. Update sanitized fixtures before changing Swift implementation.
-5. Prove TypeScript-to-Swift behavioral equivalence through differential tests.
-6. Update provenance and the exact upstream revision in the same change.
+3. Inspect allowlisted source paths, relevant upstream tests, and the changelog.
+4. Classify every relevant hunk before editing Swift.
+5. Update sanitized fixtures before changing Swift implementation.
+6. Prove TypeScript-to-Swift behavioral equivalence through differential tests.
+7. Run macOS tests, iOS compile/runtime gates, and any explicitly authorized
+   live test required by the affected behavior.
+8. Update provenance and the exact upstream revision in the same change.
+
+An automated run may end as `upstream_incompatible` or `verification_failed`.
+That is preferable to moving the lock without equivalence. Keep the last
+compatible pin and report the exact invariant.
 
 Do not infer provider behavior from model names or documentation alone. Exact
 URLs, headers, bodies, refresh transitions, stream framing, and errors are part
@@ -44,3 +55,7 @@ not run in ordinary CI.
 Run `swift test` and `./Scripts/check-upstream.sh`. A provider is not supported
 until its request encoding, stream decoding, authentication lifecycle,
 cancellation, and explicit failure behavior all have contract coverage.
+
+A macOS CLI test cannot establish iOS runtime support. Use an actual Simulator
+XCTest for Apple-runtime claims. Live tests require explicit opt-in and may emit
+only safe metadata; browser completion alone is not authorization success.

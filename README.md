@@ -55,4 +55,6 @@ swift test
 The upstream TypeScript implementation is an oracle, not a shipping runtime.
 Synchronization must compare structured requests, raw stream fixtures,
 normalized events, authentication transitions, and explicit errors. See
-[`Docs/ARCHITECTURE.md`](Docs/ARCHITECTURE.md).
+the [design registry](Docs/README.md),
+[`Docs/ARCHITECTURE.md`](Docs/ARCHITECTURE.md), and
+[`Docs/AI_MAINTENANCE.md`](Docs/AI_MAINTENANCE.md).

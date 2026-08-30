@@ -1,0 +1,21 @@
+# Design registry
+
+This directory is the living design and maintenance registry for
+`pi-ai-swift`. Code and executable verification outrank document claims.
+
+| Document | Status | Responsibility |
+| --- | --- | --- |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Partially landed | Public seam, ownership, and semantic-port model |
+| [AI_MAINTENANCE.md](AI_MAINTENANCE.md) | Partially landed | AI-driven upstream sync, compatibility decisions, and reconstruction |
+
+## Status meanings
+
+- **Landed:** the described behavior exists and has executable evidence.
+- **Partially landed:** a real path exists, but one or more structural gates are
+  still missing.
+- **Draft:** primarily a proposed design with no meaningful end-to-end path.
+- **Retired:** historical context whose current authority moved elsewhere.
+
+Update this registry whenever a document's status changes. Do not promote a
+document because its prose is complete; promote it only when the implementation
+and verification named by that document exist.

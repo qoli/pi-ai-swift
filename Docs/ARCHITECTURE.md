@@ -1,5 +1,12 @@
 # Architecture
 
+## Current status
+
+**Partially landed.** The public seam, normalized DTOs, explicit failure model,
+injected HTTP transport, and OpenAI Codex device authorization exist. Live
+generation adapters, credential refresh persistence, and full differential
+fixtures are not yet landed.
+
 ## Purpose
 
 `PiAIProviderRuntime` is a provider compatibility kernel. Its public interface
@@ -61,3 +68,7 @@ line-by-line translation. Observable equivalence is defined by:
 Catalog-only changes may be automated after tests pass. Authentication,
 endpoint, request, credential-schema, or provider-policy changes require an
 explicit review even when an automated port passes.
+
+The classification, synchronization, incompatibility, and reconstruction rules
+are defined in [AI_MAINTENANCE.md](AI_MAINTENANCE.md). This document owns the
+module seam; the maintenance document must not redefine it.
