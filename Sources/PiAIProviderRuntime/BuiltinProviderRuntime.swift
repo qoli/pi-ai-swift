@@ -106,6 +106,22 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
         adapters[method.id] = KimiCodingOAuthAuthorizationAdapter(
           transport: authorizationTransport
         )
+      case "oauth" where record.id == AnthropicOAuthAuthorizationAdapter.providerID:
+        adapters[method.id] = AnthropicOAuthAuthorizationAdapter(
+          transport: authorizationTransport
+        )
+      case "oauth" where record.id == GitHubCopilotOAuthAuthorizationAdapter.providerID:
+        adapters[method.id] = GitHubCopilotOAuthAuthorizationAdapter(
+          transport: authorizationTransport
+        )
+      case "oauth" where record.id == OpenRouterOAuthAuthorizationAdapter.providerID:
+        adapters[method.id] = OpenRouterOAuthAuthorizationAdapter(
+          transport: authorizationTransport
+        )
+      case "oauth" where record.id == XAIOAuthAuthorizationAdapter.providerID:
+        adapters[method.id] = XAIOAuthAuthorizationAdapter(
+          transport: authorizationTransport
+        )
       default:
         adapters[method.id] = UnimplementedAuthorizationAdapter(
           providerID: record.id,

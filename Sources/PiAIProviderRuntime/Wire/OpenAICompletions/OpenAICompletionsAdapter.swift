@@ -66,6 +66,11 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
+    applyGitHubCopilotHeaders(
+      providerID: request.providerID,
+      messages: request.messages,
+      to: &urlRequest
+    )
     switch context.credential {
     case .apiKey(let credential):
       urlRequest.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")

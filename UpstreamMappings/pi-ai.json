@@ -112,7 +112,8 @@
         "Sources/PiAIProviderRuntime/Authorization/CompositeAuthorizationAdapter.swift",
         "Sources/PiAIProviderRuntime/Authorization/InMemoryProviderCredentialStore.swift",
         "Sources/PiAIProviderRuntime/Authorization/KeychainProviderCredentialStore.swift",
-        "Sources/PiAIProviderRuntime/Authorization/CredentialRefreshCoordinator.swift"
+        "Sources/PiAIProviderRuntime/Authorization/CredentialRefreshCoordinator.swift",
+        "Sources/PiAIProviderRuntime/Authorization/OAuthUtilities.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -338,14 +339,13 @@
       "id": "provider-anthropic",
       "providerID": "anthropic",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for anthropic.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/AnthropicProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/anthropic.ts",
         "packages/ai/src/providers/anthropic.models.ts",
@@ -361,12 +361,13 @@
         "wire-anthropic-messages"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#anthropicPKCELoginValidatesStateAndStoresRotatingOAuth"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
@@ -611,14 +612,14 @@
       "id": "provider-github-copilot",
       "providerID": "github-copilot",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for github-copilot.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Authorization/GitHubCopilotAuthorizationAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/GitHubCopilotHeaders.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/GithubCopilotProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/github-copilot.ts",
         "packages/ai/src/providers/github-copilot.models.ts",
@@ -636,12 +637,14 @@
         "wire-openai-responses"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#githubCopilotDeviceFlowDerivesProxyEndpointAndAccountModels",
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#copilotDynamicHeadersReflectInitiatorAndVision"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
@@ -1156,14 +1159,13 @@
       "id": "provider-openrouter",
       "providerID": "openrouter",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for openrouter.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/OpenrouterProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/openrouter.ts",
         "packages/ai/src/providers/openrouter.models.ts",
@@ -1179,12 +1181,13 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#openRouterPKCEExchangesPermanentKeyWithoutInventingRefresh"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
@@ -1390,14 +1393,13 @@
       "id": "provider-xai",
       "providerID": "xai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xai.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Authorization/XAIAuthorizationAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/XaiProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/xai.ts",
         "packages/ai/src/providers/xai.models.ts",
@@ -1413,12 +1415,14 @@
         "wire-openai-responses"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#xAIDeviceFlowHandlesPendingAndRefreshTokenRotation",
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#xAIRefreshPreservesUnrotatedRefreshToken"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {

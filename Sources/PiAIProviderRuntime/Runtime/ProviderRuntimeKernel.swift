@@ -214,8 +214,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     case nil: credentialMetadata = [:]
     }
     guard
-      let baseURLTemplate = modelConfiguration.baseURL ?? provider.baseURL
-        ?? credentialMetadata["baseURL"]
+      let baseURLTemplate = credentialMetadata["baseURL"]
+        ?? modelConfiguration.baseURL ?? provider.baseURL
     else {
       throw failure(
         .invalidRequest,

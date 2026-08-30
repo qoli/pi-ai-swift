@@ -64,6 +64,11 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
+    applyGitHubCopilotHeaders(
+      providerID: request.providerID,
+      messages: request.messages,
+      to: &urlRequest
+    )
     try applyCredential(context.credential, to: &urlRequest, providerID: request.providerID)
     urlRequest.httpBody = try encodeJSONObject(
       try makeBody(request, context: context),

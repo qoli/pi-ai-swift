@@ -8,8 +8,10 @@ Keychain storage, serialized credential refresh, and Kimi Coding/OpenAI Codex
 device authorization exist. Provider reasoning signatures remain opaque but
 round-trip through normalized events. Bedrock supports bearer credentials and
 native SigV4 credentials supplied by the host. Provider-by-provider
-equivalence, the remaining subscription authorization methods, and the complete
-differential fixture corpus are still tracked in the maintenance IR.
+equivalence is pinned by the differential manifest. Anthropic and OpenRouter
+use native host-returned PKCE callbacks; GitHub Copilot, Kimi Coding, OpenAI
+Codex, and xAI use native device or callback flows. Radius dynamic discovery is
+the remaining provider-specific area tracked in the maintenance IR.
 
 ## Purpose
 

@@ -14,7 +14,8 @@ Implemented today:
   validation;
 - buffered and raw incremental URLSession transports with cancellation tests;
 - API-key storage, Apple Keychain persistence, serialized refresh ownership,
-  and Kimi Coding/OpenAI Codex device OAuth;
+  Anthropic/OpenRouter PKCE, and GitHub Copilot/Kimi Coding/OpenAI Codex/xAI
+  subscription OAuth;
 - Bedrock bearer and deterministic SigV4 signing, AWS event-stream CRC
   validation, and opaque reasoning-signature round trips;
 - deterministic contract, wire-protocol, catalog, transport, and OAuth fixtures;
@@ -29,7 +30,7 @@ Not implemented yet:
 - a shared cross-language request/event runner for newly added semantics that
   are not yet represented by the protocol fixture suites;
 - a machine-readable sync decision report;
-- the remaining subscription authorization adapters;
+- Radius gateway discovery, OAuth, and dynamic model publication;
 - live generation evidence for providers without authorized credentials;
 - unattended promotion of any provider implementation.
 
