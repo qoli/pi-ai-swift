@@ -2,7 +2,7 @@
 
 ## Current status
 
-**Partially landed.** The public seam, normalized DTOs, explicit failure model,
+**Landed for the pinned provider scope.** The public seam, normalized DTOs, explicit failure model,
 complete pinned catalog, native wire adapters, raw streaming transport,
 Keychain storage, serialized credential refresh, and Kimi Coding/OpenAI Codex
 device authorization exist. Provider reasoning signatures remain opaque but
@@ -10,8 +10,11 @@ round-trip through normalized events. Bedrock supports bearer credentials and
 native SigV4 credentials supplied by the host. Provider-by-provider
 equivalence is pinned by the differential manifest. Anthropic and OpenRouter
 use native host-returned PKCE callbacks; GitHub Copilot, Kimi Coding, OpenAI
-Codex, and xAI use native device or callback flows. Radius dynamic discovery is
-the remaining provider-specific area tracked in the maintenance IR.
+Codex, and xAI use native device or callback flows. Radius supports browser or
+device OAuth, authenticated dynamic catalog refresh, persisted offline catalog
+restoration, and `pi-messages` streaming. All areas in the maintenance IR have
+deterministic Swift evidence; live credentials remain a separate acceptance
+layer rather than a substitute for compatibility fixtures.
 
 ## Purpose
 

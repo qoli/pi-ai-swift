@@ -328,7 +328,11 @@ actor ProviderModelStore {
         cause: String(describing: error)
       )
     }
-    try validateBaseURL(config.baseUrl, providerID: providerID)
+    try validateBaseURL(
+      config.baseUrl,
+      providerID: providerID,
+      allowsHTTP: true
+    )
     guard !config.models.isEmpty else {
       throw failure(
         .invalidResponse,
@@ -507,7 +511,8 @@ actor ProviderModelStore {
 
   private static func validateBaseURL(
     _ value: String?,
-    providerID: String
+    providerID: String,
+    allowsHTTP: Bool = false
   ) throws {
     guard let value else { return }
     let validationValue = value.replacingOccurrences(
@@ -515,7 +520,11 @@ actor ProviderModelStore {
       with: "placeholder",
       options: .regularExpression
     )
-    guard let url = URL(string: validationValue), url.scheme == "https" else {
+    let allowedSchemes = allowsHTTP ? ["http", "https"] : ["https"]
+    guard let url = URL(string: validationValue),
+      let scheme = url.scheme?.lowercased(),
+      allowedSchemes.contains(scheme)
+    else {
       throw failure(
         .upstreamDrift,
         providerID: providerID,

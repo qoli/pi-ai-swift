@@ -5,7 +5,7 @@ This directory is the living design and maintenance registry for
 
 | Document | Status | Responsibility |
 | --- | --- | --- |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Partially landed | Public seam, ownership, and semantic-port model |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Landed | Public seam, ownership, and semantic-port model |
 | [AI_MAINTENANCE.md](AI_MAINTENANCE.md) | Partially landed | Human-initiated inventory and implementation sync, compatibility decisions, and reconstruction |
 
 ## Status meanings

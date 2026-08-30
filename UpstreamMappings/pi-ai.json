@@ -1293,14 +1293,14 @@
       "id": "provider-radius",
       "providerID": "radius",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for radius.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Catalog/ProviderModelStore.swift",
+        "Sources/PiAIProviderRuntime/Authorization/RadiusAuthorizationAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/RadiusProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/radius.ts",
         "packages/ai/src/providers/radius-config.ts",
@@ -1315,12 +1315,15 @@
         "credential-store-auth-resolution"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#deviceOAuthStoresGatewayAndHandlesPendingPolling",
+        "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#expiredOAuthRefreshesBeforeDynamicCatalogRequest",
+        "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#dynamicCatalogRoutesStreamAndReloadsPersistedModelsOffline",
+        "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#invalidNetworkRefreshFailsWithoutServingPersistedModels"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {

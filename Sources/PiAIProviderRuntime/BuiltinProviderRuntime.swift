@@ -1,22 +1,176 @@
 import Foundation
 
 public struct BuiltinProviderRuntime: ProviderRuntime {
+  private let registry: BuiltinProviderRegistry
   private let kernel: ProviderRuntimeKernel
+  private let modelStore: ProviderModelStore
+  private let credentialStore: any ProviderCredentialStore
+  private let streamingTransport: any ProviderHTTPStreamingTransport
+  private let authorizationTransport: any ProviderHTTPTransport
+  private let radiusAuthorization: RadiusOAuthAuthorizationAdapter
+  private let radiusRefreshCoordinator: CredentialRefreshCoordinator
 
   public init(
     credentialStore: any ProviderCredentialStore,
     streamingTransport: any ProviderHTTPStreamingTransport =
       URLSessionProviderHTTPStreamingTransport(),
-    authorizationTransport: any ProviderHTTPTransport = URLSessionProviderHTTPTransport()
+    authorizationTransport: any ProviderHTTPTransport = URLSessionProviderHTTPTransport(),
+    radiusCatalogPersistenceURL: URL? = nil
   ) throws {
     let registry = try BuiltinProviderRegistry.load()
+    self.registry = registry
+    self.credentialStore = credentialStore
+    self.streamingTransport = streamingTransport
+    self.authorizationTransport = authorizationTransport
+    radiusAuthorization = RadiusOAuthAuthorizationAdapter(
+      transport: authorizationTransport
+    )
+    radiusRefreshCoordinator = CredentialRefreshCoordinator(
+      credentialStore: credentialStore
+    )
+    modelStore = try ProviderModelStore(
+      expectedRevision: registry.upstreamRevision,
+      persistenceURL: radiusCatalogPersistenceURL
+    )
+    kernel = try Self.makeKernel(
+      registry: registry,
+      credentialStore: credentialStore,
+      streamingTransport: streamingTransport,
+      authorizationTransport: authorizationTransport
+    )
+  }
+
+  public func catalog() async throws -> ProviderCatalog {
+    try await radiusKernel(refreshFromNetwork: true).catalog()
+  }
+
+  public func authorize(
+    _ operation: AuthorizationOperation,
+    interaction: @escaping AuthorizationInteraction
+  ) async throws -> AuthorizationState {
+    try await kernel.authorize(operation, interaction: interaction)
+  }
+
+  public func stream(
+    _ request: ProviderRequest
+  ) -> AsyncThrowingStream<ProviderEvent, any Error> {
+    guard request.providerID == RadiusOAuthAuthorizationAdapter.providerID else {
+      return kernel.stream(request)
+    }
+    return AsyncThrowingStream { continuation in
+      let task = Task {
+        do {
+          let runtime = try await radiusKernel(refreshFromNetwork: true)
+          for try await event in runtime.stream(request) {
+            continuation.yield(event)
+          }
+          continuation.finish()
+        } catch {
+          continuation.finish(throwing: error)
+        }
+      }
+      continuation.onTermination = { _ in task.cancel() }
+    }
+  }
+
+  private func radiusKernel(
+    refreshFromNetwork: Bool
+  ) async throws -> ProviderRuntimeKernel {
+    var records = await modelStore.records(
+      providerID: RadiusOAuthAuthorizationAdapter.providerID
+    )
+    let credential = try await radiusAuthorization.resolveCredential(
+      providerID: RadiusOAuthAuthorizationAdapter.providerID,
+      credentialStore: credentialStore,
+      refreshCoordinator: radiusRefreshCoordinator
+    )
+    if refreshFromNetwork, let credential {
+      let gateway = try radiusGateway(credential)
+      var request = URLRequest(url: gateway.appending(path: "v1/config"))
+      request.setValue("application/json", forHTTPHeaderField: "Accept")
+      switch credential {
+      case .apiKey(let value):
+        request.setValue("Bearer \(value.key)", forHTTPHeaderField: "Authorization")
+      case .oauth(let value):
+        request.setValue("Bearer \(value.accessToken)", forHTTPHeaderField: "Authorization")
+      }
+      let response = try await authorizationTransport.send(request)
+      guard (200..<300).contains(response.statusCode) else {
+        throw ProviderRuntimeFailure(
+          code: .transportFailed,
+          message: "Radius gateway config request failed (HTTP \(response.statusCode))",
+          providerID: RadiusOAuthAuthorizationAdapter.providerID,
+          operation: "radius.catalog.refresh",
+          causeDescription: nil
+        )
+      }
+      _ = try await modelStore.refreshRadius {
+        ProviderModelRefreshPayload(
+          data: response.body,
+          checkedAt: Date(),
+          etag: response.headers.first {
+            $0.key.lowercased() == "etag"
+          }?.value
+        )
+      }
+      records = await modelStore.records(
+        providerID: RadiusOAuthAuthorizationAdapter.providerID
+      )
+    }
+    guard !records.isEmpty else { return kernel }
+    let providers = registry.providers.map { record in
+      record.id == RadiusOAuthAuthorizationAdapter.providerID
+        ? record.replacingModels(with: records) : record
+    }
+    return try Self.makeKernel(
+      registry: BuiltinProviderRegistry(
+        upstreamRevision: registry.upstreamRevision,
+        providers: providers
+      ),
+      credentialStore: credentialStore,
+      streamingTransport: streamingTransport,
+      authorizationTransport: authorizationTransport
+    )
+  }
+
+  private func radiusGateway(_ credential: ProviderCredential) throws -> URL {
+    let metadata: [String: String]
+    switch credential {
+    case .apiKey(let value): metadata = value.metadata
+    case .oauth(let value): metadata = value.metadata
+    }
+    let raw =
+      metadata["gateway"] ?? metadata["baseURL"]
+      ?? RadiusOAuthAuthorizationAdapter.defaultGateway
+    guard let url = URL(string: raw),
+      let scheme = url.scheme?.lowercased(),
+      ["http", "https"].contains(scheme),
+      url.host != nil
+    else {
+      throw ProviderRuntimeFailure(
+        code: .invalidCredential,
+        message: "Radius credential gateway metadata is invalid",
+        providerID: RadiusOAuthAuthorizationAdapter.providerID,
+        operation: "radius.catalog.gateway",
+        causeDescription: nil
+      )
+    }
+    return url
+  }
+
+  private static func makeKernel(
+    registry: BuiltinProviderRegistry,
+    credentialStore: any ProviderCredentialStore,
+    streamingTransport: any ProviderHTTPStreamingTransport,
+    authorizationTransport: any ProviderHTTPTransport
+  ) throws -> ProviderRuntimeKernel {
     let definitions = try registry.providers.map {
-      try Self.makeDefinition(
+      try makeDefinition(
         $0,
         authorizationTransport: authorizationTransport
       )
     }
-    kernel = try ProviderRuntimeKernel(
+    return try ProviderRuntimeKernel(
       catalogRevision: registry.upstreamRevision,
       providers: definitions,
       wireProtocols: [
@@ -44,23 +198,6 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       credentialStore: credentialStore,
       transport: streamingTransport
     )
-  }
-
-  public func catalog() async throws -> ProviderCatalog {
-    try await kernel.catalog()
-  }
-
-  public func authorize(
-    _ operation: AuthorizationOperation,
-    interaction: @escaping AuthorizationInteraction
-  ) async throws -> AuthorizationState {
-    try await kernel.authorize(operation, interaction: interaction)
-  }
-
-  public func stream(
-    _ request: ProviderRequest
-  ) -> AsyncThrowingStream<ProviderEvent, any Error> {
-    kernel.stream(request)
   }
 
   private static func makeDefinition(
@@ -120,6 +257,10 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
         )
       case "oauth" where record.id == XAIOAuthAuthorizationAdapter.providerID:
         adapters[method.id] = XAIOAuthAuthorizationAdapter(
+          transport: authorizationTransport
+        )
+      case "oauth" where record.id == RadiusOAuthAuthorizationAdapter.providerID:
+        adapters[method.id] = RadiusOAuthAuthorizationAdapter(
           transport: authorizationTransport
         )
       default:

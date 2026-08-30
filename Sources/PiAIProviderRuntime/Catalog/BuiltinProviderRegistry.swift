@@ -46,6 +46,53 @@ struct BuiltinProviderRecord: Sendable {
   let models: [ProviderModel]
   let modelConfigurations: [ProviderModelRoute: ProviderModelConfiguration]
 
+  init(
+    id: String,
+    name: String,
+    baseURL: String?,
+    headers: [String: String],
+    authorizationMethodIDs: [String],
+    models: [ProviderModel],
+    modelConfigurations: [ProviderModelRoute: ProviderModelConfiguration]
+  ) {
+    self.id = id
+    self.name = name
+    self.baseURL = baseURL
+    self.headers = headers
+    self.authorizationMethodIDs = authorizationMethodIDs
+    self.models = models
+    self.modelConfigurations = modelConfigurations
+  }
+
+  func replacingModels(
+    with records: [ProviderModelStoreRecord]
+  ) -> BuiltinProviderRecord {
+    BuiltinProviderRecord(
+      id: id,
+      name: name,
+      baseURL: baseURL,
+      headers: headers,
+      authorizationMethodIDs: authorizationMethodIDs,
+      models: records.map(\.model),
+      modelConfigurations: Dictionary(
+        uniqueKeysWithValues: records.map { record in
+          (
+            ProviderModelRoute(
+              modelID: record.model.id,
+              outputModality: .text
+            ),
+            ProviderModelConfiguration(
+              protocolID: record.model.protocolID,
+              baseURL: record.baseURL,
+              headers: [:],
+              metadata: record.metadata
+            )
+          )
+        }
+      )
+    )
+  }
+
   fileprivate init(document: BuiltinProviderDocument) throws {
     id = document.id
     name = document.name
