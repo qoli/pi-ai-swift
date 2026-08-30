@@ -17,6 +17,10 @@ let package = Package(
       name: "pi-ai-auth-probe",
       targets: ["PiAIAuthProbe"]
     ),
+    .executable(
+      name: "pi-ai-live-probe",
+      targets: ["PiAILiveProbe"]
+    ),
   ],
   targets: [
     .target(
@@ -25,6 +29,10 @@ let package = Package(
     ),
     .executableTarget(
       name: "PiAIAuthProbe",
+      dependencies: ["PiAIProviderRuntime"]
+    ),
+    .executableTarget(
+      name: "PiAILiveProbe",
       dependencies: ["PiAIProviderRuntime"]
     ),
     .testTarget(
