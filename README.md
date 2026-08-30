@@ -11,13 +11,13 @@ or a shell runtime.
 
 ## Status
 
-The repository currently contains the public provider-runtime contract,
-upstream provenance lock, synchronization checks, contract tests, and the first
-live authorization slice: OpenAI Codex device-code OAuth. The
-`pi-ai-auth-probe` executable verifies login without persisting or printing
-access and refresh tokens. Production persistence remains a host-app Keychain
-responsibility. No live generation provider is claimed yet. Unsupported
-providers and unavailable capabilities must fail explicitly; the runtime never
+The repository contains the public provider-runtime contract, the complete
+pinned built-in catalog, native wire adapters, URLSession raw streaming,
+API-key and device-code OAuth slices, serialized token refresh, and an optional
+Apple Keychain credential store. The `pi-ai-auth-probe` executable verifies
+login without printing access or refresh tokens. Live provider evidence is
+tracked separately from deterministic compatibility evidence; unsupported
+providers and unavailable capabilities fail explicitly, and the runtime never
 switches providers or protocols automatically.
 
 ## Interface

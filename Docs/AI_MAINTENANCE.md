@@ -10,7 +10,12 @@ Implemented today:
 - the complete tracked built-in provider inventory and per-area mappings;
 - clean-cache and source-presence verification;
 - a narrow Swift provider-runtime seam;
-- deterministic contract and OpenAI Codex OAuth fixtures;
+- a complete pinned catalog with persisted snapshot and dynamic Radius model
+  validation;
+- buffered and raw incremental URLSession transports with cancellation tests;
+- API-key storage, Apple Keychain persistence, serialized refresh ownership,
+  and Kimi Coding/OpenAI Codex device OAuth;
+- deterministic contract, wire-protocol, catalog, transport, and OAuth fixtures;
 - macOS tests, iOS builds, and an opt-in iOS Simulator OAuth test;
 - explicit errors instead of provider, protocol, or authentication fallback.
 
@@ -20,7 +25,9 @@ Not implemented yet:
 - sanitized fixtures generated directly from the pinned TypeScript tests;
 - differential request/event runners shared by TypeScript and Swift;
 - a machine-readable sync decision report;
-- Keychain refresh rotation and live generation adapters;
+- the remaining subscription authorization adapters;
+- full AWS Bedrock credential resolution and request signing;
+- complete provider-by-provider differential and live generation evidence;
 - unattended promotion of any provider implementation.
 
 This document governs both updating an existing checkout and reconstructing the

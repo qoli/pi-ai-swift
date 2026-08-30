@@ -3,9 +3,11 @@
 ## Current status
 
 **Partially landed.** The public seam, normalized DTOs, explicit failure model,
-injected HTTP transport, and OpenAI Codex device authorization exist. Live
-generation adapters, credential refresh persistence, and full differential
-fixtures are not yet landed.
+complete pinned catalog, native wire adapters, raw streaming transport,
+Keychain storage, serialized credential refresh, and Kimi Coding/OpenAI Codex
+device authorization exist. Provider-by-provider equivalence, the remaining
+subscription authorization methods, full Bedrock credential signing, and the
+complete differential fixture corpus are still tracked in the maintenance IR.
 
 ## Purpose
 
@@ -48,10 +50,10 @@ wire adapter named by `ProviderModel.protocolID`. Provider authorization and
 wire-protocol adapters are internal seams; consumers do not select or assemble
 them.
 
-The kernel is partially landed. Its dispatch and explicit configuration
-failures have deterministic coverage, but the public built-in `PiAIRuntime`,
-provider definitions, and production wire adapters are not yet landed. An
-unimplemented protocol therefore fails explicitly instead of selecting another
+The kernel dispatches the public `BuiltinProviderRuntime` through exact catalog
+routes and production wire adapters. Explicit configuration failures have
+deterministic coverage. A missing protocol, credential, endpoint, output
+modality, or authorization method fails explicitly instead of selecting another
 protocol or provider.
 
 ## OpenAI Codex authorization

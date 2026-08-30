@@ -40,6 +40,34 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  func resolveCredential(
+    providerID: String,
+    credentialStore: any ProviderCredentialStore,
+    refreshCoordinator: CredentialRefreshCoordinator
+  ) async throws -> ProviderCredential? {
+    guard providerID == OpenAICodexOAuthClient.providerID else {
+      throw failure("credential provider mismatch")
+    }
+    guard let stored = try await credentialStore.read(providerID: providerID) else {
+      return nil
+    }
+    guard case .oauth = stored else {
+      throw ProviderRuntimeFailure(
+        code: .invalidCredential,
+        message: "OpenAI Codex requires an OAuth credential",
+        providerID: providerID,
+        operation: "oauth.credential.resolve",
+        causeDescription: nil
+      )
+    }
+    let refreshed = try await refreshCoordinator.credential(
+      providerID: providerID,
+      minimumValidity: 60,
+      refresh: { credential in try await client.refresh(credential) }
+    )
+    return .oauth(refreshed)
+  }
+
   private func failure(_ message: String) -> ProviderRuntimeFailure {
     ProviderRuntimeFailure(
       code: .authorizationFailed,

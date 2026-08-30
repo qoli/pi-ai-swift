@@ -14,14 +14,16 @@ protocol ProviderAuthorizationAdapter: Sendable {
 
   func resolveCredential(
     providerID: String,
-    credentialStore: any ProviderCredentialStore
+    credentialStore: any ProviderCredentialStore,
+    refreshCoordinator: CredentialRefreshCoordinator
   ) async throws -> ProviderCredential?
 }
 
 extension ProviderAuthorizationAdapter {
   func resolveCredential(
     providerID: String,
-    credentialStore: any ProviderCredentialStore
+    credentialStore: any ProviderCredentialStore,
+    refreshCoordinator: CredentialRefreshCoordinator
   ) async throws -> ProviderCredential? {
     let credential = try await credentialStore.read(providerID: providerID)
     if case .oauth(let oauth) = credential, oauth.expiresAt <= Date() {
@@ -79,6 +81,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
   private let providers: [String: ProviderDefinition]
   private let wireProtocols: [String: any WireProtocolAdapter]
   private let credentialStore: any ProviderCredentialStore
+  private let refreshCoordinator: CredentialRefreshCoordinator
   private let transport: any ProviderHTTPStreamingTransport
 
   init(
@@ -92,6 +95,9 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     self.providers = try Self.uniqueProviders(providers)
     self.wireProtocols = try Self.uniqueWireProtocols(wireProtocols)
     self.credentialStore = credentialStore
+    refreshCoordinator = CredentialRefreshCoordinator(
+      credentialStore: credentialStore
+    )
     self.transport = transport
   }
 
@@ -168,7 +174,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     }
     let credential = try await provider.authorization.resolveCredential(
       providerID: request.providerID,
-      credentialStore: credentialStore
+      credentialStore: credentialStore,
+      refreshCoordinator: refreshCoordinator
     )
     if provider.credentialRequirement == .required, credential == nil {
       throw failure(

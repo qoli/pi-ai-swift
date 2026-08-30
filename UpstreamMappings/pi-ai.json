@@ -72,14 +72,12 @@
     {
       "id": "catalog-model-store",
       "responsibility": "Provider descriptors, model metadata, dynamic catalog refresh, and persisted model snapshots.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/ProviderCatalog.swift"
-      ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Catalog/ProviderCatalogRegistry.swift",
+        "Sources/PiAIProviderRuntime/ProviderCatalog.swift",
         "Sources/PiAIProviderRuntime/Catalog/ProviderModelStore.swift"
       ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/models.ts",
         "packages/ai/src/models-store.ts",
@@ -91,27 +89,30 @@
         "packages/ai/test/models-runtime.test.ts"
       ],
       "dependsOn": [],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#loadsValidatedBundledSnapshotAtPinnedRevision",
+        "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#radiusRefreshPersistsAtomicallyAndReloadsValidators",
+        "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#newerRadiusRefreshOwnsPublicationWhileReadersSeeImmutableSnapshot"
+      ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "credential-store-auth-resolution",
       "responsibility": "Credential representation, serialized storage mutation, auth source resolution, refresh ownership, and logout.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Authorization.swift",
         "Sources/PiAIProviderRuntime/Authorization/APIKeyAuthorizationAdapter.swift",
         "Sources/PiAIProviderRuntime/Authorization/CompositeAuthorizationAdapter.swift",
-        "Sources/PiAIProviderRuntime/Authorization/InMemoryProviderCredentialStore.swift"
+        "Sources/PiAIProviderRuntime/Authorization/InMemoryProviderCredentialStore.swift",
+        "Sources/PiAIProviderRuntime/Authorization/KeychainProviderCredentialStore.swift",
+        "Sources/PiAIProviderRuntime/Authorization/CredentialRefreshCoordinator.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Authorization/AuthorizationRuntime.swift",
-        "Sources/PiAIProviderRuntime/Authorization/CredentialResolver.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/context.ts",
         "packages/ai/src/auth/credential-store.ts",
@@ -132,12 +133,15 @@
       ],
       "dependsOn": [],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/APIKeyAuthorizationAdapterTests.swift#loginUsesSecretChallengeAndStoresTrimmedKey"
+        "Tests/PiAIProviderRuntimeTests/APIKeyAuthorizationAdapterTests.swift#loginUsesSecretChallengeAndStoresTrimmedKey",
+        "Tests/PiAIProviderRuntimeTests/KeychainProviderCredentialStoreTests.swift#roundTripsListsUpdatesAndDeletesCredentialsWithoutExposingSecrets",
+        "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#coalescesConcurrentRefreshAndCommitsRotatedCredentialOnce",
+        "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#logoutCancelsInFlightRefreshWithoutResurrectingCredential"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
@@ -175,13 +179,11 @@
     {
       "id": "http-transport",
       "responsibility": "Buffered and incremental URLSession transport with cancellation and injectable fixtures.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/ProviderHTTPTransport.swift"
       ],
-      "plannedSwiftPaths": [
-        "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/types.ts",
         "packages/ai/src/utils/provider-retry.ts"
@@ -191,24 +193,26 @@
         "packages/ai/test/provider-retry.test.ts"
       ],
       "dependsOn": [],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#streamingTransportPreservesStatusHeadersAndAllArbitrarilyFragmentedBytes",
+        "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#cancellingBodyConsumerCancelsTheUnderlyingURLSessionTask",
+        "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#urlSessionErrorsRemainTheThrownCauseAndAreNotRetried"
+      ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "kimi-coding-oauth",
       "providerID": "kimi-coding",
       "responsibility": "Kimi Coding subscription device authorization, token refresh, and credential state.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Authorization/KimiCodingOAuthAuthorizationAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Authorization/KimiCodingAuthorizationAdapter.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/kimi-coding.ts"
       ],
@@ -221,19 +225,20 @@
         "http-transport"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/KimiCodingOAuthAuthorizationAdapterTests.swift#deviceFlowPreservesPendingSlowDownAndStoresCredential"
+        "Tests/PiAIProviderRuntimeTests/KimiCodingOAuthAuthorizationAdapterTests.swift#deviceFlowPreservesPendingSlowDownAndStoresCredential",
+        "Tests/PiAIProviderRuntimeTests/KimiCodingOAuthAuthorizationAdapterTests.swift#refreshRotatesExpiredCredentialAndRejectsMalformedToken"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "openai-codex-oauth",
       "providerID": "openai-codex",
       "responsibility": "OpenAI Codex device authorization, token exchange, account identity, refresh, and credential state.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Authorization/OpenAICodexAuthorizationAdapter.swift",
         "Sources/PiAIProviderRuntime/OpenAICodexOAuth.swift"
@@ -251,12 +256,14 @@
         "http-transport"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#tokenExchangeReturnsCredentialWithoutPersistingTokens"
+        "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#tokenExchangeReturnsCredentialWithoutPersistingTokens",
+        "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#refreshRotatesCredentialAndPreservesAccountIdentity",
+        "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#malformedRefreshFailsWithoutRetainingOrInventingTokens"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {

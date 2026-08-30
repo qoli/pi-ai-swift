@@ -139,6 +139,134 @@ struct OpenAICodexOAuthTests {
         "redirect_uri=https://auth.openai.com/deviceauth/callback"
       ))
   }
+
+  @Test
+  func refreshRotatesCredentialAndPreservesAccountIdentity() async throws {
+    let accessToken = jwt(payload: [
+      "https://api.openai.com/auth": [
+        "chatgpt_account_id": "account-refreshed"
+      ]
+    ])
+    let transport = QueueTransport([
+      .init(
+        statusCode: 200,
+        headers: [:],
+        body: tokenResponse(
+          accessToken: accessToken,
+          refreshToken: "refresh-rotated"
+        )
+      )
+    ])
+    let client = makeClient(transport)
+    let credential = try await client.refresh(
+      OAuthCredential(
+        accessToken: "expired-access",
+        refreshToken: "refresh-source",
+        expiresAt: .distantPast,
+        metadata: ["accountID": "account-source"]
+      )
+    )
+
+    #expect(credential.accessToken == accessToken)
+    #expect(credential.refreshToken == "refresh-rotated")
+    #expect(credential.metadata["accountID"] == "account-refreshed")
+    let request = try #require(await transport.requests.first)
+    #expect(request.url?.path == "/oauth/token")
+    let body = try #require(
+      request.httpBody.flatMap { String(data: $0, encoding: .utf8) }
+    )
+    #expect(body.contains("grant_type=refresh_token"))
+    #expect(body.contains("refresh_token=refresh-source"))
+  }
+
+  @Test
+  func authorizationAdapterRefreshesAndPersistsExpiredCredential() async throws {
+    let accessToken = jwt(payload: [
+      "https://api.openai.com/auth": [
+        "chatgpt_account_id": "account-2"
+      ]
+    ])
+    let transport = QueueTransport([
+      .init(
+        statusCode: 200,
+        headers: [:],
+        body: tokenResponse(
+          accessToken: accessToken,
+          refreshToken: "refresh-2"
+        )
+      )
+    ])
+    let expired = OAuthCredential(
+      accessToken: "expired-access",
+      refreshToken: "refresh-source",
+      expiresAt: .distantPast,
+      metadata: ["accountID": "account-1"]
+    )
+    let store = InMemoryProviderCredentialStore(
+      credentials: [OpenAICodexOAuthClient.providerID: .oauth(expired)]
+    )
+    let adapter = OpenAICodexAuthorizationAdapter(transport: transport)
+
+    let resolved = try await adapter.resolveCredential(
+      providerID: OpenAICodexOAuthClient.providerID,
+      credentialStore: store,
+      refreshCoordinator: CredentialRefreshCoordinator(
+        credentialStore: store
+      )
+    )
+
+    guard case .oauth(let credential) = resolved else {
+      Issue.record("OpenAI Codex refresh did not return an OAuth credential")
+      return
+    }
+    #expect(credential.accessToken == accessToken)
+    #expect(credential.refreshToken == "refresh-2")
+    #expect(
+      await store.read(providerID: OpenAICodexOAuthClient.providerID)
+        == .oauth(credential)
+    )
+  }
+
+  @Test
+  func malformedRefreshFailsWithoutRetainingOrInventingTokens() async throws {
+    let source = OAuthCredential(
+      accessToken: "expired-access",
+      refreshToken: "refresh-source",
+      expiresAt: .distantPast,
+      metadata: ["accountID": "account-source"]
+    )
+    let transport = QueueTransport([
+      .init(
+        statusCode: 200,
+        headers: [:],
+        body: Data(#"{"access_token":"only-access","expires_in":3600}"#.utf8)
+      )
+    ])
+    let store = InMemoryProviderCredentialStore(
+      credentials: [OpenAICodexOAuthClient.providerID: .oauth(source)]
+    )
+    let adapter = OpenAICodexAuthorizationAdapter(transport: transport)
+
+    do {
+      _ = try await adapter.resolveCredential(
+        providerID: OpenAICodexOAuthClient.providerID,
+        credentialStore: store,
+        refreshCoordinator: CredentialRefreshCoordinator(
+          credentialStore: store
+        )
+      )
+      Issue.record("malformed OpenAI refresh response was accepted")
+    } catch let error as ProviderRuntimeFailure {
+      #expect(error.code == .authorizationFailed)
+      #expect(error.operation == "credential.refresh")
+    } catch {
+      Issue.record("unexpected refresh error: \(error)")
+    }
+    #expect(
+      await store.read(providerID: OpenAICodexOAuthClient.providerID)
+        == .oauth(source)
+    )
+  }
 }
 
 private actor QueueTransport: ProviderHTTPTransport {
@@ -203,10 +331,13 @@ private func base64URLEncode(_ data: Data) -> String {
     .replacingOccurrences(of: "=", with: "")
 }
 
-private func tokenResponse(accessToken: String) -> Data {
+private func tokenResponse(
+  accessToken: String,
+  refreshToken: String = "refresh-1"
+) -> Data {
   try! JSONSerialization.data(withJSONObject: [
     "access_token": accessToken,
-    "refresh_token": "refresh-1",
+    "refresh_token": refreshToken,
     "expires_in": 3_600,
   ])
 }

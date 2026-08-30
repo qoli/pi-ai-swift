@@ -111,7 +111,10 @@ struct KimiCodingOAuthAuthorizationAdapterTests {
     )
     let resolved = try await adapter.resolveCredential(
       providerID: "kimi-coding",
-      credentialStore: store
+      credentialStore: store,
+      refreshCoordinator: CredentialRefreshCoordinator(
+        credentialStore: store
+      )
     )
     #expect(
       resolved
@@ -138,7 +141,10 @@ struct KimiCodingOAuthAuthorizationAdapterTests {
     await #expect(throws: ProviderRuntimeFailure.self) {
       _ = try await malformedAdapter.resolveCredential(
         providerID: "kimi-coding",
-        credentialStore: malformedStore
+        credentialStore: malformedStore,
+        refreshCoordinator: CredentialRefreshCoordinator(
+          credentialStore: malformedStore
+        )
       )
     }
   }

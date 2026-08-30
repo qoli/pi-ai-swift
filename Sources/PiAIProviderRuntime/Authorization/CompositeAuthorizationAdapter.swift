@@ -41,7 +41,8 @@ struct CompositeAuthorizationAdapter: ProviderAuthorizationAdapter {
 
   func resolveCredential(
     providerID requestedProviderID: String,
-    credentialStore: any ProviderCredentialStore
+    credentialStore: any ProviderCredentialStore,
+    refreshCoordinator: CredentialRefreshCoordinator
   ) async throws -> ProviderCredential? {
     guard requestedProviderID == providerID else {
       throw failure("credential provider mismatch")
@@ -59,7 +60,8 @@ struct CompositeAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
     return try await adapter.resolveCredential(
       providerID: providerID,
-      credentialStore: credentialStore
+      credentialStore: credentialStore,
+      refreshCoordinator: refreshCoordinator
     )
   }
 

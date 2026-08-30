@@ -157,6 +157,60 @@ public struct OpenAICodexOAuthClient: Sendable {
     )
   }
 
+  public func refresh(
+    _ credential: OAuthCredential
+  ) async throws -> OAuthCredential {
+    let endpoint = authBaseURL.appending(path: "oauth/token")
+    var request = URLRequest(url: endpoint)
+    request.httpMethod = "POST"
+    request.setValue(
+      "application/x-www-form-urlencoded",
+      forHTTPHeaderField: "Content-Type"
+    )
+    var components = URLComponents()
+    components.queryItems = [
+      URLQueryItem(name: "grant_type", value: "refresh_token"),
+      URLQueryItem(name: "refresh_token", value: credential.refreshToken),
+      URLQueryItem(name: "client_id", value: Self.clientID),
+    ]
+    guard let form = components.percentEncodedQuery else {
+      throw failure(
+        .invalidRequest,
+        operation: "oauth.token.refresh",
+        message: "OpenAI Codex token refresh form could not be encoded"
+      )
+    }
+    request.httpBody = Data(form.utf8)
+    let response = try await send(request, operation: "oauth.token.refresh")
+    guard (200..<300).contains(response.statusCode) else {
+      throw httpFailure(
+        response,
+        operation: "oauth.token.refresh",
+        message: "OpenAI Codex token refresh failed"
+      )
+    }
+    let token: TokenResponse = try decode(
+      response.body,
+      operation: "oauth.token.refresh"
+    )
+    guard !token.accessToken.isEmpty, !token.refreshToken.isEmpty,
+      token.expiresIn > 0
+    else {
+      throw failure(
+        .invalidResponse,
+        operation: "oauth.token.refresh",
+        message: "OpenAI Codex refresh response contains invalid required fields"
+      )
+    }
+    let accountID = try extractAccountID(from: token.accessToken)
+    return OAuthCredential(
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken,
+      expiresAt: Date().addingTimeInterval(TimeInterval(token.expiresIn)),
+      metadata: ["accountID": accountID]
+    )
+  }
+
   func pollDeviceAuthorization(
     _ authorization: OpenAICodexDeviceAuthorization
   ) async throws -> DevicePollResult {
