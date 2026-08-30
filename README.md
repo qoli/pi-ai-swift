@@ -44,7 +44,14 @@ does not depend on `AnyLanguageModel` or `AIReasoningCore`.
 
 ## Upstream synchronization
 
-`Upstream.lock.json` pins the exact pi revision and allowlisted provider paths.
+`Upstream.lock.json` pins the exact pi revision and complete built-in provider
+inventory. `UpstreamMappings/pi-ai.json` records every foundation,
+authorization, wire-protocol, and provider area with a truthful implementation
+status. It is the durable maintenance IR between discovery and implementation;
+tracking a provider does not claim it is already supported. Maintenance is
+human-initiated and may be irregular: an inventory task records a new provider
+as `missing`, while a later implementation task supplies the Swift vertical
+slice and executable evidence. No scheduler or unattended watcher is required.
 Run:
 
 ```bash

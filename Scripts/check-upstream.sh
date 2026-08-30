@@ -3,12 +3,88 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 lock_file="$repo_root/Upstream.lock.json"
+mapping_file="$repo_root/UpstreamMappings/pi-ai.json"
 cache_root="${PI_AI_SWIFT_UPSTREAM_CACHE:-$repo_root/.build/upstreams/pi}"
 
 if [[ ! -f "$lock_file" ]]; then
   echo "missing upstream lock: $lock_file" >&2
   exit 2
 fi
+
+if [[ ! -f "$mapping_file" ]]; then
+  echo "missing upstream mapping: $mapping_file" >&2
+  exit 2
+fi
+
+python3 - "$repo_root" "$lock_file" "$mapping_file" <<'PY'
+import json
+import pathlib
+import sys
+
+repo_root = pathlib.Path(sys.argv[1])
+with open(sys.argv[2], "r", encoding="utf-8") as handle:
+    lock = json.load(handle)
+with open(sys.argv[3], "r", encoding="utf-8") as handle:
+    mapping = json.load(handle)
+
+if mapping.get("schemaVersion") != 2:
+    raise SystemExit("malformed upstream mapping: schemaVersion must be 2")
+
+areas = mapping.get("areas")
+if not isinstance(areas, list) or not areas:
+    raise SystemExit("malformed upstream mapping: areas must be a non-empty array")
+
+required_upstream = set(lock.get("requiredSourcePaths", []))
+allowed_statuses = {"landed", "partial", "missing", "blocked"}
+area_ids = set()
+covered_swift_paths = set()
+
+for area in areas:
+    if not isinstance(area, dict):
+        raise SystemExit("malformed upstream mapping: every area must be an object")
+    area_id = area.get("id")
+    if not isinstance(area_id, str) or not area_id:
+        raise SystemExit("malformed upstream mapping: every area requires a non-empty id")
+    if area_id in area_ids:
+        raise SystemExit(f"malformed upstream mapping: duplicate area id {area_id}")
+    area_ids.add(area_id)
+
+    status = area.get("status")
+    if status not in allowed_statuses:
+        raise SystemExit(f"malformed upstream mapping: {area_id} has invalid status {status}")
+    responsibility = area.get("responsibility")
+    if not isinstance(responsibility, str) or not responsibility:
+        raise SystemExit(f"malformed upstream mapping: {area_id} requires responsibility")
+
+    for key in ["swiftPaths", "plannedSwiftPaths", "upstreamPaths", "upstreamTestPaths"]:
+        values = area.get(key)
+        if not isinstance(values, list) or any(not isinstance(value, str) or not value for value in values):
+            raise SystemExit(f"malformed upstream mapping: {area_id}.{key} must be a string array")
+
+    swift_paths = area["swiftPaths"]
+    if status in {"landed", "partial"} and not swift_paths:
+        raise SystemExit(f"malformed upstream mapping: {area_id} is {status} but has no swiftPaths")
+    for relative in swift_paths:
+        path = repo_root / relative
+        if not path.is_file():
+            raise SystemExit(f"mapped Swift source does not exist: {area_id}: {relative}")
+        covered_swift_paths.add(relative)
+
+    for relative in area["upstreamPaths"] + area["upstreamTestPaths"]:
+        if relative not in required_upstream:
+            raise SystemExit(
+                f"mapped upstream path is absent from Upstream.lock.json: {area_id}: {relative}"
+            )
+
+source_root = repo_root / "Sources" / "PiAIProviderRuntime"
+actual_swift_paths = {
+    str(path.relative_to(repo_root))
+    for path in source_root.rglob("*.swift")
+}
+unmapped = sorted(actual_swift_paths - covered_swift_paths)
+if unmapped:
+    raise SystemExit("unmapped Swift provider-runtime sources: " + ", ".join(unmapped))
+PY
 
 readarray_output="$({
   python3 - "$lock_file" <<'PY'
@@ -22,6 +98,11 @@ required = ["repository", "revision", "package", "requiredSourcePaths"]
 for key in required:
     if key not in lock:
         raise SystemExit(f"malformed upstream lock: missing {key}")
+
+if lock.get("schemaVersion") != 2:
+    raise SystemExit("malformed upstream lock: schemaVersion must be 2")
+if not isinstance(lock.get("trackedBuiltinProviders"), list):
+    raise SystemExit("malformed upstream lock: trackedBuiltinProviders must be an array")
 
 revision = lock["revision"]
 if not isinstance(revision, str) or len(revision) != 40:
@@ -123,5 +204,69 @@ for required_path in "${required_paths[@]}"; do
     exit 4
   fi
 done
+
+python3 - "$cache_root" "$mapping_file" "$lock_file" <<'PY'
+import json
+import pathlib
+import re
+import sys
+
+cache_root = pathlib.Path(sys.argv[1])
+with open(sys.argv[2], "r", encoding="utf-8") as handle:
+    mapping = json.load(handle)
+with open(sys.argv[3], "r", encoding="utf-8") as handle:
+    lock = json.load(handle)
+
+all_source = (cache_root / "packages/ai/src/providers/all.ts").read_text(encoding="utf-8")
+imports = dict(
+    re.findall(r'import \{ (\w+) \} from "\./([^"/]+)\.ts";', all_source)
+)
+try:
+    builtin_body = all_source.split("export function builtinProviders()", 1)[1].split("];", 1)[0]
+except IndexError as error:
+    raise SystemExit("could not parse upstream builtinProviders()") from error
+
+provider_factories = re.findall(r"\b(\w+Provider)\(\)", builtin_body)
+upstream_providers = {imports[factory] for factory in provider_factories if factory in imports}
+mapped_providers = {
+    area["providerID"]
+    for area in mapping["areas"]
+    if isinstance(area.get("providerID"), str)
+}
+if upstream_providers != mapped_providers:
+    missing = sorted(upstream_providers - mapped_providers)
+    extra = sorted(mapped_providers - upstream_providers)
+    raise SystemExit(
+        f"builtin provider inventory drift: missing={missing}, extra={extra}"
+    )
+
+locked_providers = set(lock.get("trackedBuiltinProviders", []))
+if locked_providers != upstream_providers:
+    missing = sorted(upstream_providers - locked_providers)
+    extra = sorted(locked_providers - upstream_providers)
+    raise SystemExit(
+        f"locked provider inventory drift: missing={missing}, extra={extra}"
+    )
+
+types_source = (cache_root / "packages/ai/src/types.ts").read_text(encoding="utf-8")
+known_api_match = re.search(
+    r"export type KnownApi =(?P<body>.*?);",
+    types_source,
+    flags=re.DOTALL,
+)
+if known_api_match is None:
+    raise SystemExit("could not parse upstream KnownApi")
+upstream_protocols = set(re.findall(r'"([^"]+)"', known_api_match.group("body")))
+mapped_protocols = {
+    area["protocolID"]
+    for area in mapping["areas"]
+    if isinstance(area.get("protocolID"), str)
+}
+missing_protocols = sorted(upstream_protocols - mapped_protocols)
+if missing_protocols:
+    raise SystemExit(
+        "wire protocol inventory drift: missing=" + repr(missing_protocols)
+    )
+PY
 
 echo "verified pi-ai upstream $upstream_revision ($upstream_package_version)"

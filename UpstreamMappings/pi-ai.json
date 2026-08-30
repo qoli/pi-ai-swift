@@ -1,9 +1,830 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "upstream": "earendil-works/pi/packages/ai",
-  "mappings": [
+  "statusDefinitions": {
+    "landed": "Swift implementation and deterministic coverage exist for the mapped behavior.",
+    "partial": "A real Swift path exists, but one or more mapped semantics or verification gates are missing.",
+    "missing": "No production Swift implementation exists yet.",
+    "blocked": "The area cannot advance until a recorded policy or platform decision is resolved."
+  },
+  "areas": [
     {
-      "swiftArea": "ProviderRuntime contract and normalized events",
+      "id": "builtin-provider-registry",
+      "responsibility": "Complete built-in provider inventory and generated model-catalog registration.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/BuiltinProviderRegistry.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/all.ts",
+        "packages/ai/src/models.generated.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts",
+        "packages/ai/test/model-data-validation.test.ts"
+      ]
+    },
+    {
+      "id": "canonical-request-event-dtos",
+      "responsibility": "Provider-neutral request, message, tool, image, event, usage, and completion values.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/JSONValue.swift",
+        "Sources/PiAIProviderRuntime/ProviderRequest.swift",
+        "Sources/PiAIProviderRuntime/ProviderEvent.swift"
+      ],
+      "plannedSwiftPaths": [],
+      "upstreamPaths": [
+        "packages/ai/src/types.ts",
+        "packages/ai/src/api/transform-messages.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/cross-provider-handoff.test.ts",
+        "packages/ai/test/tool-call-id-normalization.test.ts",
+        "packages/ai/test/unicode-surrogate.test.ts"
+      ]
+    },
+    {
+      "id": "catalog-model-store",
+      "responsibility": "Provider descriptors, model metadata, dynamic catalog refresh, and persisted model snapshots.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/ProviderCatalog.swift"
+      ],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Catalog/ProviderCatalogRegistry.swift",
+        "Sources/PiAIProviderRuntime/Catalog/ProviderModelStore.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/models.ts",
+        "packages/ai/src/models-store.ts",
+        "packages/ai/src/model-catalog.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/model-catalog-types.test.ts",
+        "packages/ai/test/model-data-validation.test.ts",
+        "packages/ai/test/models-runtime.test.ts"
+      ]
+    },
+    {
+      "id": "credential-store-auth-resolution",
+      "responsibility": "Credential representation, serialized storage mutation, auth source resolution, refresh ownership, and logout.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Authorization.swift",
+        "Sources/PiAIProviderRuntime/Authorization/APIKeyAuthorizationAdapter.swift"
+      ],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Authorization/AuthorizationRuntime.swift",
+        "Sources/PiAIProviderRuntime/Authorization/CredentialResolver.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/auth/types.ts",
+        "packages/ai/src/auth/resolve.ts",
+        "packages/ai/src/auth/credential-store.ts",
+        "packages/ai/src/auth/helpers.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/oauth-auth.test.ts",
+        "packages/ai/test/oauth-device-code.test.ts",
+        "packages/ai/test/abort.test.ts"
+      ]
+    },
+    {
+      "id": "differential-fixture-harness",
+      "responsibility": "Sanitized upstream provenance, canonical request and raw-stream fixtures, and TypeScript-to-Swift equivalence results.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Fixtures/Manifest.json",
+        "Tests/PiAIProviderRuntimeTests/DifferentialFixtureTests.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/test/models-runtime.test.ts",
+        "packages/ai/test/stream.test.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/provider-error-body-regression.test.ts",
+        "packages/ai/test/stream.test.ts"
+      ]
+    },
+    {
+      "id": "http-transport",
+      "responsibility": "Buffered and incremental URLSession transport with cancellation and injectable fixtures.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/ProviderHTTPTransport.swift"
+      ],
+      "plannedSwiftPaths": [
+        "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/types.ts",
+        "packages/ai/src/utils/provider-retry.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/abort.test.ts",
+        "packages/ai/test/provider-retry.test.ts"
+      ]
+    },
+    {
+      "id": "kimi-coding-oauth",
+      "providerID": "kimi-coding",
+      "responsibility": "Kimi Coding subscription device authorization, token refresh, and credential state.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Authorization/KimiCodingAuthorizationAdapter.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/auth/oauth/kimi-coding.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/kimi-coding-oauth.test.ts",
+        "packages/ai/test/oauth-device-code.test.ts"
+      ]
+    },
+    {
+      "id": "openai-codex-oauth",
+      "providerID": "openai-codex",
+      "responsibility": "OpenAI Codex device authorization, token exchange, account identity, refresh, and credential state.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/OpenAICodexOAuth.swift"
+      ],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Authorization/OpenAICodexAuthorizationAdapter.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/auth/oauth/openai-codex.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/openai-codex-oauth.test.ts",
+        "packages/ai/test/oauth-device-code.test.ts"
+      ]
+    },
+    {
+      "id": "provider-amazon-bedrock",
+      "providerID": "amazon-bedrock",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for amazon-bedrock.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/AmazonBedrockProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/amazon-bedrock.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-ant-ling",
+      "providerID": "ant-ling",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for ant-ling.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/AntLingProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/ant-ling.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-anthropic",
+      "providerID": "anthropic",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for anthropic.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/AnthropicProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/anthropic.ts",
+        "packages/ai/src/auth/oauth/anthropic.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for azure-openai-responses.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/AzureOpenaiResponsesProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/azure-openai-responses.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-baseten",
+      "providerID": "baseten",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for baseten.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/BasetenProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/baseten.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-cerebras",
+      "providerID": "cerebras",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cerebras.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/CerebrasProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/cerebras.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-cloudflare-ai-gateway",
+      "providerID": "cloudflare-ai-gateway",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cloudflare-ai-gateway.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/CloudflareAiGatewayProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/cloudflare-ai-gateway.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-cloudflare-workers-ai",
+      "providerID": "cloudflare-workers-ai",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cloudflare-workers-ai.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/CloudflareWorkersAiProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/cloudflare-workers-ai.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-deepseek",
+      "providerID": "deepseek",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for deepseek.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/DeepseekProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/deepseek.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-fireworks",
+      "providerID": "fireworks",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for fireworks.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/FireworksProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/fireworks.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-github-copilot",
+      "providerID": "github-copilot",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for github-copilot.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/GithubCopilotProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/github-copilot.ts",
+        "packages/ai/src/auth/oauth/github-copilot.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-google",
+      "providerID": "google",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for google.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/GoogleProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/google.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-google-vertex",
+      "providerID": "google-vertex",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for google-vertex.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/GoogleVertexProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/google-vertex.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-groq",
+      "providerID": "groq",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for groq.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/GroqProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/groq.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-huggingface",
+      "providerID": "huggingface",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for huggingface.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/HuggingfaceProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/huggingface.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-kimi-coding",
+      "providerID": "kimi-coding",
+      "responsibility": "Kimi Coding API-key and subscription authorization, catalog, endpoint, headers, and Anthropic Messages protocol selection.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/KimiCodingProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/kimi-coding.ts",
+        "packages/ai/src/auth/oauth/kimi-coding.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/kimi-coding-oauth.test.ts",
+        "packages/ai/test/models-runtime.test.ts"
+      ]
+    },
+    {
+      "id": "provider-minimax",
+      "providerID": "minimax",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/MinimaxProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/minimax.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-minimax-cn",
+      "providerID": "minimax-cn",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax-cn.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/MinimaxCnProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/minimax-cn.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-mistral",
+      "providerID": "mistral",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for mistral.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/MistralProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/mistral.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-moonshotai",
+      "providerID": "moonshotai",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for moonshotai.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/MoonshotaiProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/moonshotai.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-moonshotai-cn",
+      "providerID": "moonshotai-cn",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for moonshotai-cn.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/MoonshotaiCnProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/moonshotai-cn.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-nvidia",
+      "providerID": "nvidia",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for nvidia.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/NvidiaProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/nvidia.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-openai",
+      "providerID": "openai",
+      "responsibility": "OpenAI API-key authorization, catalog, endpoint, headers, and OpenAI Responses protocol selection.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/OpenAIProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/openai.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/models-runtime.test.ts",
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-openai-codex",
+      "providerID": "openai-codex",
+      "responsibility": "OpenAI Codex subscription catalog, authorization composition, endpoint, headers, and Codex Responses protocol selection.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/OpenAICodexOAuth.swift"
+      ],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/OpenAICodexProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/openai-codex.ts",
+        "packages/ai/src/auth/oauth/openai-codex.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/openai-codex-oauth.test.ts",
+        "packages/ai/test/openai-codex-stream.test.ts"
+      ]
+    },
+    {
+      "id": "provider-opencode",
+      "providerID": "opencode",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for opencode.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/OpencodeProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/opencode.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-opencode-go",
+      "providerID": "opencode-go",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for opencode-go.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/OpencodeGoProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/opencode-go.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-openrouter",
+      "providerID": "openrouter",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for openrouter.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/OpenrouterProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/openrouter.ts",
+        "packages/ai/src/auth/oauth/openrouter.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-qwen-token-plan",
+      "providerID": "qwen-token-plan",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/qwen-token-plan.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-qwen-token-plan-cn",
+      "providerID": "qwen-token-plan-cn",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-cn.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanCnProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/qwen-token-plan-cn.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-qwen-token-plan-individual",
+      "providerID": "qwen-token-plan-individual",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-individual.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanIndividualProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/qwen-token-plan-individual.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-radius",
+      "providerID": "radius",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for radius.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/RadiusProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/radius.ts",
+        "packages/ai/src/auth/oauth/radius.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-together",
+      "providerID": "together",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for together.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/TogetherProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/together.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-vercel-ai-gateway",
+      "providerID": "vercel-ai-gateway",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for vercel-ai-gateway.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/VercelAiGatewayProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/vercel-ai-gateway.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-xai",
+      "providerID": "xai",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xai.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/XaiProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/xai.ts",
+        "packages/ai/src/auth/oauth/xai.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-xiaomi",
+      "providerID": "xiaomi",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/XiaomiProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/xiaomi.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-xiaomi-token-plan-ams",
+      "providerID": "xiaomi-token-plan-ams",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-ams.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanAmsProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/xiaomi-token-plan-ams.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-xiaomi-token-plan-cn",
+      "providerID": "xiaomi-token-plan-cn",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-cn.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanCnProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/xiaomi-token-plan-cn.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-xiaomi-token-plan-sgp",
+      "providerID": "xiaomi-token-plan-sgp",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-sgp.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanSgpProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/xiaomi-token-plan-sgp.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-zai",
+      "providerID": "zai",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for zai.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/ZaiProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/zai.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "provider-zai-coding-cn",
+      "providerID": "zai-coding-cn",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for zai-coding-cn.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Providers/ZaiCodingCnProviderDefinition.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/zai-coding-cn.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "public-runtime-seam",
+      "responsibility": "ProviderRuntime interface and typed failure surface exposed to consumers.",
+      "status": "landed",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/ProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/ProviderRuntimeFailure.swift"
+      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/types.ts",
         "packages/ai/src/models.ts"
@@ -14,56 +835,260 @@
       ]
     },
     {
-      "swiftArea": "Credential store and authorization lifecycle",
+      "id": "runtime-provider-dispatch",
+      "responsibility": "Resolve provider and model, apply authorization, and dispatch by model wire protocol.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
+      ],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Runtime/PiAIRuntime.swift"
+      ],
       "upstreamPaths": [
-        "packages/ai/src/auth/types.ts",
-        "packages/ai/src/auth/resolve.ts"
+        "packages/ai/src/models.ts",
+        "packages/ai/src/api/lazy.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/models-runtime.test.ts",
+        "packages/ai/test/providers.test.ts"
+      ]
+    },
+    {
+      "id": "wire-anthropic-messages",
+      "protocolID": "anthropic-messages",
+      "responsibility": "Anthropic Messages request encoding, SSE decoding, thinking signatures, images, tools, usage, and stop reasons.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/AnthropicMessages/AnthropicMessagesAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/AnthropicMessages/AnthropicMessagesRequestEncoder.swift",
+        "Sources/PiAIProviderRuntime/Wire/AnthropicMessages/AnthropicMessagesStreamDecoder.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/api/anthropic-messages.ts",
+        "packages/ai/src/api/anthropic-messages.lazy.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/anthropic-empty-thinking-signature-compat.test.ts",
+        "packages/ai/test/anthropic-force-adaptive-thinking.test.ts",
+        "packages/ai/test/anthropic-sse-parsing.test.ts",
+        "packages/ai/test/anthropic-tool-name-normalization.test.ts"
+      ]
+    },
+    {
+      "id": "wire-azure-openai-responses",
+      "protocolID": "azure-openai-responses",
+      "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for azure-openai-responses.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/AzureOpenaiResponses/AzureOpenaiResponsesAdapter.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/api/azure-openai-responses.ts",
+        "packages/ai/src/api/azure-openai-responses.lazy.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/stream.test.ts"
+      ]
+    },
+    {
+      "id": "wire-bedrock-converse-stream",
+      "protocolID": "bedrock-converse-stream",
+      "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for bedrock-converse-stream.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/BedrockConverseStream/BedrockConverseStreamAdapter.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/api/bedrock-converse-stream.ts",
+        "packages/ai/src/api/bedrock-converse-stream.lazy.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/stream.test.ts"
+      ]
+    },
+    {
+      "id": "wire-common",
+      "responsibility": "Shared message transforms, simple generation options, event ordering, provider errors, retries, and Unicode handling.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/Common/MessageTransformer.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/GenerationOptions.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderErrorDecoder.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/api/simple-options.ts",
+        "packages/ai/src/api/transform-messages.ts",
+        "packages/ai/src/utils/event-stream.ts",
+        "packages/ai/src/utils/error-body.ts",
+        "packages/ai/src/utils/provider-retry.ts",
+        "packages/ai/src/utils/sanitize-unicode.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
-        "packages/ai/test/oauth-auth.test.ts",
-        "packages/ai/test/oauth-device-code.test.ts"
+        "packages/ai/test/provider-error-body-regression.test.ts",
+        "packages/ai/test/provider-retry.test.ts",
+        "packages/ai/test/tool-call-without-result.test.ts",
+        "packages/ai/test/unicode-surrogate.test.ts"
       ]
     },
     {
-      "swiftArea": "OpenAI API-key provider",
-      "providerID": "openai",
+      "id": "wire-google-generative-ai",
+      "protocolID": "google-generative-ai",
+      "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for google-generative-ai.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/GoogleGenerativeAi/GoogleGenerativeAiAdapter.swift"
+      ],
       "upstreamPaths": [
-        "packages/ai/src/providers/openai.ts",
+        "packages/ai/src/api/google-generative-ai.ts",
+        "packages/ai/src/api/google-generative-ai.lazy.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/stream.test.ts"
+      ]
+    },
+    {
+      "id": "wire-google-vertex",
+      "protocolID": "google-vertex",
+      "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for google-vertex.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/GoogleVertex/GoogleVertexAdapter.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/api/google-vertex.ts",
+        "packages/ai/src/api/google-vertex.lazy.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/stream.test.ts"
+      ]
+    },
+    {
+      "id": "wire-mistral-conversations",
+      "protocolID": "mistral-conversations",
+      "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for mistral-conversations.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/MistralConversations/MistralConversationsAdapter.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/api/mistral-conversations.ts",
+        "packages/ai/src/api/mistral-conversations.lazy.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/stream.test.ts"
+      ]
+    },
+    {
+      "id": "wire-openai-codex-responses",
+      "protocolID": "openai-codex-responses",
+      "responsibility": "ChatGPT Codex subscription response transport, account headers, cache affinity, streaming events, and continuation state.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesRequestEncoder.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesStreamDecoder.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/api/openai-codex-responses.ts",
+        "packages/ai/src/api/openai-codex-responses.lazy.ts",
+        "packages/ai/src/api/openai-responses-shared.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/openai-codex-cache-affinity-e2e.test.ts",
+        "packages/ai/test/openai-codex-stream.test.ts",
+        "packages/ai/test/openai-responses-terminal-event.test.ts"
+      ]
+    },
+    {
+      "id": "wire-openai-completions",
+      "protocolID": "openai-completions",
+      "responsibility": "OpenAI Chat Completions request encoding, streaming decoding, compatibility rules, reasoning, images, tools, usage, and stop reasons.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsRequestEncoder.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsStreamDecoder.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/api/openai-completions.ts",
+        "packages/ai/src/api/openai-completions.lazy.ts",
+        "packages/ai/src/api/openai-prompt-cache.ts",
+        "packages/ai/src/api/constrained-sampling.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/openai-completions-empty-tools.test.ts",
+        "packages/ai/test/openai-completions-reasoning-details.test.ts",
+        "packages/ai/test/openai-completions-retry.test.ts",
+        "packages/ai/test/openai-completions-tool-choice.test.ts",
+        "packages/ai/test/openai-completions-tool-result-images.test.ts"
+      ]
+    },
+    {
+      "id": "wire-openai-responses",
+      "protocolID": "openai-responses",
+      "responsibility": "OpenAI Responses request encoding, streaming decoding, tool and reasoning replay, usage, and terminal event rules.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesRequestEncoder.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesStreamDecoder.swift"
+      ],
+      "upstreamPaths": [
         "packages/ai/src/api/openai-responses.ts",
-        "packages/ai/src/api/openai-completions.ts"
+        "packages/ai/src/api/openai-responses-shared.ts",
+        "packages/ai/src/api/openai-responses.lazy.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/openai-responses-compat.test.ts",
+        "packages/ai/test/openai-responses-partial-json-cleanup.test.ts",
         "packages/ai/test/openai-responses-terminal-event.test.ts",
-        "packages/ai/test/openai-completions-empty-tools.test.ts",
-        "packages/ai/test/openai-completions-reasoning-details.test.ts"
+        "packages/ai/test/openai-responses-tool-result-images.test.ts"
       ]
     },
     {
-      "swiftArea": "ChatGPT Codex subscription provider",
-      "providerID": "openai-codex",
+      "id": "wire-openrouter-images",
+      "protocolID": "openrouter-images",
+      "responsibility": "OpenRouter image-generation request encoding, response decoding, assets, usage, errors, and cancellation.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/OpenRouterImages/OpenRouterImagesAdapter.swift"
+      ],
       "upstreamPaths": [
-        "packages/ai/src/providers/openai-codex.ts",
-        "packages/ai/src/auth/oauth/openai-codex.ts",
-        "packages/ai/src/api/openai-codex-responses.ts"
+        "packages/ai/src/api/openrouter-images.ts",
+        "packages/ai/src/api/openrouter-images.lazy.ts",
+        "packages/ai/src/providers/openrouter-images.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/openai-codex-oauth.test.ts",
-        "packages/ai/test/openai-codex-stream.test.ts",
-        "packages/ai/test/openai-codex-cache-affinity-e2e.test.ts"
+        "packages/ai/test/image-model-data.test.ts"
       ]
     },
     {
-      "swiftArea": "Kimi Coding provider",
-      "providerID": "kimi-coding",
+      "id": "wire-pi-messages",
+      "protocolID": "pi-messages",
+      "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for pi-messages.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/PiMessages/PiMessagesAdapter.swift"
+      ],
       "upstreamPaths": [
-        "packages/ai/src/providers/kimi-coding.ts",
-        "packages/ai/src/auth/oauth/kimi-coding.ts",
-        "packages/ai/src/api/anthropic-messages.ts"
+        "packages/ai/src/api/pi-messages.ts",
+        "packages/ai/src/api/pi-messages.lazy.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/kimi-coding-oauth.test.ts"
+        "packages/ai/test/stream.test.ts"
       ]
     }
   ]

@@ -7,7 +7,7 @@
 Implemented today:
 
 - exact upstream repository, revision, package version, and source-path lock;
-- allowlisted provider mappings;
+- the complete tracked built-in provider inventory and per-area mappings;
 - clean-cache and source-presence verification;
 - a narrow Swift provider-runtime seam;
 - deterministic contract and OpenAI Codex OAuth fixtures;
@@ -44,7 +44,8 @@ cannot be represented safely on Apple platforms.
 
 Use these sources in this order:
 
-1. `Upstream.lock.json` for the accepted revision and allowlist.
+1. `Upstream.lock.json` for the accepted revision and tracked built-in provider
+   inventory.
 2. `UpstreamMappings/pi-ai.json` for ownership between Swift areas and upstream
    source paths.
 3. Canonical sanitized fixtures and differential test results.
@@ -54,6 +55,85 @@ Use these sources in this order:
 
 Documentation or model names alone never establish wire behavior. A passing
 upstream JavaScript/TypeScript test never establishes native Swift equivalence.
+
+## Area coverage ledger
+
+`UpstreamMappings/pi-ai.json` is maintained per implementation area rather than
+per repository or broad provider label. Each area records its responsibility,
+truthful status, existing Swift paths, planned Swift paths, upstream sources,
+and upstream tests. `landed` and `partial` areas must point to real Swift source
+files; every production source in `PiAIProviderRuntime` must belong to at least
+one area. The upstream check enforces these invariants and requires every
+mapped upstream path to remain inside the exact provenance lock.
+
+A mapped path means “this area must absorb or explicitly reject changes from
+this source.” It does not mean the behavior is implemented. Only an area's
+status plus executable evidence establishes completion.
+
+Provider inventory is not a hand-maintained subset. The upstream gate parses
+the pinned `providers/all.ts` `builtinProviders()` list and requires every
+built-in provider to have at least one explicit mapping area and to appear in
+the provenance lock. This includes subscription/OAuth providers such as GitHub
+Copilot and xAI as well as API-key providers such as DeepSeek, Groq, Moonshot,
+OpenRouter, Qwen Token Plan, Together, and Z.AI. The same gate parses
+`KnownApi` and rejects an unmapped wire protocol.
+
+## Maintenance trigger and IR lifecycle
+
+Maintenance is human-initiated and may occur at irregular intervals. This
+repository does not require a scheduler, periodic bot, automatic pull request,
+or unattended upstream watcher. Once a maintainer names a candidate upstream
+revision or asks for a provider implementation, an agent may execute the
+bounded workflow in this document. Normal authorization rules for commits,
+publishing, credentials, and billable live tests still apply.
+
+`UpstreamMappings/pi-ai.json` is the durable intermediate representation
+between upstream discovery and Swift implementation. It is both a coverage
+ledger and a maintenance queue, but it is not runtime configuration and must
+not generate supported-provider claims by itself.
+
+Every newly discovered built-in provider must enter this IR before provider
+implementation begins. The inventory update must:
+
+1. create a provider area with status `missing`;
+2. record its responsibility, upstream provider and model sources, relevant
+   upstream tests, and planned Swift paths;
+3. map every new wire protocol, authentication mechanism, or shared foundation
+   area introduced by that provider;
+4. update the complete tracked built-in provider inventory and provenance for
+   the exact candidate revision; and
+5. prove that no existing supported area regressed before accepting a new pin.
+
+A provider may remain `missing` across releases and maintenance intervals. That
+is a truthful result: the provider is known and assigned, but is not registered
+as a working Swift provider. The accepted pin may move after the complete
+provenance and all applicable existing-support gates pass; moving the pin does
+not promote a newly recorded provider.
+
+Maintenance tasks have two explicit modes:
+
+- **Inventory sync:** compare a proposed upstream revision, update the IR and
+  provenance, register new areas as `missing`, and verify the already supported
+  surface. It does not implement or advertise the new provider.
+- **Implementation sync:** select one or more related IR areas, port the
+  provider vertical slice, add deterministic evidence, and promote status only
+  as far as that evidence proves.
+
+An implementation task may be started immediately after inventory sync or much
+later by a separate human request. Agents must resume from the IR rather than
+rediscovering scope from provider names or current documentation.
+
+The normal evidence-based promotion path is:
+
+```text
+missing -> partial -> landed
+```
+
+Use `blocked` when an area is known but cannot currently satisfy a required
+policy, platform, or upstream-contract gate. Never promote an area merely
+because files, placeholders, mocks, or a provider name exist. If later upstream
+drift invalidates earlier evidence, regress the status truthfully rather than
+preserving a stale `landed` claim.
 
 ## Module seam and deletion test
 
@@ -73,7 +153,7 @@ Every sync or reconstruction run must end in exactly one state:
 | State | Meaning | Pin may move? |
 | --- | --- | --- |
 | `compatible` | Required equivalence is proven at every applicable gate | Yes |
-| `no_relevant_change` | The allowlisted semantic surface is unchanged | Yes, after provenance checks |
+| `no_relevant_change` | The mapped semantic surface is unchanged | Yes, after provenance checks |
 | `needs_review` | A policy, security, public-seam, or live-account decision is required | No |
 | `upstream_incompatible` | Required behavior cannot be represented by the supported Swift/Apple contract | No |
 | `verification_failed` | Evidence is missing, malformed, flaky, or contradictory | No |
@@ -194,7 +274,10 @@ provider transport semantics.
 
 ## Existing-checkout synchronization workflow
 
-An AI maintainer must execute these stages in order.
+After a human initiates an inventory or implementation sync, an AI maintainer
+must execute the applicable stages in order. An inventory sync normally stops
+after recording and verifying the decision; an implementation sync continues
+through fixtures, porting, and the full verification matrix.
 
 ### 1. Establish a clean baseline
 

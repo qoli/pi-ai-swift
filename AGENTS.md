@@ -19,16 +19,27 @@ Read `Docs/AI_MAINTENANCE.md` before changing the upstream pin, a provider
 adapter, authentication, normalized events, or reconstruction logic. Its sync
 terminal states and change classes are mandatory.
 
-1. Read `Upstream.lock.json` and the provider's entry in
+Maintenance is initiated explicitly by a human and may be irregular; do not
+create a scheduler or unattended sync mechanism. Treat
+`UpstreamMappings/pi-ai.json` as the durable maintenance IR. A newly discovered
+built-in provider must first be recorded as `missing` with its provider, model,
+wire-protocol, authentication, test, and planned Swift ownership. A later,
+separately initiated implementation task promotes that area only with executable
+evidence. The IR is not runtime configuration and does not advertise support.
+
+1. Read `Upstream.lock.json` and every affected area in
    `UpstreamMappings/pi-ai.json`.
 2. Compare the pinned revision with the proposed upstream revision.
-3. Inspect allowlisted source paths, relevant upstream tests, and the changelog.
+3. Inspect the tracked built-in provider inventory, mapped source paths,
+   relevant upstream tests, and the changelog.
 4. Classify every relevant hunk before editing Swift.
 5. Update sanitized fixtures before changing Swift implementation.
 6. Prove TypeScript-to-Swift behavioral equivalence through differential tests.
 7. Run macOS tests, iOS compile/runtime gates, and any explicitly authorized
    live test required by the affected behavior.
-8. Update provenance and the exact upstream revision in the same change.
+8. Update each affected area's Swift paths, planned paths, upstream paths,
+   tests, and truthful status in the same change.
+9. Update provenance and the exact upstream revision in the same change.
 
 An automated run may end as `upstream_incompatible` or `verification_failed`.
 That is preferable to moving the lock without equivalence. Keep the last

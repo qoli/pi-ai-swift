@@ -145,7 +145,7 @@ struct ContractTests {
   }
 
   @Test
-  func upstreamLockPinsExactPiPackageAndAllowlist() throws {
+  func upstreamLockPinsExactPiPackageAndBuiltInProviderInventory() throws {
     let repositoryRoot = URL(fileURLWithPath: #filePath)
       .deletingLastPathComponent()
       .deletingLastPathComponent()
@@ -156,14 +156,15 @@ struct ContractTests {
       from: Data(contentsOf: lockURL)
     )
 
-    #expect(lock.schemaVersion == 1)
+    #expect(lock.schemaVersion == 2)
     #expect(lock.revision.count == 40)
     #expect(lock.package.name == "@earendil-works/pi-ai")
     #expect(lock.package.version == "0.84.4")
-    #expect(
-      lock.allowlistedProviders == [
-        "openai", "openai-codex", "kimi-coding",
-      ])
+    #expect(lock.trackedBuiltinProviders.count == 40)
+    #expect(lock.trackedBuiltinProviders.contains("github-copilot"))
+    #expect(lock.trackedBuiltinProviders.contains("xai"))
+    #expect(lock.trackedBuiltinProviders.contains("deepseek"))
+    #expect(lock.trackedBuiltinProviders.contains("qwen-token-plan"))
     #expect(!lock.requiredSourcePaths.isEmpty)
   }
 }
@@ -212,6 +213,6 @@ private struct UpstreamLock: Decodable {
   let schemaVersion: Int
   let revision: String
   let package: Package
-  let allowlistedProviders: [String]
+  let trackedBuiltinProviders: [String]
   let requiredSourcePaths: [String]
 }
