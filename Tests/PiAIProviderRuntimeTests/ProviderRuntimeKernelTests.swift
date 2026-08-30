@@ -144,7 +144,10 @@ struct ProviderRuntimeKernelTests {
             baseURL: "https://fixture.invalid/v1",
             headers: [:],
             modelConfigurations: [
-              "fixture-model": fixtureModelConfiguration()
+              ProviderModelRoute(
+                modelID: "fixture-model",
+                outputModality: .text
+              ): fixtureModelConfiguration()
             ],
             credentialRequirement: .required,
             authorization: fixtureAuthorization()
@@ -298,7 +301,10 @@ private func fixtureProvider() -> ProviderDefinition {
     baseURL: "https://fixture.invalid/v1",
     headers: ["X-Fixture": "true"],
     modelConfigurations: [
-      "fixture-model": fixtureModelConfiguration()
+      ProviderModelRoute(
+        modelID: "fixture-model",
+        outputModality: .text
+      ): fixtureModelConfiguration()
     ],
     credentialRequirement: .required,
     authorization: fixtureAuthorization()
@@ -306,7 +312,12 @@ private func fixtureProvider() -> ProviderDefinition {
 }
 
 private func fixtureModelConfiguration() -> ProviderModelConfiguration {
-  ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+  ProviderModelConfiguration(
+    protocolID: "fixture-wire",
+    baseURL: nil,
+    headers: [:],
+    metadata: [:]
+  )
 }
 
 private func fixtureAuthorization() -> APIKeyAuthorizationAdapter {

@@ -50,7 +50,12 @@ struct OpenAIResponsesAdapterTests {
       baseURL: URL(string: "https://api.openai.com/v1")!,
       headers: [:],
       credential: .apiKey(APIKeyCredential(key: "fixture", metadata: [:])),
-      modelConfiguration: ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+      modelConfiguration: ProviderModelConfiguration(
+        protocolID: model.protocolID,
+        baseURL: nil,
+        headers: [:],
+        metadata: [:]
+      )
     )
     var events: [ProviderEvent] = []
     for try await event in adapter.stream(request, context: context, transport: transport) {
@@ -224,7 +229,12 @@ private func responsesFixture(
       baseURL: URL(string: baseURL)!,
       headers: [:],
       credential: credential,
-      modelConfiguration: ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+      modelConfiguration: ProviderModelConfiguration(
+        protocolID: model.protocolID,
+        baseURL: nil,
+        headers: [:],
+        metadata: [:]
+      )
     )
   )
 }

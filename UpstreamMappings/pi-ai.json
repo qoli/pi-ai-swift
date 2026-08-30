@@ -143,8 +143,10 @@
     {
       "id": "differential-fixture-harness",
       "responsibility": "Sanitized upstream provenance, canonical request and raw-stream fixtures, and TypeScript-to-Swift equivalence results.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Verification/DifferentialFixture.swift"
+      ],
       "plannedSwiftPaths": [
         "Fixtures/Manifest.json",
         "Tests/PiAIProviderRuntimeTests/DifferentialFixtureTests.swift"
@@ -161,7 +163,9 @@
         "canonical-request-event-dtos",
         "wire-common"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/DifferentialFixtureTests.swift#validatesPinnedProvenanceDigestRedactionAndExactComparison"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -259,8 +263,11 @@
       "id": "provider-amazon-bedrock",
       "providerID": "amazon-bedrock",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for amazon-bedrock.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/AmazonBedrockProviderDefinition.swift"
       ],
@@ -277,7 +284,9 @@
         "credential-store-auth-resolution",
         "wire-bedrock-converse-stream"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -288,8 +297,11 @@
       "id": "provider-ant-ling",
       "providerID": "ant-ling",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for ant-ling.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/AntLingProviderDefinition.swift"
       ],
@@ -306,7 +318,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -317,8 +331,11 @@
       "id": "provider-anthropic",
       "providerID": "anthropic",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for anthropic.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/AnthropicProviderDefinition.swift"
       ],
@@ -336,7 +353,9 @@
         "credential-store-auth-resolution",
         "wire-anthropic-messages"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -347,8 +366,11 @@
       "id": "provider-azure-openai-responses",
       "providerID": "azure-openai-responses",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for azure-openai-responses.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/AzureOpenaiResponsesProviderDefinition.swift"
       ],
@@ -365,7 +387,9 @@
         "credential-store-auth-resolution",
         "wire-azure-openai-responses"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -376,8 +400,11 @@
       "id": "provider-baseten",
       "providerID": "baseten",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for baseten.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/BasetenProviderDefinition.swift"
       ],
@@ -394,7 +421,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -405,8 +434,11 @@
       "id": "provider-cerebras",
       "providerID": "cerebras",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cerebras.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/CerebrasProviderDefinition.swift"
       ],
@@ -423,7 +455,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -434,8 +468,11 @@
       "id": "provider-cloudflare-ai-gateway",
       "providerID": "cloudflare-ai-gateway",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cloudflare-ai-gateway.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/CloudflareAiGatewayProviderDefinition.swift"
       ],
@@ -456,7 +493,9 @@
         "wire-openai-completions",
         "wire-openai-responses"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -467,8 +506,11 @@
       "id": "provider-cloudflare-workers-ai",
       "providerID": "cloudflare-workers-ai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cloudflare-workers-ai.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/CloudflareWorkersAiProviderDefinition.swift"
       ],
@@ -487,7 +529,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -498,8 +542,11 @@
       "id": "provider-deepseek",
       "providerID": "deepseek",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for deepseek.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/DeepseekProviderDefinition.swift"
       ],
@@ -516,7 +563,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -527,8 +576,11 @@
       "id": "provider-fireworks",
       "providerID": "fireworks",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for fireworks.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/FireworksProviderDefinition.swift"
       ],
@@ -546,7 +598,9 @@
         "wire-anthropic-messages",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -557,8 +611,11 @@
       "id": "provider-github-copilot",
       "providerID": "github-copilot",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for github-copilot.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/GithubCopilotProviderDefinition.swift"
       ],
@@ -578,7 +635,9 @@
         "wire-openai-completions",
         "wire-openai-responses"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -589,8 +648,11 @@
       "id": "provider-google",
       "providerID": "google",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for google.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/GoogleProviderDefinition.swift"
       ],
@@ -607,7 +669,9 @@
         "credential-store-auth-resolution",
         "wire-google-generative-ai"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -618,8 +682,11 @@
       "id": "provider-google-vertex",
       "providerID": "google-vertex",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for google-vertex.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/GoogleVertexProviderDefinition.swift"
       ],
@@ -636,7 +703,9 @@
         "credential-store-auth-resolution",
         "wire-google-vertex"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -647,8 +716,11 @@
       "id": "provider-groq",
       "providerID": "groq",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for groq.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/GroqProviderDefinition.swift"
       ],
@@ -665,7 +737,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -676,8 +750,11 @@
       "id": "provider-huggingface",
       "providerID": "huggingface",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for huggingface.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/HuggingfaceProviderDefinition.swift"
       ],
@@ -694,7 +771,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -705,8 +784,11 @@
       "id": "provider-kimi-coding",
       "providerID": "kimi-coding",
       "responsibility": "Kimi Coding API-key and subscription authorization, catalog, endpoint, headers, and Anthropic Messages protocol selection.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/KimiCodingProviderDefinition.swift"
       ],
@@ -726,7 +808,9 @@
         "kimi-coding-oauth",
         "wire-anthropic-messages"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -737,8 +821,11 @@
       "id": "provider-minimax",
       "providerID": "minimax",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/MinimaxProviderDefinition.swift"
       ],
@@ -755,7 +842,9 @@
         "credential-store-auth-resolution",
         "wire-anthropic-messages"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -766,8 +855,11 @@
       "id": "provider-minimax-cn",
       "providerID": "minimax-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax-cn.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/MinimaxCnProviderDefinition.swift"
       ],
@@ -784,7 +876,9 @@
         "credential-store-auth-resolution",
         "wire-anthropic-messages"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -795,8 +889,11 @@
       "id": "provider-mistral",
       "providerID": "mistral",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for mistral.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/MistralProviderDefinition.swift"
       ],
@@ -813,7 +910,9 @@
         "credential-store-auth-resolution",
         "wire-mistral-conversations"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -824,8 +923,11 @@
       "id": "provider-moonshotai",
       "providerID": "moonshotai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for moonshotai.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/MoonshotaiProviderDefinition.swift"
       ],
@@ -842,7 +944,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -853,8 +957,11 @@
       "id": "provider-moonshotai-cn",
       "providerID": "moonshotai-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for moonshotai-cn.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/MoonshotaiCnProviderDefinition.swift"
       ],
@@ -871,7 +978,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -882,8 +991,11 @@
       "id": "provider-nvidia",
       "providerID": "nvidia",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for nvidia.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/NvidiaProviderDefinition.swift"
       ],
@@ -900,7 +1012,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -911,8 +1025,11 @@
       "id": "provider-openai",
       "providerID": "openai",
       "responsibility": "OpenAI API-key authorization, catalog, endpoint, headers, and OpenAI Responses protocol selection.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/OpenAIProviderDefinition.swift"
       ],
@@ -930,7 +1047,9 @@
         "credential-store-auth-resolution",
         "wire-openai-responses"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -943,6 +1062,8 @@
       "responsibility": "OpenAI Codex subscription catalog, authorization composition, endpoint, headers, and Codex Responses protocol selection.",
       "status": "partial",
       "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
         "Sources/PiAIProviderRuntime/OpenAICodexOAuth.swift"
       ],
       "plannedSwiftPaths": [
@@ -964,7 +1085,9 @@
         "openai-codex-oauth",
         "wire-openai-codex-responses"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -975,8 +1098,11 @@
       "id": "provider-opencode",
       "providerID": "opencode",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for opencode.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/OpencodeProviderDefinition.swift"
       ],
@@ -996,7 +1122,9 @@
         "wire-openai-completions",
         "wire-openai-responses"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1007,8 +1135,11 @@
       "id": "provider-opencode-go",
       "providerID": "opencode-go",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for opencode-go.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/OpencodeGoProviderDefinition.swift"
       ],
@@ -1027,7 +1158,9 @@
         "wire-openai-completions",
         "wire-openai-responses"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1038,8 +1171,11 @@
       "id": "provider-openrouter",
       "providerID": "openrouter",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for openrouter.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/OpenrouterProviderDefinition.swift"
       ],
@@ -1057,7 +1193,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1068,8 +1206,11 @@
       "id": "provider-qwen-token-plan",
       "providerID": "qwen-token-plan",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanProviderDefinition.swift"
       ],
@@ -1086,7 +1227,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1097,8 +1240,11 @@
       "id": "provider-qwen-token-plan-cn",
       "providerID": "qwen-token-plan-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-cn.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanCnProviderDefinition.swift"
       ],
@@ -1115,7 +1261,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1126,8 +1274,11 @@
       "id": "provider-qwen-token-plan-individual",
       "providerID": "qwen-token-plan-individual",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-individual.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanIndividualProviderDefinition.swift"
       ],
@@ -1144,7 +1295,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1155,8 +1308,11 @@
       "id": "provider-radius",
       "providerID": "radius",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for radius.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/RadiusProviderDefinition.swift"
       ],
@@ -1173,7 +1329,9 @@
         "catalog-model-store",
         "credential-store-auth-resolution"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1184,8 +1342,11 @@
       "id": "provider-together",
       "providerID": "together",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for together.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/TogetherProviderDefinition.swift"
       ],
@@ -1202,7 +1363,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1213,8 +1376,11 @@
       "id": "provider-vercel-ai-gateway",
       "providerID": "vercel-ai-gateway",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for vercel-ai-gateway.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/VercelAiGatewayProviderDefinition.swift"
       ],
@@ -1231,7 +1397,9 @@
         "credential-store-auth-resolution",
         "wire-anthropic-messages"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1242,8 +1410,11 @@
       "id": "provider-xai",
       "providerID": "xai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xai.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/XaiProviderDefinition.swift"
       ],
@@ -1261,7 +1432,9 @@
         "credential-store-auth-resolution",
         "wire-openai-responses"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1272,8 +1445,11 @@
       "id": "provider-xiaomi",
       "providerID": "xiaomi",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/XiaomiProviderDefinition.swift"
       ],
@@ -1290,7 +1466,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1301,8 +1479,11 @@
       "id": "provider-xiaomi-token-plan-ams",
       "providerID": "xiaomi-token-plan-ams",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-ams.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanAmsProviderDefinition.swift"
       ],
@@ -1319,7 +1500,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1330,8 +1513,11 @@
       "id": "provider-xiaomi-token-plan-cn",
       "providerID": "xiaomi-token-plan-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-cn.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanCnProviderDefinition.swift"
       ],
@@ -1348,7 +1534,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1359,8 +1547,11 @@
       "id": "provider-xiaomi-token-plan-sgp",
       "providerID": "xiaomi-token-plan-sgp",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-sgp.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanSgpProviderDefinition.swift"
       ],
@@ -1377,7 +1568,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1388,8 +1581,11 @@
       "id": "provider-zai",
       "providerID": "zai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for zai.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/ZaiProviderDefinition.swift"
       ],
@@ -1406,7 +1602,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],
@@ -1417,8 +1615,11 @@
       "id": "provider-zai-coding-cn",
       "providerID": "zai-coding-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for zai-coding-cn.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/ZaiCodingCnProviderDefinition.swift"
       ],
@@ -1435,7 +1636,9 @@
         "credential-store-auth-resolution",
         "wire-openai-completions"
       ],
-      "evidence": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
       "requiredGates": [
         "swift-test"
       ],

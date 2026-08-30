@@ -14,7 +14,7 @@
     "integrity": "sha512-AClAZxf5+c4RRu44NJPS6wyQy+Nmq+Mzyyrdvm4ZVMNuixelO02RZX4G4Aq1F145Yzp43wnM5S+hLlSI7ypfVw==",
     "modelDataManifestStructureHash": "456b83c08bed3255d7e399d7927c6743e7f3568435691b3d38cc3666ffa70479"
   },
-  "generatedCatalogSHA256": "cb152d3482e0f78aa2eb07b43904767b85a423c231dac248aad4dde90ed45ff6",
+  "generatedCatalogSHA256": "02a822172800c7ca7950594dcf1e9ef2299cda6bcac81da1639b8144b588ea50",
   "trackedBuiltinProviders": [
     "amazon-bedrock",
     "ant-ling",

@@ -118,18 +118,26 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
   public let reasoningEffort: String?
   public let responseSchema: JSONValue?
   public let providerOptions: [String: JSONValue]
+  public let outputModality: ProviderOutputModality
 
   public init(
     maximumOutputTokens: Int?,
     temperature: Double?,
     reasoningEffort: String?,
     responseSchema: JSONValue?,
-    providerOptions: [String: JSONValue]
+    providerOptions: [String: JSONValue],
+    outputModality: ProviderOutputModality = .text
   ) {
     self.maximumOutputTokens = maximumOutputTokens
     self.temperature = temperature
     self.reasoningEffort = reasoningEffort
     self.responseSchema = responseSchema
     self.providerOptions = providerOptions
+    self.outputModality = outputModality
   }
+}
+
+public enum ProviderOutputModality: String, Sendable, Equatable, Codable {
+  case text
+  case image
 }

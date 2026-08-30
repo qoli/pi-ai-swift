@@ -37,6 +37,7 @@ struct OpenAICompletionsAdapterTests {
       headers: [:],
       credential: .apiKey(APIKeyCredential(key: "fixture", metadata: [:])),
       modelConfiguration: ProviderModelConfiguration(
+        protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
         metadata: [
@@ -201,7 +202,12 @@ private func completionFixtureRequestAndContext() -> (
       baseURL: URL(string: "https://fixture.invalid")!,
       headers: [:],
       credential: .apiKey(APIKeyCredential(key: "k", metadata: [:])),
-      modelConfiguration: ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+      modelConfiguration: ProviderModelConfiguration(
+        protocolID: model.protocolID,
+        baseURL: nil,
+        headers: [:],
+        metadata: [:]
+      )
     )
   )
 }

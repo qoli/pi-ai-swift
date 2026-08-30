@@ -270,6 +270,7 @@ private func piMessagesFixtureContext(model: ProviderModel) -> WireProtocolConte
     headers: ["X-Fixture": "value"],
     credential: .apiKey(APIKeyCredential(key: "radius-key", metadata: [:])),
     modelConfiguration: ProviderModelConfiguration(
+      protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
       metadata: [:]

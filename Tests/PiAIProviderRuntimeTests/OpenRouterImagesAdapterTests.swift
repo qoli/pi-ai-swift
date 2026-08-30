@@ -211,6 +211,7 @@ private func openRouterImageContext(
     headers: [:],
     credential: .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:])),
     modelConfiguration: ProviderModelConfiguration(
+      protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
       metadata: ["output": .array(output.map(JSONValue.string))]

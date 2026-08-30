@@ -43,12 +43,13 @@ struct ProviderDefinition: Sendable {
   let descriptor: ProviderDescriptor
   let baseURL: String?
   let headers: [String: String]
-  let modelConfigurations: [String: ProviderModelConfiguration]
+  let modelConfigurations: [ProviderModelRoute: ProviderModelConfiguration]
   let credentialRequirement: ProviderCredentialRequirement
   let authorization: any ProviderAuthorizationAdapter
 }
 
 struct ProviderModelConfiguration: Sendable {
+  let protocolID: String
   let baseURL: String?
   let headers: [String: String]
   let metadata: [String: JSONValue]
@@ -165,15 +166,6 @@ struct ProviderRuntimeKernel: ProviderRuntime {
           "unsupported model for \(request.providerID): \(request.modelID)"
       )
     }
-    guard let wireProtocol = wireProtocols[model.protocolID] else {
-      throw failure(
-        .unsupportedCapability,
-        providerID: request.providerID,
-        operation: "stream.resolve-protocol",
-        message: "wire protocol is not implemented: \(model.protocolID)"
-      )
-    }
-
     let credential = try await provider.authorization.resolveCredential(
       providerID: request.providerID,
       credentialStore: credentialStore
@@ -187,12 +179,25 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       )
     }
 
-    guard let modelConfiguration = provider.modelConfigurations[model.id] else {
+    let route = ProviderModelRoute(
+      modelID: model.id,
+      outputModality: request.options.outputModality
+    )
+    guard let modelConfiguration = provider.modelConfigurations[route] else {
       throw failure(
-        .upstreamDrift,
+        .unsupportedCapability,
         providerID: request.providerID,
         operation: "stream.resolve-model-configuration",
-        message: "model configuration is missing: \(request.modelID)"
+        message:
+          "model does not support \(request.options.outputModality.rawValue) output: \(request.modelID)"
+      )
+    }
+    guard let wireProtocol = wireProtocols[modelConfiguration.protocolID] else {
+      throw failure(
+        .unsupportedCapability,
+        providerID: request.providerID,
+        operation: "stream.resolve-protocol",
+        message: "wire protocol is not implemented: \(modelConfiguration.protocolID)"
       )
     }
     let credentialMetadata: [String: String]
@@ -225,7 +230,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       request,
       context: WireProtocolContext(
         provider: provider.descriptor,
-        model: model,
+        model: model.withProtocolID(modelConfiguration.protocolID),
         baseURL: baseURL,
         headers: headers,
         credential: credential,
@@ -369,6 +374,25 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       providerID: providerID,
       operation: operation,
       message: message
+    )
+  }
+}
+
+struct ProviderModelRoute: Sendable, Hashable {
+  let modelID: String
+  let outputModality: ProviderOutputModality
+}
+
+extension ProviderModel {
+  fileprivate func withProtocolID(_ protocolID: String) -> ProviderModel {
+    ProviderModel(
+      id: id,
+      providerID: providerID,
+      name: name,
+      protocolID: protocolID,
+      capabilities: capabilities,
+      contextWindow: contextWindow,
+      maximumOutputTokens: maximumOutputTokens
     )
   }
 }

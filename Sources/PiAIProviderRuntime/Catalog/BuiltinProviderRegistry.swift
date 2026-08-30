@@ -44,7 +44,7 @@ struct BuiltinProviderRecord: Sendable {
   let headers: [String: String]
   let authorizationMethodIDs: [String]
   let models: [ProviderModel]
-  let modelConfigurations: [String: ProviderModelConfiguration]
+  let modelConfigurations: [ProviderModelRoute: ProviderModelConfiguration]
 
   fileprivate init(document: BuiltinProviderDocument) throws {
     id = document.id
@@ -53,8 +53,8 @@ struct BuiltinProviderRecord: Sendable {
     headers = document.headers
     authorizationMethodIDs = document.authorizationMethods
 
-    var parsedModels: [ProviderModel] = []
-    var configurations: [String: ProviderModelConfiguration] = [:]
+    var parsedModels: [String: ProviderModel] = [:]
+    var configurations: [ProviderModelRoute: ProviderModelConfiguration] = [:]
     for value in document.models {
       guard case .object(let object) = value else {
         throw Self.failure(document.id, "model catalog entry is not an object")
@@ -76,7 +76,9 @@ struct BuiltinProviderRecord: Sendable {
       )
       let inputs = object.stringArray("input")
       let reasoning = object.bool("reasoning") ?? false
-      let model = ProviderModel(
+      let outputModality: ProviderOutputModality =
+        protocolID == "openrouter-images" ? .image : .text
+      let incoming = ProviderModel(
         id: modelID,
         providerID: providerID,
         name: object.string("name") ?? modelID,
@@ -92,18 +94,60 @@ struct BuiltinProviderRecord: Sendable {
         contextWindow: object.int("contextWindow"),
         maximumOutputTokens: object.int("maxTokens")
       )
-      guard configurations[modelID] == nil else {
-        throw Self.failure(document.id, "duplicate model: \(modelID)")
+      let route = ProviderModelRoute(
+        modelID: modelID,
+        outputModality: outputModality
+      )
+      guard configurations[route] == nil else {
+        throw Self.failure(
+          document.id,
+          "duplicate model route: \(modelID)/\(outputModality.rawValue)"
+        )
       }
-      parsedModels.append(model)
-      configurations[modelID] = ProviderModelConfiguration(
+      if let existing = parsedModels[modelID] {
+        parsedModels[modelID] = Self.merge(
+          existing,
+          incoming,
+          preferIncomingProtocol: outputModality == .text
+        )
+      } else {
+        parsedModels[modelID] = incoming
+      }
+      configurations[route] = ProviderModelConfiguration(
+        protocolID: protocolID,
         baseURL: try Self.parseOptionalURLTemplate(object.string("baseUrl")),
         headers: object.stringDictionary("headers"),
         metadata: object
       )
     }
-    models = parsedModels.sorted { $0.id < $1.id }
+    models = parsedModels.values.sorted { $0.id < $1.id }
     modelConfigurations = configurations
+  }
+
+  private static func merge(
+    _ existing: ProviderModel,
+    _ incoming: ProviderModel,
+    preferIncomingProtocol: Bool
+  ) -> ProviderModel {
+    let lhs = existing.capabilities
+    let rhs = incoming.capabilities
+    return ProviderModel(
+      id: existing.id,
+      providerID: existing.providerID,
+      name: existing.name,
+      protocolID: preferIncomingProtocol ? incoming.protocolID : existing.protocolID,
+      capabilities: ProviderCapabilities(
+        textInput: lhs.textInput || rhs.textInput,
+        imageInput: lhs.imageInput || rhs.imageInput,
+        toolCalling: lhs.toolCalling || rhs.toolCalling,
+        reasoning: lhs.reasoning || rhs.reasoning,
+        structuredOutput: lhs.structuredOutput || rhs.structuredOutput,
+        imageGeneration: lhs.imageGeneration || rhs.imageGeneration
+      ),
+      contextWindow: existing.contextWindow ?? incoming.contextWindow,
+      maximumOutputTokens: existing.maximumOutputTokens
+        ?? incoming.maximumOutputTokens
+    )
   }
 
   private static func supportsStructuredOutput(_ protocolID: String) -> Bool {

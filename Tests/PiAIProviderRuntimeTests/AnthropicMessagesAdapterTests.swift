@@ -68,6 +68,7 @@ struct AnthropicMessagesAdapterTests {
       headers: [:],
       credential: .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:])),
       modelConfiguration: ProviderModelConfiguration(
+        protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
         metadata: [:]
@@ -222,7 +223,12 @@ private func fixtureAnthropicContext(model: ProviderModel) -> WireProtocolContex
     baseURL: URL(string: "https://fixture.invalid")!,
     headers: [:],
     credential: .apiKey(APIKeyCredential(key: "fixture", metadata: [:])),
-    modelConfiguration: ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+    modelConfiguration: ProviderModelConfiguration(
+      protocolID: model.protocolID,
+      baseURL: nil,
+      headers: [:],
+      metadata: [:]
+    )
   )
 }
 

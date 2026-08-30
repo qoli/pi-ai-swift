@@ -407,7 +407,12 @@ private func googleContext(model: ProviderModel) -> WireProtocolContext {
     baseURL: URL(string: "https://generativelanguage.googleapis.com/v1beta")!,
     headers: [:],
     credential: .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:])),
-    modelConfiguration: ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+    modelConfiguration: ProviderModelConfiguration(
+      protocolID: model.protocolID,
+      baseURL: nil,
+      headers: [:],
+      metadata: [:]
+    )
   )
 }
 
@@ -426,7 +431,12 @@ private func vertexContext(
     baseURL: URL(string: "https://us-central1-aiplatform.googleapis.com")!,
     headers: [:],
     credential: credential,
-    modelConfiguration: ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+    modelConfiguration: ProviderModelConfiguration(
+      protocolID: model.protocolID,
+      baseURL: nil,
+      headers: [:],
+      metadata: [:]
+    )
   )
 }
 

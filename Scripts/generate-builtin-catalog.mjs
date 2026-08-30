@@ -25,7 +25,7 @@ if (manifest.name !== lock.package.name || manifest.version !== lock.package.ver
 const moduleURL = pathToFileURL(
   path.join(packageRoot, "dist/providers/all.js")
 ).href;
-const { builtinProviders } = await import(moduleURL);
+const { builtinImagesProviders, builtinProviders } = await import(moduleURL);
 const modelDataManifest = JSON.parse(
   await readFile(
     path.join(packageRoot, "dist/providers/data/.manifest.json"),
@@ -53,6 +53,17 @@ const providers = builtinProviders().map((provider) => ({
 }));
 providers.sort((lhs, rhs) => lhs.id.localeCompare(rhs.id));
 
+const imageProviderIDs = [];
+for (const imageProvider of builtinImagesProviders()) {
+  const provider = providers.find((candidate) => candidate.id === imageProvider.id);
+  if (!provider) {
+    throw new Error(`image provider has no matching text provider: ${imageProvider.id}`);
+  }
+  imageProviderIDs.push(imageProvider.id);
+  provider.models.push(...imageProvider.getModels());
+}
+imageProviderIDs.sort();
+
 const expectedProviders = [...lock.trackedBuiltinProviders].sort();
 const actualProviders = providers.map((provider) => provider.id);
 if (JSON.stringify(actualProviders) !== JSON.stringify(expectedProviders)) {
@@ -69,6 +80,7 @@ const document = {
   upstreamPackage: lock.package,
   publishedArtifact: lock.publishedArtifact,
   modelDataManifest,
+  imageProviderIDs,
   providers,
 };
 await writeFile(outputPath, `${JSON.stringify(document)}\n`, "utf8");

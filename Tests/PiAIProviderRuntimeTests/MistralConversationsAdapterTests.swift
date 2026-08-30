@@ -262,6 +262,7 @@ private func mistralFixtureContext(model: ProviderModel) -> WireProtocolContext 
     headers: [:],
     credential: .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:])),
     modelConfiguration: ProviderModelConfiguration(
+      protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
       metadata: [:]

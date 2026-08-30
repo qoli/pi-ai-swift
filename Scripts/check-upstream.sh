@@ -354,6 +354,13 @@ if upstream_image_providers != mapped_image_providers:
         f"missing={sorted(upstream_image_providers - mapped_image_providers)}, "
         f"extra={sorted(mapped_image_providers - upstream_image_providers)}"
     )
+catalog_image_providers = set(catalog.get("imageProviderIDs", []))
+if upstream_image_providers != catalog_image_providers:
+    raise SystemExit(
+        "bundled image provider inventory drift: "
+        f"missing={sorted(upstream_image_providers - catalog_image_providers)}, "
+        f"extra={sorted(catalog_image_providers - upstream_image_providers)}"
+    )
 
 types_source = (cache_root / "packages/ai/src/types.ts").read_text(encoding="utf-8")
 known_api_match = re.search(

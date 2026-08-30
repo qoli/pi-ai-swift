@@ -225,7 +225,12 @@ private func bedrockContext(
       "Authorization": "must-not-override",
     ],
     credential: credential,
-    modelConfiguration: ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
+    modelConfiguration: ProviderModelConfiguration(
+      protocolID: model.protocolID,
+      baseURL: nil,
+      headers: [:],
+      metadata: [:]
+    )
   )
 }
 

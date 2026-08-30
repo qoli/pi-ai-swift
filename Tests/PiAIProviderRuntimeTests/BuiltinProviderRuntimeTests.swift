@@ -15,7 +15,7 @@ struct BuiltinProviderRuntimeTests {
     )
     let catalog = try await runtime.catalog()
     #expect(catalog.providers.count == 40)
-    #expect(catalog.providers.flatMap(\.models).count == 1_290)
+    #expect(catalog.providers.flatMap(\.models).count == 1_337)
 
     let state = try await runtime.authorize(
       .login(providerID: "kimi-coding", methodID: "api-key")
@@ -43,6 +43,53 @@ struct BuiltinProviderRuntimeTests {
         == .apiKey(APIKeyCredential(key: "fixture-kimi-key", metadata: [:]))
     )
   }
+
+  @Test
+  func outputModalitySelectsImageRouteForTextImageModelCollision() async throws {
+    let store = InMemoryProviderCredentialStore(
+      credentials: [
+        "openrouter": .apiKey(
+          APIKeyCredential(key: "fixture-openrouter-key", metadata: [:])
+        )
+      ]
+    )
+    let transport = RuntimeCaptureStreamingTransport(
+      body: Data(
+        #"{"id":"image-response","choices":[{"message":{"content":null,"images":[]}}]}"#.utf8
+      )
+    )
+    let runtime = try BuiltinProviderRuntime(
+      credentialStore: store,
+      streamingTransport: transport,
+      authorizationTransport: RuntimeUnusedHTTPTransport()
+    )
+    let request = ProviderRequest(
+      id: "request",
+      providerID: "openrouter",
+      modelID: "google/gemini-3-pro-image",
+      messages: [.user([.text("draw a circle")])],
+      tools: [],
+      options: ProviderGenerationOptions(
+        maximumOutputTokens: nil,
+        temperature: nil,
+        reasoningEffort: nil,
+        responseSchema: nil,
+        providerOptions: [:],
+        outputModality: .image
+      )
+    )
+    var events: [ProviderEvent] = []
+    for try await event in runtime.stream(request) { events.append(event) }
+    #expect(events.last == .completed(.stop))
+    let sent = try #require(await transport.request())
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody),
+      providerID: "fixture",
+      operation: "fixture"
+    )
+    #expect(body.bool("stream") == false)
+    #expect(body.array("modalities")?.first == .string("image"))
+  }
 }
 
 private struct RuntimeUnusedStreamingTransport: ProviderHTTPStreamingTransport {
@@ -67,4 +114,26 @@ private struct RuntimeUnusedHTTPTransport: ProviderHTTPTransport {
       causeDescription: nil
     )
   }
+}
+
+private actor RuntimeCaptureStreamingTransport: ProviderHTTPStreamingTransport {
+  private let body: Data
+  private var captured: URLRequest?
+
+  init(body: Data) { self.body = body }
+
+  func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    captured = request
+    let body = self.body
+    return ProviderHTTPStreamingResponse(
+      statusCode: 200,
+      headers: [:],
+      body: AsyncThrowingStream { continuation in
+        continuation.yield(body)
+        continuation.finish()
+      }
+    )
+  }
+
+  func request() -> URLRequest? { captured }
 }
