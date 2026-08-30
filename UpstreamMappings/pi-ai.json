@@ -1716,15 +1716,11 @@
       "id": "wire-anthropic-messages",
       "protocolID": "anthropic-messages",
       "responsibility": "Anthropic Messages request encoding, SSE decoding, thinking signatures, images, tools, usage, and stop reasons.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/Anthropic/AnthropicMessagesAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/AnthropicMessages/AnthropicMessagesAdapter.swift",
-        "Sources/PiAIProviderRuntime/Wire/AnthropicMessages/AnthropicMessagesRequestEncoder.swift",
-        "Sources/PiAIProviderRuntime/Wire/AnthropicMessages/AnthropicMessagesStreamDecoder.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/anthropic-messages.ts",
         "packages/ai/src/api/anthropic-messages.lazy.ts"
@@ -1746,20 +1742,18 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-azure-openai-responses",
       "protocolID": "azure-openai-responses",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for azure-openai-responses.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/AzureOpenaiResponses/AzureOpenaiResponsesAdapter.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/azure-openai-responses.ts",
         "packages/ai/src/api/azure-openai-responses.lazy.ts"
@@ -1778,7 +1772,7 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
@@ -1816,17 +1810,13 @@
     },
     {
       "id": "wire-common",
-      "responsibility": "Shared message transforms, simple generation options, event ordering, provider errors, retries, and Unicode handling.",
-      "status": "partial",
+      "responsibility": "Shared strict JSON/SSE decoding, event ordering, bounded provider errors, Unicode handling, and explicit no-automatic-retry transport semantics.",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/Common/JSONAccessors.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ServerSentEvents.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/Common/GenerationOptions.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/MessageTransformer.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/ProviderErrorDecoder.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/github-copilot-headers.ts",
         "packages/ai/src/api/simple-options.ts",
@@ -1856,25 +1846,26 @@
       ],
       "dependsOn": [],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/ServerSentEventsTests.swift#decodesArbitraryChunksCommentsMultilineDataAndEOF"
+        "Tests/PiAIProviderRuntimeTests/ServerSentEventsTests.swift#decodesArbitraryChunksCommentsMultilineDataAndEOF",
+        "Tests/PiAIProviderRuntimeTests/ServerSentEventsTests.swift#rejectsInvalidUTF8",
+        "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#urlSessionErrorsRemainTheThrownCauseAndAreNotRetried",
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#unknownEventFailsDecodingInsteadOfProducingSubstituteOutput"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-google-generative-ai",
       "protocolID": "google-generative-ai",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for google-generative-ai.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/Google/GoogleGenerativeAIAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/GoogleGenerativeAi/GoogleGenerativeAiAdapter.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/google-generative-ai.lazy.ts",
         "packages/ai/src/api/google-generative-ai.ts",
@@ -1894,20 +1885,18 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-google-vertex",
       "protocolID": "google-vertex",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for google-vertex.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/Google/GoogleGenerativeAIAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/GoogleVertex/GoogleVertexAdapter.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/google-shared.ts",
         "packages/ai/src/api/google-vertex.lazy.ts",
@@ -1927,20 +1916,18 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-mistral-conversations",
       "protocolID": "mistral-conversations",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for mistral-conversations.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/Mistral/MistralConversationsAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/MistralConversations/MistralConversationsAdapter.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/mistral-conversations.ts",
         "packages/ai/src/api/mistral-conversations.lazy.ts"
@@ -1959,7 +1946,7 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
@@ -2008,14 +1995,11 @@
       "id": "wire-openai-completions",
       "protocolID": "openai-completions",
       "responsibility": "OpenAI Chat Completions request encoding, streaming decoding, compatibility rules, reasoning, images, tools, usage, and stop reasons.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsRequestEncoder.swift",
-        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsStreamDecoder.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/openai-completions.ts",
         "packages/ai/src/api/openai-completions.lazy.ts",
@@ -2040,21 +2024,18 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-openai-responses",
       "protocolID": "openai-responses",
       "responsibility": "OpenAI Responses request encoding, streaming decoding, tool and reasoning replay, usage, and terminal event rules.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesRequestEncoder.swift",
-        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesStreamDecoder.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/openai-responses.ts",
         "packages/ai/src/api/openai-responses-shared.ts",
@@ -2077,14 +2058,14 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-openrouter-images",
       "protocolID": "openrouter-images",
       "responsibility": "OpenRouter image-generation request encoding, response decoding, assets, usage, errors, and cancellation.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenRouterImages/OpenRouterImagesAdapter.swift"
       ],
@@ -2109,14 +2090,14 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-pi-messages",
       "protocolID": "pi-messages",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for pi-messages.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/PiMessages/PiMessagesAdapter.swift"
       ],
@@ -2139,7 +2120,7 @@
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     }
   ]
