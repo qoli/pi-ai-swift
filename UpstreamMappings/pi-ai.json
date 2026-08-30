@@ -272,14 +272,12 @@
       "id": "provider-amazon-bedrock",
       "providerID": "amazon-bedrock",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for amazon-bedrock.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/AmazonBedrockProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/amazon-bedrock.models.ts",
         "packages/ai/src/providers/amazon-bedrock.ts"
@@ -294,26 +292,25 @@
         "wire-bedrock-converse-stream"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-ant-ling",
       "providerID": "ant-ling",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for ant-ling.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/AntLingProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/ant-ling.models.ts",
         "packages/ai/src/providers/ant-ling.ts"
@@ -328,12 +325,13 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
@@ -375,14 +373,12 @@
       "id": "provider-azure-openai-responses",
       "providerID": "azure-openai-responses",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for azure-openai-responses.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/AzureOpenaiResponsesProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/azure-openai-responses.models.ts",
         "packages/ai/src/providers/azure-openai-responses.ts"
@@ -397,26 +393,25 @@
         "wire-azure-openai-responses"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-baseten",
       "providerID": "baseten",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for baseten.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/BasetenProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/baseten.models.ts",
         "packages/ai/src/providers/baseten.ts"
@@ -431,26 +426,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-cerebras",
       "providerID": "cerebras",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cerebras.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/CerebrasProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/cerebras.models.ts",
         "packages/ai/src/providers/cerebras.ts"
@@ -465,26 +459,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-cloudflare-ai-gateway",
       "providerID": "cloudflare-ai-gateway",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cloudflare-ai-gateway.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/CloudflareAiGatewayProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/cloudflare-ai-gateway.models.ts",
         "packages/ai/src/providers/cloudflare-ai-gateway.ts",
@@ -503,26 +496,25 @@
         "wire-openai-responses"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-cloudflare-workers-ai",
       "providerID": "cloudflare-workers-ai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cloudflare-workers-ai.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/CloudflareWorkersAiProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/cloudflare-auth.ts",
         "packages/ai/src/providers/cloudflare-stream.ts",
@@ -539,26 +531,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-deepseek",
       "providerID": "deepseek",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for deepseek.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/DeepseekProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/deepseek.models.ts",
         "packages/ai/src/providers/deepseek.ts"
@@ -573,26 +564,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-fireworks",
       "providerID": "fireworks",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for fireworks.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/FireworksProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/fireworks.models.ts",
         "packages/ai/src/providers/fireworks.ts"
@@ -608,12 +598,13 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
@@ -657,14 +648,12 @@
       "id": "provider-google",
       "providerID": "google",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for google.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/GoogleProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/google.models.ts",
         "packages/ai/src/providers/google.ts"
@@ -679,26 +668,25 @@
         "wire-google-generative-ai"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-google-vertex",
       "providerID": "google-vertex",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for google-vertex.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/GoogleVertexProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/google-vertex.models.ts",
         "packages/ai/src/providers/google-vertex.ts"
@@ -713,26 +701,25 @@
         "wire-google-vertex"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-groq",
       "providerID": "groq",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for groq.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/GroqProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/groq.models.ts",
         "packages/ai/src/providers/groq.ts"
@@ -747,26 +734,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-huggingface",
       "providerID": "huggingface",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for huggingface.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/HuggingfaceProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/huggingface.models.ts",
         "packages/ai/src/providers/huggingface.ts"
@@ -781,26 +767,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-kimi-coding",
       "providerID": "kimi-coding",
       "responsibility": "Kimi Coding API-key and subscription authorization, catalog, endpoint, headers, and Anthropic Messages protocol selection.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/KimiCodingProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/kimi-coding.ts",
         "packages/ai/src/providers/kimi-coding.models.ts",
@@ -818,26 +803,25 @@
         "wire-anthropic-messages"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-minimax",
       "providerID": "minimax",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/MinimaxProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/minimax.models.ts",
         "packages/ai/src/providers/minimax.ts"
@@ -852,26 +836,25 @@
         "wire-anthropic-messages"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-minimax-cn",
       "providerID": "minimax-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax-cn.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/MinimaxCnProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/minimax-cn.models.ts",
         "packages/ai/src/providers/minimax-cn.ts"
@@ -886,26 +869,25 @@
         "wire-anthropic-messages"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-mistral",
       "providerID": "mistral",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for mistral.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/MistralProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/mistral.models.ts",
         "packages/ai/src/providers/mistral.ts"
@@ -920,26 +902,25 @@
         "wire-mistral-conversations"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-moonshotai",
       "providerID": "moonshotai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for moonshotai.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/MoonshotaiProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/moonshotai.models.ts",
         "packages/ai/src/providers/moonshotai.ts"
@@ -954,26 +935,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-moonshotai-cn",
       "providerID": "moonshotai-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for moonshotai-cn.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/MoonshotaiCnProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/moonshotai-cn.models.ts",
         "packages/ai/src/providers/moonshotai-cn.ts"
@@ -988,26 +968,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-nvidia",
       "providerID": "nvidia",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for nvidia.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/NvidiaProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/nvidia.models.ts",
         "packages/ai/src/providers/nvidia.ts"
@@ -1022,26 +1001,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-openai",
       "providerID": "openai",
       "responsibility": "OpenAI API-key authorization, catalog, endpoint, headers, and OpenAI Responses protocol selection.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/OpenAIProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/openai.models.ts",
         "packages/ai/src/providers/openai.ts"
@@ -1057,27 +1035,26 @@
         "wire-openai-responses"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-openai-codex",
       "providerID": "openai-codex",
       "responsibility": "OpenAI Codex subscription catalog, authorization composition, endpoint, headers, and Codex Responses protocol selection.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
         "Sources/PiAIProviderRuntime/OpenAICodexOAuth.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/OpenAICodexProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/openai-codex.ts",
         "packages/ai/src/providers/openai-codex.models.ts",
@@ -1095,26 +1072,25 @@
         "wire-openai-codex-responses"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-opencode",
       "providerID": "opencode",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for opencode.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/OpencodeProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/opencode.models.ts",
         "packages/ai/src/providers/opencode.ts"
@@ -1132,26 +1108,25 @@
         "wire-openai-responses"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-opencode-go",
       "providerID": "opencode-go",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for opencode-go.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/OpencodeGoProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/opencode-go.models.ts",
         "packages/ai/src/providers/opencode-go.ts"
@@ -1168,12 +1143,13 @@
         "wire-openai-responses"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
@@ -1215,14 +1191,12 @@
       "id": "provider-qwen-token-plan",
       "providerID": "qwen-token-plan",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/qwen-token-plan.models.ts",
         "packages/ai/src/providers/qwen-token-plan.ts"
@@ -1237,26 +1211,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-qwen-token-plan-cn",
       "providerID": "qwen-token-plan-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-cn.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanCnProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/qwen-token-plan-cn.models.ts",
         "packages/ai/src/providers/qwen-token-plan-cn.ts"
@@ -1271,26 +1244,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-qwen-token-plan-individual",
       "providerID": "qwen-token-plan-individual",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-individual.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanIndividualProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/qwen-token-plan-individual.models.ts",
         "packages/ai/src/providers/qwen-token-plan-individual.ts"
@@ -1305,12 +1277,13 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
@@ -1351,14 +1324,12 @@
       "id": "provider-together",
       "providerID": "together",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for together.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/TogetherProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/together.models.ts",
         "packages/ai/src/providers/together.ts"
@@ -1373,26 +1344,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-vercel-ai-gateway",
       "providerID": "vercel-ai-gateway",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for vercel-ai-gateway.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/VercelAiGatewayProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/vercel-ai-gateway.models.ts",
         "packages/ai/src/providers/vercel-ai-gateway.ts"
@@ -1407,12 +1377,13 @@
         "wire-anthropic-messages"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
@@ -1454,14 +1425,12 @@
       "id": "provider-xiaomi",
       "providerID": "xiaomi",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/XiaomiProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/xiaomi.models.ts",
         "packages/ai/src/providers/xiaomi.ts"
@@ -1476,26 +1445,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-xiaomi-token-plan-ams",
       "providerID": "xiaomi-token-plan-ams",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-ams.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanAmsProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/xiaomi-token-plan-ams.models.ts",
         "packages/ai/src/providers/xiaomi-token-plan-ams.ts"
@@ -1510,26 +1478,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-xiaomi-token-plan-cn",
       "providerID": "xiaomi-token-plan-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-cn.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanCnProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/xiaomi-token-plan-cn.models.ts",
         "packages/ai/src/providers/xiaomi-token-plan-cn.ts"
@@ -1544,26 +1511,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-xiaomi-token-plan-sgp",
       "providerID": "xiaomi-token-plan-sgp",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-sgp.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanSgpProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/xiaomi-token-plan-sgp.models.ts",
         "packages/ai/src/providers/xiaomi-token-plan-sgp.ts"
@@ -1578,26 +1544,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-zai",
       "providerID": "zai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for zai.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/ZaiProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/zai.models.ts",
         "packages/ai/src/providers/zai.ts"
@@ -1612,26 +1577,25 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-zai-coding-cn",
       "providerID": "zai-coding-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for zai-coding-cn.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Providers/ZaiCodingCnProviderDefinition.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/zai-coding-cn.models.ts",
         "packages/ai/src/providers/zai-coding-cn.ts"
@@ -1646,12 +1610,13 @@
         "wire-openai-completions"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRun"
     },
     {
