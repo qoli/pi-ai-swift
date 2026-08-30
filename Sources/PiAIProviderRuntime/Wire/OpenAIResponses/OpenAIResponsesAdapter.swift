@@ -42,7 +42,8 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           var decoder = ServerSentEventDecoder()
           var reducer = OpenAIResponsesReducer(
             providerID: request.providerID,
-            requestedModelID: request.modelID
+            requestedModelID: request.modelID,
+            acceptsCodexTerminalAliases: flavor == .codex
           )
           for try await chunk in response.body {
             try Task.checkCancellation()
@@ -94,6 +95,10 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       urlRequest.setValue(accountID, forHTTPHeaderField: "chatgpt-account-id")
       urlRequest.setValue("pi", forHTTPHeaderField: "originator")
       urlRequest.setValue("responses=experimental", forHTTPHeaderField: "OpenAI-Beta")
+      if let sessionID = codexSessionID(request.options) {
+        urlRequest.setValue(sessionID, forHTTPHeaderField: "session-id")
+        urlRequest.setValue(sessionID, forHTTPHeaderField: "x-client-request-id")
+      }
     case (_, .apiKey(let credential)):
       urlRequest.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")
     case (_, .oauth(let credential)):
@@ -170,8 +175,9 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     if !instructions.isEmpty {
       body["instructions"] = .string(instructions.joined(separator: "\n\n"))
     }
-    if let maximum = request.options.maximumOutputTokens
-      ?? context.model.maximumOutputTokens
+    if flavor != .codex,
+      let maximum = request.options.maximumOutputTokens
+        ?? context.model.maximumOutputTokens
     {
       body["max_output_tokens"] = .integer(Int64(max(16, maximum)))
     }
@@ -184,6 +190,12 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         "summary": .string("auto"),
       ])
       body["include"] = .array([.string("reasoning.encrypted_content")])
+    }
+    if let serviceTier = request.options.serviceTier {
+      body["service_tier"] = .string(serviceTier)
+    }
+    if let toolChoice = request.options.toolChoice {
+      body["tool_choice"] = toolChoice
     }
     if !request.tools.isEmpty {
       body["tools"] = .array(
@@ -208,10 +220,34 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         ])
       ])
     }
+    if flavor == .codex {
+      body["instructions"] = .string(
+        instructions.isEmpty
+          ? "You are a helpful assistant."
+          : instructions.joined(separator: "\n\n")
+      )
+      body["text"] = .object(["verbosity": .string("low")])
+      body["include"] = .array([.string("reasoning.encrypted_content")])
+      body["tool_choice"] = request.options.toolChoice ?? .string("auto")
+      body["parallel_tool_calls"] = .bool(true)
+      if let sessionID = codexSessionID(request.options) {
+        body["prompt_cache_key"] = .string(sessionID)
+      }
+    }
     for (key, value) in request.options.providerOptions {
       body[key] = value
     }
     return body
+  }
+
+  private func codexSessionID(
+    _ options: ProviderGenerationOptions
+  ) -> String? {
+    guard flavor == .codex, options.cacheRetention != .none,
+      let sessionID = options.sessionID,
+      !sessionID.isEmpty
+    else { return nil }
+    return String(sessionID.prefix(64))
   }
 
   private func resolvedModelID(
@@ -306,14 +342,20 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
 private struct OpenAIResponsesReducer {
   let providerID: String
   let requestedModelID: String
+  let acceptsCodexTerminalAliases: Bool
   private var started = false
   private var terminal = false
   private var tools: [String: ToolState] = [:]
   private var completedToolCall = false
 
-  init(providerID: String, requestedModelID: String) {
+  init(
+    providerID: String,
+    requestedModelID: String,
+    acceptsCodexTerminalAliases: Bool
+  ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
+    self.acceptsCodexTerminalAliases = acceptsCodexTerminalAliases
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
@@ -368,9 +410,16 @@ private struct OpenAIResponsesReducer {
       tools[id] = state
       return [.toolInputDelta(id: id, delta: delta)]
     case "response.output_item.done":
-      guard let item = object.object("item"), item.string("type") == "function_call" else {
-        return []
+      guard let item = object.object("item"), let itemType = item.string("type") else {
+        throw invalid("completed output item is missing type")
       }
+      if itemType == "reasoning" {
+        guard let encrypted = item.string("encrypted_content"), !encrypted.isEmpty else {
+          return []
+        }
+        return [.reasoningSignatureDelta(encrypted)]
+      }
+      guard itemType == "function_call" else { return [] }
       guard let id = item.string("id") ?? item.string("call_id"),
         let state = tools.removeValue(forKey: id)
       else { throw invalid("completed function call has no matching item") }
@@ -387,7 +436,9 @@ private struct OpenAIResponsesReducer {
           ProviderToolCall(id: id, name: state.name, arguments: arguments)
         )
       ]
-    case "response.completed":
+    case "response.completed",
+      "response.done"
+    where type == "response.completed" || acceptsCodexTerminalAliases:
       guard let response = object.object("response") else {
         throw invalid("completed event is missing response")
       }

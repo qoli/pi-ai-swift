@@ -5,9 +5,11 @@
 **Partially landed.** The public seam, normalized DTOs, explicit failure model,
 complete pinned catalog, native wire adapters, raw streaming transport,
 Keychain storage, serialized credential refresh, and Kimi Coding/OpenAI Codex
-device authorization exist. Provider-by-provider equivalence, the remaining
-subscription authorization methods, full Bedrock credential signing, and the
-complete differential fixture corpus are still tracked in the maintenance IR.
+device authorization exist. Provider reasoning signatures remain opaque but
+round-trip through normalized events. Bedrock supports bearer credentials and
+native SigV4 credentials supplied by the host. Provider-by-provider
+equivalence, the remaining subscription authorization methods, and the complete
+differential fixture corpus are still tracked in the maintenance IR.
 
 ## Purpose
 

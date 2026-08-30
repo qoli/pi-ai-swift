@@ -4,6 +4,7 @@ public enum ProviderEvent: Sendable, Equatable, Codable {
   case responseStarted(ProviderResponseMetadata)
   case textDelta(String)
   case reasoningDelta(String)
+  case reasoningSignatureDelta(String)
   case toolCallStarted(id: String, name: String)
   case toolInputDelta(id: String, delta: String)
   case toolCallCompleted(ProviderToolCall)

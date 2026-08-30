@@ -72,7 +72,9 @@ func encodeJSONObject(
   operation: String
 ) throws -> Data {
   do {
-    return try JSONEncoder().encode(JSONValue.object(object))
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+    return try encoder.encode(JSONValue.object(object))
   } catch {
     throw ProviderRuntimeFailure(
       code: .invalidRequest,

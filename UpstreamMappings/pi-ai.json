@@ -1779,14 +1779,13 @@
       "id": "wire-bedrock-converse-stream",
       "protocolID": "bedrock-converse-stream",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for bedrock-converse-stream.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/Bedrock/AWSEventStream.swift",
+        "Sources/PiAIProviderRuntime/Wire/Bedrock/AWSSignatureV4.swift",
         "Sources/PiAIProviderRuntime/Wire/Bedrock/BedrockConverseStreamAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/BedrockConverseStream/BedrockConverseStreamAdapter.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/bedrock-converse-stream.ts",
         "packages/ai/src/api/bedrock-converse-stream.lazy.ts"
@@ -1800,12 +1799,14 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop"
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop",
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#sigV4SignsExactBodyHeadersRegionAndSessionCredential",
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#adaptiveClaudeReasoningRequestAndSignatureRoundTrip"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
@@ -1952,16 +1953,12 @@
     {
       "id": "wire-openai-codex-responses",
       "protocolID": "openai-codex-responses",
-      "responsibility": "ChatGPT Codex subscription response transport, account headers, cache affinity, streaming events, and continuation state.",
-      "status": "partial",
+      "responsibility": "ChatGPT Codex subscription SSE transport, account headers, prompt-cache affinity, streaming events, and explicit terminal aliases.",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesAdapter.swift",
-        "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesRequestEncoder.swift",
-        "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesStreamDecoder.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/openai-codex-responses.lazy.ts",
         "packages/ai/src/api/openai-codex-responses.ts",
@@ -1983,12 +1980,13 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#codexSSEPreservesCacheAffinityAndNormalizesDoneAlias"
       ],
       "requiredGates": [
         "swift-test"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {

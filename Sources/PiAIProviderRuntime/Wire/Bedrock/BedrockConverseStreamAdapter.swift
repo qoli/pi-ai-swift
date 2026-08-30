@@ -2,6 +2,11 @@ import Foundation
 
 struct BedrockConverseStreamAdapter: WireProtocolAdapter {
   let protocolID = "bedrock-converse-stream"
+  private let signingDate: Date?
+
+  init(signingDate: Date? = nil) {
+    self.signingDate = signingDate
+  }
 
   func stream(
     _ request: ProviderRequest,
@@ -60,14 +65,6 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> URLRequest {
-    guard request.options.reasoningEffort == nil else {
-      throw failure(
-        .unsupportedCapability,
-        request,
-        "bedrock.request.reasoning",
-        "Bedrock reasoning configuration is not implemented by the native bearer-token adapter"
-      )
-    }
     let endpoint = try endpointURL(baseURL: context.baseURL, modelID: request.modelID)
     var urlRequest = URLRequest(url: endpoint)
     urlRequest.httpMethod = "POST"
@@ -80,6 +77,11 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     for (name, value) in context.headers where !isReservedHeader(name) {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
+    urlRequest.httpBody = try encodeJSONObject(
+      try makeBody(request, context: context),
+      providerID: request.providerID,
+      operation: "bedrock.request.encode"
+    )
     switch context.credential {
     case .apiKey(let credential):
       guard !credential.key.isEmpty else {
@@ -87,31 +89,91 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           .invalidCredential,
           request,
           "bedrock.request.auth",
-          "Bedrock bearer token is empty"
+          "Bedrock credential secret is empty"
         )
       }
-      urlRequest.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")
+      switch credential.metadata["authentication"] ?? "bearer" {
+      case "bearer":
+        urlRequest.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")
+      case "sigv4":
+        guard let accessKeyID = credential.metadata["accessKeyID"],
+          !accessKeyID.isEmpty
+        else {
+          throw failure(
+            .invalidCredential,
+            request,
+            "bedrock.request.auth",
+            "Bedrock SigV4 credential is missing accessKeyID metadata"
+          )
+        }
+        try AWSSignatureV4.sign(
+          &urlRequest,
+          credential: AWSSignatureV4Credential(
+            accessKeyID: accessKeyID,
+            secretAccessKey: credential.key,
+            sessionToken: credential.metadata["sessionToken"]
+          ),
+          region: try resolvedRegion(
+            request: request,
+            endpoint: endpoint,
+            metadata: credential.metadata
+          ),
+          service: "bedrock",
+          date: signingDate ?? Date()
+        )
+      case let method:
+        throw failure(
+          .unsupportedCapability,
+          request,
+          "bedrock.request.auth",
+          "unsupported Bedrock authentication method: \(method)"
+        )
+      }
     case .oauth:
       throw failure(
         .unsupportedCapability,
         request,
         "bedrock.request.auth",
-        "Bedrock OAuth credentials are unsupported; this adapter implements bearer-token authentication only"
+        "Bedrock OAuth credentials are unsupported"
       )
     case nil:
       throw failure(
         .missingCredential,
         request,
         "bedrock.request.auth",
-        "Bedrock bearer token is missing"
+        "Bedrock credential is missing"
       )
     }
-    urlRequest.httpBody = try encodeJSONObject(
-      try makeBody(request, context: context),
-      providerID: request.providerID,
-      operation: "bedrock.request.encode"
-    )
     return urlRequest
+  }
+
+  private func resolvedRegion(
+    request: ProviderRequest,
+    endpoint: URL,
+    metadata: [String: String]
+  ) throws -> String {
+    if let region = metadata["region"], !region.isEmpty { return region }
+    let arnParts = request.modelID.split(
+      separator: ":",
+      omittingEmptySubsequences: false
+    )
+    if arnParts.count > 3, arnParts[0] == "arn", arnParts[1] == "aws",
+      !arnParts[3].isEmpty
+    {
+      return String(arnParts[3])
+    }
+    if let host = endpoint.host {
+      let parts = host.split(separator: ".")
+      if parts.count >= 4, parts[0] == "bedrock-runtime", !parts[1].isEmpty {
+        return String(parts[1])
+      }
+    }
+    throw failure(
+      .invalidCredential,
+      request,
+      "bedrock.request.region",
+      "Bedrock SigV4 requires explicit region metadata for this endpoint"
+    )
   }
 
   private func makeBody(
@@ -119,7 +181,8 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
     let supportedOptions: Set<String> = [
-      "additionalModelRequestFields", "requestMetadata", "toolChoice",
+      "additionalModelRequestFields", "interleavedThinking", "requestMetadata",
+      "thinkingBudgets", "thinkingDisplay", "toolChoice",
     ]
     let unknown = Set(request.options.providerOptions.keys).subtracting(supportedOptions)
     guard unknown.isEmpty else {
@@ -174,8 +237,30 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         "Bedrock toolChoice requires at least one tool"
       )
     }
+    var additionalFields = try reasoningFields(request, context: context)
     if let fields = request.options.providerOptions["additionalModelRequestFields"] {
-      body["additionalModelRequestFields"] = fields
+      guard case .object(let custom) = fields else {
+        throw failure(
+          .invalidRequest,
+          request,
+          "bedrock.request.additional-fields",
+          "Bedrock additionalModelRequestFields must be an object"
+        )
+      }
+      for (key, value) in custom {
+        guard additionalFields[key] == nil else {
+          throw failure(
+            .invalidRequest,
+            request,
+            "bedrock.request.additional-fields",
+            "Bedrock additionalModelRequestFields conflicts with reasoning field: \(key)"
+          )
+        }
+        additionalFields[key] = value
+      }
+    }
+    if !additionalFields.isEmpty {
+      body["additionalModelRequestFields"] = .object(additionalFields)
     }
     if let metadata = request.options.providerOptions["requestMetadata"] {
       body["requestMetadata"] = metadata
@@ -189,6 +274,142 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       )
     }
     return body
+  }
+
+  private func reasoningFields(
+    _ request: ProviderRequest,
+    context: WireProtocolContext
+  ) throws -> [String: JSONValue] {
+    guard let requested = request.options.reasoningEffort else { return [:] }
+    guard context.model.capabilities.reasoning else {
+      throw failure(
+        .unsupportedCapability,
+        request,
+        "bedrock.request.reasoning",
+        "Bedrock model does not support reasoning"
+      )
+    }
+    let candidates = [context.model.id, context.model.name].flatMap { value in
+      let lower = value.lowercased()
+      return [
+        lower, lower.replacingOccurrences(of: #"[\s_.:]+"#, with: "-", options: .regularExpression),
+      ]
+    }
+    guard candidates.contains(where: { $0.contains("anthropic") || $0.contains("claude") })
+    else {
+      return [:]
+    }
+    let adaptive = candidates.contains { value in
+      ["opus-4-6", "opus-4-7", "opus-4-8", "opus-5", "sonnet-4-6", "sonnet-5", "fable-5"]
+        .contains { value.contains($0) }
+    }
+    let display =
+      request.options.providerOptions["thinkingDisplay"]?.stringValue
+      ?? "summarized"
+    if adaptive {
+      return [
+        "thinking": .object([
+          "type": .string("adaptive"),
+          "display": .string(display),
+        ]),
+        "output_config": .object([
+          "effort": .string(
+            try reasoningEffort(
+              requested,
+              candidates: candidates,
+              context: context,
+              request: request
+            )
+          )
+        ]),
+      ]
+    }
+
+    let defaults = [
+      "minimal": 1_024,
+      "low": 2_048,
+      "medium": 8_192,
+      "high": 16_384,
+      "xhigh": 16_384,
+      "max": 16_384,
+    ]
+    guard var budget = defaults[requested] else {
+      throw failure(
+        .invalidRequest,
+        request,
+        "bedrock.request.reasoning",
+        "unsupported Bedrock reasoning effort: \(requested)"
+      )
+    }
+    if case .object(let custom)? = request.options.providerOptions["thinkingBudgets"],
+      let configured = custom[requested]?.integerValue
+    {
+      guard configured > 0 else {
+        throw failure(
+          .invalidRequest,
+          request,
+          "bedrock.request.reasoning",
+          "Bedrock reasoning budget must be positive"
+        )
+      }
+      budget = configured
+    }
+    let outputLimit =
+      request.options.maximumOutputTokens
+      ?? context.model.maximumOutputTokens ?? budget + 1_024
+    budget = min(budget, max(0, outputLimit - 1_024))
+    guard budget > 0 else {
+      throw failure(
+        .invalidRequest,
+        request,
+        "bedrock.request.reasoning",
+        "Bedrock output limit leaves no room for reasoning"
+      )
+    }
+    var result: [String: JSONValue] = [
+      "thinking": .object([
+        "type": .string("enabled"),
+        "budget_tokens": .integer(Int64(budget)),
+        "display": .string(display),
+      ])
+    ]
+    if request.options.providerOptions["interleavedThinking"]?.boolValue != false {
+      result["anthropic_beta"] = .array([
+        .string("interleaved-thinking-2025-05-14")
+      ])
+    }
+    return result
+  }
+
+  private func reasoningEffort(
+    _ requested: String,
+    candidates: [String],
+    context: WireProtocolContext,
+    request: ProviderRequest
+  ) throws -> String {
+    if let mapped = context.modelConfiguration.metadata
+      .object("thinkingLevelMap")?.string(requested)
+    {
+      return mapped
+    }
+    let supportsXHigh = candidates.contains { value in
+      ["opus-4-7", "opus-4-8", "opus-5", "sonnet-5", "fable-5"]
+        .contains { value.contains($0) }
+    }
+    if requested == "xhigh", supportsXHigh { return "xhigh" }
+    switch requested {
+    case "minimal", "low": return "low"
+    case "medium": return "medium"
+    case "high": return "high"
+    case "xhigh", "max": return "high"
+    default:
+      throw failure(
+        .invalidRequest,
+        request,
+        "bedrock.request.reasoning",
+        "unsupported Bedrock reasoning effort: \(requested)"
+      )
+    }
   }
 
   private func messages(_ messages: [ProviderMessage]) throws -> [JSONValue] {
@@ -456,6 +677,20 @@ private struct BedrockEventReducer {
       if let text = delta.string("text") { return [.textDelta(text)] }
       if let reasoning = delta.object("reasoningContent")?.string("text") {
         return [.reasoningDelta(reasoning)]
+      }
+      if let reasoningContent = delta.object("reasoningContent"),
+        let signature = reasoningContent.string("signature"), !signature.isEmpty
+      {
+        return [.reasoningSignatureDelta(signature)]
+      }
+      if let reasoningContent = delta.object("reasoningContent"),
+        let redacted = reasoningContent.string("redactedContent"),
+        !redacted.isEmpty
+      {
+        guard Data(base64Encoded: redacted) != nil else {
+          throw invalid("Bedrock redacted reasoning content is malformed")
+        }
+        return [.reasoningSignatureDelta(redacted)]
       }
       if let input = delta.object("toolUse")?.string("input") {
         guard var tool = tools[index] else {

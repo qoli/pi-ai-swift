@@ -567,6 +567,12 @@ private struct GoogleEventReducer {
           guard let part = part.objectValue else {
             throw invalid("Google content part is not an object")
           }
+          if let signature = part.string("thoughtSignature") {
+            guard !signature.isEmpty, Data(base64Encoded: signature) != nil else {
+              throw invalid("Google thought signature is malformed")
+            }
+            normalized.append(.reasoningSignatureDelta(signature))
+          }
           if let text = part.string("text") {
             normalized.append(
               part.bool("thought") == true ? .reasoningDelta(text) : .textDelta(text))

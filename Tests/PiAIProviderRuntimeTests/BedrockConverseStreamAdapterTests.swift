@@ -130,6 +130,93 @@ struct BedrockConverseStreamAdapterTests {
       Issue.record("unexpected error: \(error)")
     }
   }
+
+  @Test
+  func sigV4SignsExactBodyHeadersRegionAndSessionCredential() async throws {
+    let transport = BedrockFixtureTransport(
+      chunks: [try bedrockFrames()],
+      headers: ["x-amzn-requestid": "aws-request-signed"]
+    )
+    let date = Date(timeIntervalSince1970: 1_735_787_045)
+    for try await _ in BedrockConverseStreamAdapter(signingDate: date).stream(
+      bedrockRequest(),
+      context: bedrockContext(
+        credential: .apiKey(
+          APIKeyCredential(
+            key: "fixture-secret-access-key",
+            metadata: [
+              "authentication": "sigv4",
+              "accessKeyID": "AKIDEXAMPLE",
+              "region": "us-east-1",
+              "sessionToken": "fixture-session-token",
+            ]
+          )
+        )
+      ),
+      transport: transport
+    ) {}
+
+    let sent = try #require(await transport.request())
+    #expect(sent.value(forHTTPHeaderField: "x-amz-date") == "20250102T030405Z")
+    #expect(
+      sent.value(forHTTPHeaderField: "x-amz-security-token")
+        == "fixture-session-token"
+    )
+    #expect(
+      sent.value(forHTTPHeaderField: "x-amz-content-sha256")
+        == "feb8ea8cbfbeba6f29eb3a869528bc7fab403db9525afd074103472daa1f4f86"
+    )
+    let authorization = try #require(
+      sent.value(forHTTPHeaderField: "Authorization")
+    )
+    #expect(
+      authorization
+        == "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20250102/us-east-1/bedrock/aws4_request, SignedHeaders=accept;content-type;host;x-amz-content-sha256;x-amz-date;x-amz-security-token;x-amzn-bedrock-accept;x-fixture, Signature=661c2919a783854ccfcf7544248e6cd5e8c9df9eef99533f67bdbafa606826d7"
+    )
+  }
+
+  @Test
+  func adaptiveClaudeReasoningRequestAndSignatureRoundTrip() async throws {
+    let request = ProviderRequest(
+      id: "bedrock-reasoning",
+      providerID: "amazon-bedrock",
+      modelID: "anthropic.claude-sonnet-4-6",
+      messages: [.user([.text("reason")])],
+      tools: [],
+      options: ProviderGenerationOptions(
+        maximumOutputTokens: 8_192,
+        temperature: nil,
+        reasoningEffort: "high",
+        responseSchema: nil,
+        providerOptions: [:]
+      )
+    )
+    let transport = BedrockFixtureTransport(
+      chunks: [try bedrockReasoningFrames()],
+      headers: ["x-amzn-requestid": "aws-reasoning"]
+    )
+    var events: [ProviderEvent] = []
+    for try await event in BedrockConverseStreamAdapter().stream(
+      request,
+      context: bedrockReasoningContext(),
+      transport: transport
+    ) {
+      events.append(event)
+    }
+
+    #expect(events.contains(.reasoningDelta("inspect")))
+    #expect(events.contains(.reasoningSignatureDelta("opaque-signature")))
+    let sent = try #require(await transport.request())
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody),
+      providerID: "fixture",
+      operation: "fixture"
+    )
+    let additional = try #require(body.object("additionalModelRequestFields"))
+    #expect(additional.object("thinking")?.string("type") == "adaptive")
+    #expect(additional.object("thinking")?.string("display") == "summarized")
+    #expect(additional.object("output_config")?.string("effort") == "high")
+  }
 }
 
 private actor BedrockFixtureTransport: ProviderHTTPStreamingTransport {
@@ -232,6 +319,75 @@ private func bedrockContext(
       metadata: [:]
     )
   )
+}
+
+private func bedrockReasoningContext() -> WireProtocolContext {
+  let model = ProviderModel(
+    id: "anthropic.claude-sonnet-4-6",
+    providerID: "amazon-bedrock",
+    name: "Claude Sonnet 4.6",
+    protocolID: "bedrock-converse-stream",
+    capabilities: ProviderCapabilities(
+      textInput: true,
+      imageInput: true,
+      toolCalling: true,
+      reasoning: true,
+      structuredOutput: false,
+      imageGeneration: false
+    ),
+    contextWindow: 1_000_000,
+    maximumOutputTokens: 64_000
+  )
+  return WireProtocolContext(
+    provider: ProviderDescriptor(
+      id: "amazon-bedrock",
+      name: "Amazon Bedrock",
+      authorizationMethods: [],
+      models: [model]
+    ),
+    model: model,
+    baseURL: URL(string: "https://bedrock-runtime.us-east-1.amazonaws.com")!,
+    headers: [:],
+    credential: .apiKey(
+      APIKeyCredential(key: "fixture-bearer", metadata: [:])
+    ),
+    modelConfiguration: ProviderModelConfiguration(
+      protocolID: model.protocolID,
+      baseURL: nil,
+      headers: [:],
+      metadata: [
+        "thinkingLevelMap": .object(["max": .string("max")])
+      ]
+    )
+  )
+}
+
+private func bedrockReasoningFrames() throws -> Data {
+  let events: [(String, String)] = [
+    ("messageStart", #"{"role":"assistant"}"#),
+    (
+      "contentBlockDelta",
+      #"{"contentBlockIndex":0,"delta":{"reasoningContent":{"text":"inspect"}}}"#
+    ),
+    (
+      "contentBlockDelta",
+      #"{"contentBlockIndex":0,"delta":{"reasoningContent":{"signature":"opaque-signature"}}}"#
+    ),
+    ("messageStop", #"{"stopReason":"end_turn"}"#),
+    ("metadata", #"{"usage":{"inputTokens":2,"outputTokens":3}}"#),
+  ]
+  return try events.reduce(into: Data()) { data, event in
+    data.append(
+      try AWSEventStreamDecoder.encode(
+        headers: [
+          ":message-type": "event",
+          ":event-type": event.0,
+          ":content-type": "application/json",
+        ],
+        payload: Data(event.1.utf8)
+      )
+    )
+  }
 }
 
 private func bedrockFrames() throws -> Data {

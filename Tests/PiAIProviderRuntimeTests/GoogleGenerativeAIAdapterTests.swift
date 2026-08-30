@@ -69,18 +69,20 @@ struct GoogleGenerativeAIAdapterTests {
           )
         )
     )
-    #expect(events[1] == .reasoningDelta("checking"))
-    #expect(events[2] == .textDelta("ready"))
-    #expect(events[3] == .toolCallStarted(id: "call-1", name: "weather"))
+    #expect(events.contains(.reasoningSignatureDelta("YWJjZA==")))
+    #expect(events.contains(.reasoningSignatureDelta("ZWZnaA==")))
+    #expect(events.contains(.reasoningDelta("checking")))
+    #expect(events.contains(.textDelta("ready")))
+    #expect(events.contains(.toolCallStarted(id: "call-1", name: "weather")))
     #expect(
-      events[5]
-        == .toolCallCompleted(
+      events.contains(
+        .toolCallCompleted(
           ProviderToolCall(
             id: "call-1",
             name: "weather",
             arguments: .object(["city": .string("Taipei")])
           )
-        )
+        ))
     )
     #expect(events.last == .completed(.toolCalls))
 

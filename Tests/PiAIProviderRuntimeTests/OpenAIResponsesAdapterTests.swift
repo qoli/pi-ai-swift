@@ -71,6 +71,7 @@ struct OpenAIResponsesAdapterTests {
             providerMetadata: [:]
           )))
     #expect(events.contains(.textDelta("hello")))
+    #expect(events.contains(.reasoningSignatureDelta("encrypted-reasoning")))
     #expect(events.last == .completed(.stop))
 
     let sent = try #require(await transport.request())
@@ -146,6 +147,66 @@ struct OpenAIResponsesAdapterTests {
     #expect(codexRequest.value(forHTTPHeaderField: "chatgpt-account-id") == "account-1")
     #expect(codexRequest.value(forHTTPHeaderField: "originator") == "pi")
   }
+
+  @Test
+  func codexSSEPreservesCacheAffinityAndNormalizesDoneAlias() async throws {
+    let terminal =
+      [
+        #"data: {"type":"response.created","response":{"id":"response-codex","model":"gpt-fixture"}}"#,
+        #"data: {"type":"response.output_text.delta","delta":"hello"}"#,
+        #"data: {"type":"response.done","response":{"status":"completed","usage":{"input_tokens":3,"output_tokens":1}}}"#,
+      ].joined(separator: "\n\n") + "\n\n"
+    let transport = ResponsesFixtureTransport(chunks: [Data(terminal.utf8)])
+    let sessionID = String(repeating: "session-", count: 12)
+    let fixture = responsesFixture(
+      providerID: "openai-codex",
+      protocolID: "openai-codex-responses",
+      baseURL: "https://chatgpt.com/backend-api",
+      credential: .oauth(
+        OAuthCredential(
+          accessToken: "codex-access",
+          refreshToken: "codex-refresh",
+          expiresAt: .distantFuture,
+          metadata: ["accountID": "account-1"]
+        )
+      ),
+      options: ProviderGenerationOptions(
+        maximumOutputTokens: 100,
+        temperature: nil,
+        reasoningEffort: "high",
+        responseSchema: nil,
+        providerOptions: [:],
+        sessionID: sessionID,
+        cacheRetention: .short,
+        serviceTier: "priority"
+      )
+    )
+    var events: [ProviderEvent] = []
+    for try await event in OpenAIResponsesAdapter(
+      protocolID: "openai-codex-responses",
+      flavor: .codex
+    ).stream(fixture.request, context: fixture.context, transport: transport) {
+      events.append(event)
+    }
+
+    #expect(events.last == .completed(.stop))
+    let sent = try #require(await transport.request())
+    let clampedSessionID = String(sessionID.prefix(64))
+    #expect(sent.value(forHTTPHeaderField: "session-id") == clampedSessionID)
+    #expect(sent.value(forHTTPHeaderField: "x-client-request-id") == clampedSessionID)
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody),
+      providerID: "fixture",
+      operation: "fixture"
+    )
+    #expect(body.string("prompt_cache_key") == clampedSessionID)
+    #expect(body.string("instructions") == "You are a helpful assistant.")
+    #expect(body.object("text")?.string("verbosity") == "low")
+    #expect(body.string("tool_choice") == "auto")
+    #expect(body.bool("parallel_tool_calls") == true)
+    #expect(body.string("service_tier") == "priority")
+    #expect(body["max_output_tokens"] == nil)
+  }
 }
 
 private actor ResponsesFixtureTransport: ProviderHTTPStreamingTransport {
@@ -175,6 +236,7 @@ private func responsesFixtureChunks() -> [Data] {
     [
       #"data: {"type":"response.created","response":{"id":"response-1","model":"gpt-fixture"}}"#,
       #"data: {"type":"response.output_text.delta","delta":"hello"}"#,
+      #"data: {"type":"response.output_item.done","item":{"type":"reasoning","encrypted_content":"encrypted-reasoning"}}"#,
       #"data: {"type":"response.completed","response":{"usage":{"input_tokens":4,"output_tokens":2,"input_tokens_details":{"cached_tokens":1},"output_tokens_details":{"reasoning_tokens":1}}}}"#,
     ].joined(separator: "\n\n") + "\n\n"
   let bytes = Array(stream.utf8)
@@ -185,7 +247,8 @@ private func responsesFixture(
   providerID: String,
   protocolID: String,
   baseURL: String,
-  credential: ProviderCredential
+  credential: ProviderCredential,
+  options: ProviderGenerationOptions? = nil
 ) -> (request: ProviderRequest, context: WireProtocolContext) {
   let model = ProviderModel(
     id: "gpt-fixture",
@@ -210,13 +273,14 @@ private func responsesFixture(
       modelID: model.id,
       messages: [.user([.text("hello")])],
       tools: [],
-      options: ProviderGenerationOptions(
-        maximumOutputTokens: 100,
-        temperature: nil,
-        reasoningEffort: nil,
-        responseSchema: nil,
-        providerOptions: [:]
-      )
+      options: options
+        ?? ProviderGenerationOptions(
+          maximumOutputTokens: 100,
+          temperature: nil,
+          reasoningEffort: nil,
+          responseSchema: nil,
+          providerOptions: [:]
+        )
     ),
     WireProtocolContext(
       provider: ProviderDescriptor(

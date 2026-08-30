@@ -73,6 +73,7 @@ struct ContractTests {
         )
       ),
       .reasoningDelta("inspect"),
+      .reasoningSignatureDelta("opaque-signature"),
       .textDelta("hello"),
       .toolCallStarted(id: "call-1", name: "fetch"),
       .toolInputDelta(id: "call-1", delta: #"{"url":"https://"#),

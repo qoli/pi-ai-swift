@@ -15,6 +15,8 @@ Implemented today:
 - buffered and raw incremental URLSession transports with cancellation tests;
 - API-key storage, Apple Keychain persistence, serialized refresh ownership,
   and Kimi Coding/OpenAI Codex device OAuth;
+- Bedrock bearer and deterministic SigV4 signing, AWS event-stream CRC
+  validation, and opaque reasoning-signature round trips;
 - deterministic contract, wire-protocol, catalog, transport, and OAuth fixtures;
 - macOS tests, iOS builds, and an opt-in iOS Simulator OAuth test;
 - explicit errors instead of provider, protocol, or authentication fallback.
@@ -26,7 +28,6 @@ Not implemented yet:
 - differential request/event runners shared by TypeScript and Swift;
 - a machine-readable sync decision report;
 - the remaining subscription authorization adapters;
-- full AWS Bedrock credential resolution and request signing;
 - complete provider-by-provider differential and live generation evidence;
 - unattended promotion of any provider implementation.
 

@@ -119,6 +119,10 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
   public let responseSchema: JSONValue?
   public let providerOptions: [String: JSONValue]
   public let outputModality: ProviderOutputModality
+  public let sessionID: String?
+  public let cacheRetention: ProviderCacheRetention
+  public let serviceTier: String?
+  public let toolChoice: JSONValue?
 
   public init(
     maximumOutputTokens: Int?,
@@ -126,7 +130,11 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
     reasoningEffort: String?,
     responseSchema: JSONValue?,
     providerOptions: [String: JSONValue],
-    outputModality: ProviderOutputModality = .text
+    outputModality: ProviderOutputModality = .text,
+    sessionID: String? = nil,
+    cacheRetention: ProviderCacheRetention = .short,
+    serviceTier: String? = nil,
+    toolChoice: JSONValue? = nil
   ) {
     self.maximumOutputTokens = maximumOutputTokens
     self.temperature = temperature
@@ -134,7 +142,17 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
     self.responseSchema = responseSchema
     self.providerOptions = providerOptions
     self.outputModality = outputModality
+    self.sessionID = sessionID
+    self.cacheRetention = cacheRetention
+    self.serviceTier = serviceTier
+    self.toolChoice = toolChoice
   }
+}
+
+public enum ProviderCacheRetention: String, Sendable, Equatable, Codable {
+  case none
+  case short
+  case long
 }
 
 public enum ProviderOutputModality: String, Sendable, Equatable, Codable {

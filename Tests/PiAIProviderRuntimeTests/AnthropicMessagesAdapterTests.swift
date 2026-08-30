@@ -80,22 +80,24 @@ struct AnthropicMessagesAdapterTests {
       events.append(event)
     }
 
-    #expect(events.count == 8)
-    #expect(events[1] == .textDelta("Checking"))
-    #expect(events[2] == .toolCallStarted(id: "tool-1", name: "weather"))
-    #expect(events[3] == .toolInputDelta(id: "tool-1", delta: "{\"city\":\"Tai"))
-    #expect(events[4] == .toolInputDelta(id: "tool-1", delta: "pei\"}"))
+    #expect(events.count == 10)
+    #expect(events.contains(.textDelta("Checking")))
+    #expect(events.contains(.reasoningDelta("inspect")))
+    #expect(events.contains(.reasoningSignatureDelta("opaque-signature")))
+    #expect(events.contains(.toolCallStarted(id: "tool-1", name: "weather")))
+    #expect(events.contains(.toolInputDelta(id: "tool-1", delta: "{\"city\":\"Tai")))
+    #expect(events.contains(.toolInputDelta(id: "tool-1", delta: "pei\"}")))
     #expect(
-      events[5]
-        == .toolCallCompleted(
+      events.contains(
+        .toolCallCompleted(
           ProviderToolCall(
             id: "tool-1",
             name: "weather",
             arguments: .object(["city": .string("Taipei")])
           )
-        )
+        ))
     )
-    #expect(events[7] == .completed(.toolCalls))
+    #expect(events.last == .completed(.toolCalls))
 
     let sent = try #require(await transport.request())
     #expect(sent.url?.absoluteString == "https://api.kimi.com/coding/v1/messages")
@@ -176,6 +178,10 @@ private func anthropicFixtureChunks() -> [Data] {
       #"data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}"#,
       #"data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Checking"}}"#,
       #"data: {"type":"content_block_stop","index":0}"#,
+      #"data: {"type":"content_block_start","index":2,"content_block":{"type":"thinking","thinking":""}}"#,
+      #"data: {"type":"content_block_delta","index":2,"delta":{"type":"thinking_delta","thinking":"inspect"}}"#,
+      #"data: {"type":"content_block_delta","index":2,"delta":{"type":"signature_delta","signature":"opaque-signature"}}"#,
+      #"data: {"type":"content_block_stop","index":2}"#,
       #"data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"tool-1","name":"weather","input":{}}}"#,
       #"data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"city\":\"Tai"}}"#,
       #"data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"pei\"}"}}"#,

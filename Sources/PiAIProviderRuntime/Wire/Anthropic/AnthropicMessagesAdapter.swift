@@ -345,7 +345,10 @@ private struct AnthropicEventReducer {
         }
         return [.reasoningDelta(text)]
       case "signature_delta":
-        return []
+        guard let signature = delta.string("signature"), !signature.isEmpty else {
+          throw invalid("signature delta is missing signature")
+        }
+        return [.reasoningSignatureDelta(signature)]
       case "input_json_delta":
         guard let partial = delta.string("partial_json"), var block = toolBlocks[index] else {
           throw invalid("tool input delta has no matching tool block")
