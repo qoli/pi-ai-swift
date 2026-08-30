@@ -30,3 +30,10 @@ event. If an upstream test relies on Node/Bun process state, timers, dynamic
 modules, prototypes, or callbacks, first derive a platform-neutral observable
 contract or classify it as incompatible under
 `Docs/AI_MAINTENANCE.md`.
+
+`Manifest.json` is the machine gate for the current executable protocol
+fixtures. `Scripts/differential-manifest.py` recomputes aggregate SHA-256 values
+from the exact pinned upstream source/tests and the mapped Swift fixture files.
+`Scripts/check-upstream.sh` rejects any mismatch, missing protocol, stale pin,
+or fixture edit until the semantic change is reviewed and the manifest is
+regenerated. The manifest contains no credentials or raw live responses.

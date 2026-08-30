@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/earendil-works/pi.git",
+  "revision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "packageVersion": "0.84.4",
+  "entries": [
+    {
+      "protocolID": "anthropic-messages",
+      "areaID": "wire-anthropic-messages",
+      "upstreamSources": ["packages/ai/src/api/anthropic-messages.ts", "packages/ai/src/api/anthropic-messages.lazy.ts"],
+      "upstreamTests": ["packages/ai/test/anthropic-empty-thinking-signature-compat.test.ts", "packages/ai/test/anthropic-force-adaptive-thinking.test.ts", "packages/ai/test/anthropic-sse-parsing.test.ts", "packages/ai/test/anthropic-tool-name-normalization.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents"],
+      "upstreamSourceSHA256": "a0bc4d4749204603e2c8ad2dfffbee51d44281e9162c051585f853dcbd794fe2",
+      "upstreamTestSHA256": "276af44308f0c63b9f112fa6c32423154f29c0bf21a245734e203a4968d65f3b",
+      "swiftEvidenceSHA256": "2ee193b8a8e5545127298e919ef4c9d5b57ddf2b12a5f4fcb80679eabefa853a"
+    },
+    {
+      "protocolID": "azure-openai-responses",
+      "areaID": "wire-azure-openai-responses",
+      "upstreamSources": ["packages/ai/src/api/azure-openai-responses.ts", "packages/ai/src/api/azure-openai-responses.lazy.ts"],
+      "upstreamTests": ["packages/ai/test/stream.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate"],
+      "upstreamSourceSHA256": "f8a2bbbf3b60872547c5f4660a73ceddfc94db2ef1cfc07f4dbc72abef247c7b",
+      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "swiftEvidenceSHA256": "1ea56943c17525e0dc15f8b3bfb3c605804d1439986625bd12572e34b125ab2c"
+    },
+    {
+      "protocolID": "bedrock-converse-stream",
+      "areaID": "wire-bedrock-converse-stream",
+      "upstreamSources": ["packages/ai/src/api/bedrock-converse-stream.ts", "packages/ai/src/api/bedrock-converse-stream.lazy.ts"],
+      "upstreamTests": ["packages/ai/test/stream.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop", "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#sigV4SignsExactBodyHeadersRegionAndSessionCredential", "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#adaptiveClaudeReasoningRequestAndSignatureRoundTrip"],
+      "upstreamSourceSHA256": "a4b63e63290081609d7a67ed0bb695a6bf8d5971f27455f0b65335e1ff5303ac",
+      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "swiftEvidenceSHA256": "8af97e9b6c8a4cf77fb52c418e0bfc462fcc3e3ef7b47ba9bab15765ee7a4fe6"
+    },
+    {
+      "protocolID": "google-generative-ai",
+      "areaID": "wire-google-generative-ai",
+      "upstreamSources": ["packages/ai/src/api/google-generative-ai.lazy.ts", "packages/ai/src/api/google-generative-ai.ts", "packages/ai/src/api/google-shared.ts"],
+      "upstreamTests": ["packages/ai/test/stream.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream"],
+      "upstreamSourceSHA256": "89b20ffe22db94b159bda8c2d9abe856d84e85fb7c06d02832d76e401cab5cfc",
+      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "swiftEvidenceSHA256": "5d44ae7fc9465555289c3b0091c2781c6b58e90a066a63345ed3be99c8f06505"
+    },
+    {
+      "protocolID": "google-vertex",
+      "areaID": "wire-google-vertex",
+      "upstreamSources": ["packages/ai/src/api/google-shared.ts", "packages/ai/src/api/google-vertex.lazy.ts", "packages/ai/src/api/google-vertex.ts"],
+      "upstreamTests": ["packages/ai/test/stream.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#vertexBuildsScopedOAuthRequestAndNormalizesLengthFinish"],
+      "upstreamSourceSHA256": "3c2810a8fa0f109ea631b6971c35cad01ab4bce553e2e4848046a4ab9cc2e541",
+      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "swiftEvidenceSHA256": "5d44ae7fc9465555289c3b0091c2781c6b58e90a066a63345ed3be99c8f06505"
+    },
+    {
+      "protocolID": "mistral-conversations",
+      "areaID": "wire-mistral-conversations",
+      "upstreamSources": ["packages/ai/src/api/mistral-conversations.ts", "packages/ai/src/api/mistral-conversations.lazy.ts"],
+      "upstreamTests": ["packages/ai/test/stream.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#encodesConversationAndNormalizesTextReasoningToolUsageAndTerminal"],
+      "upstreamSourceSHA256": "3293cf6bc436761b8d4d7a019f929cd9d09a8c73a5a77b3c3c241c31ad5e72b6",
+      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "swiftEvidenceSHA256": "93d85c230e0b5ea7329243ed829d59adede8af6c566f2277e9c71ff26d36e642"
+    },
+    {
+      "protocolID": "openai-codex-responses",
+      "areaID": "wire-openai-codex-responses",
+      "upstreamSources": ["packages/ai/src/api/openai-codex-responses.lazy.ts", "packages/ai/src/api/openai-codex-responses.ts", "packages/ai/src/api/openai-responses-shared.ts", "packages/ai/src/session-resources.ts", "packages/ai/src/utils/abort-signals.ts", "packages/ai/src/utils/diagnostics.ts", "packages/ai/src/utils/node-http-proxy.ts", "packages/ai/src/utils/uuid.ts"],
+      "upstreamTests": ["packages/ai/test/openai-codex-cache-affinity-e2e.test.ts", "packages/ai/test/openai-codex-stream.test.ts", "packages/ai/test/openai-responses-terminal-event.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate", "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#codexSSEPreservesCacheAffinityAndNormalizesDoneAlias"],
+      "upstreamSourceSHA256": "b79fb082a44e61617b8552c3f46d7429d6a92de86b6cca3597020f34129da68a",
+      "upstreamTestSHA256": "36eb7420e65aec4887ba56b698ecfad86c0be902cca5efd4eaedc46e15b0d0d5",
+      "swiftEvidenceSHA256": "1ea56943c17525e0dc15f8b3bfb3c605804d1439986625bd12572e34b125ab2c"
+    },
+    {
+      "protocolID": "openai-completions",
+      "areaID": "wire-openai-completions",
+      "upstreamSources": ["packages/ai/src/api/openai-completions.ts", "packages/ai/src/api/openai-completions.lazy.ts", "packages/ai/src/api/openai-prompt-cache.ts", "packages/ai/src/api/constrained-sampling.ts"],
+      "upstreamTests": ["packages/ai/test/openai-completions-empty-tools.test.ts", "packages/ai/test/openai-completions-reasoning-details.test.ts", "packages/ai/test/openai-completions-retry.test.ts", "packages/ai/test/openai-completions-tool-choice.test.ts", "packages/ai/test/openai-completions-tool-result-images.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream"],
+      "upstreamSourceSHA256": "45660963d95d8bdc4a8fce2157da25901b41b2f0954e2e81dba488aead580228",
+      "upstreamTestSHA256": "046c2361f5076ae0e5735fbe887fe0f1e8221744fcf89e2d38b213850ce45143",
+      "swiftEvidenceSHA256": "51cf3d9247f716ce7bab9b466387e6c9cbf4443a60fe897f6e8128fdfb8f3d4e"
+    },
+    {
+      "protocolID": "openai-responses",
+      "areaID": "wire-openai-responses",
+      "upstreamSources": ["packages/ai/src/api/openai-responses.ts", "packages/ai/src/api/openai-responses-shared.ts", "packages/ai/src/api/openai-responses.lazy.ts"],
+      "upstreamTests": ["packages/ai/test/openai-responses-compat.test.ts", "packages/ai/test/openai-responses-partial-json-cleanup.test.ts", "packages/ai/test/openai-responses-terminal-event.test.ts", "packages/ai/test/openai-responses-tool-result-images.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents"],
+      "upstreamSourceSHA256": "04a5183c7bace4e614ad26f46ca6ac3f904b75e9ab4b804ac9c22188dc9190d0",
+      "upstreamTestSHA256": "8a1b3deca52b3e1499580eaf239ffcba96d4294a907c2fa83c1cfc3b7c9a6070",
+      "swiftEvidenceSHA256": "1ea56943c17525e0dc15f8b3bfb3c605804d1439986625bd12572e34b125ab2c"
+    },
+    {
+      "protocolID": "openrouter-images",
+      "areaID": "wire-openrouter-images",
+      "upstreamSources": ["packages/ai/src/api/openrouter-images.ts", "packages/ai/src/api/openrouter-images.lazy.ts", "packages/ai/src/providers/openrouter-images.ts"],
+      "upstreamTests": ["packages/ai/test/image-model-data.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/OpenRouterImagesAdapterTests.swift#encodesImageRequestAndNormalizesTextAssetsUsageAndTerminal"],
+      "upstreamSourceSHA256": "89cda47714d207ff9ddf1365070e073b9a2093d1a93c754f81cc8013cf514748",
+      "upstreamTestSHA256": "ac7f9b1974fba865ca5dd1935ff7bb560f4448c69214e1d68c022974535a09b0",
+      "swiftEvidenceSHA256": "c741571f1d887bdb70f28c56966e14cb5c2dec84f922caf9ac52f0bea8368e8f"
+    },
+    {
+      "protocolID": "pi-messages",
+      "areaID": "wire-pi-messages",
+      "upstreamSources": ["packages/ai/src/api/pi-messages.ts", "packages/ai/src/api/pi-messages.lazy.ts"],
+      "upstreamTests": ["packages/ai/test/stream.test.ts"],
+      "swiftEvidence": ["Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#encodesContextAndNormalizesTextReasoningToolUsageAndTerminal"],
+      "upstreamSourceSHA256": "4cf8bb83af5db9cf10f2e9bc95651624cea7c14314cb0443cf5604b1015cd22e",
+      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "swiftEvidenceSHA256": "91be9d2f901bb91c2fcd09906a230bc667fb57985ac77b0cfd9a99022ba1069e"
+    }
+  ]
+}

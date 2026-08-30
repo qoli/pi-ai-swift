@@ -266,6 +266,11 @@ for required_path in "${required_paths[@]}"; do
   fi
 done
 
+python3 "$repo_root/Scripts/differential-manifest.py" \
+  --repo "$repo_root" \
+  --upstream "$cache_root" \
+  --manifest "$repo_root/Fixtures/Manifest.json"
+
 python3 - "$cache_root" "$mapping_file" "$lock_file" "$catalog_file" <<'PY'
 import hashlib
 import json

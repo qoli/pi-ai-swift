@@ -18,17 +18,19 @@ Implemented today:
 - Bedrock bearer and deterministic SigV4 signing, AWS event-stream CRC
   validation, and opaque reasoning-signature round trips;
 - deterministic contract, wire-protocol, catalog, transport, and OAuth fixtures;
+- a generated differential manifest that binds every known wire protocol to
+  exact upstream source/test digests and executable Swift fixture digests;
 - macOS tests, iOS builds, and an opt-in iOS Simulator OAuth test;
 - explicit errors instead of provider, protocol, or authentication fallback.
 
 Not implemented yet:
 
 - an automated semantic diff classifier;
-- sanitized fixtures generated directly from the pinned TypeScript tests;
-- differential request/event runners shared by TypeScript and Swift;
+- a shared cross-language request/event runner for newly added semantics that
+  are not yet represented by the protocol fixture suites;
 - a machine-readable sync decision report;
 - the remaining subscription authorization adapters;
-- complete provider-by-provider differential and live generation evidence;
+- live generation evidence for providers without authorized credentials;
 - unattended promotion of any provider implementation.
 
 This document governs both updating an existing checkout and reconstructing the

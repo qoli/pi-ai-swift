@@ -149,14 +149,11 @@
     {
       "id": "differential-fixture-harness",
       "responsibility": "Sanitized upstream provenance, canonical request and raw-stream fixtures, and TypeScript-to-Swift equivalence results.",
-      "status": "partial",
+      "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Verification/DifferentialFixture.swift"
       ],
-      "plannedSwiftPaths": [
-        "Fixtures/Manifest.json",
-        "Tests/PiAIProviderRuntimeTests/DifferentialFixtureTests.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/test/models-runtime.test.ts",
         "packages/ai/test/stream.test.ts"
@@ -170,12 +167,15 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/DifferentialFixtureTests.swift#validatesPinnedProvenanceDigestRedactionAndExactComparison"
+        "Tests/PiAIProviderRuntimeTests/DifferentialFixtureTests.swift#validatesPinnedProvenanceDigestRedactionAndExactComparison",
+        "Scripts/differential-manifest.py",
+        "Fixtures/Manifest.json"
       ],
       "requiredGates": [
-        "swift-test"
+        "swift-test",
+        "upstream-check"
       ],
-      "supportDisposition": "planned",
+      "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
     },
     {
