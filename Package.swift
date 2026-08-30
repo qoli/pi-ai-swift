@@ -19,7 +19,10 @@ let package = Package(
     ),
   ],
   targets: [
-    .target(name: "PiAIProviderRuntime"),
+    .target(
+      name: "PiAIProviderRuntime",
+      resources: [.process("Resources")]
+    ),
     .executableTarget(
       name: "PiAIAuthProbe",
       dependencies: ["PiAIProviderRuntime"]

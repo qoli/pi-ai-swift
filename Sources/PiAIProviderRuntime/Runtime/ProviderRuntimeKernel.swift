@@ -15,10 +15,17 @@ protocol ProviderAuthorizationAdapter: Sendable {
 
 struct ProviderDefinition: Sendable {
   let descriptor: ProviderDescriptor
-  let baseURL: URL
+  let baseURL: String?
   let headers: [String: String]
+  let modelConfigurations: [String: ProviderModelConfiguration]
   let credentialRequirement: ProviderCredentialRequirement
   let authorization: any ProviderAuthorizationAdapter
+}
+
+struct ProviderModelConfiguration: Sendable {
+  let baseURL: String?
+  let headers: [String: String]
+  let metadata: [String: JSONValue]
 }
 
 struct WireProtocolContext: Sendable {
@@ -27,6 +34,7 @@ struct WireProtocolContext: Sendable {
   let baseURL: URL
   let headers: [String: String]
   let credential: ProviderCredential?
+  let modelConfiguration: ProviderModelConfiguration
 }
 
 protocol WireProtocolAdapter: Sendable {
@@ -152,17 +160,94 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       )
     }
 
+    guard let modelConfiguration = provider.modelConfigurations[model.id] else {
+      throw failure(
+        .upstreamDrift,
+        providerID: request.providerID,
+        operation: "stream.resolve-model-configuration",
+        message: "model configuration is missing: \(request.modelID)"
+      )
+    }
+    let credentialMetadata: [String: String]
+    switch credential {
+    case .apiKey(let credential): credentialMetadata = credential.metadata
+    case .oauth(let credential): credentialMetadata = credential.metadata
+    case nil: credentialMetadata = [:]
+    }
+    guard
+      let baseURLTemplate = modelConfiguration.baseURL ?? provider.baseURL
+        ?? credentialMetadata["baseURL"]
+    else {
+      throw failure(
+        .invalidRequest,
+        providerID: request.providerID,
+        operation: "stream.resolve-base-url",
+        message: "provider requires an explicit runtime base URL: \(request.providerID)"
+      )
+    }
+    let baseURL = try resolveURLTemplate(
+      baseURLTemplate,
+      credential: credential,
+      providerID: request.providerID
+    )
+    let headers = provider.headers.merging(modelConfiguration.headers) {
+      _, modelValue in modelValue
+    }
+
     return wireProtocol.stream(
       request,
       context: WireProtocolContext(
         provider: provider.descriptor,
         model: model,
-        baseURL: provider.baseURL,
-        headers: provider.headers,
-        credential: credential
+        baseURL: baseURL,
+        headers: headers,
+        credential: credential,
+        modelConfiguration: modelConfiguration
       ),
       transport: transport
     )
+  }
+
+  private func resolveURLTemplate(
+    _ template: String,
+    credential: ProviderCredential?,
+    providerID: String
+  ) throws -> URL {
+    var value = template
+    let metadata: [String: String]
+    switch credential {
+    case .apiKey(let credential): metadata = credential.metadata
+    case .oauth(let credential): metadata = credential.metadata
+    case nil: metadata = [:]
+    }
+    for (key, replacement) in metadata {
+      value = value.replacingOccurrences(of: "{\(key)}", with: replacement)
+      value = value.replacingOccurrences(
+        of: "{\(key.uppercased())}",
+        with: replacement
+      )
+      value = value.replacingOccurrences(
+        of: "{\(key.lowercased())}",
+        with: replacement
+      )
+    }
+    guard !value.contains("{") && !value.contains("}") else {
+      throw failure(
+        .invalidCredential,
+        providerID: providerID,
+        operation: "stream.resolve-base-url",
+        message: "provider base URL requires credential metadata: \(template)"
+      )
+    }
+    guard let url = URL(string: value), url.scheme == "https" else {
+      throw failure(
+        .invalidRequest,
+        providerID: providerID,
+        operation: "stream.resolve-base-url",
+        message: "provider base URL is invalid: \(value)"
+      )
+    }
+    return url
   }
 
   private static func uniqueProviders(

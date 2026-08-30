@@ -141,8 +141,11 @@ struct ProviderRuntimeKernelTests {
         providers: [
           ProviderDefinition(
             descriptor: duplicateModels,
-            baseURL: URL(string: "https://fixture.invalid/v1")!,
+            baseURL: "https://fixture.invalid/v1",
             headers: [:],
+            modelConfigurations: [
+              "fixture-model": fixtureModelConfiguration()
+            ],
             credentialRequirement: .required,
             authorization: fixtureAuthorization()
           )
@@ -292,11 +295,18 @@ private func fixtureProvider() -> ProviderDefinition {
       ],
       models: [fixtureModel()]
     ),
-    baseURL: URL(string: "https://fixture.invalid/v1")!,
+    baseURL: "https://fixture.invalid/v1",
     headers: ["X-Fixture": "true"],
+    modelConfigurations: [
+      "fixture-model": fixtureModelConfiguration()
+    ],
     credentialRequirement: .required,
     authorization: fixtureAuthorization()
   )
+}
+
+private func fixtureModelConfiguration() -> ProviderModelConfiguration {
+  ProviderModelConfiguration(baseURL: nil, headers: [:], metadata: [:])
 }
 
 private func fixtureAuthorization() -> APIKeyAuthorizationAdapter {

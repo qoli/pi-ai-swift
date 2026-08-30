@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "upstream": "earendil-works/pi/packages/ai",
   "statusDefinitions": {
     "landed": "Swift implementation and deterministic coverage exist for the mapped behavior.",
@@ -11,19 +11,36 @@
     {
       "id": "builtin-provider-registry",
       "responsibility": "Complete built-in provider inventory and generated model-catalog registration.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Providers/BuiltinProviderRegistry.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/all.ts",
-        "packages/ai/src/models.generated.ts"
+        "packages/ai/src/image-models.generated.ts",
+        "packages/ai/src/images-models.ts",
+        "packages/ai/src/models.generated.ts",
+        "packages/ai/src/providers/all.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts",
         "packages/ai/test/model-data-validation.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "catalog-model-store"
+      ],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+      ],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "canonical-request-event-dtos",
@@ -43,7 +60,14 @@
         "packages/ai/test/cross-provider-handoff.test.ts",
         "packages/ai/test/tool-call-id-normalization.test.ts",
         "packages/ai/test/unicode-surrogate.test.ts"
-      ]
+      ],
+      "dependsOn": [],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "catalog-model-store",
@@ -65,7 +89,14 @@
         "packages/ai/test/model-catalog-types.test.ts",
         "packages/ai/test/model-data-validation.test.ts",
         "packages/ai/test/models-runtime.test.ts"
-      ]
+      ],
+      "dependsOn": [],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "credential-store-auth-resolution",
@@ -73,23 +104,41 @@
       "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Authorization.swift",
-        "Sources/PiAIProviderRuntime/Authorization/APIKeyAuthorizationAdapter.swift"
+        "Sources/PiAIProviderRuntime/Authorization/APIKeyAuthorizationAdapter.swift",
+        "Sources/PiAIProviderRuntime/Authorization/CompositeAuthorizationAdapter.swift",
+        "Sources/PiAIProviderRuntime/Authorization/InMemoryProviderCredentialStore.swift"
       ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Authorization/AuthorizationRuntime.swift",
         "Sources/PiAIProviderRuntime/Authorization/CredentialResolver.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/auth/types.ts",
-        "packages/ai/src/auth/resolve.ts",
+        "packages/ai/src/auth/context.ts",
         "packages/ai/src/auth/credential-store.ts",
-        "packages/ai/src/auth/helpers.ts"
+        "packages/ai/src/auth/helpers.ts",
+        "packages/ai/src/auth/oauth/device-code.ts",
+        "packages/ai/src/auth/oauth/load.ts",
+        "packages/ai/src/auth/oauth/oauth-page.ts",
+        "packages/ai/src/auth/oauth/pkce.ts",
+        "packages/ai/src/auth/resolve.ts",
+        "packages/ai/src/auth/types.ts",
+        "packages/ai/src/env-api-keys.ts",
+        "packages/ai/src/utils/abort.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/oauth-auth.test.ts",
         "packages/ai/test/oauth-device-code.test.ts",
         "packages/ai/test/abort.test.ts"
-      ]
+      ],
+      "dependsOn": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/APIKeyAuthorizationAdapterTests.swift#loginUsesSecretChallengeAndStoresTrimmedKey"
+      ],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "differential-fixture-harness",
@@ -107,7 +156,17 @@
       "upstreamTestPaths": [
         "packages/ai/test/provider-error-body-regression.test.ts",
         "packages/ai/test/stream.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "http-transport",
@@ -126,7 +185,14 @@
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
         "packages/ai/test/provider-retry.test.ts"
-      ]
+      ],
+      "dependsOn": [],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "kimi-coding-oauth",
@@ -143,7 +209,17 @@
       "upstreamTestPaths": [
         "packages/ai/test/kimi-coding-oauth.test.ts",
         "packages/ai/test/oauth-device-code.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "credential-store-auth-resolution",
+        "http-transport"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "openai-codex-oauth",
@@ -151,18 +227,29 @@
       "responsibility": "OpenAI Codex device authorization, token exchange, account identity, refresh, and credential state.",
       "status": "partial",
       "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Authorization/OpenAICodexAuthorizationAdapter.swift",
         "Sources/PiAIProviderRuntime/OpenAICodexOAuth.swift"
       ],
-      "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Authorization/OpenAICodexAuthorizationAdapter.swift"
-      ],
+      "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/openai-codex.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/openai-codex-oauth.test.ts",
         "packages/ai/test/oauth-device-code.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "credential-store-auth-resolution",
+        "http-transport"
+      ],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#tokenExchangeReturnsCredentialWithoutPersistingTokens"
+      ],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-amazon-bedrock",
@@ -174,11 +261,24 @@
         "Sources/PiAIProviderRuntime/Providers/AmazonBedrockProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/amazon-bedrock.models.ts",
         "packages/ai/src/providers/amazon-bedrock.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-bedrock-converse-stream"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-ant-ling",
@@ -190,11 +290,24 @@
         "Sources/PiAIProviderRuntime/Providers/AntLingProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/ant-ling.models.ts",
         "packages/ai/src/providers/ant-ling.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-anthropic",
@@ -206,12 +319,25 @@
         "Sources/PiAIProviderRuntime/Providers/AnthropicProviderDefinition.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/anthropic.ts",
-        "packages/ai/src/auth/oauth/anthropic.ts"
+        "packages/ai/src/auth/oauth/anthropic.ts",
+        "packages/ai/src/providers/anthropic.models.ts",
+        "packages/ai/src/providers/anthropic.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-azure-openai-responses",
@@ -223,11 +349,24 @@
         "Sources/PiAIProviderRuntime/Providers/AzureOpenaiResponsesProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/azure-openai-responses.models.ts",
         "packages/ai/src/providers/azure-openai-responses.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-azure-openai-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-baseten",
@@ -239,11 +378,24 @@
         "Sources/PiAIProviderRuntime/Providers/BasetenProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/baseten.models.ts",
         "packages/ai/src/providers/baseten.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-cerebras",
@@ -255,11 +407,24 @@
         "Sources/PiAIProviderRuntime/Providers/CerebrasProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/cerebras.models.ts",
         "packages/ai/src/providers/cerebras.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-cloudflare-ai-gateway",
@@ -271,11 +436,28 @@
         "Sources/PiAIProviderRuntime/Providers/CloudflareAiGatewayProviderDefinition.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/cloudflare-ai-gateway.ts"
+        "packages/ai/src/providers/cloudflare-ai-gateway.models.ts",
+        "packages/ai/src/providers/cloudflare-ai-gateway.ts",
+        "packages/ai/src/providers/cloudflare-auth.ts",
+        "packages/ai/src/providers/cloudflare-stream.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages",
+        "wire-openai-completions",
+        "wire-openai-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-cloudflare-workers-ai",
@@ -287,11 +469,26 @@
         "Sources/PiAIProviderRuntime/Providers/CloudflareWorkersAiProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/cloudflare-auth.ts",
+        "packages/ai/src/providers/cloudflare-stream.ts",
+        "packages/ai/src/providers/cloudflare-workers-ai.models.ts",
         "packages/ai/src/providers/cloudflare-workers-ai.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-deepseek",
@@ -303,11 +500,24 @@
         "Sources/PiAIProviderRuntime/Providers/DeepseekProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/deepseek.models.ts",
         "packages/ai/src/providers/deepseek.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-fireworks",
@@ -319,11 +529,25 @@
         "Sources/PiAIProviderRuntime/Providers/FireworksProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/fireworks.models.ts",
         "packages/ai/src/providers/fireworks.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-github-copilot",
@@ -335,12 +559,27 @@
         "Sources/PiAIProviderRuntime/Providers/GithubCopilotProviderDefinition.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/github-copilot.ts",
-        "packages/ai/src/auth/oauth/github-copilot.ts"
+        "packages/ai/src/auth/oauth/github-copilot.ts",
+        "packages/ai/src/providers/github-copilot.models.ts",
+        "packages/ai/src/providers/github-copilot.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages",
+        "wire-openai-completions",
+        "wire-openai-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-google",
@@ -352,11 +591,24 @@
         "Sources/PiAIProviderRuntime/Providers/GoogleProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/google.models.ts",
         "packages/ai/src/providers/google.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-google-generative-ai"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-google-vertex",
@@ -368,11 +620,24 @@
         "Sources/PiAIProviderRuntime/Providers/GoogleVertexProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/google-vertex.models.ts",
         "packages/ai/src/providers/google-vertex.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-google-vertex"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-groq",
@@ -384,11 +649,24 @@
         "Sources/PiAIProviderRuntime/Providers/GroqProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/groq.models.ts",
         "packages/ai/src/providers/groq.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-huggingface",
@@ -400,11 +678,24 @@
         "Sources/PiAIProviderRuntime/Providers/HuggingfaceProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/huggingface.models.ts",
         "packages/ai/src/providers/huggingface.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-kimi-coding",
@@ -416,13 +707,27 @@
         "Sources/PiAIProviderRuntime/Providers/KimiCodingProviderDefinition.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/kimi-coding.ts",
-        "packages/ai/src/auth/oauth/kimi-coding.ts"
+        "packages/ai/src/auth/oauth/kimi-coding.ts",
+        "packages/ai/src/providers/kimi-coding.models.ts",
+        "packages/ai/src/providers/kimi-coding.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/kimi-coding-oauth.test.ts",
         "packages/ai/test/models-runtime.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "kimi-coding-oauth",
+        "wire-anthropic-messages"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-minimax",
@@ -434,11 +739,24 @@
         "Sources/PiAIProviderRuntime/Providers/MinimaxProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/minimax.models.ts",
         "packages/ai/src/providers/minimax.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-minimax-cn",
@@ -450,11 +768,24 @@
         "Sources/PiAIProviderRuntime/Providers/MinimaxCnProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/minimax-cn.models.ts",
         "packages/ai/src/providers/minimax-cn.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-mistral",
@@ -466,11 +797,24 @@
         "Sources/PiAIProviderRuntime/Providers/MistralProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/mistral.models.ts",
         "packages/ai/src/providers/mistral.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-mistral-conversations"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-moonshotai",
@@ -482,11 +826,24 @@
         "Sources/PiAIProviderRuntime/Providers/MoonshotaiProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/moonshotai.models.ts",
         "packages/ai/src/providers/moonshotai.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-moonshotai-cn",
@@ -498,11 +855,24 @@
         "Sources/PiAIProviderRuntime/Providers/MoonshotaiCnProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/moonshotai-cn.models.ts",
         "packages/ai/src/providers/moonshotai-cn.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-nvidia",
@@ -514,11 +884,24 @@
         "Sources/PiAIProviderRuntime/Providers/NvidiaProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/nvidia.models.ts",
         "packages/ai/src/providers/nvidia.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-openai",
@@ -530,12 +913,25 @@
         "Sources/PiAIProviderRuntime/Providers/OpenAIProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/openai.models.ts",
         "packages/ai/src/providers/openai.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/models-runtime.test.ts",
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-openai-codex",
@@ -549,13 +945,27 @@
         "Sources/PiAIProviderRuntime/Providers/OpenAICodexProviderDefinition.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/openai-codex.ts",
-        "packages/ai/src/auth/oauth/openai-codex.ts"
+        "packages/ai/src/auth/oauth/openai-codex.ts",
+        "packages/ai/src/providers/openai-codex.models.ts",
+        "packages/ai/src/providers/openai-codex.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/openai-codex-oauth.test.ts",
         "packages/ai/test/openai-codex-stream.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "openai-codex-oauth",
+        "wire-openai-codex-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-opencode",
@@ -567,11 +977,27 @@
         "Sources/PiAIProviderRuntime/Providers/OpencodeProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/opencode.models.ts",
         "packages/ai/src/providers/opencode.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages",
+        "wire-google-generative-ai",
+        "wire-openai-completions",
+        "wire-openai-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-opencode-go",
@@ -583,11 +1009,26 @@
         "Sources/PiAIProviderRuntime/Providers/OpencodeGoProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/opencode-go.models.ts",
         "packages/ai/src/providers/opencode-go.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages",
+        "wire-openai-completions",
+        "wire-openai-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-openrouter",
@@ -599,12 +1040,25 @@
         "Sources/PiAIProviderRuntime/Providers/OpenrouterProviderDefinition.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/openrouter.ts",
-        "packages/ai/src/auth/oauth/openrouter.ts"
+        "packages/ai/src/auth/oauth/openrouter.ts",
+        "packages/ai/src/providers/openrouter.models.ts",
+        "packages/ai/src/providers/openrouter.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-qwen-token-plan",
@@ -616,11 +1070,24 @@
         "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/qwen-token-plan.models.ts",
         "packages/ai/src/providers/qwen-token-plan.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-qwen-token-plan-cn",
@@ -632,11 +1099,24 @@
         "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanCnProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/qwen-token-plan-cn.models.ts",
         "packages/ai/src/providers/qwen-token-plan-cn.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-qwen-token-plan-individual",
@@ -648,11 +1128,24 @@
         "Sources/PiAIProviderRuntime/Providers/QwenTokenPlanIndividualProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/qwen-token-plan-individual.models.ts",
         "packages/ai/src/providers/qwen-token-plan-individual.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-radius",
@@ -664,12 +1157,24 @@
         "Sources/PiAIProviderRuntime/Providers/RadiusProviderDefinition.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/radius.ts",
-        "packages/ai/src/auth/oauth/radius.ts"
+        "packages/ai/src/auth/oauth/radius.ts",
+        "packages/ai/src/providers/radius-config.ts",
+        "packages/ai/src/providers/radius.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-together",
@@ -681,11 +1186,24 @@
         "Sources/PiAIProviderRuntime/Providers/TogetherProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/together.models.ts",
         "packages/ai/src/providers/together.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-vercel-ai-gateway",
@@ -697,11 +1215,24 @@
         "Sources/PiAIProviderRuntime/Providers/VercelAiGatewayProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/vercel-ai-gateway.models.ts",
         "packages/ai/src/providers/vercel-ai-gateway.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-anthropic-messages"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-xai",
@@ -713,12 +1244,25 @@
         "Sources/PiAIProviderRuntime/Providers/XaiProviderDefinition.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/providers/xai.ts",
-        "packages/ai/src/auth/oauth/xai.ts"
+        "packages/ai/src/auth/oauth/xai.ts",
+        "packages/ai/src/providers/xai.models.ts",
+        "packages/ai/src/providers/xai.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-xiaomi",
@@ -730,11 +1274,24 @@
         "Sources/PiAIProviderRuntime/Providers/XiaomiProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/xiaomi.models.ts",
         "packages/ai/src/providers/xiaomi.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-xiaomi-token-plan-ams",
@@ -746,11 +1303,24 @@
         "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanAmsProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/xiaomi-token-plan-ams.models.ts",
         "packages/ai/src/providers/xiaomi-token-plan-ams.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-xiaomi-token-plan-cn",
@@ -762,11 +1332,24 @@
         "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanCnProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/xiaomi-token-plan-cn.models.ts",
         "packages/ai/src/providers/xiaomi-token-plan-cn.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-xiaomi-token-plan-sgp",
@@ -778,11 +1361,24 @@
         "Sources/PiAIProviderRuntime/Providers/XiaomiTokenPlanSgpProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/xiaomi-token-plan-sgp.models.ts",
         "packages/ai/src/providers/xiaomi-token-plan-sgp.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-zai",
@@ -794,11 +1390,24 @@
         "Sources/PiAIProviderRuntime/Providers/ZaiProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/zai.models.ts",
         "packages/ai/src/providers/zai.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "provider-zai-coding-cn",
@@ -810,11 +1419,24 @@
         "Sources/PiAIProviderRuntime/Providers/ZaiCodingCnProviderDefinition.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/providers/zai-coding-cn.models.ts",
         "packages/ai/src/providers/zai-coding-cn.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     },
     {
       "id": "public-runtime-seam",
@@ -832,13 +1454,23 @@
       "upstreamTestPaths": [
         "packages/ai/test/models-runtime.test.ts",
         "packages/ai/test/provider-error-body-regression.test.ts"
-      ]
+      ],
+      "dependsOn": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#runtimeSurfacesUnsupportedProviderAsAnExplicitStreamFailure"
+      ],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "supported",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "runtime-provider-dispatch",
       "responsibility": "Resolve provider and model, apply authorization, and dispatch by model wire protocol.",
       "status": "partial",
       "swiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
       ],
       "plannedSwiftPaths": [
@@ -851,14 +1483,29 @@
       "upstreamTestPaths": [
         "packages/ai/test/models-runtime.test.ts",
         "packages/ai/test/providers.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "credential-store-auth-resolution",
+        "http-transport"
+      ],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRuntimeTests.swift#exposesCompleteCatalogAndRoutesGenericAPIKeyAuthorization"
+      ],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-anthropic-messages",
       "protocolID": "anthropic-messages",
       "responsibility": "Anthropic Messages request encoding, SSE decoding, thinking signatures, images, tools, usage, and stop reasons.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/Anthropic/AnthropicMessagesAdapter.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/AnthropicMessages/AnthropicMessagesAdapter.swift",
         "Sources/PiAIProviderRuntime/Wire/AnthropicMessages/AnthropicMessagesRequestEncoder.swift",
@@ -873,14 +1520,29 @@
         "packages/ai/test/anthropic-force-adaptive-thinking.test.ts",
         "packages/ai/test/anthropic-sse-parsing.test.ts",
         "packages/ai/test/anthropic-tool-name-normalization.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents"
+      ],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-azure-openai-responses",
       "protocolID": "azure-openai-responses",
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for azure-openai-responses.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/AzureOpenaiResponses/AzureOpenaiResponsesAdapter.swift"
       ],
@@ -890,7 +1552,18 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-bedrock-converse-stream",
@@ -907,25 +1580,51 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-common",
       "responsibility": "Shared message transforms, simple generation options, event ordering, provider errors, retries, and Unicode handling.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/Common/JSONAccessors.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ServerSentEvents.swift"
+      ],
       "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/Common/MessageTransformer.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/GenerationOptions.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/MessageTransformer.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderErrorDecoder.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/api/github-copilot-headers.ts",
         "packages/ai/src/api/simple-options.ts",
         "packages/ai/src/api/transform-messages.ts",
-        "packages/ai/src/utils/event-stream.ts",
+        "packages/ai/src/utils/deferred-tools.ts",
+        "packages/ai/src/utils/diagnostics.ts",
         "packages/ai/src/utils/error-body.ts",
+        "packages/ai/src/utils/estimate.ts",
+        "packages/ai/src/utils/event-stream.ts",
+        "packages/ai/src/utils/hash.ts",
+        "packages/ai/src/utils/headers.ts",
+        "packages/ai/src/utils/json-parse.ts",
+        "packages/ai/src/utils/node-http-proxy.ts",
+        "packages/ai/src/utils/pi-user-agent.ts",
+        "packages/ai/src/utils/provider-env.ts",
         "packages/ai/src/utils/provider-retry.ts",
-        "packages/ai/src/utils/sanitize-unicode.ts"
+        "packages/ai/src/utils/sanitize-unicode.ts",
+        "packages/ai/src/utils/sleep.ts",
+        "packages/ai/src/utils/uuid.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
@@ -933,7 +1632,16 @@
         "packages/ai/test/provider-retry.test.ts",
         "packages/ai/test/tool-call-without-result.test.ts",
         "packages/ai/test/unicode-surrogate.test.ts"
-      ]
+      ],
+      "dependsOn": [],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/ServerSentEventsTests.swift#decodesArbitraryChunksCommentsMultilineDataAndEOF"
+      ],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-google-generative-ai",
@@ -945,12 +1653,24 @@
         "Sources/PiAIProviderRuntime/Wire/GoogleGenerativeAi/GoogleGenerativeAiAdapter.swift"
       ],
       "upstreamPaths": [
+        "packages/ai/src/api/google-generative-ai.lazy.ts",
         "packages/ai/src/api/google-generative-ai.ts",
-        "packages/ai/src/api/google-generative-ai.lazy.ts"
+        "packages/ai/src/api/google-shared.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-google-vertex",
@@ -962,12 +1682,24 @@
         "Sources/PiAIProviderRuntime/Wire/GoogleVertex/GoogleVertexAdapter.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/api/google-vertex.ts",
-        "packages/ai/src/api/google-vertex.lazy.ts"
+        "packages/ai/src/api/google-shared.ts",
+        "packages/ai/src/api/google-vertex.lazy.ts",
+        "packages/ai/src/api/google-vertex.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-mistral-conversations",
@@ -984,38 +1716,68 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-openai-codex-responses",
       "protocolID": "openai-codex-responses",
       "responsibility": "ChatGPT Codex subscription response transport, account headers, cache affinity, streaming events, and continuation state.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift"
+      ],
       "plannedSwiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesAdapter.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesRequestEncoder.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAICodexResponses/OpenAICodexResponsesStreamDecoder.swift"
       ],
       "upstreamPaths": [
-        "packages/ai/src/api/openai-codex-responses.ts",
         "packages/ai/src/api/openai-codex-responses.lazy.ts",
-        "packages/ai/src/api/openai-responses-shared.ts"
+        "packages/ai/src/api/openai-codex-responses.ts",
+        "packages/ai/src/api/openai-responses-shared.ts",
+        "packages/ai/src/session-resources.ts",
+        "packages/ai/src/utils/abort-signals.ts",
+        "packages/ai/src/utils/diagnostics.ts",
+        "packages/ai/src/utils/node-http-proxy.ts",
+        "packages/ai/src/utils/uuid.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/openai-codex-cache-affinity-e2e.test.ts",
         "packages/ai/test/openai-codex-stream.test.ts",
         "packages/ai/test/openai-responses-terminal-event.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-openai-completions",
       "protocolID": "openai-completions",
       "responsibility": "OpenAI Chat Completions request encoding, streaming decoding, compatibility rules, reasoning, images, tools, usage, and stop reasons.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift"
+      ],
       "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsRequestEncoder.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsStreamDecoder.swift"
       ],
@@ -1031,16 +1793,28 @@
         "packages/ai/test/openai-completions-retry.test.ts",
         "packages/ai/test/openai-completions-tool-choice.test.ts",
         "packages/ai/test/openai-completions-tool-result-images.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-openai-responses",
       "protocolID": "openai-responses",
       "responsibility": "OpenAI Responses request encoding, streaming decoding, tool and reasoning replay, usage, and terminal event rules.",
-      "status": "missing",
-      "swiftPaths": [],
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift"
+      ],
       "plannedSwiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesRequestEncoder.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesStreamDecoder.swift"
       ],
@@ -1054,7 +1828,20 @@
         "packages/ai/test/openai-responses-partial-json-cleanup.test.ts",
         "packages/ai/test/openai-responses-terminal-event.test.ts",
         "packages/ai/test/openai-responses-tool-result-images.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents"
+      ],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-openrouter-images",
@@ -1072,7 +1859,19 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/image-model-data.test.ts"
-      ]
+      ],
+      "imageProviderID": "openrouter",
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     },
     {
       "id": "wire-pi-messages",
@@ -1089,7 +1888,18 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts"
-      ]
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos",
+        "http-transport",
+        "wire-common"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired"
     }
   ]
 }

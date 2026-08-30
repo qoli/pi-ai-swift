@@ -4,6 +4,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 lock_file="$repo_root/Upstream.lock.json"
 mapping_file="$repo_root/UpstreamMappings/pi-ai.json"
+catalog_file="$repo_root/Sources/PiAIProviderRuntime/Resources/BuiltinCatalog.json"
 cache_root="${PI_AI_SWIFT_UPSTREAM_CACHE:-$repo_root/.build/upstreams/pi}"
 
 if [[ ! -f "$lock_file" ]]; then
@@ -27,8 +28,8 @@ with open(sys.argv[2], "r", encoding="utf-8") as handle:
 with open(sys.argv[3], "r", encoding="utf-8") as handle:
     mapping = json.load(handle)
 
-if mapping.get("schemaVersion") != 2:
-    raise SystemExit("malformed upstream mapping: schemaVersion must be 2")
+if mapping.get("schemaVersion") != 3:
+    raise SystemExit("malformed upstream mapping: schemaVersion must be 3")
 
 areas = mapping.get("areas")
 if not isinstance(areas, list) or not areas:
@@ -56,10 +57,18 @@ for area in areas:
     if not isinstance(responsibility, str) or not responsibility:
         raise SystemExit(f"malformed upstream mapping: {area_id} requires responsibility")
 
-    for key in ["swiftPaths", "plannedSwiftPaths", "upstreamPaths", "upstreamTestPaths"]:
+    for key in [
+        "swiftPaths", "plannedSwiftPaths", "upstreamPaths", "upstreamTestPaths",
+        "dependsOn", "evidence", "requiredGates",
+    ]:
         values = area.get(key)
         if not isinstance(values, list) or any(not isinstance(value, str) or not value for value in values):
             raise SystemExit(f"malformed upstream mapping: {area_id}.{key} must be a string array")
+
+    if area.get("supportDisposition") not in {"planned", "supported", "blocked"}:
+        raise SystemExit(f"malformed upstream mapping: {area_id} has invalid supportDisposition")
+    if area.get("liveVerificationStatus") not in {"notRun", "notRequired", "passed"}:
+        raise SystemExit(f"malformed upstream mapping: {area_id} has invalid liveVerificationStatus")
 
     swift_paths = area["swiftPaths"]
     if status in {"landed", "partial"} and not swift_paths:
@@ -74,6 +83,49 @@ for area in areas:
         if relative not in required_upstream:
             raise SystemExit(
                 f"mapped upstream path is absent from Upstream.lock.json: {area_id}: {relative}"
+            )
+
+    for evidence in area["evidence"]:
+        relative = evidence.split("#", 1)[0]
+        if not (repo_root / relative).is_file():
+            raise SystemExit(f"mapped evidence does not exist: {area_id}: {evidence}")
+    if status == "landed" and not area["evidence"]:
+        raise SystemExit(f"landed area has no executable evidence: {area_id}")
+
+for area in areas:
+    for dependency in area["dependsOn"]:
+        if dependency not in area_ids:
+            raise SystemExit(f"unknown area dependency: {area['id']}: {dependency}")
+        if dependency == area["id"]:
+            raise SystemExit(f"self-referential area dependency: {area['id']}")
+
+def visit(area_id, active, completed):
+    if area_id in completed:
+        return
+    if area_id in active:
+        raise SystemExit(f"cyclic area dependency: {area_id}")
+    active.add(area_id)
+    area = next(item for item in areas if item["id"] == area_id)
+    for dependency in area["dependsOn"]:
+        visit(dependency, active, completed)
+    active.remove(area_id)
+    completed.add(area_id)
+
+completed = set()
+for area_id in area_ids:
+    visit(area_id, set(), completed)
+
+statuses = {area["id"]: area["status"] for area in areas}
+for area in areas:
+    if area["status"] == "landed":
+        incomplete = [
+            dependency
+            for dependency in area["dependsOn"]
+            if statuses[dependency] != "landed"
+        ]
+        if incomplete:
+            raise SystemExit(
+                f"landed area depends on incomplete areas: {area['id']}: {incomplete}"
             )
 
 source_root = repo_root / "Sources" / "PiAIProviderRuntime"
@@ -99,10 +151,19 @@ for key in required:
     if key not in lock:
         raise SystemExit(f"malformed upstream lock: missing {key}")
 
-if lock.get("schemaVersion") != 2:
-    raise SystemExit("malformed upstream lock: schemaVersion must be 2")
+if lock.get("schemaVersion") != 3:
+    raise SystemExit("malformed upstream lock: schemaVersion must be 3")
 if not isinstance(lock.get("trackedBuiltinProviders"), list):
     raise SystemExit("malformed upstream lock: trackedBuiltinProviders must be an array")
+artifact = lock.get("publishedArtifact")
+if not isinstance(artifact, dict):
+    raise SystemExit("malformed upstream lock: publishedArtifact must be an object")
+for key in ["registry", "shasum", "integrity", "modelDataManifestStructureHash"]:
+    if not isinstance(artifact.get(key), str) or not artifact[key]:
+        raise SystemExit(f"malformed upstream lock: publishedArtifact.{key} is required")
+catalog_hash = lock.get("generatedCatalogSHA256")
+if not isinstance(catalog_hash, str) or len(catalog_hash) != 64:
+    raise SystemExit("malformed upstream lock: generatedCatalogSHA256 is required")
 
 revision = lock["revision"]
 if not isinstance(revision, str) or len(revision) != 40:
@@ -205,7 +266,8 @@ for required_path in "${required_paths[@]}"; do
   fi
 done
 
-python3 - "$cache_root" "$mapping_file" "$lock_file" <<'PY'
+python3 - "$cache_root" "$mapping_file" "$lock_file" "$catalog_file" <<'PY'
+import hashlib
 import json
 import pathlib
 import re
@@ -216,6 +278,21 @@ with open(sys.argv[2], "r", encoding="utf-8") as handle:
     mapping = json.load(handle)
 with open(sys.argv[3], "r", encoding="utf-8") as handle:
     lock = json.load(handle)
+catalog_path = pathlib.Path(sys.argv[4])
+if not catalog_path.is_file():
+    raise SystemExit("bundled provider catalog is missing")
+catalog_bytes = catalog_path.read_bytes()
+catalog_digest = hashlib.sha256(catalog_bytes).hexdigest()
+if catalog_digest != lock["generatedCatalogSHA256"]:
+    raise SystemExit(
+        f"bundled provider catalog digest mismatch: expected={lock['generatedCatalogSHA256']} "
+        f"actual={catalog_digest}"
+    )
+catalog = json.loads(catalog_bytes)
+if catalog.get("upstreamRevision") != lock["revision"]:
+    raise SystemExit("bundled provider catalog revision does not match upstream lock")
+if catalog.get("publishedArtifact") != lock["publishedArtifact"]:
+    raise SystemExit("bundled provider catalog artifact provenance does not match upstream lock")
 
 all_source = (cache_root / "packages/ai/src/providers/all.ts").read_text(encoding="utf-8")
 imports = dict(
@@ -248,6 +325,36 @@ if locked_providers != upstream_providers:
         f"locked provider inventory drift: missing={missing}, extra={extra}"
     )
 
+catalog_providers = {provider.get("id") for provider in catalog.get("providers", [])}
+if catalog_providers != upstream_providers:
+    raise SystemExit(
+        "bundled provider catalog inventory drift: "
+        f"missing={sorted(upstream_providers - catalog_providers)}, "
+        f"extra={sorted(catalog_providers - upstream_providers)}"
+    )
+
+try:
+    images_body = all_source.split("export function builtinImagesProviders()", 1)[1].split("];", 1)[0]
+except IndexError as error:
+    raise SystemExit("could not parse upstream builtinImagesProviders()") from error
+image_factories = re.findall(r"\b(\w+Provider)\(\)", images_body)
+upstream_image_providers = {
+    imports[factory].removesuffix("-images")
+    for factory in image_factories
+    if factory in imports
+}
+mapped_image_providers = {
+    area["imageProviderID"]
+    for area in mapping["areas"]
+    if isinstance(area.get("imageProviderID"), str)
+}
+if upstream_image_providers != mapped_image_providers:
+    raise SystemExit(
+        "image provider inventory drift: "
+        f"missing={sorted(upstream_image_providers - mapped_image_providers)}, "
+        f"extra={sorted(mapped_image_providers - upstream_image_providers)}"
+    )
+
 types_source = (cache_root / "packages/ai/src/types.ts").read_text(encoding="utf-8")
 known_api_match = re.search(
     r"export type KnownApi =(?P<body>.*?);",
@@ -266,6 +373,50 @@ missing_protocols = sorted(upstream_protocols - mapped_protocols)
 if missing_protocols:
     raise SystemExit(
         "wire protocol inventory drift: missing=" + repr(missing_protocols)
+    )
+
+# Every relative production import reachable from a mapped pi-ai source must
+# remain inside the semantic provenance closure. This intentionally excludes
+# external packages and test-only imports.
+mapped_sources = {
+    path
+    for area in mapping["areas"]
+    for path in area["upstreamPaths"]
+    if path.startswith("packages/ai/src/")
+}
+import_pattern = re.compile(r'(?:from\s+|import\s*\()["\'](\.[^"\']+)["\']')
+reachable = set()
+pending = list(mapped_sources)
+while pending:
+    relative = pending.pop()
+    if relative in reachable:
+        continue
+    reachable.add(relative)
+    source_path = cache_root / relative
+    if not source_path.is_file():
+        continue
+    for imported in import_pattern.findall(source_path.read_text(encoding="utf-8")):
+        candidate = pathlib.PurePosixPath(relative).parent / imported
+        parts = []
+        for part in candidate.parts:
+            if part == "..":
+                if parts:
+                    parts.pop()
+            elif part != ".":
+                parts.append(part)
+        normalized = "/".join(parts)
+        if not pathlib.PurePosixPath(normalized).suffix:
+            normalized += ".ts"
+        if (
+            normalized.startswith("packages/ai/src/")
+            and (cache_root / normalized).is_file()
+            and normalized not in reachable
+        ):
+            pending.append(normalized)
+unmapped_dependencies = sorted(reachable - mapped_sources)
+if unmapped_dependencies:
+    raise SystemExit(
+        "upstream semantic import closure drift: " + repr(unmapped_dependencies)
     )
 PY
 

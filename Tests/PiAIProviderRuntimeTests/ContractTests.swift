@@ -151,12 +151,15 @@ struct ContractTests {
       .deletingLastPathComponent()
       .deletingLastPathComponent()
     let lockURL = repositoryRoot.appendingPathComponent("Upstream.lock.json")
+    let mappingURL = repositoryRoot.appendingPathComponent(
+      "UpstreamMappings/pi-ai.json"
+    )
     let lock = try JSONDecoder().decode(
       UpstreamLock.self,
       from: Data(contentsOf: lockURL)
     )
 
-    #expect(lock.schemaVersion == 2)
+    #expect(lock.schemaVersion == 3)
     #expect(lock.revision.count == 40)
     #expect(lock.package.name == "@earendil-works/pi-ai")
     #expect(lock.package.version == "0.84.4")
@@ -166,7 +169,24 @@ struct ContractTests {
     #expect(lock.trackedBuiltinProviders.contains("deepseek"))
     #expect(lock.trackedBuiltinProviders.contains("qwen-token-plan"))
     #expect(!lock.requiredSourcePaths.isEmpty)
+    let mapping = try JSONDecoder().decode(
+      UpstreamMapping.self,
+      from: Data(contentsOf: mappingURL)
+    )
+    #expect(mapping.schemaVersion == 3)
+    #expect(mapping.areas.count == 62)
+    #expect(mapping.areas.allSatisfy { !$0.dependsOn.contains($0.id) })
   }
+}
+
+private struct UpstreamMapping: Decodable {
+  struct Area: Decodable {
+    let id: String
+    let dependsOn: [String]
+  }
+
+  let schemaVersion: Int
+  let areas: [Area]
 }
 
 private struct UnsupportedRuntime: ProviderRuntime {
