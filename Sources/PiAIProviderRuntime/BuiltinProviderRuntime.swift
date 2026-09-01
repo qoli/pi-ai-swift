@@ -173,28 +173,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     return try ProviderRuntimeKernel(
       catalogRevision: registry.upstreamRevision,
       providers: definitions,
-      wireProtocols: [
-        AnthropicMessagesAdapter(),
-        OpenAICompletionsAdapter(),
-        OpenAIResponsesAdapter(),
-        OpenAIResponsesAdapter(
-          protocolID: "azure-openai-responses",
-          flavor: .azure
-        ),
-        OpenAIResponsesAdapter(
-          protocolID: "openai-codex-responses",
-          flavor: .codex
-        ),
-        GoogleGenerativeAIAdapter(),
-        GoogleGenerativeAIAdapter(
-          protocolID: "google-vertex",
-          flavor: .vertex
-        ),
-        MistralConversationsAdapter(),
-        PiMessagesAdapter(),
-        BedrockConverseStreamAdapter(),
-        OpenRouterImagesAdapter(),
-      ],
+      wireProtocols: StandardWireProtocols.make(),
       credentialStore: credentialStore,
       transport: streamingTransport
     )

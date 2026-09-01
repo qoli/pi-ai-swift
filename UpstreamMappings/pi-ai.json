@@ -1688,6 +1688,42 @@
       "liveVerificationStatus": "notRequired"
     },
     {
+      "id": "custom-provider-construction",
+      "responsibility": "Public static custom-provider declaration, provider API inheritance, model API override, and reuse of production authorization and wire adapters.",
+      "status": "landed",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/CustomProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Runtime/StandardWireProtocols.swift",
+        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
+      ],
+      "plannedSwiftPaths": [],
+      "upstreamPaths": [
+        "packages/ai/src/models.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/models-runtime.test.ts",
+        "packages/ai/test/providers.test.ts"
+      ],
+      "dependsOn": [
+        "public-runtime-seam",
+        "credential-store-auth-resolution",
+        "runtime-provider-dispatch"
+      ],
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#projectsUpstreamStyleProviderAndModelAPIOverrideIntoCatalog",
+        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#reusesOpenAIAdapterWithExactAPIRootHeadersCredentialAndCompatibility",
+        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#invalidDeclarationsFailAtConstructionWithoutProtocolFallback",
+        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#permitsExplicitLoopbackHTTPForLocalCustomProviders",
+        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#missingBaseURLFailsAtRequestTimeWithoutEndpointFallback"
+      ],
+      "requiredGates": [
+        "swift-test",
+        "upstream-check"
+      ],
+      "supportDisposition": "supported",
+      "liveVerificationStatus": "notRequired"
+    },
+    {
       "id": "wire-anthropic-messages",
       "protocolID": "anthropic-messages",
       "responsibility": "Anthropic Messages request encoding, SSE decoding, thinking signatures, images, tools, usage, and stop reasons.",

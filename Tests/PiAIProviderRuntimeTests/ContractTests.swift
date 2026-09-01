@@ -175,7 +175,7 @@ struct ContractTests {
       from: Data(contentsOf: mappingURL)
     )
     #expect(mapping.schemaVersion == 3)
-    #expect(mapping.areas.count == 62)
+    #expect(mapping.areas.count == 63)
     #expect(mapping.areas.allSatisfy { !$0.dependsOn.contains($0.id) })
   }
 }

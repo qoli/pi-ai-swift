@@ -13,8 +13,9 @@ or a shell runtime.
 
 The repository contains the public provider-runtime contract, the complete
 pinned built-in catalog, native wire adapters, URLSession raw streaming,
-API-key and device-code OAuth slices, serialized token refresh, and an optional
-Apple Keychain credential store. The `pi-ai-auth-probe` executable verifies
+API-key and device-code OAuth slices, serialized token refresh, a public static
+custom-provider construction seam, and an optional Apple Keychain credential
+store. The `pi-ai-auth-probe` executable verifies
 login without printing access or refresh tokens. Live provider evidence is
 tracked separately from deterministic compatibility evidence; unsupported
 providers and unavailable capabilities fail explicitly, and the runtime never
@@ -41,6 +42,13 @@ public protocol ProviderRuntime: Sendable {
 
 Consumers adapt this interface to their conversation framework. The package
 does not depend on `AnyLanguageModel` or `AIReasoningCore`.
+
+For a provider outside the bundled catalog, construct a `CustomProviderRuntime`
+with the provider's API-root URL, supported API identifier, headers, and models.
+The provider-level API is inherited unless a model explicitly overrides it;
+unknown APIs fail during construction. Credentials remain in the injected
+`ProviderCredentialStore`. See
+[`Docs/CUSTOM_PROVIDER_RUNTIME_PROPOSAL.md`](Docs/CUSTOM_PROVIDER_RUNTIME_PROPOSAL.md).
 
 ## Upstream synchronization
 

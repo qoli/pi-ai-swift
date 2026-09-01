@@ -3,7 +3,7 @@
 ## Current status
 
 **Landed for the pinned provider scope.** The public seam, normalized DTOs, explicit failure model,
-complete pinned catalog, native wire adapters, raw streaming transport,
+complete pinned catalog, static custom-provider construction, native wire adapters, raw streaming transport,
 Keychain storage, serialized credential refresh, and Kimi Coding/OpenAI Codex
 device authorization exist. Provider reasoning signatures remain opaque but
 round-trip through normalized events. Bedrock supports bearer credentials and
@@ -57,8 +57,11 @@ wire adapter named by `ProviderModel.protocolID`. Provider authorization and
 wire-protocol adapters are internal seams; consumers do not select or assemble
 them.
 
-The kernel dispatches the public `BuiltinProviderRuntime` through exact catalog
-routes and production wire adapters. Explicit configuration failures have
+The kernel dispatches both `BuiltinProviderRuntime` and `CustomProviderRuntime`
+through exact catalog routes and the same production wire adapters. The custom
+runtime semantically ports upstream's static `createProvider` declaration:
+provider API-root URL, headers, default API, models, and model-level API/URL/header
+overrides. Explicit configuration failures have
 deterministic coverage. A missing protocol, credential, endpoint, output
 modality, or authorization method fails explicitly instead of selecting another
 protocol or provider.

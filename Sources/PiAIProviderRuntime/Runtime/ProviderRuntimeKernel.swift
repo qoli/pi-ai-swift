@@ -5,6 +5,11 @@ enum ProviderCredentialRequirement: Sendable {
   case none
 }
 
+enum ProviderEndpointPolicy: Sendable {
+  case httpsOnly
+  case httpsOrLoopbackHTTP
+}
+
 protocol ProviderAuthorizationAdapter: Sendable {
   func authorize(
     _ operation: AuthorizationOperation,
@@ -47,7 +52,26 @@ struct ProviderDefinition: Sendable {
   let headers: [String: String]
   let modelConfigurations: [ProviderModelRoute: ProviderModelConfiguration]
   let credentialRequirement: ProviderCredentialRequirement
+  let endpointPolicy: ProviderEndpointPolicy
   let authorization: any ProviderAuthorizationAdapter
+
+  init(
+    descriptor: ProviderDescriptor,
+    baseURL: String?,
+    headers: [String: String],
+    modelConfigurations: [ProviderModelRoute: ProviderModelConfiguration],
+    credentialRequirement: ProviderCredentialRequirement,
+    endpointPolicy: ProviderEndpointPolicy = .httpsOnly,
+    authorization: any ProviderAuthorizationAdapter
+  ) {
+    self.descriptor = descriptor
+    self.baseURL = baseURL
+    self.headers = headers
+    self.modelConfigurations = modelConfigurations
+    self.credentialRequirement = credentialRequirement
+    self.endpointPolicy = endpointPolicy
+    self.authorization = authorization
+  }
 }
 
 struct ProviderModelConfiguration: Sendable {
@@ -227,7 +251,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     let baseURL = try resolveURLTemplate(
       baseURLTemplate,
       credential: credential,
-      providerID: request.providerID
+      providerID: request.providerID,
+      endpointPolicy: provider.endpointPolicy
     )
     let headers = provider.headers.merging(modelConfiguration.headers) {
       _, modelValue in modelValue
@@ -250,7 +275,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
   private func resolveURLTemplate(
     _ template: String,
     credential: ProviderCredential?,
-    providerID: String
+    providerID: String,
+    endpointPolicy: ProviderEndpointPolicy
   ) throws -> URL {
     var value = template
     let metadata: [String: String]
@@ -278,7 +304,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         message: "provider base URL requires credential metadata: \(template)"
       )
     }
-    guard let url = URL(string: value), url.scheme == "https" else {
+    guard let url = URL(string: value), Self.isAllowed(url, policy: endpointPolicy) else {
       throw failure(
         .invalidRequest,
         providerID: providerID,
@@ -287,6 +313,21 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       )
     }
     return url
+  }
+
+  private static func isAllowed(
+    _ url: URL,
+    policy: ProviderEndpointPolicy
+  ) -> Bool {
+    guard url.host != nil else { return false }
+    if url.scheme?.lowercased() == "https" { return true }
+    guard policy == .httpsOrLoopbackHTTP,
+      url.scheme?.lowercased() == "http",
+      let rawHost = url.host?.lowercased()
+    else { return false }
+    let host = rawHost.trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
+    return host == "localhost" || host.hasSuffix(".localhost") || host == "::1"
+      || host.split(separator: ".").first == "127"
   }
 
   private static func uniqueProviders(

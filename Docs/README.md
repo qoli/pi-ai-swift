@@ -7,6 +7,7 @@ This directory is the living design and maintenance registry for
 | --- | --- | --- |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Landed | Public seam, ownership, and semantic-port model |
 | [AI_MAINTENANCE.md](AI_MAINTENANCE.md) | Partially landed | Human-initiated inventory and implementation sync, compatibility decisions, and reconstruction |
+| [CUSTOM_PROVIDER_RUNTIME_PROPOSAL.md](CUSTOM_PROVIDER_RUNTIME_PROPOSAL.md) | Landed | Public construction seam for static non-bundled API-key providers using existing wire adapters |
 
 ## Status meanings
 
