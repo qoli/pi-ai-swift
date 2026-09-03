@@ -6,6 +6,43 @@ import Testing
 @Suite
 struct AnthropicMessagesAdapterTests {
   @Test
+  func olderModelUsesBudgetAndLeavesAnswerRoom() async throws {
+    let transport = AnthropicFixtureTransport(chunks: anthropicFixtureChunks(), statusCode: 200)
+    for try await _ in AnthropicMessagesAdapter().stream(
+      fixtureAnthropicRequest(effort: .high),
+      context: fixtureAnthropicContext(model: fixtureAnthropicModel()), transport: transport)
+    {}
+    let sent = try #require(await transport.request())
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+    #expect(body.object("thinking")?.string("type") == "enabled")
+    #expect(body.object("thinking")?.int("budget_tokens") == 3_072)
+    #expect(body.int("max_tokens") == 4_096)
+    #expect(body["output_config"] == nil)
+  }
+
+  @Test
+  func encodesDisabledAndMappedAdaptiveReasoning() async throws {
+    for effort in [ProviderReasoningEffort.off, .minimal] {
+      let transport = AnthropicFixtureTransport(chunks: anthropicFixtureChunks(), statusCode: 200)
+      let context = fixtureAnthropicContext(
+        model: fixtureAnthropicModel(),
+        metadata: [
+          "compat": .object(["forceAdaptiveThinking": .bool(true)]),
+          "thinkingLevelMap": .object(["minimal": .string("low")]),
+        ])
+      for try await _ in AnthropicMessagesAdapter().stream(
+        fixtureAnthropicRequest(effort: effort), context: context, transport: transport)
+      {}
+      let sent = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+      #expect(body.object("thinking")?.string("type") == (effort == .off ? "disabled" : "adaptive"))
+      #expect(body.object("output_config")?.string("effort") == (effort == .off ? nil : "low"))
+    }
+  }
+
+  @Test
   func encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents() async throws {
     let transport = AnthropicFixtureTransport(
       chunks: anthropicFixtureChunks(),
@@ -35,7 +72,7 @@ struct AnthropicMessagesAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: 512,
         temperature: 0.2,
-        reasoningEffort: "high",
+        reasoningEffort: .high,
         responseSchema: nil,
         providerOptions: [:]
       )
@@ -71,7 +108,7 @@ struct AnthropicMessagesAdapterTests {
         protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
-        metadata: [:]
+        metadata: ["compat": .object(["forceAdaptiveThinking": .bool(true)])]
       )
     )
 
@@ -217,7 +254,9 @@ private func fixtureAnthropicModel() -> ProviderModel {
   )
 }
 
-private func fixtureAnthropicContext(model: ProviderModel) -> WireProtocolContext {
+private func fixtureAnthropicContext(model: ProviderModel, metadata: [String: JSONValue] = [:])
+  -> WireProtocolContext
+{
   WireProtocolContext(
     provider: ProviderDescriptor(
       id: "fixture-provider",
@@ -233,12 +272,12 @@ private func fixtureAnthropicContext(model: ProviderModel) -> WireProtocolContex
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: [:]
+      metadata: metadata
     )
   )
 }
 
-private func fixtureAnthropicRequest() -> ProviderRequest {
+private func fixtureAnthropicRequest(effort: ProviderReasoningEffort? = nil) -> ProviderRequest {
   ProviderRequest(
     id: "request",
     providerID: "fixture-provider",
@@ -248,7 +287,7 @@ private func fixtureAnthropicRequest() -> ProviderRequest {
     options: ProviderGenerationOptions(
       maximumOutputTokens: nil,
       temperature: nil,
-      reasoningEffort: nil,
+      reasoningEffort: effort,
       responseSchema: nil,
       providerOptions: [:]
     )

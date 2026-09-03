@@ -5,6 +5,49 @@ import Testing
 
 @Suite
 struct GoogleGenerativeAIAdapterTests {
+  @Test(arguments: ["gemini-3.1-pro", "gemini-2.5-pro"])
+  func rejectsOffWhenGoogleCanOnlyHideThoughts(modelID: String) async throws {
+    let model = googleModel(id: modelID)
+    let transport = GoogleFixtureTransport(statusCode: 200, chunks: googleFixtureChunks())
+    let request = ProviderRequest(
+      id: "effort", providerID: model.providerID, modelID: model.id,
+      messages: [.user([.text("hello")])], tools: [],
+      options: .init(
+        maximumOutputTokens: nil, temperature: nil, reasoningEffort: .off, responseSchema: nil,
+        providerOptions: [:]))
+    await #expect(throws: ProviderRuntimeFailure.self) {
+      for try await _ in GoogleGenerativeAIAdapter().stream(
+        request, context: googleContext(model: model), transport: transport)
+      {}
+    }
+    #expect(await transport.request() == nil)
+  }
+
+  @Test
+  func encodesDisabledAndMappedBudgetReasoning() async throws {
+    for effort in [ProviderReasoningEffort.off, .low] {
+      let model = googleModel()
+      let transport = GoogleFixtureTransport(statusCode: 200, chunks: googleFixtureChunks())
+      let request = ProviderRequest(
+        id: "effort", providerID: model.providerID, modelID: model.id,
+        messages: [.user([.text("hello")])], tools: [],
+        options: .init(
+          maximumOutputTokens: nil, temperature: nil, reasoningEffort: effort, responseSchema: nil,
+          providerOptions: [:]))
+      let context = googleContext(
+        model: model, metadata: ["thinkingLevelMap": .object(["low": .string("HIGH")])])
+      for try await _ in GoogleGenerativeAIAdapter().stream(
+        request, context: context, transport: transport)
+      {}
+      let sent = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+      let thinking = try #require(body.object("generationConfig")?.object("thinkingConfig"))
+      #expect(thinking.int("thinkingBudget") == (effort == .off ? 0 : 24_576))
+      #expect(thinking["includeThoughts"] == (effort == .off ? nil : .bool(true)))
+    }
+  }
+
   @Test
   func encodesMultimodalToolReasoningRequestAndNormalizesStream() async throws {
     let transport = GoogleFixtureTransport(
@@ -38,7 +81,7 @@ struct GoogleGenerativeAIAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: 512,
         temperature: 0.25,
-        reasoningEffort: "high",
+        reasoningEffort: .high,
         responseSchema: .object([
           "type": .string("object"),
           "properties": .object([
@@ -359,9 +402,9 @@ private func googleFixtureChunks() -> [Data] {
   return [Data(bytes[..<79]), Data(bytes[79..<221]), Data(bytes[221...])]
 }
 
-private func googleModel() -> ProviderModel {
+private func googleModel(id: String = "gemini-2.5-flash") -> ProviderModel {
   ProviderModel(
-    id: "gemini-2.5-flash",
+    id: id,
     providerID: "google",
     name: "Gemini 2.5 Flash",
     protocolID: "google-generative-ai",
@@ -397,7 +440,9 @@ private func vertexModel() -> ProviderModel {
   )
 }
 
-private func googleContext(model: ProviderModel) -> WireProtocolContext {
+private func googleContext(model: ProviderModel, metadata: [String: JSONValue] = [:])
+  -> WireProtocolContext
+{
   WireProtocolContext(
     provider: ProviderDescriptor(
       id: model.providerID,
@@ -413,7 +458,7 @@ private func googleContext(model: ProviderModel) -> WireProtocolContext {
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: [:]
+      metadata: metadata
     )
   )
 }

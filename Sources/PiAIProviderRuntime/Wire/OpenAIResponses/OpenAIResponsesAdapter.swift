@@ -167,6 +167,22 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
+    if let effort = request.options.reasoningEffort {
+      let supported = try ProviderReasoning.supportedEfforts(
+        reasoning: context.model.capabilities.reasoning,
+        metadata: context.modelConfiguration.metadata,
+        protocolID: context.model.protocolID,
+        providerID: context.model.providerID, modelID: context.model.id,
+        modelName: context.model.name)
+      guard supported.contains(effort) else {
+        throw ProviderRuntimeFailure(
+          code: .unsupportedCapability,
+          message: "Model does not support the selected reasoning effort: \(effort.rawValue)",
+          providerID: request.providerID, operation: "stream.validate-reasoning",
+          causeDescription: nil)
+      }
+    }
+
     var body: [String: JSONValue] = [
       "model": .string(resolvedModelID(request, context: context)),
       "input": .array(try makeInput(request.messages)),
@@ -189,9 +205,11 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     if let temperature = request.options.temperature {
       body["temperature"] = .number(temperature)
     }
-    if let effort = request.options.reasoningEffort {
+    if let effort = request.options.reasoningEffort, context.model.capabilities.reasoning {
+      let mapped = context.modelConfiguration.metadata
+        .object("thinkingLevelMap")?.string(effort.rawValue)
       body["reasoning"] = .object([
-        "effort": .string(effort),
+        "effort": .string(mapped ?? (effort == .off ? "none" : effort.rawValue)),
         "summary": .string("auto"),
       ])
       body["include"] = .array([.string("reasoning.encrypted_content")])

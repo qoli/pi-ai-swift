@@ -6,6 +6,58 @@ import Testing
 @Suite
 struct OpenAICompletionsAdapterTests {
   @Test
+  func reasoningFormatsEncodeOffAndMappedEffort() async throws {
+    for format in [
+      "openai", "openrouter", "deepseek", "zai", "qwen", "qwen-chat-template", "together",
+      "string-thinking", "ant-ling", "chat-template", "baseten",
+    ] {
+      for effort in [ProviderReasoningEffort.off, .low] {
+        let transport = CompletionsFixtureTransport(chunks: completionsFixtureChunks())
+        let (request, context) = completionFixtureRequestAndContext(
+          effort: effort,
+          metadata: [
+            "thinkingLevelMap": .object(["off": .string("none"), "low": .string("high")]),
+            "compat": .object([
+              "thinkingFormat": .string(format),
+              "chatTemplateKwargs": .object([
+                "enabled": .object(["$var": .string("thinking.enabled")]),
+                "level": .object(["$var": .string("thinking.level")]),
+              ]),
+              "chatTemplateArgs": .object([
+                "enabled": .object(["$var": .string("thinking.enabled")]),
+                "level": .object(["$var": .string("thinking.level")]),
+              ]),
+            ]),
+          ])
+        for try await _ in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+        let sent = try #require(await transport.request())
+        let body = try decodeJSONObject(
+          try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+        let enabled = effort != .off
+        let wire = enabled ? "high" : "none"
+        switch format {
+        case "openai": #expect(body.string("reasoning_effort") == wire)
+        case "openrouter", "ant-ling": #expect(body.object("reasoning")?.string("effort") == wire)
+        case "deepseek", "zai":
+          #expect(body.object("thinking")?.string("type") == (enabled ? "enabled" : "disabled"))
+        case "qwen": #expect(body.bool("enable_thinking") == enabled)
+        case "qwen-chat-template":
+          #expect(body.object("chat_template_kwargs")?.bool("enable_thinking") == enabled)
+        case "together": #expect(body.object("reasoning")?.bool("enabled") == enabled)
+        case "string-thinking": #expect(body.string("thinking") == wire)
+        default:
+          let template = body.object(
+            format == "baseten" ? "chat_template_args" : "chat_template_kwargs")
+          #expect(template?.bool("enabled") == enabled)
+          #expect(template?.string("level") == wire)
+        }
+      }
+    }
+  }
+
+  @Test
   func honorsModelCompatibilityAndNormalizesToolStream() async throws {
     let transport = CompletionsFixtureTransport(chunks: completionsFixtureChunks())
     let adapter = OpenAICompletionsAdapter()
@@ -45,6 +97,7 @@ struct OpenAICompletionsAdapterTests {
             "maxTokensField": .string("max_tokens"),
             "supportsStore": .bool(false),
             "supportsReasoningEffort": .bool(false),
+            "thinkingFormat": .string("deepseek"),
           ])
         ]
       )
@@ -64,7 +117,7 @@ struct OpenAICompletionsAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: 100,
         temperature: 0.1,
-        reasoningEffort: "high",
+        reasoningEffort: .high,
         responseSchema: nil,
         providerOptions: [:]
       )
@@ -101,6 +154,7 @@ struct OpenAICompletionsAdapterTests {
     #expect(body["max_completion_tokens"] == nil)
     #expect(body["store"] == nil)
     #expect(body["reasoning_effort"] == nil)
+    #expect(body.object("thinking")?.string("type") == "enabled")
   }
 
   @Test
@@ -157,7 +211,9 @@ private func completionsFixtureChunks() -> [Data] {
   return [Data(bytes[..<91]), Data(bytes[91..<317]), Data(bytes[317...])]
 }
 
-private func completionFixtureRequestAndContext() -> (
+private func completionFixtureRequestAndContext(
+  effort: ProviderReasoningEffort? = nil, metadata: [String: JSONValue] = [:]
+) -> (
   ProviderRequest, WireProtocolContext
 ) {
   let model = ProviderModel(
@@ -169,7 +225,7 @@ private func completionFixtureRequestAndContext() -> (
       textInput: true,
       imageInput: false,
       toolCalling: true,
-      reasoning: false,
+      reasoning: true,
       structuredOutput: false,
       imageGeneration: false
     ),
@@ -186,7 +242,7 @@ private func completionFixtureRequestAndContext() -> (
       options: ProviderGenerationOptions(
         maximumOutputTokens: nil,
         temperature: nil,
-        reasoningEffort: nil,
+        reasoningEffort: effort,
         responseSchema: nil,
         providerOptions: [:]
       )
@@ -206,7 +262,7 @@ private func completionFixtureRequestAndContext() -> (
         protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
-        metadata: [:]
+        metadata: metadata
       )
     )
   )

@@ -120,6 +120,22 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
+    if let effort = request.options.reasoningEffort {
+      let supported = try ProviderReasoning.supportedEfforts(
+        reasoning: context.model.capabilities.reasoning,
+        metadata: context.modelConfiguration.metadata,
+        protocolID: context.model.protocolID,
+        providerID: context.model.providerID, modelID: context.model.id,
+        modelName: context.model.name)
+      guard supported.contains(effort) else {
+        throw ProviderRuntimeFailure(
+          code: .unsupportedCapability,
+          message: "Model does not support the selected reasoning effort: \(effort.rawValue)",
+          providerID: request.providerID, operation: "stream.validate-reasoning",
+          causeDescription: nil)
+      }
+    }
+
     if request.options.responseSchema != nil {
       throw failure(
         .unsupportedCapability,
@@ -157,7 +173,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
       options["maxTokens"] = .integer(Int64(maximum))
     }
     if let effort = request.options.reasoningEffort {
-      options["reasoning"] = .string(effort)
+      options["reasoning"] = .string(effort.rawValue)
     }
     for (key, value) in request.options.providerOptions where key != "debug" {
       options[key] = value

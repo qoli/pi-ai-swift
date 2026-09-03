@@ -136,8 +136,42 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       body["temperature"] = .number(temperature)
     }
     if let effort = request.options.reasoningEffort, context.model.capabilities.reasoning {
-      body["thinking"] = .object(["type": .string("adaptive")])
-      body["output_config"] = .object(["effort": .string(effort)])
+      let metadata = context.modelConfiguration.metadata
+      if effort == .off {
+        body["thinking"] = .object(["type": .string("disabled")])
+      } else if metadata.object("compat")?.bool("forceAdaptiveThinking") == true {
+        let mapped = metadata.object("thinkingLevelMap")?.string(effort.rawValue)
+        let wireEffort = mapped ?? (effort == .minimal ? "low" : effort.rawValue)
+        body["thinking"] = .object([
+          "type": .string("adaptive"), "display": .string("summarized"),
+        ])
+        body["output_config"] = .object(["effort": .string(wireEffort)])
+      } else {
+        let budgets: [ProviderReasoningEffort: Int] = [
+          .minimal: 1_024, .low: 2_048, .medium: 8_192, .high: 16_384,
+        ]
+        guard var budget = budgets[effort] else {
+          throw failure(
+            .unsupportedCapability, providerID: request.providerID,
+            operation: "anthropic.request.reasoning",
+            message: "reasoning effort is unsupported by budget thinking")
+        }
+        let modelLimit = context.model.maximumOutputTokens ?? maximumOutputTokens
+        let outputLimit =
+          request.options.maximumOutputTokens.map { min($0 + budget, modelLimit) } ?? modelLimit
+        if outputLimit <= budget { budget = max(0, outputLimit - 1_024) }
+        guard budget > 0 else {
+          throw failure(
+            .invalidRequest, providerID: request.providerID,
+            operation: "anthropic.request.reasoning",
+            message: "output limit leaves no room for reasoning")
+        }
+        body["max_tokens"] = .integer(Int64(outputLimit))
+        body["thinking"] = .object([
+          "type": .string("enabled"), "budget_tokens": .integer(Int64(budget)),
+          "display": .string("summarized"),
+        ])
+      }
     }
     if !request.tools.isEmpty {
       body["tools"] = .array(

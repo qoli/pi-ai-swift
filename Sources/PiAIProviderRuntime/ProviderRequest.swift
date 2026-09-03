@@ -115,7 +115,7 @@ public enum ProviderToolResultContent: Sendable, Equatable, Codable {
 public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
   public let maximumOutputTokens: Int?
   public let temperature: Double?
-  public let reasoningEffort: String?
+  public let reasoningEffort: ProviderReasoningEffort?
   public let responseSchema: JSONValue?
   public let providerOptions: [String: JSONValue]
   public let outputModality: ProviderOutputModality
@@ -127,7 +127,7 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
   public init(
     maximumOutputTokens: Int?,
     temperature: Double?,
-    reasoningEffort: String?,
+    reasoningEffort: ProviderReasoningEffort?,
     responseSchema: JSONValue?,
     providerOptions: [String: JSONValue],
     outputModality: ProviderOutputModality = .text,

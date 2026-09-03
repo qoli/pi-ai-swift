@@ -1635,7 +1635,8 @@
       "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/ProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/ProviderRuntimeFailure.swift"
+        "Sources/PiAIProviderRuntime/ProviderRuntimeFailure.swift",
+        "Sources/PiAIProviderRuntime/ProviderReasoningEffort.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -1648,7 +1649,10 @@
       ],
       "dependsOn": [],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#runtimeSurfacesUnsupportedProviderAsAnExplicitStreamFailure"
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#runtimeSurfacesUnsupportedProviderAsAnExplicitStreamFailure",
+        "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#missingNullAndExtendedLevelsHaveDistinctMeanings",
+        "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#unsupportedSelectionFailsBeforeCredentialResolution",
+        "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#catalogProjectsModelSpecificChoicesAndRoundTrips"
       ],
       "requiredGates": [
         "swift-test"
@@ -1748,7 +1752,8 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents"
+        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
+        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesDisabledAndMappedAdaptiveReasoning"
       ],
       "requiredGates": [
         "swift-test"
@@ -1778,7 +1783,8 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
       ],
       "requiredGates": [
         "swift-test"
@@ -1812,7 +1818,10 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop",
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#sigV4SignsExactBodyHeadersRegionAndSessionCredential",
-        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#adaptiveClaudeReasoningRequestAndSignatureRoundTrip"
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#adaptiveClaudeReasoningRequestAndSignatureRoundTrip",
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport",
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningContext",
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningFrames"
       ],
       "requiredGates": [
         "swift-test"
@@ -1892,7 +1901,9 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream"
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream",
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#rejectsOffWhenGoogleCanOnlyHideThoughts",
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning"
       ],
       "requiredGates": [
         "swift-test"
@@ -1923,7 +1934,10 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#vertexBuildsScopedOAuthRequestAndNormalizesLengthFinish"
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#vertexBuildsScopedOAuthRequestAndNormalizesLengthFinish",
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#rejectsOffWhenGoogleCanOnlyHideThoughts",
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning",
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream"
       ],
       "requiredGates": [
         "swift-test"
@@ -1953,7 +1967,10 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#encodesConversationAndNormalizesTextReasoningToolUsageAndTerminal"
+        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#encodesConversationAndNormalizesTextReasoningToolUsageAndTerminal",
+        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#nativeEffortModelsEncodeMappedValuesAndExplicitOff",
+        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitlyUnsupportedMapFailsBeforeTransport",
+        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport"
       ],
       "requiredGates": [
         "swift-test"
@@ -1992,7 +2009,8 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#codexSSEPreservesCacheAffinityAndNormalizesDoneAlias"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#codexSSEPreservesCacheAffinityAndNormalizesDoneAlias",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
       ],
       "requiredGates": [
         "swift-test"
@@ -2028,7 +2046,8 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream"
+        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream",
+        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#reasoningFormatsEncodeOffAndMappedEffort"
       ],
       "requiredGates": [
         "swift-test"
@@ -2062,7 +2081,8 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
       ],
       "requiredGates": [
         "swift-test"
@@ -2124,7 +2144,8 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#encodesContextAndNormalizesTextReasoningToolUsageAndTerminal"
+        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#encodesContextAndNormalizesTextReasoningToolUsageAndTerminal",
+        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#explicitOffIsForwardedAndNilOmitsReasoning"
       ],
       "requiredGates": [
         "swift-test"

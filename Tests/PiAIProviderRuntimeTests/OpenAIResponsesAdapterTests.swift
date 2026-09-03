@@ -34,7 +34,7 @@ struct OpenAIResponsesAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: 100,
         temperature: nil,
-        reasoningEffort: "high",
+        reasoningEffort: .high,
         responseSchema: .object(["type": .string("object")]),
         providerOptions: [:]
       )
@@ -86,6 +86,37 @@ struct OpenAIResponsesAdapterTests {
     #expect(body.int("max_output_tokens") == 100)
     #expect(body.object("reasoning")?.string("effort") == "high")
     #expect(body.object("text")?.object("format")?.string("type") == "json_schema")
+  }
+
+  @Test
+  func selectedEffortMapsToWireWhileNilOmitsReasoning() async throws {
+    let cases: [(ProviderReasoningEffort?, String?)] = [
+      (nil, nil), (.off, "none"), (.minimal, "low"), (.high, "high"), (.max, "max"),
+    ]
+    for (effort, expected) in cases {
+      let fixture = responsesFixture(
+        providerID: "openai", protocolID: "openai-responses",
+        baseURL: "https://api.openai.com/v1",
+        credential: .apiKey(APIKeyCredential(key: "fixture", metadata: [:])),
+        options: ProviderGenerationOptions(
+          maximumOutputTokens: nil, temperature: nil, reasoningEffort: effort,
+          responseSchema: nil, providerOptions: [:]),
+        metadata: [
+          "thinkingLevelMap": .object([
+            "minimal": .string("low"), "max": .string("max"),
+          ])
+        ]
+      )
+      let transport = ResponsesFixtureTransport(chunks: responsesFixtureChunks())
+      for try await _ in OpenAIResponsesAdapter().stream(
+        fixture.request, context: fixture.context, transport: transport)
+      {}
+      let sent = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+      #expect(body.object("reasoning")?.string("effort") == expected)
+      if effort == nil { #expect(body["reasoning"] == nil) }
+    }
   }
 
   @Test
@@ -173,7 +204,7 @@ struct OpenAIResponsesAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: 100,
         temperature: nil,
-        reasoningEffort: "high",
+        reasoningEffort: .high,
         responseSchema: nil,
         providerOptions: [:],
         sessionID: sessionID,
@@ -248,7 +279,8 @@ private func responsesFixture(
   protocolID: String,
   baseURL: String,
   credential: ProviderCredential,
-  options: ProviderGenerationOptions? = nil
+  options: ProviderGenerationOptions? = nil,
+  metadata: [String: JSONValue] = [:]
 ) -> (request: ProviderRequest, context: WireProtocolContext) {
   let model = ProviderModel(
     id: "gpt-fixture",
@@ -297,7 +329,7 @@ private func responsesFixture(
         protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
-        metadata: [:]
+        metadata: metadata
       )
     )
   )

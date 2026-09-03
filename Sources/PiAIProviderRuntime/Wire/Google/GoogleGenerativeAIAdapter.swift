@@ -218,7 +218,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       generationConfig["responseMimeType"] = .string("application/json")
       generationConfig["responseJsonSchema"] = schema
     }
-    if let effort = request.options.reasoningEffort {
+    if let effort = request.options.reasoningEffort,
+      context.model.capabilities.reasoning || effort != .off
+    {
       guard context.model.capabilities.reasoning else {
         throw failure(
           .unsupportedCapability,
@@ -228,7 +230,8 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         )
       }
       generationConfig["thinkingConfig"] = .object(
-        try thinkingConfiguration(effort: effort, modelID: request.modelID)
+        try thinkingConfiguration(
+          effort: effort, modelID: request.modelID, metadata: context.modelConfiguration.metadata)
       )
     }
     if !generationConfig.isEmpty {
@@ -386,9 +389,26 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
   }
 
   private func thinkingConfiguration(
-    effort: String,
-    modelID: String
+    effort requested: ProviderReasoningEffort,
+    modelID: String,
+    metadata: [String: JSONValue]
   ) throws -> [String: JSONValue] {
+    let lower = modelID.lowercased()
+    if requested == .off {
+      guard !lower.contains("gemini-3"), !lower.contains("gemma-4"),
+        !lower.contains("gemini-2.5-pro"),
+        lower != "gemini-flash-latest", lower != "gemini-flash-lite-latest"
+      else {
+        throw failure(
+          .unsupportedCapability, providerID: nil,
+          operation: "google.request.reasoning",
+          message: "selected Google model cannot disable reasoning")
+      }
+      return ["thinkingBudget": .integer(0)]
+    }
+    let effort =
+      (metadata.object("thinkingLevelMap")?.string(requested.rawValue) ?? requested.rawValue)
+      .lowercased()
     guard ["minimal", "low", "medium", "high"].contains(effort) else {
       throw failure(
         .invalidRequest,
@@ -397,8 +417,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         message: "unsupported Google reasoning effort: \(effort)"
       )
     }
-    let lower = modelID.lowercased()
-    if lower.contains("gemini-3") || lower.contains("gemma-4") {
+    if lower.contains("gemini-3") || lower.contains("gemma-4")
+      || lower == "gemini-flash-latest" || lower == "gemini-flash-lite-latest"
+    {
       let level: String
       if lower.contains("pro") {
         level = ["minimal", "low"].contains(effort) ? "LOW" : "HIGH"

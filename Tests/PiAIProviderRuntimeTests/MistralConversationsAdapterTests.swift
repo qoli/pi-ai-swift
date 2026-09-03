@@ -53,7 +53,7 @@ struct MistralConversationsAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: 512,
         temperature: 0.25,
-        reasoningEffort: "high",
+        reasoningEffort: .high,
         responseSchema: nil,
         providerOptions: [:]
       )
@@ -121,6 +121,68 @@ struct MistralConversationsAdapterTests {
     #expect(messages.first?.objectValue?.string("role") == "system")
     #expect(messages[2].objectValue?.array("tool_calls")?.count == 1)
     #expect(messages[3].objectValue?.string("tool_call_id") == "prior-call")
+  }
+
+  @Test
+  func nativeEffortModelsEncodeMappedValuesAndExplicitOff() async throws {
+    for effort in [ProviderReasoningEffort.off, .minimal, .high] {
+      let model = mistralFixtureModel(id: "mistral-small-2603")
+      let request = ProviderRequest(
+        id: "mapped-effort", providerID: "mistral", modelID: model.id,
+        messages: [.user([.text("hello")])], tools: [],
+        options: ProviderGenerationOptions(
+          maximumOutputTokens: nil, temperature: nil, reasoningEffort: effort,
+          responseSchema: nil, providerOptions: [:]))
+      let transport = MistralFixtureTransport(statusCode: 200, chunks: mistralSuccessChunks())
+      for try await _ in MistralConversationsAdapter().stream(
+        request,
+        context: mistralFixtureContext(
+          model: model, metadata: ["thinkingLevelMap": .object(["minimal": .string("none")])]),
+        transport: transport)
+      {}
+      let sent = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+      #expect(body.string("reasoning_effort") == (effort == .high ? "high" : "none"))
+      #expect(body["prompt_mode"] == nil)
+    }
+  }
+
+  @Test
+  func explicitlyUnsupportedMapFailsBeforeTransport() async throws {
+    let model = mistralFixtureModel(id: "mistral-small-2603")
+    let request = ProviderRequest(
+      id: "unsupported-effort", providerID: "mistral", modelID: model.id,
+      messages: [.user([.text("hello")])], tools: [],
+      options: ProviderGenerationOptions(
+        maximumOutputTokens: nil, temperature: nil, reasoningEffort: .high,
+        responseSchema: nil, providerOptions: [:]))
+    let transport = MistralFixtureTransport(statusCode: 200, chunks: [])
+    await expectMistralFailure(code: .unsupportedCapability) {
+      MistralConversationsAdapter().stream(
+        request,
+        context: mistralFixtureContext(
+          model: model, metadata: ["thinkingLevelMap": .object(["high": .null])]),
+        transport: transport)
+    }
+    #expect(await transport.request() == nil)
+  }
+
+  @Test
+  func explicitOffRejectsReasoningModelBeforeTransport() async throws {
+    let model = mistralFixtureModel()
+    let request = ProviderRequest(
+      id: "reasoning-off", providerID: "mistral", modelID: model.id,
+      messages: [.user([.text("hello")])], tools: [],
+      options: ProviderGenerationOptions(
+        maximumOutputTokens: nil, temperature: nil, reasoningEffort: .off,
+        responseSchema: nil, providerOptions: [:]))
+    let transport = MistralFixtureTransport(statusCode: 200, chunks: [])
+    await expectMistralFailure(code: .unsupportedCapability) {
+      MistralConversationsAdapter().stream(
+        request, context: mistralFixtureContext(model: model), transport: transport)
+    }
+    #expect(await transport.request() == nil)
   }
 
   @Test
@@ -230,9 +292,9 @@ private struct MistralCancellingTransport: ProviderHTTPStreamingTransport {
   }
 }
 
-private func mistralFixtureModel() -> ProviderModel {
+private func mistralFixtureModel(id: String = "magistral-small") -> ProviderModel {
   ProviderModel(
-    id: "magistral-small",
+    id: id,
     providerID: "mistral",
     name: "Magistral Small",
     protocolID: "mistral-conversations",
@@ -249,7 +311,9 @@ private func mistralFixtureModel() -> ProviderModel {
   )
 }
 
-private func mistralFixtureContext(model: ProviderModel) -> WireProtocolContext {
+private func mistralFixtureContext(
+  model: ProviderModel, metadata: [String: JSONValue] = [:]
+) -> WireProtocolContext {
   WireProtocolContext(
     provider: ProviderDescriptor(
       id: "mistral",
@@ -265,7 +329,7 @@ private func mistralFixtureContext(model: ProviderModel) -> WireProtocolContext 
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: [:]
+      metadata: metadata
     )
   )
 }

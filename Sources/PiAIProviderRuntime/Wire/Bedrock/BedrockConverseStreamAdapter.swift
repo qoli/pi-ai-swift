@@ -180,6 +180,22 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
+    if let effort = request.options.reasoningEffort {
+      let supported = try ProviderReasoning.supportedEfforts(
+        reasoning: context.model.capabilities.reasoning,
+        metadata: context.modelConfiguration.metadata,
+        protocolID: context.model.protocolID,
+        providerID: context.model.providerID, modelID: context.model.id,
+        modelName: context.model.name)
+      guard supported.contains(effort) else {
+        throw ProviderRuntimeFailure(
+          code: .unsupportedCapability,
+          message: "Model does not support the selected reasoning effort: \(effort.rawValue)",
+          providerID: request.providerID, operation: "stream.validate-reasoning",
+          causeDescription: nil)
+      }
+    }
+
     let supportedOptions: Set<String> = [
       "additionalModelRequestFields", "interleavedThinking", "requestMetadata",
       "thinkingBudgets", "thinkingDisplay", "toolChoice",
@@ -282,11 +298,18 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
   ) throws -> [String: JSONValue] {
     guard let requested = request.options.reasoningEffort else { return [:] }
     guard context.model.capabilities.reasoning else {
+      if requested == .off { return [:] }
       throw failure(
         .unsupportedCapability,
         request,
         "bedrock.request.reasoning",
         "Bedrock model does not support reasoning"
+      )
+    }
+    guard requested != .off else {
+      throw failure(
+        .unsupportedCapability, request, "bedrock.request.reasoning",
+        "Bedrock reasoning cannot be explicitly disabled through this protocol"
       )
     }
     let candidates = [context.model.id, context.model.name].flatMap { value in
@@ -297,7 +320,10 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     }
     guard candidates.contains(where: { $0.contains("anthropic") || $0.contains("claude") })
     else {
-      return [:]
+      throw failure(
+        .unsupportedCapability, request, "bedrock.request.reasoning",
+        "Bedrock reasoning controls are only implemented for Claude models"
+      )
     }
     let adaptive = candidates.contains { value in
       ["opus-4-6", "opus-4-7", "opus-4-8", "opus-5", "sonnet-4-6", "sonnet-5", "fable-5"]
@@ -333,7 +359,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       "xhigh": 16_384,
       "max": 16_384,
     ]
-    guard var budget = defaults[requested] else {
+    guard var budget = defaults[requested.rawValue] else {
       throw failure(
         .invalidRequest,
         request,
@@ -342,7 +368,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       )
     }
     if case .object(let custom)? = request.options.providerOptions["thinkingBudgets"],
-      let configured = custom[requested]?.integerValue
+      let configured = custom[requested.rawValue]?.integerValue
     {
       guard configured > 0 else {
         throw failure(
@@ -382,13 +408,13 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
   }
 
   private func reasoningEffort(
-    _ requested: String,
+    _ requested: ProviderReasoningEffort,
     candidates: [String],
     context: WireProtocolContext,
     request: ProviderRequest
   ) throws -> String {
     if let mapped = context.modelConfiguration.metadata
-      .object("thinkingLevelMap")?.string(requested)
+      .object("thinkingLevelMap")?.string(requested.rawValue)
     {
       return mapped
     }
@@ -396,12 +422,12 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       ["opus-4-7", "opus-4-8", "opus-5", "sonnet-5", "fable-5"]
         .contains { value.contains($0) }
     }
-    if requested == "xhigh", supportsXHigh { return "xhigh" }
+    if requested == .xhigh, supportsXHigh { return "xhigh" }
     switch requested {
-    case "minimal", "low": return "low"
-    case "medium": return "medium"
-    case "high": return "high"
-    case "xhigh", "max": return "high"
+    case .minimal, .low: return "low"
+    case .medium: return "medium"
+    case .high: return "high"
+    case .xhigh, .max: return "high"
     default:
       throw failure(
         .invalidRequest,

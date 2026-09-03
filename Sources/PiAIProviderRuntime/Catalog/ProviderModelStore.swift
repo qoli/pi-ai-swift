@@ -33,7 +33,7 @@ struct ProviderModelRefreshPayload: Sendable {
 }
 
 actor ProviderModelStore {
-  static let persistenceSchemaVersion = 1
+  static let persistenceSchemaVersion = 2
 
   private let expectedRevision: String
   private let persistenceURL: URL?
@@ -301,7 +301,11 @@ actor ProviderModelStore {
           imageGeneration: imageGeneration
         ),
         contextWindow: contextWindow,
-        maximumOutputTokens: maximumOutputTokens
+        maximumOutputTokens: maximumOutputTokens,
+        supportedReasoningEfforts: try ProviderReasoning.supportedEfforts(
+          reasoning: object.bool("reasoning") ?? false, metadata: object,
+          protocolID: protocolID, providerID: providerID, modelID: modelID,
+          modelName: object.string("name") ?? modelID)
       ),
       baseURL: baseURL,
       metadata: object
@@ -374,7 +378,10 @@ actor ProviderModelStore {
             imageGeneration: false
           ),
           contextWindow: raw.contextWindow,
-          maximumOutputTokens: raw.maxTokens
+          maximumOutputTokens: raw.maxTokens,
+          supportedReasoningEfforts: try ProviderReasoning.supportedEfforts(
+            reasoning: raw.reasoning, metadata: raw.metadata, protocolID: "pi-messages",
+            providerID: providerID, modelID: raw.id, modelName: raw.name)
         ),
         baseURL: config.baseUrl,
         metadata: raw.metadata
@@ -439,6 +446,15 @@ actor ProviderModelStore {
       }
       for record in entry.records {
         try validatePersistedRecord(record, providerID: providerID)
+        let efforts = try ProviderReasoning.supportedEfforts(
+          reasoning: record.model.capabilities.reasoning, metadata: record.metadata,
+          protocolID: record.model.protocolID, providerID: providerID, modelID: record.model.id,
+          modelName: record.model.name)
+        guard efforts == record.model.supportedReasoningEfforts else {
+          throw failure(
+            .upstreamDrift, providerID: providerID, operation: "catalog.store.persist.reasoning",
+            message: "persisted reasoning options do not match model metadata")
+        }
       }
       if let maximumAge {
         guard let checkedAt = entry.checkedAt,

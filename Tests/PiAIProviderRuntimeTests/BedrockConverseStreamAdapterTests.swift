@@ -176,7 +176,30 @@ struct BedrockConverseStreamAdapterTests {
   }
 
   @Test
-  func adaptiveClaudeReasoningRequestAndSignatureRoundTrip() async throws {
+  func explicitOffRejectsReasoningModelBeforeTransport() async throws {
+    let context = bedrockReasoningContext()
+    let request = ProviderRequest(
+      id: "reasoning-off", providerID: "amazon-bedrock", modelID: context.model.id,
+      messages: [.user([.text("hello")])], tools: [],
+      options: ProviderGenerationOptions(
+        maximumOutputTokens: nil, temperature: nil, reasoningEffort: .off,
+        responseSchema: nil, providerOptions: [:]))
+    let transport = BedrockFixtureTransport(chunks: [], headers: [:])
+    do {
+      for try await _ in BedrockConverseStreamAdapter().stream(
+        request, context: context, transport: transport)
+      {}
+      Issue.record("expected unsupported reasoning off")
+    } catch let error as ProviderRuntimeFailure {
+      #expect(error.code == .unsupportedCapability)
+    }
+    #expect(await transport.request() == nil)
+  }
+
+  @Test(arguments: [ProviderReasoningEffort.high, .max])
+  func adaptiveClaudeReasoningRequestAndSignatureRoundTrip(effort: ProviderReasoningEffort)
+    async throws
+  {
     let request = ProviderRequest(
       id: "bedrock-reasoning",
       providerID: "amazon-bedrock",
@@ -186,7 +209,7 @@ struct BedrockConverseStreamAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: 8_192,
         temperature: nil,
-        reasoningEffort: "high",
+        reasoningEffort: effort,
         responseSchema: nil,
         providerOptions: [:]
       )
@@ -215,7 +238,7 @@ struct BedrockConverseStreamAdapterTests {
     let additional = try #require(body.object("additionalModelRequestFields"))
     #expect(additional.object("thinking")?.string("type") == "adaptive")
     #expect(additional.object("thinking")?.string("display") == "summarized")
-    #expect(additional.object("output_config")?.string("effort") == "high")
+    #expect(additional.object("output_config")?.string("effort") == effort.rawValue)
   }
 }
 

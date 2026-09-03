@@ -48,7 +48,7 @@ struct ContractTests {
       options: .init(
         maximumOutputTokens: 512,
         temperature: nil,
-        reasoningEffort: "high",
+        reasoningEffort: .high,
         responseSchema: nil,
         providerOptions: [:]
       )

@@ -54,6 +54,9 @@ public struct ProviderModel: Sendable, Equatable, Codable {
   public let capabilities: ProviderCapabilities
   public let contextWindow: Int?
   public let maximumOutputTokens: Int?
+  /// Supported explicit selections in increasing effort order. An empty list
+  /// means only the provider default (nil) is available.
+  public let supportedReasoningEfforts: [ProviderReasoningEffort]
 
   public init(
     id: String,
@@ -62,7 +65,8 @@ public struct ProviderModel: Sendable, Equatable, Codable {
     protocolID: String,
     capabilities: ProviderCapabilities,
     contextWindow: Int?,
-    maximumOutputTokens: Int?
+    maximumOutputTokens: Int?,
+    supportedReasoningEfforts: [ProviderReasoningEffort] = []
   ) {
     self.id = id
     self.providerID = providerID
@@ -71,6 +75,7 @@ public struct ProviderModel: Sendable, Equatable, Codable {
     self.capabilities = capabilities
     self.contextWindow = contextWindow
     self.maximumOutputTokens = maximumOutputTokens
+    self.supportedReasoningEfforts = supportedReasoningEfforts
   }
 }
 

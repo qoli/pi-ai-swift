@@ -54,6 +54,132 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     }
   }
 
+  private func applyReasoning(
+    _ effort: ProviderReasoningEffort,
+    metadata: [String: JSONValue],
+    compat: [String: JSONValue],
+    body: inout [String: JSONValue],
+    providerID: String
+  ) throws {
+    let enabled = effort != .off
+    let mapped = metadata.object("thinkingLevelMap")?.string(effort.rawValue)
+    let wireEffort = mapped ?? (enabled ? effort.rawValue : "none")
+    let supportsEffort = compat.bool("supportsReasoningEffort") != false
+    // These provider defaults are the pinned upstream compatibility resolution.
+    let format =
+      compat.string("thinkingFormat") ?? (providerID == "openrouter" ? "openrouter" : "openai")
+    switch format {
+    case "zai":
+      body["thinking"] = .object(
+        enabled
+          ? ["type": .string("enabled"), "clear_thinking": .bool(false)]
+          : ["type": .string("disabled")])
+      if enabled && supportsEffort { body["reasoning_effort"] = .string(wireEffort) }
+    case "deepseek":
+      body["thinking"] = .object(["type": .string(enabled ? "enabled" : "disabled")])
+      if enabled && supportsEffort { body["reasoning_effort"] = .string(wireEffort) }
+    case "qwen":
+      body["enable_thinking"] = .bool(enabled)
+      if enabled && supportsEffort { body["reasoning_effort"] = .string(wireEffort) }
+    case "qwen-chat-template":
+      body["chat_template_kwargs"] = .object([
+        "enable_thinking": .bool(enabled), "preserve_thinking": .bool(true),
+      ])
+    case "chat-template", "baseten":
+      let key = format == "baseten" ? "chatTemplateArgs" : "chatTemplateKwargs"
+      let field = format == "baseten" ? "chat_template_args" : "chat_template_kwargs"
+      var values: [String: JSONValue] = [:]
+      for (name, value) in compat.object(key) ?? [:] {
+        guard case .object(let variable) = value else {
+          values[name] = value
+          continue
+        }
+        if !enabled && variable.bool("omitWhenOff") == true { continue }
+        switch variable.string("$var") {
+        case "thinking.enabled": values[name] = .bool(enabled)
+        case "thinking.level":
+          if enabled || mapped != nil { values[name] = .string(wireEffort) }
+        case "thinking.budget":
+          if enabled {
+            let budgets: [ProviderReasoningEffort: Int] = [
+              .minimal: 1_024, .low: 2_048, .medium: 8_192, .high: 16_384,
+            ]
+            guard let budget = budgets[effort] else {
+              throw failure(
+                .unsupportedCapability, providerID: providerID,
+                operation: "openai-completions.request.reasoning",
+                message: "reasoning budget requires a supported budget level")
+            }
+            guard let ceiling = body.int("max_tokens") ?? body.int("max_completion_tokens") else {
+              throw failure(
+                .invalidRequest, providerID: providerID,
+                operation: "openai-completions.request.reasoning",
+                message: "reasoning budget requires an output limit")
+            }
+            let clamped = min(budget, max(0, ceiling - 1_024))
+            guard clamped > 0 else {
+              throw failure(
+                .invalidRequest, providerID: providerID,
+                operation: "openai-completions.request.reasoning",
+                message: "output limit leaves no room for reasoning")
+            }
+            values[name] = .integer(Int64(clamped))
+          }
+        default:
+          throw failure(
+            .unsupportedCapability, providerID: providerID,
+            operation: "openai-completions.request.reasoning",
+            message: "unknown reasoning template variable")
+        }
+      }
+      guard !values.isEmpty || (format == "baseten" && supportsEffort && (enabled || mapped != nil))
+      else {
+        throw failure(
+          .unsupportedCapability, providerID: providerID,
+          operation: "openai-completions.request.reasoning",
+          message: "reasoning template has no encodable control")
+      }
+      if !values.isEmpty { body[field] = .object(values) }
+      if format == "baseten", supportsEffort, enabled || mapped != nil {
+        body["reasoning_effort"] = .string(wireEffort)
+      }
+    case "openrouter":
+      body["reasoning"] = .object(["effort": .string(wireEffort)])
+    case "together":
+      body["reasoning"] = .object(["enabled": .bool(enabled)])
+      if enabled && supportsEffort { body["reasoning_effort"] = .string(wireEffort) }
+    case "string-thinking":
+      body["thinking"] = .string(wireEffort)
+    case "ant-ling":
+      guard let mapped else {
+        throw failure(
+          .unsupportedCapability, providerID: providerID,
+          operation: "openai-completions.request.reasoning",
+          message: "reasoning effort requires a model mapping")
+      }
+      body["reasoning"] = .object(["effort": .string(mapped)])
+    case "openai":
+      guard supportsEffort else {
+        throw failure(
+          .unsupportedCapability, providerID: providerID,
+          operation: "openai-completions.request.reasoning",
+          message: "model does not encode reasoning effort")
+      }
+      if !enabled && mapped == nil {
+        throw failure(
+          .unsupportedCapability, providerID: providerID,
+          operation: "openai-completions.request.reasoning",
+          message: "model has no explicit reasoning-off mapping")
+      }
+      body["reasoning_effort"] = .string(wireEffort)
+    default:
+      throw failure(
+        .unsupportedCapability, providerID: providerID,
+        operation: "openai-completions.request.reasoning",
+        message: "unsupported reasoning format: \(format)")
+    }
+  }
+
   private func makeURLRequest(
     _ request: ProviderRequest,
     context: WireProtocolContext
@@ -116,10 +242,9 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     if let temperature = request.options.temperature {
       body["temperature"] = .number(temperature)
     }
-    if let effort = request.options.reasoningEffort,
-      compat.bool("supportsReasoningEffort") != false
-    {
-      body["reasoning_effort"] = .string(effort)
+    if let effort = request.options.reasoningEffort, context.model.capabilities.reasoning {
+      try applyReasoning(
+        effort, metadata: metadata, compat: compat, body: &body, providerID: request.providerID)
     }
     if !request.tools.isEmpty {
       body["tools"] = .array(

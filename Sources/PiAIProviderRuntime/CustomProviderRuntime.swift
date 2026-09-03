@@ -145,7 +145,10 @@ public struct CustomProviderRuntime: ProviderRuntime {
           protocolID: api,
           capabilities: model.capabilities,
           contextWindow: model.contextWindow,
-          maximumOutputTokens: model.maximumOutputTokens
+          maximumOutputTokens: model.maximumOutputTokens,
+          supportedReasoningEfforts: try ProviderReasoning.supportedEfforts(
+            reasoning: model.capabilities.reasoning, metadata: model.metadata,
+            protocolID: api, providerID: provider.id, modelID: model.id, modelName: model.name)
         )
       )
       configurations[

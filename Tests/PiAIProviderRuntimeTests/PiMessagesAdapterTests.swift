@@ -57,7 +57,7 @@ struct PiMessagesAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: 256,
         temperature: 0.5,
-        reasoningEffort: "high",
+        reasoningEffort: .high,
         responseSchema: nil,
         providerOptions: [
           "cacheRetention": .string("long"),
@@ -131,6 +131,27 @@ struct PiMessagesAdapterTests {
     #expect(options.string("reasoning") == "high")
     #expect(options.string("sessionId") == "session-1")
     #expect(options["debug"] == nil)
+  }
+
+  @Test
+  func explicitOffIsForwardedAndNilOmitsReasoning() async throws {
+    for effort: ProviderReasoningEffort? in [nil, .off] {
+      let model = piMessagesFixtureModel()
+      let request = ProviderRequest(
+        id: "reasoning-option", providerID: "radius", modelID: model.id,
+        messages: [.user([.text("hello")])], tools: [],
+        options: ProviderGenerationOptions(
+          maximumOutputTokens: nil, temperature: nil, reasoningEffort: effort,
+          responseSchema: nil, providerOptions: [:]))
+      let transport = PiMessagesFixtureTransport(statusCode: 200, chunks: piMessagesSuccessChunks())
+      for try await _ in PiMessagesAdapter().stream(
+        request, context: piMessagesFixtureContext(model: model), transport: transport)
+      {}
+      let sent = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+      #expect(body.object("options")?.string("reasoning") == effort?.rawValue)
+    }
   }
 
   @Test

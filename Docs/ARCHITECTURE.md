@@ -109,3 +109,28 @@ of authorization kind. OAuth, subscription, ambient, and API-key providers all
 remain in scope. A provider marked `missing` is tracked but not advertised as a
 working Swift provider until its authorization, catalog, selected wire
 protocols, and deterministic verification are landed.
+
+## Reasoning effort selections
+
+`ProviderGenerationOptions.reasoningEffort` uses `ProviderReasoningEffort`, not
+an arbitrary string. A nil selection leaves provider defaults unchanged; `.off`
+requests disabled reasoning. `ProviderModel.supportedReasoningEfforts` supplies
+ordered, model-specific choices for host pickers. The runtime rejects unsupported
+selections before resolving credentials or starting transport.
+
+Catalog choices follow the pinned upstream `getSupportedThinkingLevels`: null
+mappings remove a level, omitted basic levels use the protocol's defined mapping,
+and xhigh/max require explicit mappings. Swift additionally excludes settings
+that its adapter cannot represent, including Google minimum-thinking modes that
+cannot actually disable reasoning and Bedrock reasoning on non-Claude models.
+It never clamps an unsupported caller selection to another level.
+
+The model-store persistence schema is now 2 because catalog descriptors include
+reasoning choices. Older snapshots fail explicitly; no inferred migration or
+silent catalog replacement is performed. Model metadata and persisted choices
+must agree. The upstream pin remains unchanged.
+
+Google 2.5 Pro is also excluded from `.off`: its documented minimum thinking
+budget is 128. This deliberately rejects the pinned upstream's generic 2.x
+zero-budget behavior for that model. Source:
+https://ai.google.dev/gemini-api/docs/generate-content/thinking?hl=en .

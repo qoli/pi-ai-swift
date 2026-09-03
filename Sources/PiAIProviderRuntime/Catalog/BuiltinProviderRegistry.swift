@@ -139,7 +139,10 @@ struct BuiltinProviderRecord: Sendable {
           imageGeneration: protocolID == "openrouter-images"
         ),
         contextWindow: object.int("contextWindow"),
-        maximumOutputTokens: object.int("maxTokens")
+        maximumOutputTokens: object.int("maxTokens"),
+        supportedReasoningEfforts: try ProviderReasoning.supportedEfforts(
+          reasoning: reasoning, metadata: object, protocolID: protocolID,
+          providerID: providerID, modelID: modelID, modelName: object.string("name") ?? modelID)
       )
       let route = ProviderModelRoute(
         modelID: modelID,
@@ -193,7 +196,9 @@ struct BuiltinProviderRecord: Sendable {
       ),
       contextWindow: existing.contextWindow ?? incoming.contextWindow,
       maximumOutputTokens: existing.maximumOutputTokens
-        ?? incoming.maximumOutputTokens
+        ?? incoming.maximumOutputTokens,
+      supportedReasoningEfforts: preferIncomingProtocol
+        ? incoming.supportedReasoningEfforts : existing.supportedReasoningEfforts
     )
   }
 

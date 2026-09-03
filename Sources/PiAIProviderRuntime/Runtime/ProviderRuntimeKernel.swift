@@ -196,6 +196,16 @@ struct ProviderRuntimeKernel: ProviderRuntime {
           "unsupported model for \(request.providerID): \(request.modelID)"
       )
     }
+    if let effort = request.options.reasoningEffort,
+      !model.supportedReasoningEfforts.contains(effort)
+    {
+      throw failure(
+        .unsupportedCapability,
+        providerID: request.providerID,
+        operation: "stream.validate-reasoning",
+        message: "model \(request.modelID) does not support reasoning effort \(effort.rawValue)"
+      )
+    }
     let credential = try await provider.authorization.resolveCredential(
       providerID: request.providerID,
       credentialStore: credentialStore,
@@ -440,7 +450,8 @@ extension ProviderModel {
       protocolID: protocolID,
       capabilities: capabilities,
       contextWindow: contextWindow,
-      maximumOutputTokens: maximumOutputTokens
+      maximumOutputTokens: maximumOutputTokens,
+      supportedReasoningEfforts: supportedReasoningEfforts
     )
   }
 }
