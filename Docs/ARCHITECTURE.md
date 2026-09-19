@@ -2,19 +2,28 @@
 
 ## Current status
 
-**Landed for the pinned provider scope.** The public seam, normalized DTOs, explicit failure model,
-complete pinned catalog, static custom-provider construction, native wire adapters, raw streaming transport,
-Keychain storage, serialized credential refresh, and Kimi Coding/OpenAI Codex
-device authorization exist. Provider reasoning signatures remain opaque but
-round-trip through normalized events. Bedrock supports bearer credentials and
-native SigV4 credentials supplied by the host. Provider-by-provider
-equivalence is pinned by the differential manifest. Anthropic and OpenRouter
-use native host-returned PKCE callbacks; GitHub Copilot, Kimi Coding, OpenAI
-Codex, and xAI use native device or callback flows. Radius supports browser or
-device OAuth, authenticated dynamic catalog refresh, persisted offline catalog
-restoration, and `pi-messages` streaming. All areas in the maintenance IR have
-deterministic Swift evidence; live credentials remain a separate acceptance
-layer rather than a substitute for compatibility fixtures.
+**Wire compatibility is landed for the pinned provider scope.** Source-executed
+oracles and Swift replay tests close every required request, response-event, and
+typed-failure branch for all eleven wire protocols. The coverage gate requires
+the protocol-by-variant matrices, checked-in source oracle, and Swift replay to
+agree before a wire area can remain `landed`; a fully closed area may no longer
+remain `partial`. Monetary usage, including pricing tiers, cache read/write,
+Anthropic one-hour cache writes, OpenAI service-tier multipliers, Pi direct
+cost, and OpenRouter image cost, is part of that deterministic response gate.
+
+The public seam, normalized DTOs, explicit failure model, complete pinned
+catalog, static custom-provider construction, native wire adapters, raw
+streaming transport, Keychain storage, serialized credential refresh, and Kimi
+Coding/OpenAI Codex device authorization exist. Provider reasoning signatures
+remain opaque but round-trip through normalized events. Bedrock supports bearer
+credentials and native SigV4 credentials supplied by the host. Anthropic and
+OpenRouter use native host-returned PKCE callbacks; GitHub Copilot, Kimi Coding,
+OpenAI Codex, and xAI use native device or callback flows. Radius supports
+browser or device OAuth, authenticated dynamic catalog refresh, persisted
+offline catalog restoration, and `pi-messages` streaming. Provider catalog and
+authorization areas retain their own ledger statuses; wire closure does not
+promote them. Live credentials remain a separate acceptance layer rather than
+a substitute for compatibility fixtures.
 
 ## Purpose
 
@@ -120,17 +129,17 @@ selections before resolving credentials or starting transport.
 
 Catalog choices follow the pinned upstream `getSupportedThinkingLevels`: null
 mappings remove a level, omitted basic levels use the protocol's defined mapping,
-and xhigh/max require explicit mappings. Swift additionally excludes settings
-that its adapter cannot represent, including Google minimum-thinking modes that
-cannot actually disable reasoning and Bedrock reasoning on non-Claude models.
-It never clamps an unsupported caller selection to another level.
+and xhigh/max require explicit mappings. Protocol adapters preserve the pinned
+provider-specific disabled representation: Google families use their exact
+minimum-thinking encoding, while non-Claude Bedrock models omit Claude-only
+reasoning fields. The runtime never clamps an unsupported caller selection to
+another level.
 
 The model-store persistence schema is now 2 because catalog descriptors include
 reasoning choices. Older snapshots fail explicitly; no inferred migration or
 silent catalog replacement is performed. Model metadata and persisted choices
 must agree. The upstream pin remains unchanged.
 
-Google 2.5 Pro is also excluded from `.off`: its documented minimum thinking
-budget is 128. This deliberately rejects the pinned upstream's generic 2.x
-zero-budget behavior for that model. Source:
-https://ai.google.dev/gemini-api/docs/generate-content/thinking?hl=en .
+For Google models, `.off` is the canonical caller request for the pinned
+source's model-family-specific hidden/minimum-thinking form; it does not claim
+that every Google backend can encode a literal zero-token budget.

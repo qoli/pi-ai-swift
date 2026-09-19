@@ -234,6 +234,11 @@ if [[ "$resolved_revision" != "$upstream_revision" ]]; then
   exit 4
 fi
 
+# Execute the exact pinned TypeScript source as the differential oracle. The
+# lockfile owns dependency identity; lifecycle scripts are not needed for the
+# provider request builders exercised by the oracle.
+npm --prefix "$cache_root" ci --ignore-scripts --no-audit --no-fund
+
 package_file="$cache_root/$upstream_package_path/package.json"
 if [[ ! -f "$package_file" ]]; then
   echo "missing upstream package manifest: $package_file" >&2
@@ -270,6 +275,12 @@ python3 "$repo_root/Scripts/differential-manifest.py" \
   --repo "$repo_root" \
   --upstream "$cache_root" \
   --manifest "$repo_root/Fixtures/Manifest.json"
+
+python3 "$repo_root/Scripts/source-differential.py" \
+  --repo "$repo_root" \
+  --upstream "$cache_root"
+
+python3 "$repo_root/Scripts/check-differential-coverage.py" "$repo_root"
 
 python3 - "$cache_root" "$mapping_file" "$lock_file" "$catalog_file" <<'PY'
 import hashlib

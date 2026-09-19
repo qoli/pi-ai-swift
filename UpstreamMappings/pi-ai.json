@@ -11,7 +11,7 @@
     {
       "id": "builtin-provider-registry",
       "responsibility": "Complete built-in provider inventory and generated model-catalog registration.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -169,7 +169,67 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/DifferentialFixtureTests.swift#validatesPinnedProvenanceDigestRedactionAndExactComparison",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedRequestDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceRequestOracle",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#supportedResponseProtocolsMatchPinnedSourceNormalizedEvents",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedSecondaryRequestDifferentialTests.swift#piMistralAndOpenRouterRequestBranchesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockRequestBranchDifferentialTests.swift#sourceDerivedBranchMatrixMatchesPinnedAnthropicAndBedrockRequests",
+        "Tests/PiAIProviderRuntimeTests/GoogleSourceDerivedRequestTests.swift#googleAndVertexRequestBranchesMatchPinnedSourceOracle",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#pinnedSourceOracleIsReproducible",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#successResponseBranchesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleMistralAndOpenRouterResponsesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#pinnedResponseEventOracleIsReproducible",
+        "Tests/PiAIProviderRuntimeTests/AzureOpenAIConfigurationDifferentialTests.swift#pinnedSourceConfigurationCasesMatchSwiftResolverAndAdapter",
         "Scripts/differential-manifest.py",
+        "Scripts/openai-request-branch-oracle.mjs",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Scripts/pi-ai-anthropic-bedrock-request-oracle.mjs",
+        "Scripts/pi-ai-azure-configuration-oracle.mjs",
+        "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
+        "Scripts/pi-ai-google-request-oracle.mjs",
+        "Scripts/pi-ai-provider-response-branches-oracle.mjs",
+        "Scripts/pi-ai-replay-oracle.mjs",
+        "Scripts/pi-ai-request-domain-oracle.mjs",
+        "Scripts/pi-ai-secondary-request-oracle.mjs",
+        "Scripts/pi-ai-source-oracle.mjs",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Scripts/pi-ai-failure-oracle.mjs",
+        "Scripts/source-differential.py",
+        "Scripts/check-differential-coverage.py",
+        "Fixtures/Differential/Cases/request-rich.json",
+        "Fixtures/Differential/Cases/request-replay.json",
+        "Fixtures/Differential/Cases/request-secondary.json",
+        "Fixtures/Differential/Cases/request-domain.json",
+        "Fixtures/Differential/Cases/request-anthropic-bedrock.json",
+        "Fixtures/Differential/Cases/request-google-branches.json",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
+        "Fixtures/Differential/Cases/response-provider-branches.json",
+        "Fixtures/Differential/Cases/failure-http.json",
+        "Fixtures/Differential/Cases/failure-malformed-wire.json",
+        "Fixtures/Differential/Cases/failure-missing-terminal.json",
+        "Fixtures/Differential/Cases/failure-provider-declared.json",
+        "Fixtures/Differential/Coverage.json",
+        "Fixtures/Differential/RequestBranchInventory.json",
+        "Fixtures/Differential/ResponseBranchInventory.json",
+        "Fixtures/Differential/FailureBranchInventory.json",
+        "Fixtures/Differential/Oracle/request-rich.json",
+        "Fixtures/Differential/Oracle/request-replay.json",
+        "Fixtures/Differential/Oracle/request-secondary.json",
+        "Fixtures/Differential/Oracle/request-domain.json",
+        "Fixtures/Differential/Oracle/request-anthropic-bedrock.json",
+        "Fixtures/Differential/Oracle/request-google-branches.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
+        "Fixtures/Differential/Oracle/response-provider-branches.json",
+        "Fixtures/Differential/Cases/failure-cancellation.json",
+        "Fixtures/Differential/Oracle/failure-cancellation.json",
+        "Fixtures/AzureOpenAIConfiguration/Cases/configuration.json",
+        "Fixtures/AzureOpenAIConfiguration/Oracle/configuration.json",
+        "Fixtures/OpenAIRequestBranches/Cases/request-branches.json",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
         "Fixtures/Manifest.json"
       ],
       "requiredGates": [
@@ -274,7 +334,7 @@
       "id": "provider-amazon-bedrock",
       "providerID": "amazon-bedrock",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for amazon-bedrock.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -307,7 +367,7 @@
       "id": "provider-ant-ling",
       "providerID": "ant-ling",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for ant-ling.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -340,7 +400,7 @@
       "id": "provider-anthropic",
       "providerID": "anthropic",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for anthropic.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
@@ -375,7 +435,7 @@
       "id": "provider-azure-openai-responses",
       "providerID": "azure-openai-responses",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for azure-openai-responses.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -408,7 +468,7 @@
       "id": "provider-baseten",
       "providerID": "baseten",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for baseten.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -441,7 +501,7 @@
       "id": "provider-cerebras",
       "providerID": "cerebras",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cerebras.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -474,7 +534,7 @@
       "id": "provider-cloudflare-ai-gateway",
       "providerID": "cloudflare-ai-gateway",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cloudflare-ai-gateway.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -511,7 +571,7 @@
       "id": "provider-cloudflare-workers-ai",
       "providerID": "cloudflare-workers-ai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for cloudflare-workers-ai.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -546,7 +606,7 @@
       "id": "provider-deepseek",
       "providerID": "deepseek",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for deepseek.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -579,7 +639,7 @@
       "id": "provider-fireworks",
       "providerID": "fireworks",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for fireworks.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -613,7 +673,7 @@
       "id": "provider-github-copilot",
       "providerID": "github-copilot",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for github-copilot.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
@@ -652,7 +712,7 @@
       "id": "provider-google",
       "providerID": "google",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for google.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -685,7 +745,7 @@
       "id": "provider-google-vertex",
       "providerID": "google-vertex",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for google-vertex.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -718,7 +778,7 @@
       "id": "provider-groq",
       "providerID": "groq",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for groq.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -751,7 +811,7 @@
       "id": "provider-huggingface",
       "providerID": "huggingface",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for huggingface.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -784,7 +844,7 @@
       "id": "provider-kimi-coding",
       "providerID": "kimi-coding",
       "responsibility": "Kimi Coding API-key and subscription authorization, catalog, endpoint, headers, and Anthropic Messages protocol selection.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -821,7 +881,7 @@
       "id": "provider-minimax",
       "providerID": "minimax",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -854,7 +914,7 @@
       "id": "provider-minimax-cn",
       "providerID": "minimax-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax-cn.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -887,7 +947,7 @@
       "id": "provider-mistral",
       "providerID": "mistral",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for mistral.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -920,7 +980,7 @@
       "id": "provider-moonshotai",
       "providerID": "moonshotai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for moonshotai.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -953,7 +1013,7 @@
       "id": "provider-moonshotai-cn",
       "providerID": "moonshotai-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for moonshotai-cn.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -986,7 +1046,7 @@
       "id": "provider-nvidia",
       "providerID": "nvidia",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for nvidia.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1019,7 +1079,7 @@
       "id": "provider-openai",
       "providerID": "openai",
       "responsibility": "OpenAI API-key authorization, catalog, endpoint, headers, and OpenAI Responses protocol selection.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1053,7 +1113,7 @@
       "id": "provider-openai-codex",
       "providerID": "openai-codex",
       "responsibility": "OpenAI Codex subscription catalog, authorization composition, endpoint, headers, and Codex Responses protocol selection.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
@@ -1091,7 +1151,7 @@
       "id": "provider-opencode",
       "providerID": "opencode",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for opencode.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1127,7 +1187,7 @@
       "id": "provider-opencode-go",
       "providerID": "opencode-go",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for opencode-go.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1162,7 +1222,7 @@
       "id": "provider-openrouter",
       "providerID": "openrouter",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for openrouter.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
@@ -1197,7 +1257,7 @@
       "id": "provider-qwen-token-plan",
       "providerID": "qwen-token-plan",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1230,7 +1290,7 @@
       "id": "provider-qwen-token-plan-cn",
       "providerID": "qwen-token-plan-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-cn.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1263,7 +1323,7 @@
       "id": "provider-qwen-token-plan-individual",
       "providerID": "qwen-token-plan-individual",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-individual.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1296,7 +1356,7 @@
       "id": "provider-radius",
       "providerID": "radius",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for radius.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
@@ -1315,7 +1375,8 @@
       "dependsOn": [
         "builtin-provider-registry",
         "catalog-model-store",
-        "credential-store-auth-resolution"
+        "credential-store-auth-resolution",
+        "wire-pi-messages"
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#deviceOAuthStoresGatewayAndHandlesPendingPolling",
@@ -1333,7 +1394,7 @@
       "id": "provider-together",
       "providerID": "together",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for together.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1366,7 +1427,7 @@
       "id": "provider-vercel-ai-gateway",
       "providerID": "vercel-ai-gateway",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for vercel-ai-gateway.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1399,7 +1460,7 @@
       "id": "provider-xai",
       "providerID": "xai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xai.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
@@ -1435,7 +1496,7 @@
       "id": "provider-xiaomi",
       "providerID": "xiaomi",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1468,7 +1529,7 @@
       "id": "provider-xiaomi-token-plan-ams",
       "providerID": "xiaomi-token-plan-ams",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-ams.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1501,7 +1562,7 @@
       "id": "provider-xiaomi-token-plan-cn",
       "providerID": "xiaomi-token-plan-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-cn.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1534,7 +1595,7 @@
       "id": "provider-xiaomi-token-plan-sgp",
       "providerID": "xiaomi-token-plan-sgp",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for xiaomi-token-plan-sgp.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1567,7 +1628,7 @@
       "id": "provider-zai",
       "providerID": "zai",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for zai.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1600,7 +1661,7 @@
       "id": "provider-zai-coding-cn",
       "providerID": "zai-coding-cn",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for zai-coding-cn.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
@@ -1663,7 +1724,7 @@
     {
       "id": "runtime-provider-dispatch",
       "responsibility": "Resolve provider and model, apply authorization, and dispatch by model wire protocol.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
@@ -1694,7 +1755,7 @@
     {
       "id": "custom-provider-construction",
       "responsibility": "Public static custom-provider declaration, provider API inheritance, model API override, and reuse of production authorization and wire adapters.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/CustomProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Runtime/StandardWireProtocols.swift",
@@ -1834,6 +1895,7 @@
       "responsibility": "Shared strict JSON/SSE decoding, event ordering, bounded provider errors, Unicode handling, and explicit no-automatic-retry transport semantics.",
       "status": "landed",
       "swiftPaths": [
+        "Sources/PiAIProviderRuntime/ProviderConstrainedSamplingResolver.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/JSONAccessors.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ServerSentEvents.swift"
       ],
