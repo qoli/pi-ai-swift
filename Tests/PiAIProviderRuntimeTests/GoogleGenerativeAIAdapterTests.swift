@@ -5,22 +5,32 @@ import Testing
 
 @Suite
 struct GoogleGenerativeAIAdapterTests {
-  @Test(arguments: ["gemini-3.1-pro", "gemini-2.5-pro"])
-  func rejectsOffWhenGoogleCanOnlyHideThoughts(modelID: String) async throws {
-    let model = googleModel(id: modelID)
-    let transport = GoogleFixtureTransport(statusCode: 200, chunks: googleFixtureChunks())
-    let request = ProviderRequest(
-      id: "effort", providerID: model.providerID, modelID: model.id,
-      messages: [.user([.text("hello")])], tools: [],
-      options: .init(
-        maximumOutputTokens: nil, temperature: nil, reasoningEffort: .off, responseSchema: nil,
-        providerOptions: [:]))
-    await #expect(throws: ProviderRuntimeFailure.self) {
+  @Test
+  func encodesPinnedSourceDisabledThinkingByModelFamily() async throws {
+    let cases: [(modelID: String, field: String, value: JSONValue)] = [
+      ("gemini-3.1-pro-preview", "thinkingLevel", .string("LOW")),
+      ("gemini-3-flash-preview", "thinkingLevel", .string("MINIMAL")),
+      ("gemma-4-27b-it", "thinkingLevel", .string("MINIMAL")),
+      ("gemini-2.5-pro", "thinkingBudget", .integer(0)),
+    ]
+    for testCase in cases {
+      let model = googleModel(id: testCase.modelID)
+      let transport = GoogleFixtureTransport(statusCode: 200, chunks: googleFixtureChunks())
+      let request = ProviderRequest(
+        id: "effort", providerID: model.providerID, modelID: model.id,
+        messages: [.user([.text("hello")])], tools: [],
+        options: .init(
+          maximumOutputTokens: nil, temperature: nil, reasoningEffort: .off,
+          responseSchema: nil, providerOptions: [:]))
       for try await _ in GoogleGenerativeAIAdapter().stream(
         request, context: googleContext(model: model), transport: transport)
       {}
+      let sent = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+      let thinking = try #require(body.object("generationConfig")?.object("thinkingConfig"))
+      #expect(thinking[testCase.field] == testCase.value)
     }
-    #expect(await transport.request() == nil)
   }
 
   @Test
@@ -88,7 +98,8 @@ struct GoogleGenerativeAIAdapterTests {
             "answer": .object(["type": .string("string")])
           ]),
         ]),
-        providerOptions: ["toolChoice": .string("any")]
+        providerOptions: [:],
+        toolChoice: .string("any")
       )
     )
 
@@ -167,13 +178,37 @@ struct GoogleGenerativeAIAdapterTests {
       flavor: .vertex
     )
 
+    let apiKeyTransport = GoogleFixtureTransport(
+      statusCode: 200,
+      chunks: [
+        Data(
+          "data: {\"responseId\":\"vertex-key\",\"candidates\":[{\"finishReason\":\"STOP\"}]}\n\n"
+            .utf8)
+      ]
+    )
+    for try await _ in adapter.stream(
+      request,
+      context: vertexContext(
+        model: model,
+        credential: .apiKey(APIKeyCredential(key: "key", metadata: [:]))
+      ),
+      transport: apiKeyTransport
+    ) {}
+    #expect(
+      await apiKeyTransport.request()?.url?.absoluteString
+        == "https://us-central1-aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
+    )
+
     await expectFailure(
       adapter: adapter,
       request: request,
       context: vertexContext(
         model: model,
-        credential: .apiKey(
-          APIKeyCredential(key: "key", metadata: ["location": "us-central1"])
+        credential: .oauth(
+          OAuthCredential(
+            accessToken: "token", refreshToken: "refresh",
+            expiresAt: Date(timeIntervalSince1970: 4_000_000_000),
+            metadata: ["location": "us-central1"])
         )
       ),
       expectedCode: .invalidCredential,
@@ -184,8 +219,11 @@ struct GoogleGenerativeAIAdapterTests {
       request: request,
       context: vertexContext(
         model: model,
-        credential: .apiKey(
-          APIKeyCredential(key: "key", metadata: ["project": "sample-project"])
+        credential: .oauth(
+          OAuthCredential(
+            accessToken: "token", refreshToken: "refresh",
+            expiresAt: Date(timeIntervalSince1970: 4_000_000_000),
+            metadata: ["project": "sample-project"])
         )
       ),
       expectedCode: .invalidCredential,
@@ -458,7 +496,7 @@ private func googleContext(model: ProviderModel, metadata: [String: JSONValue] =
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: metadata
+      metadata: fixtureMetadataWithCost(metadata)
     )
   )
 }
@@ -482,7 +520,7 @@ private func vertexContext(
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: [:]
+      metadata: fixtureMetadataWithCost()
     )
   )
 }

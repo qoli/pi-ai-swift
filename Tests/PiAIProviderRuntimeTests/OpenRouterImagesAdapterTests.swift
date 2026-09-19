@@ -23,7 +23,7 @@ struct OpenRouterImagesAdapterTests {
       events.append(event)
     }
 
-    #expect(events.count == 6)
+    #expect(events.count == 7)
     #expect(events[1] == .textDelta("created"))
     guard case .asset(let first) = events[2], case .asset(let second) = events[3] else {
       Issue.record("expected two image assets")
@@ -42,6 +42,8 @@ struct OpenRouterImagesAdapterTests {
             outputTokens: 4,
             reasoningTokens: nil,
             cachedInputTokens: 2,
+            cacheWriteTokens: 1,
+            totalTokens: 14,
             providerMetadata: [
               "prompt_tokens": .integer(10),
               "completion_tokens": .integer(4),
@@ -49,11 +51,17 @@ struct OpenRouterImagesAdapterTests {
                 "cached_tokens": .integer(3),
                 "cache_write_tokens": .integer(1),
               ]),
-            ]
+            ],
+            cost: ProviderUsageCost(input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0)
           )
         )
     )
-    #expect(events[5] == .completed(.stop))
+    guard case .responseSnapshot(let snapshot) = events[5] else {
+      Issue.record("expected terminal response snapshot")
+      return
+    }
+    #expect(snapshot.content.count == 3)
+    #expect(events[6] == .completed(.stop))
 
     let sent = try #require(await transport.request())
     #expect(sent.url?.absoluteString == "https://openrouter.ai/api/v1/chat/completions")
@@ -214,7 +222,9 @@ private func openRouterImageContext(
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: ["output": .array(output.map(JSONValue.string))]
+      metadata: fixtureMetadataWithCost([
+        "output": .array(output.map(JSONValue.string))
+      ])
     )
   )
 }

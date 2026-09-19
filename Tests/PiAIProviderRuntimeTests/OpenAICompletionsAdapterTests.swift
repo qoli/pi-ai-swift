@@ -39,7 +39,13 @@ struct OpenAICompletionsAdapterTests {
         let wire = enabled ? "high" : "none"
         switch format {
         case "openai": #expect(body.string("reasoning_effort") == wire)
-        case "openrouter", "ant-ling": #expect(body.object("reasoning")?.string("effort") == wire)
+        case "openrouter": #expect(body.object("reasoning")?.string("effort") == wire)
+        case "ant-ling":
+          if enabled {
+            #expect(body.object("reasoning")?.string("effort") == wire)
+          } else {
+            #expect(body["reasoning"] == nil)
+          }
         case "deepseek", "zai":
           #expect(body.object("thinking")?.string("type") == (enabled ? "enabled" : "disabled"))
         case "qwen": #expect(body.bool("enable_thinking") == enabled)
@@ -92,14 +98,14 @@ struct OpenAICompletionsAdapterTests {
         protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
-        metadata: [
+        metadata: fixtureMetadataWithCost([
           "compat": .object([
             "maxTokensField": .string("max_tokens"),
             "supportsStore": .bool(false),
             "supportsReasoningEffort": .bool(false),
             "thinkingFormat": .string("deepseek"),
           ])
-        ]
+        ])
       )
     )
     let request = ProviderRequest(
@@ -262,7 +268,7 @@ private func completionFixtureRequestAndContext(
         protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
-        metadata: metadata
+        metadata: fixtureMetadataWithCost(metadata)
       )
     )
   )

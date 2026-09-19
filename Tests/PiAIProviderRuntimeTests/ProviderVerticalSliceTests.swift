@@ -47,7 +47,14 @@ struct ProviderVerticalSliceTests {
           reasoningEffort: nil,
           responseSchema: nil,
           providerOptions: [:]
-        )
+        ),
+        connectionOptions: providerID == "azure-openai-responses"
+          ? ProviderConnectionOptions(
+            azureOpenAIResponses: AzureOpenAIResponsesConnectionOptions(
+              azureBaseURL: "https://fixture.openai.azure.com/openai/v1",
+              azureAPIVersion: "v1",
+              azureDeploymentName: "fixture-deployment"))
+          : .init()
       )
       var events: [ProviderEvent] = []
       for try await event in runtime.stream(request) { events.append(event) }

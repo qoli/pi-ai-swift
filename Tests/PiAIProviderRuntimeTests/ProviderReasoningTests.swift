@@ -50,11 +50,11 @@ struct ProviderReasoningTests {
   }
 
   @Test(arguments: ["gemini-3-flash-preview", "gemini-2.5-pro"])
-  func googleMinimumThinkingIsNotAdvertisedAsDisabled(modelID: String) throws {
+  func googleOffSelectionUsesPinnedSourceMinimumThinkingEncoding(modelID: String) throws {
     let efforts = try ProviderReasoning.supportedEfforts(
       reasoning: true, metadata: [:], protocolID: "google-generative-ai",
       modelID: modelID)
-    #expect(!efforts.contains(.off))
+    #expect(efforts.contains(.off))
     #expect(efforts.contains(.high))
   }
 

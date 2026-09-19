@@ -72,7 +72,7 @@ struct MistralConversationsAdapterTests {
       events.first
         == .responseStarted(
           ProviderResponseMetadata(
-            responseID: "mistral-response",
+            responseID: nil,
             providerID: "mistral",
             modelID: model.id,
             providerMetadata: [:]
@@ -99,9 +99,23 @@ struct MistralConversationsAdapterTests {
             outputTokens: 7,
             reasoningTokens: 2,
             cachedInputTokens: 3,
-            providerMetadata: ["totalTokens": .integer(19)]
+            cacheWriteTokens: 0,
+            totalTokens: 19,
+            providerMetadata: [
+              "prompt_tokens": .integer(12),
+              "completion_tokens": .integer(7),
+              "total_tokens": .integer(19),
+              "prompt_tokens_details": .object(["cached_tokens": .integer(3)]),
+              "completion_tokens_details": .object(["reasoning_tokens": .integer(2)]),
+            ],
+            cost: ProviderUsageCost(input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0)
           )))
     )
+    guard case .responseSnapshot(let snapshot) = events[events.count - 2] else {
+      Issue.record("expected terminal response snapshot")
+      return
+    }
+    #expect(snapshot.responseID == "mistral-response")
     #expect(events.last == .completed(.toolCalls))
 
     let sent = try #require(await transport.request())
@@ -143,7 +157,8 @@ struct MistralConversationsAdapterTests {
       let sent = try #require(await transport.request())
       let body = try decodeJSONObject(
         try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
-      #expect(body.string("reasoning_effort") == (effort == .high ? "high" : "none"))
+      let expected = effort == .off ? nil : (effort == .high ? "high" : "none")
+      #expect(body.string("reasoning_effort") == expected)
       #expect(body["prompt_mode"] == nil)
     }
   }
@@ -169,7 +184,7 @@ struct MistralConversationsAdapterTests {
   }
 
   @Test
-  func explicitOffRejectsReasoningModelBeforeTransport() async throws {
+  func explicitOffUsesPinnedSimpleOmissionSemantics() async throws {
     let model = mistralFixtureModel()
     let request = ProviderRequest(
       id: "reasoning-off", providerID: "mistral", modelID: model.id,
@@ -177,12 +192,15 @@ struct MistralConversationsAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: nil, temperature: nil, reasoningEffort: .off,
         responseSchema: nil, providerOptions: [:]))
-    let transport = MistralFixtureTransport(statusCode: 200, chunks: [])
-    await expectMistralFailure(code: .unsupportedCapability) {
-      MistralConversationsAdapter().stream(
-        request, context: mistralFixtureContext(model: model), transport: transport)
-    }
-    #expect(await transport.request() == nil)
+    let transport = MistralFixtureTransport(statusCode: 200, chunks: mistralSuccessChunks())
+    for try await _ in MistralConversationsAdapter().stream(
+      request, context: mistralFixtureContext(model: model), transport: transport)
+    {}
+    let sent = try #require(await transport.request())
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+    #expect(body["reasoning_effort"] == nil)
+    #expect(body["prompt_mode"] == nil)
   }
 
   @Test
@@ -329,7 +347,7 @@ private func mistralFixtureContext(
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: metadata
+      metadata: fixtureMetadataWithCost(metadata)
     )
   )
 }

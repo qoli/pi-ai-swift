@@ -12,6 +12,10 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
+          let pricing = try ProviderUsagePricing.parse(
+            metadata: context.modelConfiguration.metadata,
+            providerID: request.providerID,
+            operation: "openrouter-images.usage.pricing")
           let response = try await transport.stream(
             try makeURLRequest(request, context: context)
           )
@@ -25,12 +29,23 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
               cause: String(data: data, encoding: .utf8)
             )
           }
-          for event in try decode(data, request: request) {
+          for event in try decode(data, request: request, pricing: pricing) {
             continuation.yield(event)
           }
           continuation.finish()
-        } catch {
+        } catch is CancellationError {
+          continuation.finish(throwing: CancellationError())
+        } catch let error as ProviderRuntimeFailure {
           continuation.finish(throwing: error)
+        } catch {
+          continuation.finish(
+            throwing: failure(
+              .transportFailed,
+              request,
+              "openrouter-images.response.transport",
+              "OpenRouter image transport failed",
+              cause: String(describing: error)
+            ))
         }
       }
       continuation.onTermination = { _ in task.cancel() }
@@ -179,21 +194,24 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
 
   private func decode(
     _ data: Data,
-    request: ProviderRequest
+    request: ProviderRequest,
+    pricing: ProviderUsagePricing?
   ) throws -> [ProviderEvent] {
     let object = try decodeJSONObject(
       data,
       providerID: request.providerID,
       operation: "openrouter-images.response.decode"
     )
-    guard let responseID = object.string("id"), !responseID.isEmpty else {
+    if let error = object.object("error") {
       throw failure(
-        .invalidResponse,
+        .transportFailed,
         request,
-        "openrouter-images.response.identity",
-        "OpenRouter image response is missing id"
+        "openrouter-images.response.error",
+        error.string("message") ?? "OpenRouter Images provider returned an error",
+        cause: error.string("code")
       )
     }
+    let responseID = object.string("id").flatMap { $0.isEmpty ? nil : $0 }
     var events: [ProviderEvent] = [
       .responseStarted(
         ProviderResponseMetadata(
@@ -204,11 +222,13 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
         )
       )
     ]
+    var snapshotContent: [ProviderResponseContent] = []
     if let choice = object.array("choices")?.first?.objectValue,
       let message = choice.object("message")
     {
       if let text = message.string("content"), !text.isEmpty {
         events.append(.textDelta(text))
+        snapshotContent.append(.text(ProviderTextContent(text: text, signature: nil)))
       }
       for (index, image) in (message.array("images") ?? []).enumerated() {
         guard let image = image.objectValue else { continue }
@@ -231,37 +251,68 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
             "OpenRouter returned malformed base64 image data"
           )
         }
-        events.append(
-          .asset(
-            ProviderAsset(
-              id: "\(responseID)-image-\(index)",
-              kind: .image,
-              mimeType: mimeType,
-              data: bytes,
-              providerMetadata: ["choiceIndex": .integer(0), "imageIndex": .integer(Int64(index))]
-            )
+        guard let responseID else {
+          throw failure(
+            .invalidResponse,
+            request,
+            "openrouter-images.response.identity",
+            "OpenRouter image response with assets is missing id"
           )
+        }
+        let asset = ProviderAsset(
+          id: "\(responseID)-image-\(index)",
+          kind: .image,
+          mimeType: mimeType,
+          data: bytes,
+          providerMetadata: ["choiceIndex": .integer(0), "imageIndex": .integer(Int64(index))]
         )
+        events.append(.asset(asset))
+        snapshotContent.append(.asset(asset))
       }
     }
+    var normalizedUsage: ProviderUsage?
     if let usage = object.object("usage") {
+      guard let pricing else {
+        throw failure(
+          .upstreamDrift, request, "openrouter-images.usage.pricing",
+          "model cost rates are missing")
+      }
       let prompt = usage.int("prompt_tokens") ?? 0
       let details = usage.object("prompt_tokens_details")
       let reportedCached = details?.int("cached_tokens") ?? 0
       let cacheWrite = details?.int("cache_write_tokens") ?? 0
       let cacheRead = cacheWrite > 0 ? max(0, reportedCached - cacheWrite) : reportedCached
-      events.append(
-        .usage(
-          ProviderUsage(
-            inputTokens: max(0, prompt - cacheRead - cacheWrite),
-            outputTokens: usage.int("completion_tokens") ?? 0,
-            reasoningTokens: nil,
-            cachedInputTokens: cacheRead,
-            providerMetadata: usage
-          )
-        )
+      let input = max(0, prompt - cacheRead - cacheWrite)
+      let output = usage.int("completion_tokens") ?? 0
+      normalizedUsage = ProviderUsage(
+        inputTokens: input,
+        outputTokens: output,
+        reasoningTokens: nil,
+        cachedInputTokens: cacheRead,
+        cacheWriteTokens: cacheWrite,
+        totalTokens: input + output + cacheRead + cacheWrite,
+        providerMetadata: usage,
+        cost: pricing.cost(
+          input: input, output: output, cacheRead: cacheRead, cacheWrite: cacheWrite,
+          useTiers: false)
       )
+      events.append(.usage(normalizedUsage!))
     }
+    events.append(
+      .responseSnapshot(
+        ProviderResponseSnapshot(
+          responseID: responseID,
+          providerID: request.providerID,
+          protocolID: "openrouter-images",
+          modelID: request.modelID,
+          responseModelID: object.string("model") == request.modelID ? nil : object.string("model"),
+          content: snapshotContent,
+          usage: normalizedUsage,
+          finishReason: .stop,
+          rawFinishReason: nil,
+          timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000)
+        )
+      ))
     events.append(.completed(.stop))
     return events
   }

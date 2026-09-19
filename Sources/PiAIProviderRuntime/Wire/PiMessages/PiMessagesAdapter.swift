@@ -66,6 +66,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> URLRequest {
+    try request.validateSingleSystemMessage(operation: "pi-messages.request.system")
     var components = URLComponents(
       url: context.baseURL.appending(path: "messages"),
       resolvingAgainstBaseURL: false
@@ -157,11 +158,26 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     if !request.tools.isEmpty {
       contextObject["tools"] = .array(
         request.tools.map {
-          .object([
+          var tool: [String: JSONValue] = [
             "name": .string($0.name),
             "description": .string($0.description),
             "parameters": $0.inputSchema,
-          ])
+          ]
+          if let constrainedSampling = $0.constrainedSampling {
+            switch constrainedSampling {
+            case .jsonSchema(let strict):
+              tool["constrainedSampling"] = .object([
+                "type": .string("json_schema"),
+                "strict": .string(strict.rawValue),
+              ])
+            case .grammar(let variants):
+              tool["constrainedSampling"] = .object([
+                "type": .string("grammar"),
+                "variants": .object(variants.mapValues(JSONValue.string)),
+              ])
+            }
+          }
+          return .object(tool)
         })
     }
 
@@ -172,8 +188,15 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     if let maximum = request.options.maximumOutputTokens {
       options["maxTokens"] = .integer(Int64(maximum))
     }
-    if let effort = request.options.reasoningEffort {
+    if let effort = request.options.reasoningEffort, effort != .off {
       options["reasoning"] = .string(effort.rawValue)
+    }
+    options["cacheRetention"] = .string(request.options.cacheRetention.rawValue)
+    if let sessionID = request.options.sessionID {
+      options["sessionId"] = .string(sessionID)
+    }
+    if let toolChoice = request.options.toolChoice {
+      options["toolChoice"] = toolChoice
     }
     for (key, value) in request.options.providerOptions where key != "debug" {
       options[key] = value
@@ -189,15 +212,35 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     _ messages: [ProviderMessage],
     context: WireProtocolContext
   ) throws -> [JSONValue] {
-    try messages.compactMap { message in
+    try messages.compactMap { message -> JSONValue? in
       switch message {
       case .system:
         return nil
       case .user(let content):
+        if content.count == 1, case .text(let text) = content[0] {
+          return .object([
+            "role": .string("user"),
+            "content": .string(text),
+            "timestamp": .integer(0),
+          ])
+        }
         return .object([
           "role": .string("user"),
           "content": .array(try content.map(makeUserContent(_:))),
           "timestamp": .integer(0),
+        ])
+      case .userMessage(let user):
+        if user.content.count == 1, case .text(let text) = user.content[0] {
+          return .object([
+            "role": .string("user"),
+            "content": .string(text),
+            "timestamp": .integer(user.timestampMilliseconds),
+          ])
+        }
+        return .object([
+          "role": .string("user"),
+          "content": .array(try user.content.map(makeUserContent(_:))),
+          "timestamp": .integer(user.timestampMilliseconds),
         ])
       case .assistant(let content):
         return .object([
@@ -210,15 +253,39 @@ struct PiMessagesAdapter: WireProtocolAdapter {
           "stopReason": .string("stop"),
           "timestamp": .integer(0),
         ])
+      case .assistantMessage(let assistant):
+        let source = assistant.source
+        var object: [String: JSONValue] = [
+          "role": .string("assistant"),
+          "content": .array(assistant.content.map(makeAssistantContent(_:))),
+          "api": .string(source.api),
+          "provider": .string(source.providerID),
+          "model": .string(source.modelID),
+          "usage": makeUsage(assistant.usage),
+          "stopReason": .string(assistant.stopReason.rawValue),
+          "timestamp": .integer(assistant.timestampMilliseconds),
+        ]
+        if let responseID = assistant.responseID { object["responseId"] = .string(responseID) }
+        if let responseModelID = assistant.responseModelID {
+          object["responseModel"] = .string(responseModelID)
+        }
+        if let rawStopReason = assistant.rawStopReason {
+          object["rawStopReason"] = .string(rawStopReason)
+        }
+        return .object(object)
       case .toolResult(let result):
-        return .object([
+        var object: [String: JSONValue] = [
           "role": .string("toolResult"),
           "toolCallId": .string(result.toolCallID),
           "toolName": .string(result.toolName),
           "content": .array(try result.content.map(makeToolResultContent(_:))),
           "isError": .bool(result.isError),
-          "timestamp": .integer(0),
-        ])
+          "timestamp": .integer(result.timestampMilliseconds ?? 0),
+        ]
+        if let addedToolNames = result.addedToolNames {
+          object["addedToolNames"] = .array(addedToolNames.map(JSONValue.string))
+        }
+        return .object(object)
       }
     }
   }
@@ -226,9 +293,9 @@ struct PiMessagesAdapter: WireProtocolAdapter {
   private func makeUserContent(_ content: ProviderUserContent) throws -> JSONValue {
     switch content {
     case .text(let text):
-      .object(["type": .string("text"), "text": .string(text)])
+      return .object(["type": .string("text"), "text": .string(text)])
     case .image(let image):
-      try makeImage(image)
+      return try makeImage(image)
     }
   }
 
@@ -237,21 +304,51 @@ struct PiMessagesAdapter: WireProtocolAdapter {
   {
     switch content {
     case .text(let text):
-      .object(["type": .string("text"), "text": .string(text)])
+      return .object(["type": .string("text"), "text": .string(text)])
+    case .signedText(let text):
+      var object: [String: JSONValue] = [
+        "type": .string("text"),
+        "text": .string(text.text),
+      ]
+      if let signature = text.signature { object["textSignature"] = .string(signature) }
+      return .object(object)
     case .reasoning(let reasoning):
-      .object([
+      var object: [String: JSONValue] = [
         "type": .string("thinking"),
         "thinking": .string(reasoning.text),
-        "thinkingSignature": reasoning.signature.map(JSONValue.string) ?? .null,
-      ])
+      ]
+      if let signature = reasoning.signature { object["thinkingSignature"] = .string(signature) }
+      if let redacted = reasoning.isRedacted { object["redacted"] = .bool(redacted) }
+      return .object(object)
     case .toolCall(let call):
-      .object([
+      var object: [String: JSONValue] = [
         "type": .string("toolCall"),
         "id": .string(call.id),
         "name": .string(call.name),
         "arguments": call.arguments,
-      ])
+      ]
+      if let signature = call.thoughtSignature { object["thoughtSignature"] = .string(signature) }
+      if let namespace = call.namespace { object["namespace"] = .string(namespace) }
+      return .object(object)
     }
+  }
+
+  private func makeUsage(_ usage: ProviderUsage) -> JSONValue {
+    .object([
+      "input": usage.inputTokens.map { .integer(Int64($0)) } ?? .null,
+      "output": usage.outputTokens.map { .integer(Int64($0)) } ?? .null,
+      "reasoning": usage.reasoningTokens.map { .integer(Int64($0)) } ?? .null,
+      "cacheRead": usage.cachedInputTokens.map { .integer(Int64($0)) } ?? .null,
+      "cacheWrite": usage.cacheWriteTokens.map { .integer(Int64($0)) } ?? .null,
+      "totalTokens": usage.totalTokens.map { .integer(Int64($0)) } ?? .null,
+      "cost": .object([
+        "input": .integer(0),
+        "output": .integer(0),
+        "cacheRead": .integer(0),
+        "cacheWrite": .integer(0),
+        "total": .integer(0),
+      ]),
+    ])
   }
 
   private func makeToolResultContent(_ content: ProviderToolResultContent) throws
@@ -321,16 +418,19 @@ private struct PiMessagesEventReducer {
   let providerID: String
   let requestedModelID: String
   let requestID: String
+  let timestampMilliseconds: Int64
   private(set) var isTerminal = false
   private var started = false
   private var toolStates: [Int: ToolState] = [:]
   private var textStates: [Int: String] = [:]
   private var reasoningStates: [Int: String] = [:]
+  private var completedContent: [Int: ProviderResponseContent] = [:]
 
   init(providerID: String, requestedModelID: String, requestID: String) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
     self.requestID = requestID
+    self.timestampMilliseconds = Int64(Date().timeIntervalSince1970 * 1_000)
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
@@ -353,7 +453,7 @@ private struct PiMessagesEventReducer {
       return [
         .responseStarted(
           ProviderResponseMetadata(
-            responseID: requestID,
+            responseID: nil,
             providerID: providerID,
             modelID: requestedModelID,
             providerMetadata: [:]
@@ -385,6 +485,8 @@ private struct PiMessagesEventReducer {
         content.hasPrefix(streamed)
       else { throw invalid("pi-messages text end is malformed") }
       let suffix = String(content.dropFirst(streamed.count))
+      completedContent[index] = .text(
+        ProviderTextContent(text: content, signature: object.string("contentSignature")))
       return suffix.isEmpty ? [] : [.textDelta(suffix)]
     case "thinking_start":
       try requireStarted(type)
@@ -412,7 +514,19 @@ private struct PiMessagesEventReducer {
         content.hasPrefix(streamed)
       else { throw invalid("pi-messages thinking end is malformed") }
       let suffix = String(content.dropFirst(streamed.count))
-      return suffix.isEmpty ? [] : [.reasoningDelta(suffix)]
+      var events: [ProviderEvent] = suffix.isEmpty ? [] : [.reasoningDelta(suffix)]
+      let signature = object.string("contentSignature")
+      completedContent[index] = .reasoning(
+        ProviderReasoningContent(
+          text: content,
+          signature: signature,
+          isRedacted: object.bool("redacted"),
+          providerMetadata: [:]
+        ))
+      if let signature, !signature.isEmpty {
+        events.append(.reasoningSignatureDelta(signature))
+      }
+      return events
     case "toolcall_start":
       try requireStarted(type)
       guard let index = object.int("contentIndex"),
@@ -456,10 +570,16 @@ private struct PiMessagesEventReducer {
           throw invalid("pi-messages final tool arguments differ from streamed input")
         }
       }
+      let completed = ProviderToolCall(
+        id: id,
+        name: name,
+        arguments: arguments,
+        thoughtSignature: call.string("thoughtSignature"),
+        namespace: call.string("namespace")
+      )
+      completedContent[index] = .toolCall(completed)
       return [
-        .toolCallCompleted(
-          ProviderToolCall(id: id, name: name, arguments: arguments)
-        )
+        .toolCallCompleted(completed)
       ]
     case "done":
       try requireStarted(type)
@@ -470,7 +590,21 @@ private struct PiMessagesEventReducer {
         let usage = object.object("usage")
       else { throw invalid("pi-messages done event is malformed") }
       isTerminal = true
-      return [usageEvent(usage), .completed(try mapFinishReason(reason))]
+      let normalizedUsage = try makeUsage(usage)
+      let finishReason = try mapFinishReason(reason)
+      let snapshot = ProviderResponseSnapshot(
+        responseID: object.string("responseId"),
+        providerID: providerID,
+        protocolID: "pi-messages",
+        modelID: requestedModelID,
+        responseModelID: object.string("responseModel"),
+        content: completedContent.keys.sorted().compactMap { completedContent[$0] },
+        usage: normalizedUsage,
+        finishReason: finishReason,
+        rawFinishReason: object.string("rawStopReason"),
+        timestampMilliseconds: timestampMilliseconds
+      )
+      return [.usage(normalizedUsage), .responseSnapshot(snapshot), .completed(finishReason)]
     case "error":
       try requireStarted(type)
       isTerminal = true
@@ -493,17 +627,23 @@ private struct PiMessagesEventReducer {
     }
   }
 
-  private func usageEvent(_ usage: [String: JSONValue]) -> ProviderEvent {
-    .usage(
-      ProviderUsage(
-        inputTokens: usage.int("input"),
-        outputTokens: usage.int("output"),
-        reasoningTokens: usage.int("reasoning"),
-        cachedInputTokens: usage.int("cacheRead"),
-        providerMetadata: usage["totalTokens"].map {
-          ["totalTokens": $0]
-        } ?? [:]
-      )
+  private func makeUsage(_ usage: [String: JSONValue]) throws -> ProviderUsage {
+    guard let rawCost = usage.object("cost") else {
+      throw invalid("pi-messages usage is missing cost")
+    }
+    return ProviderUsage(
+      inputTokens: usage.int("input"),
+      outputTokens: usage.int("output"),
+      reasoningTokens: usage.int("reasoning"),
+      cachedInputTokens: usage.int("cacheRead"),
+      cacheWriteTokens: usage.int("cacheWrite"),
+      totalTokens: usage.int("totalTokens"),
+      providerMetadata: usage,
+      cost: try ProviderUsagePricing.directCost(
+        rawCost,
+        providerID: providerID,
+        operation: "pi-messages.event.usage-cost",
+        failureCode: .invalidResponse)
     )
   }
 

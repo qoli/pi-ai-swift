@@ -1,5 +1,18 @@
 import Foundation
 
+enum GoogleVertexConfiguration {
+  static func resolveBaseURLTemplate(
+    _ template: String,
+    protocolID: String,
+    credential: ProviderCredential?
+  ) -> String {
+    guard protocolID == "google-vertex", case .apiKey = credential,
+      template.contains("{location}")
+    else { return template }
+    return "https://aiplatform.googleapis.com"
+  }
+}
+
 struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
   enum Flavor: Sendable, Equatable {
     case generativeAI
@@ -42,7 +55,12 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
           var decoder = ServerSentEventDecoder()
           var reducer = GoogleEventReducer(
             providerID: request.providerID,
-            requestedModelID: request.modelID
+            protocolID: protocolID,
+            requestedModelID: request.modelID,
+            pricing: try ProviderUsagePricing.parse(
+              metadata: context.modelConfiguration.metadata,
+              providerID: request.providerID,
+              operation: "google.usage.pricing")
           )
           for try await chunk in response.body {
             try Task.checkCancellation()
@@ -62,8 +80,19 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
             continuation.yield(normalized)
           }
           continuation.finish()
-        } catch {
+        } catch is CancellationError {
+          continuation.finish(throwing: CancellationError())
+        } catch let error as ProviderRuntimeFailure {
           continuation.finish(throwing: error)
+        } catch {
+          continuation.finish(
+            throwing: failure(
+              .transportFailed,
+              providerID: request.providerID,
+              operation: "google.response.transport",
+              message: "Google generation transport failed",
+              cause: String(describing: error)
+            ))
         }
       }
       continuation.onTermination = { _ in task.cancel() }
@@ -74,6 +103,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> URLRequest {
+    try request.validateSingleSystemMessage(operation: "google.request.system")
     let metadata = credentialMetadata(context.credential)
     let endpoint: URL
     switch flavor {
@@ -82,28 +112,38 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         .appending(path: "models")
         .appending(path: "\(request.modelID):streamGenerateContent")
     case .vertex:
-      let project = try requiredConfiguration(
-        "project",
-        aliases: ["projectID"],
-        request: request,
-        metadata: metadata
-      )
-      let location = try requiredConfiguration(
-        "location",
-        aliases: [],
-        request: request,
-        metadata: metadata
-      )
-      endpoint = context.baseURL
-        .appending(path: "v1")
-        .appending(path: "projects")
-        .appending(path: project)
-        .appending(path: "locations")
-        .appending(path: location)
-        .appending(path: "publishers")
-        .appending(path: "google")
-        .appending(path: "models")
-        .appending(path: "\(request.modelID):streamGenerateContent")
+      let base = vertexAPIBaseURL(context.baseURL)
+      if case .apiKey = context.credential {
+        endpoint =
+          base
+          .appending(path: "publishers")
+          .appending(path: "google")
+          .appending(path: "models")
+          .appending(path: "\(request.modelID):streamGenerateContent")
+      } else {
+        let project = try requiredConfiguration(
+          "project",
+          aliases: ["projectID"],
+          request: request,
+          metadata: metadata
+        )
+        let location = try requiredConfiguration(
+          "location",
+          aliases: [],
+          request: request,
+          metadata: metadata
+        )
+        endpoint =
+          base
+          .appending(path: "projects")
+          .appending(path: project)
+          .appending(path: "locations")
+          .appending(path: location)
+          .appending(path: "publishers")
+          .appending(path: "google")
+          .appending(path: "models")
+          .appending(path: "\(request.modelID):streamGenerateContent")
+      }
     }
 
     guard
@@ -191,7 +231,8 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
     var body: [String: JSONValue] = [
-      "contents": .array(try makeContents(request.messages, modelID: request.modelID))
+      "contents": .array(
+        try makeContents(request.messages.insertingMissingToolResults(), context: context))
     ]
     let systems = request.messages.compactMap { message -> String? in
       guard case .system(let text) = message else { return nil }
@@ -218,9 +259,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       generationConfig["responseMimeType"] = .string("application/json")
       generationConfig["responseJsonSchema"] = schema
     }
-    if let effort = request.options.reasoningEffort,
-      context.model.capabilities.reasoning || effort != .off
-    {
+    if let effort = request.options.reasoningEffort {
       guard context.model.capabilities.reasoning else {
         throw failure(
           .unsupportedCapability,
@@ -231,38 +270,56 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       }
       generationConfig["thinkingConfig"] = .object(
         try thinkingConfiguration(
-          effort: effort, modelID: request.modelID, metadata: context.modelConfiguration.metadata)
-      )
+          effort: effort,
+          modelID: request.modelID,
+          metadata: context.modelConfiguration.metadata,
+          customBudgets: request.options.thinkingBudgets
+        ))
     }
     if !generationConfig.isEmpty {
       body["generationConfig"] = .object(generationConfig)
     }
 
     if !request.tools.isEmpty {
+      let supportsStrictMode = supportsStrictToolSampling(request.modelID)
+      var usesStrictMode = false
       body["tools"] = .array([
         .object([
           "functionDeclarations": .array(
-            request.tools.map { tool in
-              .object([
+            try request.tools.map { tool in
+              let resolved = try ProviderConstrainedSamplingResolver.jsonSchema(
+                for: tool,
+                supportsStrictMode: supportsStrictMode,
+                providerID: request.providerID,
+                operation: "google.request.tools"
+              )
+              usesStrictMode = usesStrictMode || resolved.strict == true
+              return .object([
                 "name": .string(tool.name),
                 "description": .string(tool.description),
-                "parametersJsonSchema": tool.inputSchema,
+                "parametersJsonSchema": resolved.schema,
               ])
             }
           )
         ])
       ])
-      if let choice = request.options.providerOptions["toolChoice"]?.stringValue {
-        guard let mode = toolChoiceMode(choice) else {
+      if let choice = request.options.toolChoice {
+        guard let stringChoice = choice.stringValue,
+          let mode = toolChoiceMode(stringChoice)
+        else {
           throw failure(
             .invalidRequest,
             providerID: request.providerID,
             operation: "google.request.tool-choice",
-            message: "unsupported Google tool choice: \(choice)"
+            message: "unsupported Google tool choice"
           )
         }
         body["toolConfig"] = .object([
           "functionCallingConfig": .object(["mode": .string(mode)])
+        ])
+      } else if usesStrictMode {
+        body["toolConfig"] = .object([
+          "functionCallingConfig": .object(["mode": .string("VALIDATED")])
         ])
       }
     }
@@ -271,29 +328,85 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
 
   private func makeContents(
     _ messages: [ProviderMessage],
-    modelID: String
+    context: WireProtocolContext
   ) throws -> [JSONValue] {
-    try messages.compactMap { message in
+    let modelID = context.model.id
+    let target = ProviderMessageSource(
+      api: protocolID, providerID: context.provider.id, modelID: modelID)
+    var contents: [JSONValue] = []
+    for message in messages {
       switch message {
       case .system:
-        nil
+        continue
       case .user(let content):
-        .object([
-          "role": .string("user"),
-          "parts": .array(try content.map(makeUserPart(_:))),
-        ])
+        contents.append(
+          .object([
+            "role": .string("user"),
+            "parts": .array(try content.map(makeUserPart(_:))),
+          ]))
+      case .userMessage(let user):
+        contents.append(
+          .object([
+            "role": .string("user"),
+            "parts": .array(try user.content.map(makeUserPart(_:))),
+          ]))
       case .assistant(let content):
-        .object([
-          "role": .string("model"),
-          "parts": .array(try content.map { try makeAssistantPart($0, modelID: modelID) }),
-        ])
+        let parts = try content.map { try makeAssistantPart($0, modelID: modelID) }
+        guard !parts.isEmpty else { continue }
+        contents.append(
+          .object([
+            "role": .string("model"),
+            "parts": .array(parts),
+          ]))
+      case .assistantMessage(let assistant):
+        guard let content = assistant.replayContent(for: target) else { continue }
+        contents.append(
+          .object([
+            "role": .string("model"),
+            "parts": .array(
+              try content.map { try makeAssistantPart($0, modelID: modelID) }
+            ),
+          ]))
       case .toolResult(let result):
-        .object([
-          "role": .string("user"),
-          "parts": .array(try makeToolResultParts(result, modelID: modelID)),
-        ])
+        let resultParts = try makeToolResultParts(
+          result,
+          modelID: modelID,
+          acceptsImages: context.model.capabilities.imageInput
+        )
+        if case .object(var previous)? = contents.last,
+          previous.string("role") == "user",
+          case .array(var previousParts)? = previous["parts"],
+          previousParts.contains(where: { $0.objectValue?["functionResponse"] != nil })
+        {
+          previousParts.append(contentsOf: resultParts)
+          previous["parts"] = .array(previousParts)
+          contents[contents.count - 1] = .object(previous)
+        } else {
+          contents.append(
+            .object([
+              "role": .string("user"),
+              "parts": .array(resultParts),
+            ]))
+        }
+        let images = result.content.compactMap { content -> ProviderImage? in
+          guard case .image(let image) = content else { return nil }
+          return image
+        }
+        if context.model.capabilities.imageInput, !images.isEmpty,
+          !supportsMultimodalFunctionResponse(modelID)
+        {
+          contents.append(
+            .object([
+              "role": .string("user"),
+              "parts": .array(
+                [.object(["text": .string("Tool result image:")])]
+                  + (try images.map(makeImagePart(_:)))
+              ),
+            ]))
+        }
       }
     }
+    return contents
   }
 
   private func makeUserPart(_ content: ProviderUserContent) throws -> JSONValue {
@@ -312,6 +425,10 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     switch content {
     case .text(let text):
       return .object(["text": .string(text)])
+    case .signedText(let text):
+      var part: [String: JSONValue] = ["text": .string(text.text)]
+      if let signature = text.signature { part["thoughtSignature"] = .string(signature) }
+      return .object(part)
     case .reasoning(let reasoning):
       var part: [String: JSONValue] = [
         "text": .string(reasoning.text),
@@ -337,13 +454,16 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       if requiresToolCallID(modelID) {
         functionCall["id"] = .string(normalizedToolCallID(call.id))
       }
-      return .object(["functionCall": .object(functionCall)])
+      var part: [String: JSONValue] = ["functionCall": .object(functionCall)]
+      if let signature = call.thoughtSignature { part["thoughtSignature"] = .string(signature) }
+      return .object(part)
     }
   }
 
   private func makeToolResultParts(
     _ result: ProviderToolResult,
-    modelID: String
+    modelID: String,
+    acceptsImages: Bool
   ) throws -> [JSONValue] {
     let texts = result.content.compactMap { content -> String? in
       guard case .text(let text) = content else { return nil }
@@ -359,14 +479,34 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     if requiresToolCallID(modelID) {
       functionResponse["id"] = .string(normalizedToolCallID(result.toolCallID))
     }
-    var parts: [JSONValue] = [
-      .object(["functionResponse": .object(functionResponse)])
-    ]
-    for content in result.content {
-      guard case .image(let image) = content else { continue }
-      parts.append(try makeImagePart(image))
+    let images =
+      acceptsImages
+      ? result.content.compactMap { content -> ProviderImage? in
+        guard case .image(let image) = content else { return nil }
+        return image
+      } : []
+    if texts.isEmpty, !images.isEmpty {
+      functionResponse["response"] = .object([
+        responseKey: .string("(see attached image)")
+      ])
     }
-    return parts
+    if !images.isEmpty, supportsMultimodalFunctionResponse(modelID) {
+      functionResponse["parts"] = .array(try images.map(makeImagePart(_:)))
+    }
+    return [.object(["functionResponse": .object(functionResponse)])]
+  }
+
+  private func supportsMultimodalFunctionResponse(_ modelID: String) -> Bool {
+    let lower = modelID.lowercased()
+    guard
+      let match = lower.range(
+        of: #"^gemini(?:-live)?-(\d+)"#,
+        options: .regularExpression
+      )
+    else { return true }
+    let matched = String(lower[match])
+    let digits = matched.reversed().prefix { $0.isNumber }.reversed()
+    return (Int(String(digits)) ?? 0) >= 3
   }
 
   private func makeImagePart(_ image: ProviderImage) throws -> JSONValue {
@@ -391,18 +531,14 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
   private func thinkingConfiguration(
     effort requested: ProviderReasoningEffort,
     modelID: String,
-    metadata: [String: JSONValue]
+    metadata: [String: JSONValue],
+    customBudgets: [ProviderReasoningEffort: Int]?
   ) throws -> [String: JSONValue] {
     let lower = modelID.lowercased()
     if requested == .off {
-      guard !lower.contains("gemini-3"), !lower.contains("gemma-4"),
-        !lower.contains("gemini-2.5-pro"),
-        lower != "gemini-flash-latest", lower != "gemini-flash-lite-latest"
-      else {
-        throw failure(
-          .unsupportedCapability, providerID: nil,
-          operation: "google.request.reasoning",
-          message: "selected Google model cannot disable reasoning")
+      if isGemini3Pro(lower) { return ["thinkingLevel": .string("LOW")] }
+      if isGemini3Flash(lower) || (flavor == .generativeAI && isGemma4(lower)) {
+        return ["thinkingLevel": .string("MINIMAL")]
       }
       return ["thinkingBudget": .integer(0)]
     }
@@ -417,12 +553,14 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         message: "unsupported Google reasoning effort: \(effort)"
       )
     }
-    if lower.contains("gemini-3") || lower.contains("gemma-4")
-      || lower == "gemini-flash-latest" || lower == "gemini-flash-lite-latest"
+    if isGemini3Pro(lower) || isGemini3Flash(lower)
+      || (flavor == .generativeAI && isGemma4(lower))
     {
       let level: String
-      if lower.contains("pro") {
+      if isGemini3Pro(lower) {
         level = ["minimal", "low"].contains(effort) ? "LOW" : "HIGH"
+      } else if isGemma4(lower) {
+        level = ["minimal", "low"].contains(effort) ? "MINIMAL" : "HIGH"
       } else {
         level = effort.uppercased()
       }
@@ -432,9 +570,17 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       ]
     }
 
+    if let customBudget = customBudgets?[ProviderReasoningEffort(rawValue: effort)!] {
+      return [
+        "includeThoughts": .bool(true),
+        "thinkingBudget": .integer(Int64(customBudget)),
+      ]
+    }
     let budgets: [String: Int]
     if lower.contains("2.5-pro") {
       budgets = ["minimal": 128, "low": 2_048, "medium": 8_192, "high": 32_768]
+    } else if flavor == .generativeAI, lower.contains("2.5-flash-lite") {
+      budgets = ["minimal": 512, "low": 2_048, "medium": 8_192, "high": 24_576]
     } else if lower.contains("2.5-flash") {
       budgets = ["minimal": 128, "low": 2_048, "medium": 8_192, "high": 24_576]
     } else {
@@ -453,6 +599,46 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     case "any": "ANY"
     default: nil
     }
+  }
+
+  private func supportsStrictToolSampling(_ modelID: String) -> Bool {
+    guard let major = geminiMajorVersion(modelID) else { return false }
+    return major >= 3
+  }
+
+  private func geminiMajorVersion(_ modelID: String) -> Int? {
+    guard
+      let match = modelID.lowercased().range(
+        of: #"^gemini(?:-live)?-([0-9]+)"#,
+        options: .regularExpression
+      )
+    else { return nil }
+    return String(modelID.lowercased()[match]).split(separator: "-").last.flatMap {
+      Int(String($0))
+    }
+  }
+
+  private func isGemini3Pro(_ modelID: String) -> Bool {
+    modelID.range(of: #"gemini-3(?:\.[0-9]+)?-pro"#, options: .regularExpression) != nil
+  }
+
+  private func isGemini3Flash(_ modelID: String) -> Bool {
+    modelID.range(of: #"gemini-3(?:\.[0-9]+)?-flash"#, options: .regularExpression) != nil
+      || modelID == "gemini-flash-latest" || modelID == "gemini-flash-lite-latest"
+  }
+
+  private func isGemma4(_ modelID: String) -> Bool {
+    modelID.range(of: #"gemma-?4"#, options: .regularExpression) != nil
+  }
+
+  private func vertexAPIBaseURL(_ baseURL: URL) -> URL {
+    let pathComponents = baseURL.pathComponents.filter { $0 != "/" }
+    if pathComponents.contains(where: {
+      $0.range(of: #"^v[0-9]+(?:beta[0-9]*)?$"#, options: .regularExpression) != nil
+    }) {
+      return baseURL
+    }
+    return baseURL.appending(path: "v1")
   }
 
   private func requiredConfiguration(
@@ -493,15 +679,10 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
   }
 
   private func requiresToolCallID(_ modelID: String) -> Bool {
-    guard
-      let match = modelID.range(
-        of: #"^gemini(?:-live)?-([0-9]+)"#,
-        options: .regularExpression
-      )
-    else { return modelID.hasPrefix("claude-") || modelID.hasPrefix("gpt-oss-") }
-    let matched = String(modelID[match])
-    let major = matched.split(separator: "-").last.flatMap { Int($0) }
-    return (major ?? 0) >= 3
+    guard let major = geminiMajorVersion(modelID) else {
+      return modelID.hasPrefix("claude-") || modelID.hasPrefix("gpt-oss-")
+    }
+    return major >= 3
   }
 
   private func normalizedToolCallID(_ value: String) -> String {
@@ -534,17 +715,28 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
 
 private struct GoogleEventReducer {
   let providerID: String
+  let protocolID: String
   let requestedModelID: String
+  let pricing: ProviderUsagePricing?
   private var started = false
+  private var responseID: String?
   private var finishReason: String?
   private var usage: ProviderUsage?
   private var sawToolCall = false
   private var toolCallIDs = Set<String>()
   private var generatedToolCallCount = 0
+  private var content: [ProviderResponseContent] = []
 
-  init(providerID: String, requestedModelID: String) {
+  init(
+    providerID: String,
+    protocolID: String,
+    requestedModelID: String,
+    pricing: ProviderUsagePricing?
+  ) {
     self.providerID = providerID
+    self.protocolID = protocolID
     self.requestedModelID = requestedModelID
+    self.pricing = pricing
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
@@ -570,6 +762,7 @@ private struct GoogleEventReducer {
         throw invalid("first Google event is missing responseId")
       }
       started = true
+      self.responseID = responseID
       normalized.append(
         .responseStarted(
           ProviderResponseMetadata(
@@ -588,15 +781,18 @@ private struct GoogleEventReducer {
           guard let part = part.objectValue else {
             throw invalid("Google content part is not an object")
           }
-          if let signature = part.string("thoughtSignature") {
-            guard !signature.isEmpty, Data(base64Encoded: signature) != nil else {
-              throw invalid("Google thought signature is malformed")
-            }
-            normalized.append(.reasoningSignatureDelta(signature))
-          }
           if let text = part.string("text") {
+            let signature = part.string("thoughtSignature").flatMap { $0.isEmpty ? nil : $0 }
+            appendText(
+              text,
+              thinking: part.bool("thought") == true,
+              signature: signature
+            )
             normalized.append(
               part.bool("thought") == true ? .reasoningDelta(text) : .textDelta(text))
+          }
+          if let signature = part.string("thoughtSignature"), !signature.isEmpty {
+            normalized.append(.reasoningSignatureDelta(signature))
           }
           if let function = part.object("functionCall") {
             guard let name = function.string("name"), !name.isEmpty else {
@@ -616,6 +812,16 @@ private struct GoogleEventReducer {
             }
             toolCallIDs.insert(id)
             sawToolCall = true
+            self.content.append(
+              .toolCall(
+                ProviderToolCall(
+                  id: id,
+                  name: name,
+                  arguments: arguments,
+                  thoughtSignature: part.string("thoughtSignature").flatMap {
+                    $0.isEmpty ? nil : $0
+                  }
+                )))
             let argumentData = try JSONEncoder().encode(arguments)
             guard let argumentText = String(data: argumentData, encoding: .utf8) else {
               throw invalid("Google function call arguments are not UTF-8")
@@ -636,17 +842,27 @@ private struct GoogleEventReducer {
     }
 
     if let raw = object.object("usageMetadata") {
-      let prompt = raw.int("promptTokenCount")
-      let cached = raw.int("cachedContentTokenCount")
-      let candidates = raw.int("candidatesTokenCount")
-      let thoughts = raw.int("thoughtsTokenCount")
+      guard let pricing else {
+        throw ProviderRuntimeFailure(
+          code: .upstreamDrift, message: "model cost rates are missing",
+          providerID: providerID, operation: "google.usage.pricing",
+          causeDescription: nil)
+      }
+      let prompt = raw.int("promptTokenCount") ?? 0
+      let cached = raw.int("cachedContentTokenCount") ?? 0
+      let candidates = raw.int("candidatesTokenCount") ?? 0
+      let thoughts = raw.int("thoughtsTokenCount") ?? 0
+      let input = max(0, prompt - cached)
+      let output = candidates + thoughts
       usage = ProviderUsage(
-        inputTokens: prompt.map { max(0, $0 - (cached ?? 0)) },
-        outputTokens: (candidates != nil || thoughts != nil)
-          ? (candidates ?? 0) + (thoughts ?? 0) : nil,
+        inputTokens: input,
+        outputTokens: output,
         reasoningTokens: thoughts,
         cachedInputTokens: cached,
-        providerMetadata: raw
+        cacheWriteTokens: 0,
+        totalTokens: raw.int("totalTokenCount") ?? 0,
+        providerMetadata: raw,
+        cost: pricing.cost(input: input, output: output, cacheRead: cached, cacheWrite: 0)
       )
     }
     return normalized
@@ -665,14 +881,81 @@ private struct GoogleEventReducer {
       "IMAGE_PROHIBITED_CONTENT", "IMAGE_RECITATION", "IMAGE_OTHER", "RECITATION",
       "FINISH_REASON_UNSPECIFIED", "OTHER", "LANGUAGE", "MALFORMED_FUNCTION_CALL",
       "UNEXPECTED_TOOL_CALL", "NO_IMAGE":
-      throw invalid("Google provider stopped with: \(finishReason)")
+      throw ProviderRuntimeFailure(
+        code: .transportFailed,
+        message: "Google provider stopped with: \(finishReason)",
+        providerID: providerID,
+        operation: "google.event.finish",
+        causeDescription: finishReason
+      )
     default:
       throw invalid("unsupported Google finish reason: \(finishReason)")
     }
-    var events: [ProviderEvent] = []
-    if let usage { events.append(.usage(usage)) }
+    let terminalUsage =
+      usage
+      ?? ProviderUsage(
+        inputTokens: 0,
+        outputTokens: 0,
+        reasoningTokens: nil,
+        cachedInputTokens: 0,
+        cacheWriteTokens: 0,
+        totalTokens: 0,
+        providerMetadata: [:],
+        cost: pricing?.cost(input: 0, output: 0, cacheRead: 0, cacheWrite: 0)
+      )
+    var events: [ProviderEvent] = [.usage(terminalUsage)]
+    events.append(
+      .responseSnapshot(
+        ProviderResponseSnapshot(
+          responseID: responseID,
+          providerID: providerID,
+          protocolID: protocolID,
+          modelID: requestedModelID,
+          responseModelID: nil,
+          content: content,
+          usage: terminalUsage,
+          finishReason: reason,
+          rawFinishReason: finishReason,
+          timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000)
+        )))
     events.append(.completed(reason))
     return events
+  }
+
+  private mutating func appendText(
+    _ text: String,
+    thinking: Bool,
+    signature: String?
+  ) {
+    if let last = content.indices.last {
+      switch (content[last], thinking) {
+      case (.reasoning(let current), true):
+        content[last] = .reasoning(
+          ProviderReasoningContent(
+            text: current.text + text,
+            signature: signature ?? current.signature,
+            providerMetadata: current.providerMetadata
+          ))
+        return
+      case (.text(let current), false):
+        content[last] = .text(
+          ProviderTextContent(
+            text: current.text + text,
+            signature: signature ?? current.signature,
+            providerMetadata: current.providerMetadata
+          ))
+        return
+      default:
+        break
+      }
+    }
+    if thinking {
+      content.append(
+        .reasoning(
+          ProviderReasoningContent(text: text, signature: signature, providerMetadata: [:])))
+    } else {
+      content.append(.text(ProviderTextContent(text: text, signature: signature)))
+    }
   }
 
   private func invalid(_ message: String) -> ProviderRuntimeFailure {

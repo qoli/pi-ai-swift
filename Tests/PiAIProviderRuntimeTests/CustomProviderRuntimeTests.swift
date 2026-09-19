@@ -224,7 +224,7 @@ private func customModel(
     ),
     contextWindow: 16_384,
     maximumOutputTokens: 1_024,
-    metadata: metadata
+    metadata: fixtureMetadataWithCost(metadata)
   )
 }
 

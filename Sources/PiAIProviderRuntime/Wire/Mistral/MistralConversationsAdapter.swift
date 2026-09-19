@@ -29,7 +29,11 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
           var reducer = MistralEventReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
-            requestID: request.id
+            requestID: request.id,
+            pricing: try ProviderUsagePricing.parse(
+              metadata: context.modelConfiguration.metadata,
+              providerID: request.providerID,
+              operation: "mistral.usage.pricing")
           )
           for try await chunk in response.body {
             try Task.checkCancellation()
@@ -48,8 +52,19 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
             continuation.yield(normalized)
           }
           continuation.finish()
-        } catch {
+        } catch is CancellationError {
+          continuation.finish(throwing: CancellationError())
+        } catch let error as ProviderRuntimeFailure {
           continuation.finish(throwing: error)
+        } catch {
+          continuation.finish(
+            throwing: failure(
+              .transportFailed,
+              providerID: request.providerID,
+              operation: "mistral.response.transport",
+              message: "Mistral Conversations transport failed",
+              cause: String(describing: error)
+            ))
         }
       }
       continuation.onTermination = { _ in task.cancel() }
@@ -60,6 +75,7 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> URLRequest {
+    try request.validateSingleSystemMessage(operation: "mistral.request.system")
     let endpoint = context.baseURL.appending(path: "v1/chat/completions")
     var urlRequest = URLRequest(url: endpoint)
     urlRequest.httpMethod = "POST"
@@ -67,6 +83,12 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     urlRequest.setValue("text/event-stream", forHTTPHeaderField: "Accept")
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
+    }
+    if request.options.cacheRetention != .none,
+      let sessionID = request.options.sessionID, !sessionID.isEmpty,
+      urlRequest.value(forHTTPHeaderField: "x-affinity") == nil
+    {
+      urlRequest.setValue(sessionID, forHTTPHeaderField: "x-affinity")
     }
     switch context.credential {
     case .apiKey(let credential):
@@ -120,7 +142,8 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     var body: [String: JSONValue] = [
       "model": .string(request.modelID),
       "stream": .bool(true),
-      "messages": .array(try makeMessages(request.messages, context: context)),
+      "messages": .array(
+        try makeMessages(request.messages.insertingMissingToolResults(), context: context)),
     ]
     if let maximum = request.options.maximumOutputTokens
       ?? context.model.maximumOutputTokens
@@ -130,7 +153,13 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     if let temperature = request.options.temperature {
       body["temperature"] = .number(temperature)
     }
+    if request.options.cacheRetention != .none,
+      let sessionID = request.options.sessionID, !sessionID.isEmpty
+    {
+      body["prompt_cache_key"] = .string(sessionID)
+    }
     if let effort = request.options.reasoningEffort,
+      effort != .off,
       context.model.capabilities.reasoning
     {
       if Self.reasoningEffortModels.contains(context.model.id) {
@@ -142,7 +171,13 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
       }
     }
     if !request.tools.isEmpty {
-      body["tools"] = .array(request.tools.map(makeToolDefinition(_:)))
+      body["tools"] = .array(
+        try request.tools.map {
+          try makeToolDefinition($0, providerID: request.providerID)
+        })
+    }
+    if let toolChoice = request.options.toolChoice {
+      body["tool_choice"] = toolChoice
     }
     if request.options.responseSchema != nil {
       throw failure(
@@ -162,17 +197,45 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     _ messages: [ProviderMessage],
     context: WireProtocolContext
   ) throws -> [JSONValue] {
-    try messages.map { message in
+    let target = ProviderMessageSource(
+      api: protocolID, providerID: context.provider.id, modelID: context.model.id)
+    var normalizedToolIDs: [String: String] = [:]
+    return try messages.compactMap { message in
       switch message {
       case .system(let text):
         return .object(["role": .string("system"), "content": .string(text)])
       case .user(let content):
+        if content.count == 1, case .text(let text) = content[0] {
+          return .object([
+            "role": .string("user"),
+            "content": .string(text),
+          ])
+        }
+        let supportedContent =
+          context.model.capabilities.imageInput
+          ? content
+          : content.filter { if case .text = $0 { true } else { false } }
+        if supportedContent.isEmpty,
+          content.contains(where: { if case .image = $0 { true } else { false } })
+        {
+          return .object([
+            "role": .string("user"),
+            "content": .array([
+              .object([
+                "type": .string("text"),
+                "text": .string("(image omitted: model does not support images)"),
+              ])
+            ]),
+          ])
+        }
         return .object([
           "role": .string("user"),
           "content": .array(
-            try content.map { try makeUserContent($0, context: context) }
+            try supportedContent.map { try makeUserContent($0, context: context) }
           ),
         ])
+      case .userMessage(let user):
+        return try makeMessages([.user(user.content)], context: context)[0]
       case .assistant(let content):
         var parts: [JSONValue] = []
         var calls: [JSONValue] = []
@@ -180,6 +243,8 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
           switch item {
           case .text(let text):
             parts.append(.object(["type": .string("text"), "text": .string(text)]))
+          case .signedText(let text):
+            parts.append(.object(["type": .string("text"), "text": .string(text.text)]))
           case .reasoning(let reasoning):
             parts.append(
               .object([
@@ -207,32 +272,49 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
         if !parts.isEmpty { result["content"] = .array(parts) }
         if !calls.isEmpty { result["tool_calls"] = .array(calls) }
         return .object(result)
+      case .assistantMessage(let assistant):
+        guard let content = assistant.replayContent(for: target) else { return nil }
+        let normalizedContent = content.map { item -> ProviderAssistantContent in
+          guard case .toolCall(let call) = item, assistant.source != target else { return item }
+          let normalizedID = normalizedMistralToolID(call.id)
+          normalizedToolIDs[call.id] = normalizedID
+          return .toolCall(
+            ProviderToolCall(
+              id: normalizedID,
+              name: call.name,
+              arguments: call.arguments,
+              thoughtSignature: call.thoughtSignature,
+              namespace: call.namespace,
+              providerMetadata: call.providerMetadata
+            ))
+        }
+        return try makeMessages([.assistant(normalizedContent)], context: context)[0]
       case .toolResult(let result):
         let text = result.content.compactMap { item -> String? in
           guard case .text(let text) = item else { return nil }
           return text
         }.joined(separator: "\n")
+        let hasImages = result.content.contains { if case .image = $0 { true } else { false } }
         var parts: [JSONValue] = [
           .object([
             "type": .string("text"),
-            "text": .string(toolResultText(text, isError: result.isError)),
+            "text": .string(
+              toolResultText(
+                text,
+                hasImages: hasImages,
+                supportsImages: context.model.capabilities.imageInput,
+                isError: result.isError
+              )),
           ])
         ]
         for item in result.content {
           guard case .image(let image) = item else { continue }
-          guard context.model.capabilities.imageInput else {
-            throw failure(
-              .unsupportedCapability,
-              providerID: context.provider.id,
-              operation: "mistral.request.tool-result-image",
-              message: "Mistral model does not accept tool-result images"
-            )
-          }
+          guard context.model.capabilities.imageInput else { continue }
           parts.append(try makeImage(image))
         }
         return .object([
           "role": .string("tool"),
-          "tool_call_id": .string(result.toolCallID),
+          "tool_call_id": .string(normalizedToolIDs[result.toolCallID] ?? result.toolCallID),
           "name": .string(result.toolName),
           "content": .array(parts),
         ])
@@ -276,14 +358,23 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     return .object(["type": .string("image_url"), "image_url": .string(url)])
   }
 
-  private func makeToolDefinition(_ tool: ProviderToolDefinition) -> JSONValue {
-    .object([
+  private func makeToolDefinition(
+    _ tool: ProviderToolDefinition,
+    providerID: String
+  ) throws -> JSONValue {
+    let constrained = try ProviderConstrainedSamplingResolver.jsonSchema(
+      for: tool,
+      supportsStrictMode: true,
+      providerID: providerID,
+      operation: "mistral.request.tool-schema"
+    )
+    return .object([
       "type": .string("function"),
       "function": .object([
         "name": .string(tool.name),
         "description": .string(tool.description),
-        "parameters": tool.inputSchema,
-        "strict": .bool(true),
+        "parameters": constrained.schema,
+        "strict": .bool(constrained.strict ?? false),
       ]),
     ])
   }
@@ -300,12 +391,29 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     return effort == .off ? "none" : "high"
   }
 
-  private func toolResultText(_ text: String, isError: Bool) -> String {
+  private func toolResultText(
+    _ text: String,
+    hasImages: Bool,
+    supportsImages: Bool,
+    isError: Bool
+  ) -> String {
     let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-    if trimmed.isEmpty {
-      return isError ? "[tool error] (no tool output)" : "(no tool output)"
+    let prefix = isError ? "[tool error] " : ""
+    if !trimmed.isEmpty {
+      let suffix =
+        hasImages && !supportsImages
+        ? "\n(tool image omitted: model does not support images)" : ""
+      return "\(prefix)\(trimmed)\(suffix)"
     }
-    return isError ? "[tool error] \(trimmed)" : trimmed
+    if hasImages {
+      if supportsImages {
+        return isError ? "[tool error] (see attached image)" : "(see attached image)"
+      }
+      return isError
+        ? "[tool error] (image omitted: model does not support images)"
+        : "(image omitted: model does not support images)"
+    }
+    return isError ? "[tool error] (no tool output)" : "(no tool output)"
   }
 
   private func encodeJSONString(_ value: JSONValue) throws -> String {
@@ -319,6 +427,25 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
       )
     }
     return string
+  }
+
+  private func normalizedMistralToolID(_ value: String) -> String {
+    let normalized = value.filter { $0.isLetter || $0.isNumber }
+    if normalized.count == 9 { return normalized }
+    let seed = normalized.isEmpty ? value : normalized
+    return String(mistralShortHash(seed).filter { $0.isLetter || $0.isNumber }.prefix(9))
+  }
+
+  private func mistralShortHash(_ value: String) -> String {
+    var h1 = UInt32(0xdead_beef)
+    var h2 = UInt32(0x41c6_ce57)
+    for codeUnit in value.utf16 {
+      h1 = (h1 ^ UInt32(codeUnit)) &* 2_654_435_761
+      h2 = (h2 ^ UInt32(codeUnit)) &* 1_597_334_677
+    }
+    h1 = ((h1 ^ (h1 >> 16)) &* 2_246_822_507) ^ ((h2 ^ (h2 >> 13)) &* 3_266_489_909)
+    h2 = ((h2 ^ (h2 >> 16)) &* 2_246_822_507) ^ ((h1 ^ (h1 >> 13)) &* 3_266_489_909)
+    return String(h2, radix: 36) + String(h1, radix: 36)
   }
 
   private func failure(
@@ -346,16 +473,27 @@ private struct MistralEventReducer {
   let providerID: String
   let requestedModelID: String
   let requestID: String
+  let pricing: ProviderUsagePricing?
   private var started = false
   private var responseID: String?
+  private var responseModelID: String?
   private var finishReason: ProviderFinishReason?
+  private var rawFinishReason: String?
   private var toolStates: [String: ToolState] = [:]
   private var toolOrder: [String] = []
+  private var usage: ProviderUsage?
+  private var content: [ProviderResponseContent] = []
 
-  init(providerID: String, requestedModelID: String, requestID: String) {
+  init(
+    providerID: String,
+    requestedModelID: String,
+    requestID: String,
+    pricing: ProviderUsagePricing?
+  ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
     self.requestID = requestID
+    self.pricing = pricing
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
@@ -380,34 +518,41 @@ private struct MistralEventReducer {
     var normalized: [ProviderEvent] = []
     if !started {
       started = true
-      responseID = object.string("id") ?? requestID
+      responseID = object.string("id")
+      responseModelID = object.string("model")
       normalized.append(
         .responseStarted(
           ProviderResponseMetadata(
-            responseID: responseID!,
+            responseID: nil,
             providerID: providerID,
-            modelID: object.string("model") ?? requestedModelID,
+            modelID: requestedModelID,
             providerMetadata: [:]
           )
         ))
     }
     if let usage = object.object("usage") {
-      let prompt = usage.int("prompt_tokens")
-      let cached = cachedTokens(usage)
-      normalized.append(
-        .usage(
-          ProviderUsage(
-            inputTokens: prompt.map { max(0, $0 - (cached ?? 0)) },
-            outputTokens: usage.int("completion_tokens"),
-            reasoningTokens: usage.object("completion_tokens_details")?.int(
-              "reasoning_tokens"
-            ),
-            cachedInputTokens: cached,
-            providerMetadata: usage["total_tokens"].map {
-              ["totalTokens": $0]
-            } ?? [:]
-          )
-        ))
+      guard let pricing else {
+        throw ProviderRuntimeFailure(
+          code: .upstreamDrift, message: "model cost rates are missing",
+          providerID: providerID, operation: "mistral.usage.pricing",
+          causeDescription: nil)
+      }
+      let prompt = usage.int("prompt_tokens") ?? 0
+      let cached = min(prompt, max(0, cachedTokens(usage)))
+      let output = usage.int("completion_tokens") ?? 0
+      let input = max(0, prompt - cached)
+      self.usage = ProviderUsage(
+        inputTokens: input,
+        outputTokens: output,
+        reasoningTokens: usage.object("completion_tokens_details")?.int(
+          "reasoning_tokens"
+        ),
+        cachedInputTokens: cached,
+        cacheWriteTokens: 0,
+        totalTokens: usage.int("total_tokens") ?? max(0, prompt - cached) + output + cached,
+        providerMetadata: usage,
+        cost: pricing.cost(input: input, output: output, cacheRead: cached, cacheWrite: 0)
+      )
     }
 
     guard let choices = object.array("choices") else {
@@ -419,6 +564,7 @@ private struct MistralEventReducer {
         throw invalid("Mistral choice is not an object")
       }
       if let reason = choice.string("finish_reason") {
+        rawFinishReason = reason
         finishReason = try mapFinishReason(reason)
       }
       guard let delta = choice.object("delta") else { continue }
@@ -458,11 +604,37 @@ private struct MistralEventReducer {
           throw invalid("Mistral tool arguments are malformed")
         }
       }
-      events.append(
-        .toolCallCompleted(
-          ProviderToolCall(id: tool.id, name: tool.name, arguments: arguments)
-        ))
+      let call = ProviderToolCall(id: tool.id, name: tool.name, arguments: arguments)
+      content.append(.toolCall(call))
+      events.append(.toolCallCompleted(call))
     }
+    let terminalUsage =
+      usage
+      ?? ProviderUsage(
+        inputTokens: 0,
+        outputTokens: 0,
+        reasoningTokens: nil,
+        cachedInputTokens: 0,
+        cacheWriteTokens: 0,
+        totalTokens: 0,
+        providerMetadata: [:],
+        cost: pricing?.cost(input: 0, output: 0, cacheRead: 0, cacheWrite: 0)
+      )
+    events.append(.usage(terminalUsage))
+    events.append(
+      .responseSnapshot(
+        ProviderResponseSnapshot(
+          responseID: responseID,
+          providerID: providerID,
+          protocolID: "mistral-conversations",
+          modelID: requestedModelID,
+          responseModelID: responseModelID == requestedModelID ? nil : responseModelID,
+          content: content,
+          usage: terminalUsage,
+          finishReason: finishReason,
+          rawFinishReason: rawFinishReason,
+          timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000)
+        )))
     events.append(.completed(finishReason))
     return events
   }
@@ -472,6 +644,9 @@ private struct MistralEventReducer {
   {
     switch content {
     case .string(let text):
+      if !text.isEmpty {
+        self.content.append(.text(ProviderTextContent(text: text, signature: nil)))
+      }
       return text.isEmpty ? [] : [.textDelta(text)]
     case .array(let items):
       var events: [ProviderEvent] = []
@@ -482,6 +657,7 @@ private struct MistralEventReducer {
         switch type {
         case "text":
           if let text = item.string("text"), !text.isEmpty {
+            self.content.append(.text(ProviderTextContent(text: text, signature: nil)))
             events.append(.textDelta(text))
           }
         case "thinking":
@@ -490,7 +666,12 @@ private struct MistralEventReducer {
           }
           for part in thinking {
             guard let text = part.objectValue?.string("text") else { continue }
-            if !text.isEmpty { events.append(.reasoningDelta(text)) }
+            if !text.isEmpty {
+              self.content.append(
+                .reasoning(
+                  ProviderReasoningContent(text: text, signature: nil, providerMetadata: [:])))
+              events.append(.reasoningDelta(text))
+            }
           }
         default:
           throw invalid("unsupported Mistral content block: \(type)")
@@ -547,7 +728,7 @@ private struct MistralEventReducer {
       guard let name, !name.isEmpty else {
         throw invalid("Mistral tool call start is missing name")
       }
-      let resolvedID = (id == nil || id == "null") ? "mistral-\(index!)" : id!
+      let resolvedID = (id == nil || id == "null") ? derivedToolCallID(index: index!) : id!
       toolStates[key] = ToolState(
         id: resolvedID,
         name: name,
@@ -562,10 +743,31 @@ private struct MistralEventReducer {
     return events
   }
 
-  private func cachedTokens(_ usage: [String: JSONValue]) -> Int? {
+  private func cachedTokens(_ usage: [String: JSONValue]) -> Int {
     usage.object("prompt_tokens_details")?.int("cached_tokens")
       ?? usage.object("promptTokenDetails")?.int("cachedTokens")
       ?? usage.int("num_cached_tokens")
+      ?? 0
+  }
+
+  private func derivedToolCallID(index: Int) -> String {
+    let value = "toolcall:\(index)"
+    let normalized = value.filter { $0.isLetter || $0.isNumber }
+    if normalized.count == 9 { return normalized }
+    let seed = normalized.isEmpty ? value : normalized
+    return String(mistralShortHash(seed).filter { $0.isLetter || $0.isNumber }.prefix(9))
+  }
+
+  private func mistralShortHash(_ value: String) -> String {
+    var h1 = UInt32(0xdead_beef)
+    var h2 = UInt32(0x41c6_ce57)
+    for codeUnit in value.utf16 {
+      h1 = (h1 ^ UInt32(codeUnit)) &* 2_654_435_761
+      h2 = (h2 ^ UInt32(codeUnit)) &* 1_597_334_677
+    }
+    h1 = ((h1 ^ (h1 >> 16)) &* 2_246_822_507) ^ ((h2 ^ (h2 >> 13)) &* 3_266_489_909)
+    h2 = ((h2 ^ (h2 >> 16)) &* 2_246_822_507) ^ ((h1 ^ (h1 >> 13)) &* 3_266_489_909)
+    return String(h2, radix: 36) + String(h1, radix: 36)
   }
 
   private func mapFinishReason(_ value: String) throws -> ProviderFinishReason {

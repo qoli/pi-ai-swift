@@ -81,7 +81,7 @@ struct PiMessagesAdapterTests {
       events.first
         == .responseStarted(
           ProviderResponseMetadata(
-            responseID: "logical-request",
+            responseID: nil,
             providerID: "radius",
             modelID: model.id,
             providerMetadata: [:]
@@ -108,9 +108,29 @@ struct PiMessagesAdapterTests {
             outputTokens: 5,
             reasoningTokens: 2,
             cachedInputTokens: 3,
-            providerMetadata: ["totalTokens": .integer(16)]
+            cacheWriteTokens: 0,
+            totalTokens: 16,
+            providerMetadata: [
+              "input": .integer(8),
+              "output": .integer(5),
+              "reasoning": .integer(2),
+              "cacheRead": .integer(3),
+              "cacheWrite": .integer(0),
+              "totalTokens": .integer(16),
+              "cost": .object([
+                "input": .integer(0), "output": .integer(0),
+                "cacheRead": .integer(0), "cacheWrite": .integer(0),
+                "total": .integer(0),
+              ]),
+            ],
+            cost: ProviderUsageCost(input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0)
           )))
     )
+    guard case .responseSnapshot(let snapshot) = events[events.count - 2] else {
+      Issue.record("expected terminal response snapshot")
+      return
+    }
+    #expect(snapshot.responseID == "response-1")
     #expect(events.last == .completed(.toolCalls))
 
     let sent = try #require(await transport.request())
@@ -134,7 +154,7 @@ struct PiMessagesAdapterTests {
   }
 
   @Test
-  func explicitOffIsForwardedAndNilOmitsReasoning() async throws {
+  func explicitOffAndNilUsePinnedSimpleOmissionSemantics() async throws {
     for effort: ProviderReasoningEffort? in [nil, .off] {
       let model = piMessagesFixtureModel()
       let request = ProviderRequest(
@@ -150,7 +170,7 @@ struct PiMessagesAdapterTests {
       let sent = try #require(await transport.request())
       let body = try decodeJSONObject(
         try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
-      #expect(body.object("options")?.string("reasoning") == effort?.rawValue)
+      #expect(body.object("options")?["reasoning"] == nil)
     }
   }
 
@@ -329,7 +349,7 @@ private func piMessagesSuccessChunks() -> [Data] {
     #"{"type":"toolcall_delta","contentIndex":2,"delta":"{\"query\":\"Sw"}"#,
     #"{"type":"toolcall_delta","contentIndex":2,"delta":"ift\"}"}"#,
     #"{"type":"toolcall_end","contentIndex":2,"toolCall":{"type":"toolCall","id":"call-1","name":"lookup","arguments":{"query":"Swift"}}}"#,
-    #"{"type":"done","reason":"toolUse","usage":{"input":8,"output":5,"reasoning":2,"cacheRead":3,"cacheWrite":0,"totalTokens":16},"responseId":"response-1"}"#,
+    #"{"type":"done","reason":"toolUse","usage":{"input":8,"output":5,"reasoning":2,"cacheRead":3,"cacheWrite":0,"totalTokens":16,"cost":{"input":0,"output":0,"cacheRead":0,"cacheWrite":0,"total":0}},"responseId":"response-1"}"#,
   ])
 }
 

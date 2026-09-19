@@ -3,6 +3,19 @@ import Testing
 
 @testable import PiAIProviderRuntime
 
+func fixtureMetadataWithCost(
+  _ metadata: [String: JSONValue] = [:]
+) -> [String: JSONValue] {
+  var result = metadata
+  if result["cost"] == nil {
+    result["cost"] = .object([
+      "input": .integer(0), "output": .integer(0),
+      "cacheRead": .integer(0), "cacheWrite": .integer(0),
+    ])
+  }
+  return result
+}
+
 @Suite
 struct ContractTests {
   @Test
@@ -106,11 +119,242 @@ struct ContractTests {
   }
 
   @Test
+  func responseSnapshotEventRoundTripsWithReplayState() throws {
+    let snapshot = replayableSnapshot(
+      content: [
+        .text(
+          ProviderTextContent(
+            text: "answer",
+            signature: #"{"v":1,"id":"message-1","phase":"final_answer"}"#,
+            providerMetadata: ["phase": .string("final_answer")]
+          )),
+        .reasoning(
+          ProviderReasoningContent(
+            text: "inspect",
+            signature: "opaque-reasoning",
+            isRedacted: false,
+            providerMetadata: ["kind": .string("summary")]
+          )),
+        .toolCall(
+          ProviderToolCall(
+            id: "call-1|item-1",
+            name: "lookup",
+            arguments: .object(["query": .string("Swift")]),
+            thoughtSignature: "opaque-thought",
+            namespace: "research",
+            providerMetadata: ["kind": .string("function")]
+          )),
+      ]
+    )
+    let event = ProviderEvent.responseSnapshot(snapshot)
+
+    let data = try JSONEncoder().encode(event)
+    let decoded = try JSONDecoder().decode(ProviderEvent.self, from: data)
+
+    #expect(decoded == event)
+  }
+
+  @Test
+  func providerToolCallDecodesLegacyJSONWithoutReplayOptionals() throws {
+    let argumentsData = try JSONEncoder().encode(
+      JSONValue.object(["query": .string("Swift")])
+    )
+    let arguments = try JSONSerialization.jsonObject(with: argumentsData)
+    let legacyData = try JSONSerialization.data(
+      withJSONObject: [
+        "id": "call-legacy",
+        "name": "lookup",
+        "arguments": arguments,
+      ]
+    )
+
+    let decoded = try JSONDecoder().decode(ProviderToolCall.self, from: legacyData)
+
+    #expect(decoded.id == "call-legacy")
+    #expect(decoded.name == "lookup")
+    #expect(decoded.arguments == .object(["query": .string("Swift")]))
+    #expect(decoded.thoughtSignature == nil)
+    #expect(decoded.namespace == nil)
+    #expect(decoded.providerMetadata == nil)
+  }
+
+  @Test
+  func richUserAndAssistantMessagesRoundTripWithoutLosingReplayMetadata() throws {
+    let messages: [ProviderMessage] = [
+      .userMessage(
+        ProviderUserMessage(
+          content: [
+            .text("inspect this image"),
+            .image(.data(Data([0x89, 0x50, 0x4E, 0x47]), mimeType: "image/png")),
+            .image(
+              .remoteURL(
+                URL(string: "https://example.invalid/image.jpg")!,
+                mimeType: "image/jpeg"
+              )),
+          ],
+          timestampMilliseconds: 1_725_000_000_000
+        )),
+      .assistantMessage(
+        ProviderAssistantMessage(
+          content: [
+            .signedText(
+              ProviderTextContent(
+                text: "result",
+                signature: "opaque-text",
+                providerMetadata: ["phase": .string("final_answer")]
+              )),
+            .reasoning(
+              ProviderReasoningContent(
+                text: "[Reasoning redacted]",
+                signature: "opaque-reasoning",
+                isRedacted: true,
+                providerMetadata: ["encrypted": .bool(true)]
+              )),
+            .toolCall(
+              ProviderToolCall(
+                id: "call-1|item-1",
+                name: "lookup",
+                arguments: .object(["query": .string("Swift")]),
+                thoughtSignature: "opaque-thought",
+                namespace: "research",
+                providerMetadata: ["custom": .bool(true)]
+              )),
+          ],
+          source: ProviderMessageSource(
+            api: "openai-responses",
+            providerID: "openai",
+            modelID: "gpt-test"
+          ),
+          responseID: "response-1",
+          responseModelID: "gpt-test-2026-09-19",
+          usage: replayUsage(),
+          stopReason: .toolUse,
+          rawStopReason: "completed",
+          timestampMilliseconds: 1_725_000_000_001,
+          providerMetadata: ["endTurn": .bool(true)]
+        )),
+    ]
+
+    let data = try JSONEncoder().encode(messages)
+    let decoded = try JSONDecoder().decode([ProviderMessage].self, from: data)
+
+    #expect(decoded == messages)
+  }
+
+  @Test
+  func responseSnapshotRejectsAssetReplayAsAssistantMessage() {
+    let snapshot = replayableSnapshot(
+      content: [
+        .asset(
+          ProviderAsset(
+            id: "image-1",
+            kind: .image,
+            mimeType: "image/png",
+            data: Data([0x89, 0x50]),
+            providerMetadata: [:]
+          ))
+      ]
+    )
+
+    expectReplayFailure(snapshot, code: .unsupportedCapability, messageContains: "image response")
+  }
+
+  @Test
+  func responseSnapshotRejectsReplayWithoutUsage() {
+    let snapshot = ProviderResponseSnapshot(
+      responseID: "response-1",
+      providerID: "openai",
+      protocolID: "openai-responses",
+      modelID: "gpt-test",
+      responseModelID: nil,
+      content: [.text(ProviderTextContent(text: "answer", signature: nil))],
+      usage: nil,
+      finishReason: .stop,
+      rawFinishReason: "completed",
+      timestampMilliseconds: 1_725_000_000_000
+    )
+
+    expectReplayFailure(snapshot, code: .invalidResponse, messageContains: "missing usage")
+  }
+
+  @Test
+  func responseSnapshotRejectsNonReplayableFinishReasons() {
+    for finishReason in [ProviderFinishReason.contentFilter, .cancelled] {
+      let snapshot = replayableSnapshot(
+        content: [.text(ProviderTextContent(text: "answer", signature: nil))],
+        finishReason: finishReason
+      )
+
+      expectReplayFailure(
+        snapshot,
+        code: .invalidResponse,
+        messageContains: "non-replayable finish reason: \(finishReason.rawValue)"
+      )
+    }
+  }
+
+  @Test
   func unknownEventFailsDecodingInsteadOfProducingSubstituteOutput() {
     let data = Data(#"[{"unknown":{"_0":"value"}}]"#.utf8)
 
     #expect(throws: DecodingError.self) {
       _ = try JSONDecoder().decode([ProviderEvent].self, from: data)
+    }
+  }
+
+  @Test
+  func providerUsageCostRoundTripsAndLegacyJSONWithoutCostStillDecodes() throws {
+    let usage = ProviderUsage(
+      inputTokens: 7,
+      outputTokens: 5,
+      reasoningTokens: 2,
+      cachedInputTokens: 3,
+      cacheWriteTokens: 1,
+      totalTokens: 16,
+      providerMetadata: ["source": .string("fixture")],
+      cost: ProviderUsageCost(
+        input: 0.007,
+        output: 0.05,
+        cacheRead: 0.0003,
+        cacheWrite: 0.001,
+        total: 0.0583))
+    let roundTrip = try JSONDecoder().decode(
+      ProviderUsage.self, from: JSONEncoder().encode(usage))
+    #expect(roundTrip == usage)
+
+    let legacy = Data(
+      #"{"inputTokens":7,"outputTokens":5,"reasoningTokens":2,"cachedInputTokens":3,"cacheWriteTokens":1,"totalTokens":16,"providerMetadata":{"source":"fixture"}}"#
+        .utf8)
+    let decodedLegacy = try JSONDecoder().decode(ProviderUsage.self, from: legacy)
+    #expect(decodedLegacy.cost == nil)
+    #expect(decodedLegacy.inputTokens == 7)
+    #expect(decodedLegacy.providerMetadata["source"] == .string("fixture"))
+  }
+
+  @Test
+  func multipleSystemMessagesFailInsteadOfInventingAnUpstreamMapping() throws {
+    let request = ProviderRequest(
+      id: "multiple-system-explicit-failure",
+      providerID: "fixture",
+      modelID: "fixture-model",
+      messages: [.system("first"), .system("second"), .user([.text("hello")])],
+      tools: [],
+      options: .init(
+        maximumOutputTokens: nil,
+        temperature: nil,
+        reasoningEffort: nil,
+        responseSchema: nil,
+        providerOptions: [:]
+      )
+    )
+
+    do {
+      try request.validateSingleSystemMessage(operation: "fixture.request.system")
+      Issue.record("multiple system messages unexpectedly passed source-domain validation")
+    } catch let failure as ProviderRuntimeFailure {
+      #expect(failure.code == .invalidRequest)
+      #expect(failure.operation == "fixture.request.system")
+      #expect(failure.message.contains("one system prompt"))
     }
   }
 
@@ -177,6 +421,55 @@ struct ContractTests {
     #expect(mapping.schemaVersion == 3)
     #expect(mapping.areas.count == 63)
     #expect(mapping.areas.allSatisfy { !$0.dependsOn.contains($0.id) })
+  }
+}
+
+private func replayUsage() -> ProviderUsage {
+  ProviderUsage(
+    inputTokens: 7,
+    outputTokens: 5,
+    reasoningTokens: 2,
+    cachedInputTokens: 3,
+    cacheWriteTokens: 1,
+    totalTokens: 16,
+    providerMetadata: ["source": .string("fixture")]
+  )
+}
+
+private func replayableSnapshot(
+  content: [ProviderResponseContent],
+  finishReason: ProviderFinishReason = .toolCalls
+) -> ProviderResponseSnapshot {
+  ProviderResponseSnapshot(
+    responseID: "response-1",
+    providerID: "openai",
+    protocolID: "openai-responses",
+    modelID: "gpt-test",
+    responseModelID: "gpt-test-2026-09-19",
+    content: content,
+    usage: replayUsage(),
+    finishReason: finishReason,
+    rawFinishReason: "completed",
+    timestampMilliseconds: 1_725_000_000_000,
+    providerMetadata: ["endTurn": .bool(true)]
+  )
+}
+
+private func expectReplayFailure(
+  _ snapshot: ProviderResponseSnapshot,
+  code: ProviderRuntimeFailure.Code,
+  messageContains fragment: String
+) {
+  do {
+    _ = try snapshot.replayAssistantMessage()
+    Issue.record("response snapshot unexpectedly produced a replay assistant message")
+  } catch let error as ProviderRuntimeFailure {
+    #expect(error.code == code)
+    #expect(error.operation == "response-snapshot.replay")
+    #expect(error.providerID == snapshot.providerID)
+    #expect(error.message.contains(fragment))
+  } catch {
+    Issue.record("unexpected replay error type: \(error)")
   }
 }
 

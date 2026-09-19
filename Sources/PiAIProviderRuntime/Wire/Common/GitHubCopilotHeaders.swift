@@ -28,12 +28,17 @@ private func containsImage(_ message: ProviderMessage) -> Bool {
       if case .image = item { return true }
       return false
     }
+  case .userMessage(let user):
+    return user.content.contains { item in
+      if case .image = item { return true }
+      return false
+    }
   case .toolResult(let result):
     return result.content.contains { item in
       if case .image = item { return true }
       return false
     }
-  case .system, .assistant:
+  case .system, .assistant, .assistantMessage:
     return false
   }
 }

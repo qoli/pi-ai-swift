@@ -108,7 +108,9 @@ struct AnthropicMessagesAdapterTests {
         protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
-        metadata: ["compat": .object(["forceAdaptiveThinking": .bool(true)])]
+        metadata: fixtureMetadataWithCost([
+          "compat": .object(["forceAdaptiveThinking": .bool(true)])
+        ])
       )
     )
 
@@ -117,7 +119,7 @@ struct AnthropicMessagesAdapterTests {
       events.append(event)
     }
 
-    #expect(events.count == 10)
+    #expect(events.count == 11)
     #expect(events.contains(.textDelta("Checking")))
     #expect(events.contains(.reasoningDelta("inspect")))
     #expect(events.contains(.reasoningSignatureDelta("opaque-signature")))
@@ -134,6 +136,12 @@ struct AnthropicMessagesAdapterTests {
           )
         ))
     )
+    guard case .responseSnapshot(let snapshot) = events[events.count - 2] else {
+      Issue.record("expected terminal response snapshot")
+      return
+    }
+    #expect(snapshot.responseID == "message-1")
+    #expect(snapshot.finishReason == .toolCalls)
     #expect(events.last == .completed(.toolCalls))
 
     let sent = try #require(await transport.request())
@@ -272,7 +280,7 @@ private func fixtureAnthropicContext(model: ProviderModel, metadata: [String: JS
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: metadata
+      metadata: fixtureMetadataWithCost(metadata)
     )
   )
 }

@@ -34,7 +34,11 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           var reducer = BedrockEventReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
-            responseID: responseID
+            responseID: responseID,
+            pricing: try ProviderUsagePricing.parse(
+              metadata: context.modelConfiguration.metadata,
+              providerID: request.providerID,
+              operation: "bedrock.usage.pricing")
           )
           for try await chunk in response.body {
             try Task.checkCancellation()
@@ -65,6 +69,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> URLRequest {
+    try request.validateSingleSystemMessage(operation: "bedrock.request.system")
     let endpoint = try endpointURL(baseURL: context.baseURL, modelID: request.modelID)
     var urlRequest = URLRequest(url: endpoint)
     urlRequest.httpMethod = "POST"
@@ -198,7 +203,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
 
     let supportedOptions: Set<String> = [
       "additionalModelRequestFields", "interleavedThinking", "requestMetadata",
-      "thinkingBudgets", "thinkingDisplay", "toolChoice",
+      "forcePromptCaching", "thinkingDisplay",
     ]
     let unknown = Set(request.options.providerOptions.keys).subtracting(supportedOptions)
     guard unknown.isEmpty else {
@@ -209,17 +214,24 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         "unsupported Bedrock provider options: \(unknown.sorted().joined(separator: ", "))"
       )
     }
+    let cacheControl = bedrockCachePoint(request, context: context)
     var body: [String: JSONValue] = [
-      "messages": .array(try messages(request.messages))
+      "messages": .array(
+        try messages(
+          request.messages.insertingMissingToolResults(),
+          context: context,
+          cachePoint: cacheControl
+        ))
     ]
-    let systems = request.messages.compactMap { message -> JSONValue? in
+    var systems = request.messages.compactMap { message -> JSONValue? in
       guard case .system(let text) = message else { return nil }
       return .object(["text": .string(nonBlank(text))])
     }
+    if let cacheControl, !systems.isEmpty { systems.append(cacheControl) }
     if !systems.isEmpty { body["system"] = .array(systems) }
 
     var inference: [String: JSONValue] = [:]
-    if let maximum = request.options.maximumOutputTokens ?? context.model.maximumOutputTokens {
+    if let maximum = try effectiveMaximumOutputTokens(request, context: context) {
       inference["maxTokens"] = .integer(Int64(maximum))
     }
     if let temperature = request.options.temperature {
@@ -227,7 +239,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     }
     if !inference.isEmpty { body["inferenceConfig"] = .object(inference) }
 
-    if !request.tools.isEmpty {
+    if !request.tools.isEmpty, request.options.toolChoice?.stringValue != "none" {
       var toolConfiguration: [String: JSONValue] = [
         "tools": .array(
           request.tools.map { tool in
@@ -241,11 +253,32 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           }
         )
       ]
-      if let choice = request.options.providerOptions["toolChoice"] {
-        toolConfiguration["toolChoice"] = choice
+      if let choice = request.options.toolChoice {
+        switch choice {
+        case .string("auto"):
+          toolConfiguration["toolChoice"] = .object(["auto": .object([:])])
+        case .string("any"):
+          toolConfiguration["toolChoice"] = .object(["any": .object([:])])
+        case .string("none"):
+          break
+        case .object(let value) where value.string("type") == "tool":
+          guard let name = value.string("name"), !name.isEmpty else {
+            throw failure(
+              .invalidRequest, request, "bedrock.request.tool-choice",
+              "Bedrock named tool choice requires a non-empty name")
+          }
+          toolConfiguration["toolChoice"] = .object(["tool": .object(["name": .string(name)])])
+        default:
+          throw failure(
+            .invalidRequest,
+            request,
+            "bedrock.request.tool-choice",
+            "unsupported Bedrock tool choice"
+          )
+        }
       }
       body["toolConfig"] = .object(toolConfiguration)
-    } else if request.options.providerOptions["toolChoice"] != nil {
+    } else if request.tools.isEmpty, request.options.toolChoice != nil {
       throw failure(
         .invalidRequest,
         request,
@@ -306,38 +339,34 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         "Bedrock model does not support reasoning"
       )
     }
-    guard requested != .off else {
-      throw failure(
-        .unsupportedCapability, request, "bedrock.request.reasoning",
-        "Bedrock reasoning cannot be explicitly disabled through this protocol"
-      )
-    }
+    guard requested != .off else { return [:] }
     let candidates = [context.model.id, context.model.name].flatMap { value in
       let lower = value.lowercased()
       return [
         lower, lower.replacingOccurrences(of: #"[\s_.:]+"#, with: "-", options: .regularExpression),
       ]
     }
-    guard candidates.contains(where: { $0.contains("anthropic") || $0.contains("claude") })
-    else {
-      throw failure(
-        .unsupportedCapability, request, "bedrock.request.reasoning",
-        "Bedrock reasoning controls are only implemented for Claude models"
+    guard
+      ProviderBedrockModel.isAnthropicClaude(
+        id: context.model.id,
+        name: context.model.name
       )
+    else {
+      // The pinned upstream forwards the reasoning option for non-Claude Bedrock
+      // models but does not encode provider-specific request fields for it.
+      return [:]
     }
     let adaptive = candidates.contains { value in
       ["opus-4-6", "opus-4-7", "opus-4-8", "opus-5", "sonnet-4-6", "sonnet-5", "fable-5"]
         .contains { value.contains($0) }
     }
-    let display =
-      request.options.providerOptions["thinkingDisplay"]?.stringValue
-      ?? "summarized"
+    let display = request.options.providerOptions["thinkingDisplay"]?.stringValue ?? "summarized"
+    let omitDisplay = isGovCloudTarget(request: request, context: context)
     if adaptive {
+      var thinking: [String: JSONValue] = ["type": .string("adaptive")]
+      if !omitDisplay { thinking["display"] = .string(display) }
       return [
-        "thinking": .object([
-          "type": .string("adaptive"),
-          "display": .string(display),
-        ]),
+        "thinking": .object(thinking),
         "output_config": .object([
           "effort": .string(
             try reasoningEffort(
@@ -367,9 +396,9 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         "unsupported Bedrock reasoning effort: \(requested)"
       )
     }
-    if case .object(let custom)? = request.options.providerOptions["thinkingBudgets"],
-      let configured = custom[requested.rawValue]?.integerValue
-    {
+    let customLevel: ProviderReasoningEffort =
+      requested == .xhigh || requested == .max ? .high : requested
+    if let configured = request.options.thinkingBudgets?[customLevel] {
       guard configured > 0 else {
         throw failure(
           .invalidRequest,
@@ -380,9 +409,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       }
       budget = configured
     }
-    let outputLimit =
-      request.options.maximumOutputTokens
-      ?? context.model.maximumOutputTokens ?? budget + 1_024
+    let outputLimit = try effectiveMaximumOutputTokens(request, context: context) ?? budget + 1_024
     budget = min(budget, max(0, outputLimit - 1_024))
     guard budget > 0 else {
       throw failure(
@@ -392,13 +419,11 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         "Bedrock output limit leaves no room for reasoning"
       )
     }
-    var result: [String: JSONValue] = [
-      "thinking": .object([
-        "type": .string("enabled"),
-        "budget_tokens": .integer(Int64(budget)),
-        "display": .string(display),
-      ])
+    var thinking: [String: JSONValue] = [
+      "type": .string("enabled"), "budget_tokens": .integer(Int64(budget)),
     ]
+    if !omitDisplay { thinking["display"] = .string(display) }
+    var result: [String: JSONValue] = ["thinking": .object(thinking)]
     if request.options.providerOptions["interleavedThinking"]?.boolValue != false {
       result["anthropic_beta"] = .array([
         .string("interleaved-thinking-2025-05-14")
@@ -438,8 +463,15 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     }
   }
 
-  private func messages(_ messages: [ProviderMessage]) throws -> [JSONValue] {
-    try messages.compactMap { message in
+  private func messages(
+    _ messages: [ProviderMessage],
+    context: WireProtocolContext,
+    cachePoint: JSONValue?
+  ) throws -> [JSONValue] {
+    let target = ProviderMessageSource(
+      api: protocolID, providerID: context.provider.id, modelID: context.model.id)
+    let supportsSignature = bedrockSupportsThinkingSignature(context.model)
+    var result: [JSONValue] = try messages.compactMap { message -> JSONValue? in
       switch message {
       case .system:
         return nil
@@ -448,8 +480,22 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           "role": .string("user"),
           "content": .array(try content.map(userContent)),
         ])
+      case .userMessage(let user):
+        return .object([
+          "role": .string("user"),
+          "content": .array(try user.content.map(userContent)),
+        ])
       case .assistant(let content):
-        let values = content.compactMap(assistantContent)
+        let values = content.compactMap {
+          assistantContent($0, supportsSignature: supportsSignature)
+        }
+        guard !values.isEmpty else { return nil }
+        return .object(["role": .string("assistant"), "content": .array(values)])
+      case .assistantMessage(let assistant):
+        guard let content = assistant.replayContent(for: target) else { return nil }
+        let values = content.compactMap {
+          assistantContent($0, supportsSignature: supportsSignature)
+        }
         guard !values.isEmpty else { return nil }
         return .object(["role": .string("assistant"), "content": .array(values)])
       case .toolResult(let result):
@@ -467,6 +513,38 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         ])
       }
     }
+    result = groupingConsecutiveToolResults(result)
+    if let cachePoint, let index = result.indices.last,
+      result[index].objectValue?.string("role") == "user",
+      case .object(var message) = result[index], case .array(var content)? = message["content"]
+    {
+      content.append(cachePoint)
+      message["content"] = .array(content)
+      result[index] = .object(message)
+    }
+    return result
+  }
+
+  private func groupingConsecutiveToolResults(_ messages: [JSONValue]) -> [JSONValue] {
+    var grouped: [JSONValue] = []
+    for value in messages {
+      guard case .object(let message) = value,
+        message.string("role") == "user",
+        case .array(let content)? = message["content"],
+        content.allSatisfy({ $0.objectValue?["toolResult"] != nil }),
+        let last = grouped.indices.last,
+        case .object(var previous) = grouped[last],
+        previous.string("role") == "user",
+        case .array(let previousContent)? = previous["content"],
+        previousContent.allSatisfy({ $0.objectValue?["toolResult"] != nil })
+      else {
+        grouped.append(value)
+        continue
+      }
+      previous["content"] = .array(previousContent + content)
+      grouped[last] = .object(previous)
+    }
+    return grouped
   }
 
   private func userContent(_ content: ProviderUserContent) throws -> JSONValue {
@@ -486,15 +564,43 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     }
   }
 
-  private func assistantContent(_ content: ProviderAssistantContent) -> JSONValue? {
+  private func assistantContent(
+    _ content: ProviderAssistantContent,
+    supportsSignature: Bool
+  ) -> JSONValue? {
     switch content {
     case .text(let text):
       guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
       return .object(["text": .string(text)])
+    case .signedText(let text):
+      guard !text.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+      return .object(["text": .string(text.text)])
     case .reasoning(let reasoning):
-      var value: [String: JSONValue] = ["text": .string(reasoning.text)]
-      if let signature = reasoning.signature { value["signature"] = .string(signature) }
-      return .object(["reasoningContent": .object(["reasoningText": .object(value)])])
+      if reasoning.isRedacted == true {
+        guard let signature = reasoning.signature,
+          let bytes = Data(base64Encoded: signature), !bytes.isEmpty
+        else { return nil }
+        return .object([
+          "reasoningContent": .object(["redactedContent": .string(bytes.base64EncodedString())])
+        ])
+      }
+      if supportsSignature {
+        guard let signature = reasoning.signature,
+          !signature.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        else { return .object(["text": .string(reasoning.text)]) }
+        return .object([
+          "reasoningContent": .object([
+            "reasoningText": .object([
+              "text": .string(reasoning.text), "signature": .string(signature),
+            ])
+          ])
+        ])
+      }
+      return .object([
+        "reasoningContent": .object([
+          "reasoningText": .object(["text": .string(reasoning.text)])
+        ])
+      ])
     case .toolCall(let call):
       return .object([
         "toolUse": .object([
@@ -504,6 +610,79 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         ])
       ])
     }
+  }
+
+  private func bedrockSupportsThinkingSignature(_ model: ProviderModel) -> Bool {
+    ProviderBedrockModel.isAnthropicClaude(id: model.id, name: model.name)
+  }
+
+  private func effectiveMaximumOutputTokens(
+    _ request: ProviderRequest,
+    context: WireProtocolContext
+  ) throws -> Int? {
+    guard let requested = request.options.maximumOutputTokens ?? context.model.maximumOutputTokens
+    else {
+      return nil
+    }
+    guard let effort = request.options.reasoningEffort, effort != .off,
+      ProviderBedrockModel.isAnthropicClaude(id: context.model.id, name: context.model.name)
+    else { return requested }
+    let candidates = [context.model.id, context.model.name].map {
+      $0.lowercased().replacingOccurrences(
+        of: #"[\s_.:]+"#, with: "-", options: .regularExpression)
+    }
+    let adaptive = candidates.contains { value in
+      ["opus-4-6", "opus-4-7", "opus-4-8", "opus-5", "sonnet-4-6", "sonnet-5", "fable-5"]
+        .contains { value.contains($0) }
+    }
+    guard !adaptive else { return requested }
+    let level: ProviderReasoningEffort = effort == .xhigh || effort == .max ? .high : effort
+    let defaults: [ProviderReasoningEffort: Int] = [
+      .minimal: 1_024, .low: 2_048, .medium: 8_192, .high: 16_384,
+    ]
+    guard let budget = request.options.thinkingBudgets?[level] ?? defaults[level] else {
+      return requested
+    }
+    return min(requested + budget, context.model.maximumOutputTokens ?? requested + budget)
+  }
+
+  private func bedrockCachePoint(
+    _ request: ProviderRequest,
+    context: WireProtocolContext
+  ) -> JSONValue? {
+    guard request.options.cacheRetention != .none,
+      supportsPromptCaching(context: context)
+    else { return nil }
+    var point: [String: JSONValue] = ["type": .string("default")]
+    if request.options.cacheRetention == .long { point["ttl"] = .string("1h") }
+    return .object(["cachePoint": .object(point)])
+  }
+
+  private func supportsPromptCaching(context: WireProtocolContext) -> Bool {
+    if context.modelConfiguration.metadata.bool("forcePromptCaching") == true { return true }
+    let candidates = [context.model.id, context.model.name].map {
+      $0.lowercased().replacingOccurrences(
+        of: #"[\s_.:]+"#, with: "-", options: .regularExpression)
+    }
+    guard candidates.contains(where: { $0.contains("claude") }) else { return false }
+    return candidates.contains { value in
+      value.contains("fable-5") || value.contains("opus-5") || value.contains("sonnet-5")
+        || value.contains("-4-") || value.contains("claude-3-7-sonnet")
+        || value.contains("claude-3-5-haiku")
+    }
+  }
+
+  private func isGovCloudTarget(
+    request: ProviderRequest,
+    context: WireProtocolContext
+  ) -> Bool {
+    if case .apiKey(let credential) = context.credential,
+      credential.metadata["region"]?.lowercased().hasPrefix("us-gov-") == true
+    {
+      return true
+    }
+    let modelID = request.modelID.lowercased()
+    return modelID.hasPrefix("us-gov.") || modelID.hasPrefix("arn:aws-us-gov:")
   }
 
   private func toolResultContent(_ content: ProviderToolResultContent) throws -> JSONValue {
@@ -638,15 +817,35 @@ private struct BedrockEventReducer {
   let providerID: String
   let requestedModelID: String
   let responseID: String
+  let pricing: ProviderUsagePricing?
   private var started = false
   private var stopReason: ProviderFinishReason?
+  private var rawStopReason: String?
   private var completed = false
   private var tools: [Int: ToolState] = [:]
+  private var completedTools: [Int: ProviderToolCall] = [:]
+  private var textBlocks: [Int: String] = [:]
+  private var reasoningBlocks: [Int: ReasoningState] = [:]
+  private var usage = ProviderUsage(
+    inputTokens: 0,
+    outputTokens: 0,
+    reasoningTokens: nil,
+    cachedInputTokens: 0,
+    cacheWriteTokens: 0,
+    totalTokens: 0,
+    providerMetadata: [:]
+  )
 
-  init(providerID: String, requestedModelID: String, responseID: String) {
+  init(
+    providerID: String,
+    requestedModelID: String,
+    responseID: String,
+    pricing: ProviderUsagePricing?
+  ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
     self.responseID = responseID
+    self.pricing = pricing
   }
 
   mutating func reduce(_ message: AWSEventStreamMessage) throws -> [ProviderEvent] {
@@ -700,23 +899,41 @@ private struct BedrockEventReducer {
       guard let index = object.int("contentBlockIndex"), let delta = object.object("delta") else {
         throw invalid("Bedrock contentBlockDelta is malformed")
       }
-      if let text = delta.string("text") { return [.textDelta(text)] }
+      if let text = delta.string("text") {
+        textBlocks[index, default: ""] += text
+        return [.textDelta(text)]
+      }
       if let reasoning = delta.object("reasoningContent")?.string("text") {
+        var state = reasoningBlocks[index] ?? ReasoningState()
+        state.text += reasoning
+        reasoningBlocks[index] = state
         return [.reasoningDelta(reasoning)]
       }
       if let reasoningContent = delta.object("reasoningContent"),
         let signature = reasoningContent.string("signature"), !signature.isEmpty
       {
+        var state = reasoningBlocks[index] ?? ReasoningState()
+        if !state.isRedacted { state.signature += signature }
+        reasoningBlocks[index] = state
         return [.reasoningSignatureDelta(signature)]
       }
       if let reasoningContent = delta.object("reasoningContent"),
         let redacted = reasoningContent.string("redactedContent"),
         !redacted.isEmpty
       {
-        guard Data(base64Encoded: redacted) != nil else {
+        guard let bytes = Data(base64Encoded: redacted) else {
           throw invalid("Bedrock redacted reasoning content is malformed")
         }
-        return [.reasoningSignatureDelta(redacted)]
+        var state = reasoningBlocks[index] ?? ReasoningState()
+        let first = !state.isRedacted
+        if first {
+          state.isRedacted = true
+          state.signature = ""
+          state.text += "[Reasoning redacted]"
+        }
+        state.redactedBytes.append(bytes)
+        reasoningBlocks[index] = state
+        return first ? [.reasoningDelta("[Reasoning redacted]")] : []
       }
       if let input = delta.object("toolUse")?.string("input") {
         guard var tool = tools[index] else {
@@ -731,6 +948,11 @@ private struct BedrockEventReducer {
       guard let index = object.int("contentBlockIndex") else {
         throw invalid("Bedrock contentBlockStop is missing an index")
       }
+      if let reasoning = reasoningBlocks[index], reasoning.isRedacted,
+        !reasoning.redactedBytes.isEmpty
+      {
+        return [.reasoningSignatureDelta(reasoning.redactedBytes.base64EncodedString())]
+      }
       guard let tool = tools.removeValue(forKey: index) else { return [] }
       let arguments: JSONValue
       if tool.input.isEmpty {
@@ -742,15 +964,14 @@ private struct BedrockEventReducer {
           throw invalid("Bedrock tool input is malformed JSON")
         }
       }
-      return [
-        .toolCallCompleted(
-          ProviderToolCall(id: tool.id, name: tool.name, arguments: arguments)
-        )
-      ]
+      let call = ProviderToolCall(id: tool.id, name: tool.name, arguments: arguments)
+      completedTools[index] = call
+      return [.toolCallCompleted(call)]
     case "messageStop":
       guard let reason = object.string("stopReason") else {
         throw invalid("Bedrock messageStop is missing stopReason")
       }
+      rawStopReason = reason
       stopReason = try mapStopReason(reason)
       return []
     case "metadata":
@@ -761,18 +982,31 @@ private struct BedrockEventReducer {
       completed = true
       var events: [ProviderEvent] = []
       if let usage = object.object("usage") {
-        events.append(
-          .usage(
-            ProviderUsage(
-              inputTokens: usage.int("inputTokens"),
-              outputTokens: usage.int("outputTokens"),
-              reasoningTokens: nil,
-              cachedInputTokens: usage.int("cacheReadInputTokens"),
-              providerMetadata: usage
-            )
-          )
+        guard let pricing else {
+          throw ProviderRuntimeFailure(
+            code: .upstreamDrift, message: "model cost rates are missing",
+            providerID: providerID, operation: "bedrock.usage.pricing",
+            causeDescription: nil)
+        }
+        let input = usage.int("inputTokens") ?? 0
+        let output = usage.int("outputTokens") ?? 0
+        let cacheRead = usage.int("cacheReadInputTokens") ?? 0
+        let cacheWrite = usage.int("cacheWriteInputTokens") ?? 0
+        self.usage = ProviderUsage(
+          inputTokens: input,
+          outputTokens: output,
+          reasoningTokens: nil,
+          cachedInputTokens: cacheRead,
+          cacheWriteTokens: cacheWrite,
+          totalTokens: usage.int("totalTokens")
+            ?? input + output,
+          providerMetadata: usage,
+          cost: pricing.cost(
+            input: input, output: output, cacheRead: cacheRead, cacheWrite: cacheWrite)
         )
+        events.append(.usage(self.usage))
       }
+      events.append(responseSnapshot(reason))
       events.append(.completed(reason))
       return events
     default:
@@ -787,7 +1021,48 @@ private struct BedrockEventReducer {
     guard tools.isEmpty else { throw invalid("Bedrock stream ended with incomplete tool calls") }
     if completed { return [] }
     completed = true
-    return [.completed(reason)]
+    return [.usage(usage), responseSnapshot(reason), .completed(reason)]
+  }
+
+  private func responseSnapshot(_ reason: ProviderFinishReason) -> ProviderEvent {
+    let indices = Set(textBlocks.keys)
+      .union(reasoningBlocks.keys)
+      .union(completedTools.keys)
+      .sorted()
+    let content = indices.compactMap { index -> ProviderResponseContent? in
+      if let reasoning = reasoningBlocks[index] {
+        let signature =
+          reasoning.isRedacted
+          ? reasoning.redactedBytes.base64EncodedString()
+          : reasoning.signature
+        return .reasoning(
+          ProviderReasoningContent(
+            text: reasoning.text,
+            signature: signature.isEmpty ? nil : signature,
+            isRedacted: reasoning.isRedacted ? true : nil,
+            providerMetadata: [:]
+          ))
+      }
+      if let text = textBlocks[index] {
+        return .text(ProviderTextContent(text: text, signature: nil))
+      }
+      if let tool = completedTools[index] { return .toolCall(tool) }
+      return nil
+    }
+    return .responseSnapshot(
+      ProviderResponseSnapshot(
+        responseID: nil,
+        providerID: providerID,
+        protocolID: "bedrock-converse-stream",
+        modelID: requestedModelID,
+        responseModelID: nil,
+        content: content,
+        usage: usage,
+        finishReason: reason,
+        rawFinishReason: rawStopReason,
+        timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000),
+        providerMetadata: ["transportRequestID": .string(responseID)]
+      ))
   }
 
   private func mapStopReason(_ value: String) throws -> ProviderFinishReason {
@@ -795,7 +1070,14 @@ private struct BedrockEventReducer {
     case "end_turn", "stop_sequence": return .stop
     case "max_tokens", "model_context_window_exceeded": return .length
     case "tool_use": return .toolCalls
-    default: throw invalid("unsupported Bedrock stop reason: \(value)")
+    default:
+      throw ProviderRuntimeFailure(
+        code: .transportFailed,
+        message: "Provider stopped with: \(value)",
+        providerID: providerID,
+        operation: "bedrock.event.error",
+        causeDescription: value
+      )
     }
   }
 
@@ -813,5 +1095,12 @@ private struct BedrockEventReducer {
     let id: String
     let name: String
     var input: String
+  }
+
+  private struct ReasoningState {
+    var text = ""
+    var signature = ""
+    var isRedacted = false
+    var redactedBytes = Data()
   }
 }

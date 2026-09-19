@@ -241,25 +241,47 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         message: "wire protocol is not implemented: \(modelConfiguration.protocolID)"
       )
     }
+    if request.connectionOptions.azureOpenAIResponses != nil,
+      modelConfiguration.protocolID != "azure-openai-responses"
+    {
+      throw failure(
+        .invalidRequest,
+        providerID: request.providerID,
+        operation: "stream.resolve-connection-configuration",
+        message: "Azure OpenAI connection options require the azure-openai-responses protocol"
+      )
+    }
     let credentialMetadata: [String: String]
     switch credential {
     case .apiKey(let credential): credentialMetadata = credential.metadata
     case .oauth(let credential): credentialMetadata = credential.metadata
     case nil: credentialMetadata = [:]
     }
-    guard
-      let baseURLTemplate = credentialMetadata["baseURL"]
-        ?? modelConfiguration.baseURL ?? provider.baseURL
-    else {
-      throw failure(
-        .invalidRequest,
-        providerID: request.providerID,
-        operation: "stream.resolve-base-url",
-        message: "provider requires an explicit runtime base URL: \(request.providerID)"
-      )
+    let declaredModelBaseURL = modelConfiguration.baseURL ?? provider.baseURL
+    let baseURLTemplate: String
+    if modelConfiguration.protocolID == "azure-openai-responses" {
+      baseURLTemplate = try ResolvedAzureOpenAIResponsesConfiguration.resolve(
+        request: request,
+        modelBaseURL: declaredModelBaseURL
+      ).baseURL
+    } else {
+      guard let resolved = credentialMetadata["baseURL"] ?? declaredModelBaseURL else {
+        throw failure(
+          .invalidRequest,
+          providerID: request.providerID,
+          operation: "stream.resolve-base-url",
+          message: "provider requires an explicit runtime base URL: \(request.providerID)"
+        )
+      }
+      baseURLTemplate = resolved
     }
-    let baseURL = try resolveURLTemplate(
+    let resolvedBaseURLTemplate = GoogleVertexConfiguration.resolveBaseURLTemplate(
       baseURLTemplate,
+      protocolID: modelConfiguration.protocolID,
+      credential: credential
+    )
+    let baseURL = try resolveURLTemplate(
+      resolvedBaseURLTemplate,
       credential: credential,
       providerID: request.providerID,
       endpointPolicy: provider.endpointPolicy

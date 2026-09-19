@@ -28,7 +28,7 @@ struct BedrockConverseStreamAdapterTests {
       events.append(event)
     }
 
-    #expect(events.count == 8)
+    #expect(events.count == 9)
     #expect(
       events[0]
         == .responseStarted(
@@ -62,16 +62,25 @@ struct BedrockConverseStreamAdapterTests {
             outputTokens: 8,
             reasoningTokens: nil,
             cachedInputTokens: 2,
+            cacheWriteTokens: 0,
+            totalTokens: 20,
             providerMetadata: [
               "inputTokens": .integer(12),
               "outputTokens": .integer(8),
               "cacheReadInputTokens": .integer(2),
               "totalTokens": .integer(20),
-            ]
+            ],
+            cost: ProviderUsageCost(input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0)
           )
         )
     )
-    #expect(events[7] == .completed(.toolCalls))
+    guard case .responseSnapshot(let snapshot) = events[7] else {
+      Issue.record("expected terminal response snapshot")
+      return
+    }
+    #expect(snapshot.responseID == nil)
+    #expect(snapshot.providerMetadata["transportRequestID"] == .string("aws-request-1"))
+    #expect(events[8] == .completed(.toolCalls))
 
     let sent = try #require(await transport.request())
     #expect(
@@ -176,7 +185,7 @@ struct BedrockConverseStreamAdapterTests {
   }
 
   @Test
-  func explicitOffRejectsReasoningModelBeforeTransport() async throws {
+  func explicitOffUsesPinnedSimpleOmissionSemantics() async throws {
     let context = bedrockReasoningContext()
     let request = ProviderRequest(
       id: "reasoning-off", providerID: "amazon-bedrock", modelID: context.model.id,
@@ -184,16 +193,15 @@ struct BedrockConverseStreamAdapterTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: nil, temperature: nil, reasoningEffort: .off,
         responseSchema: nil, providerOptions: [:]))
-    let transport = BedrockFixtureTransport(chunks: [], headers: [:])
-    do {
-      for try await _ in BedrockConverseStreamAdapter().stream(
-        request, context: context, transport: transport)
-      {}
-      Issue.record("expected unsupported reasoning off")
-    } catch let error as ProviderRuntimeFailure {
-      #expect(error.code == .unsupportedCapability)
-    }
-    #expect(await transport.request() == nil)
+    let transport = BedrockFixtureTransport(
+      chunks: [try bedrockReasoningFrames()], headers: ["x-amzn-requestid": "reasoning-off"])
+    for try await _ in BedrockConverseStreamAdapter().stream(
+      request, context: context, transport: transport)
+    {}
+    let sent = try #require(await transport.request())
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+    #expect(body["additionalModelRequestFields"] == nil)
   }
 
   @Test(arguments: [ProviderReasoningEffort.high, .max])
@@ -339,7 +347,7 @@ private func bedrockContext(
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: [:]
+      metadata: fixtureMetadataWithCost()
     )
   )
 }
@@ -378,9 +386,9 @@ private func bedrockReasoningContext() -> WireProtocolContext {
       protocolID: model.protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: [
+      metadata: fixtureMetadataWithCost([
         "thinkingLevelMap": .object(["max": .string("max")])
-      ]
+      ])
     )
   )
 }

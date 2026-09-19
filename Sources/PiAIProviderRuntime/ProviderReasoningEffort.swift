@@ -54,13 +54,6 @@ enum ProviderReasoning {
       guard formats.contains(format) else { return [] }
       if format == "openai", compat.bool("supportsReasoningEffort") == false { return [] }
     }
-    if protocolID == "bedrock-converse-stream",
-      ![modelID, modelName].contains(where: {
-        $0.lowercased().contains("anthropic") || $0.lowercased().contains("claude")
-      })
-    {
-      return []
-    }
     return ProviderReasoningEffort.allCases.filter { effort in
       if map[effort.rawValue] == .null { return false }
       if protocolID == "anthropic-messages", compat.bool("forceAdaptiveThinking") != true,
@@ -114,22 +107,7 @@ enum ProviderReasoning {
             return false
           }
         }
-        if format == "openai", effort == .off, map["off"] == nil { return false }
         if format == "ant-ling", map[effort.rawValue] == nil { return false }
-      }
-      if effort == .off, protocolID == "bedrock-converse-stream" { return false }
-      if effort == .off, protocolID == "mistral-conversations",
-        !["mistral-small-2603", "mistral-small-latest", "mistral-medium-3.5"].contains(modelID)
-      {
-        return false
-      }
-      if effort == .off,
-        ["google-generative-ai", "google-vertex"].contains(protocolID),
-        modelID.lowercased().contains("gemini-3") || modelID.lowercased().contains("gemma-4")
-          || modelID.lowercased().contains("gemini-2.5-pro")
-          || ["gemini-flash-latest", "gemini-flash-lite-latest"].contains(modelID.lowercased())
-      {
-        return false
       }
       if effort == .xhigh || effort == .max { return map[effort.rawValue] != nil }
       return true
@@ -140,5 +118,16 @@ enum ProviderReasoning {
     ProviderRuntimeFailure(
       code: .invalidRequest, message: message, providerID: nil,
       operation: "catalog.reasoning", causeDescription: nil)
+  }
+}
+
+enum ProviderBedrockModel {
+  /// Mirrors the pinned upstream `isAnthropicClaudeModel` predicate exactly.
+  static func isAnthropicClaude(id: String, name: String) -> Bool {
+    let id = id.lowercased()
+    let name = name.lowercased()
+    return id.contains("anthropic.claude") || id.contains("anthropic/claude")
+      || name.contains("anthropic.claude") || name.contains("anthropic/claude")
+      || name.contains("claude")
   }
 }

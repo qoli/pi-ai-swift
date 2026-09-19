@@ -54,7 +54,7 @@ struct OpenAIResponsesAdapterTests {
         protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
-        metadata: [:]
+        metadata: zeroCostMetadata()
       )
     )
     var events: [ProviderEvent] = []
@@ -65,14 +65,23 @@ struct OpenAIResponsesAdapterTests {
       events.first
         == .responseStarted(
           ProviderResponseMetadata(
-            responseID: "response-1",
+            responseID: nil,
             providerID: "openai",
             modelID: "gpt-fixture",
             providerMetadata: [:]
           )))
     #expect(events.contains(.textDelta("hello")))
-    #expect(events.contains(.reasoningSignatureDelta("encrypted-reasoning")))
+    #expect(
+      events.contains(
+        .reasoningSignatureDelta(
+          #"{"encrypted_content":"encrypted-reasoning","type":"reasoning"}"#
+        )))
     #expect(events.last == .completed(.stop))
+    guard case .responseSnapshot(let snapshot) = events[events.count - 2] else {
+      Issue.record("expected terminal response snapshot")
+      return
+    }
+    #expect(snapshot.responseID == "response-1")
 
     let sent = try #require(await transport.request())
     #expect(sent.url?.absoluteString == "https://api.openai.com/v1/responses")
@@ -82,16 +91,18 @@ struct OpenAIResponsesAdapterTests {
       providerID: "fixture",
       operation: "fixture"
     )
-    #expect(body.string("instructions") == "system")
+    #expect(body["instructions"] == nil)
+    #expect(body.array("input")?.first?.objectValue?.string("role") == "developer")
+    #expect(body.array("input")?.first?.objectValue?.string("content") == "system")
     #expect(body.int("max_output_tokens") == 100)
     #expect(body.object("reasoning")?.string("effort") == "high")
     #expect(body.object("text")?.object("format")?.string("type") == "json_schema")
   }
 
   @Test
-  func selectedEffortMapsToWireWhileNilOmitsReasoning() async throws {
+  func selectedEffortMapsToWireWhileNilUsesPinnedDefaultOff() async throws {
     let cases: [(ProviderReasoningEffort?, String?)] = [
-      (nil, nil), (.off, "none"), (.minimal, "low"), (.high, "high"), (.max, "max"),
+      (nil, "none"), (.off, "none"), (.minimal, "low"), (.high, "high"), (.max, "max"),
     ]
     for (effort, expected) in cases {
       let fixture = responsesFixture(
@@ -115,7 +126,6 @@ struct OpenAIResponsesAdapterTests {
       let body = try decodeJSONObject(
         try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
       #expect(body.object("reasoning")?.string("effort") == expected)
-      if effort == nil { #expect(body["reasoning"] == nil) }
     }
   }
 
@@ -129,12 +139,14 @@ struct OpenAIResponsesAdapterTests {
       credential: .apiKey(
         APIKeyCredential(
           key: "azure-key",
-          metadata: [
-            "deploymentName": "deployment-1",
-            "apiVersion": "2025-04-01-preview",
-          ]
+          metadata: [:]
         )
-      )
+      ),
+      connectionOptions: ProviderConnectionOptions(
+        azureOpenAIResponses: AzureOpenAIResponsesConnectionOptions(
+          azureAPIVersion: "2025-04-01-preview",
+          azureDeploymentName: "deployment-1"
+        ))
     )
     for try await _ in OpenAIResponsesAdapter(
       protocolID: "azure-openai-responses",
@@ -177,6 +189,33 @@ struct OpenAIResponsesAdapterTests {
     #expect(codexRequest.value(forHTTPHeaderField: "Authorization") == "Bearer codex-access")
     #expect(codexRequest.value(forHTTPHeaderField: "chatgpt-account-id") == "account-1")
     #expect(codexRequest.value(forHTTPHeaderField: "originator") == "pi")
+  }
+
+  @Test
+  func azureRequestServiceTierFailsExplicitlyBecausePinnedSourceDoesNotExposeIt() async throws {
+    let fixture = responsesFixture(
+      providerID: "azure-openai-responses",
+      protocolID: "azure-openai-responses",
+      baseURL: "https://fixture.openai.azure.com/openai/v1",
+      credential: .apiKey(APIKeyCredential(key: "azure-key", metadata: [:])),
+      options: ProviderGenerationOptions(
+        maximumOutputTokens: 100,
+        temperature: nil,
+        reasoningEffort: nil,
+        responseSchema: nil,
+        providerOptions: [:],
+        serviceTier: "priority"))
+    let transport = ResponsesFixtureTransport(chunks: responsesFixtureChunks())
+    do {
+      for try await _ in OpenAIResponsesAdapter(
+        protocolID: "azure-openai-responses", flavor: .azure
+      ).stream(fixture.request, context: fixture.context, transport: transport) {}
+      Issue.record("expected unsupported Azure service tier failure")
+    } catch let failure as ProviderRuntimeFailure {
+      #expect(failure.code == .unsupportedCapability)
+      #expect(failure.operation == "azure-openai-responses.request.service-tier")
+    }
+    #expect(await transport.request() == nil)
   }
 
   @Test
@@ -280,8 +319,13 @@ private func responsesFixture(
   baseURL: String,
   credential: ProviderCredential,
   options: ProviderGenerationOptions? = nil,
-  metadata: [String: JSONValue] = [:]
+  metadata: [String: JSONValue] = [:],
+  connectionOptions: ProviderConnectionOptions = .init()
 ) -> (request: ProviderRequest, context: WireProtocolContext) {
+  var effectiveMetadata = metadata
+  if effectiveMetadata["cost"] == nil {
+    effectiveMetadata.merge(zeroCostMetadata()) { current, _ in current }
+  }
   let model = ProviderModel(
     id: "gpt-fixture",
     providerID: providerID,
@@ -312,7 +356,8 @@ private func responsesFixture(
           reasoningEffort: nil,
           responseSchema: nil,
           providerOptions: [:]
-        )
+        ),
+      connectionOptions: connectionOptions
     ),
     WireProtocolContext(
       provider: ProviderDescriptor(
@@ -329,8 +374,17 @@ private func responsesFixture(
         protocolID: model.protocolID,
         baseURL: nil,
         headers: [:],
-        metadata: metadata
+        metadata: effectiveMetadata
       )
     )
   )
+}
+
+private func zeroCostMetadata() -> [String: JSONValue] {
+  [
+    "cost": .object([
+      "input": .integer(0), "output": .integer(0),
+      "cacheRead": .integer(0), "cacheWrite": .integer(0),
+    ])
+  ]
 }
