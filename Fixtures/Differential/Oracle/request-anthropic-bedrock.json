@@ -1,0 +1,1059 @@
+{
+  "caseID": "request-anthropic-bedrock-v1",
+  "scenarios": {
+    "anthropic-adaptive-xhigh": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-7",
+        "output_config": {
+          "effort": "xhigh"
+        },
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "display": "omitted",
+          "type": "adaptive"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-api-key-system-cache-short": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": [
+              {
+                "cache_control": {
+                  "type": "ephemeral"
+                },
+                "text": "hello",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "cache_control": {
+              "type": "ephemeral"
+            },
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "temperature": 0.25,
+        "thinking": {
+          "type": "disabled"
+        },
+        "tool_choice": {
+          "type": "auto"
+        },
+        "tools": [
+          {
+            "cache_control": {
+              "type": "ephemeral"
+            },
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-budget-custom-omitted": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "max_tokens": 3584,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "budget_tokens": 1536,
+          "display": "summarized",
+          "type": "enabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-budget-default-answer-room-clamp": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "max_tokens": 2048,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "budget_tokens": 1024,
+          "display": "summarized",
+          "type": "enabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-compat-suppression": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "fine-grained-tool-streaming-2025-05-14,interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": [
+              {
+                "cache_control": {
+                  "type": "ephemeral"
+                },
+                "text": "hello",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "cache_control": {
+              "type": "ephemeral"
+            },
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-copilot": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "authorization": "Bearer copilot-fixture"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-disabled": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-header-owned": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "header-fixture"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-missing-auth": {
+      "headers": {},
+      "requestBody": null,
+      "sourceFailure": {
+        "errorMessage": "No API key for provider: anthropic",
+        "stopReason": "error"
+      }
+    },
+    "anthropic-oauth-named-tool": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "authorization": "Bearer sk-ant-oat-fixture",
+        "x-app": "cli"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "You are Claude Code, Anthropic's official CLI for Claude.",
+            "type": "text"
+          },
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tool_choice": {
+          "name": "read",
+          "type": "tool"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "Read"
+          }
+        ]
+      }
+    },
+    "anthropic-server-fallback-source": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "interleaved-thinking-2025-05-14,server-side-fallback-2026-07-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "fallbacks": [
+          {
+            "model": "claude-haiku-4-5"
+          }
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-tool-any": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "interleaved-thinking-2025-05-14",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tool_choice": {
+          "type": "any"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "bedrock-adaptive-govcloud": {
+      "headers": {},
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "output_config": {
+            "effort": "high"
+          },
+          "thinking": {
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          }
+        ],
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "bedrock-budget-custom-interleaved": {
+      "headers": {},
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 1536,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 5632
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          }
+        ],
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "bedrock-budget-default-answer-room-clamp": {
+      "headers": {},
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 1024,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 2048
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          }
+        ],
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "bedrock-cache-long-forced-nonclaude": {
+      "headers": {},
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "reasoningContent": {
+                  "reasoningText": {
+                    "text": "inspect"
+                  }
+                }
+              }
+            ],
+            "role": "assistant"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          },
+          {
+            "cachePoint": {
+              "ttl": "1h",
+              "type": "default"
+            }
+          }
+        ],
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "bedrock-cache-short-signed": {
+      "headers": {},
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "reasoningContent": {
+                  "reasoningText": {
+                    "signature": "opaque-signature",
+                    "text": "inspect"
+                  }
+                }
+              }
+            ],
+            "role": "assistant"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          },
+          {
+            "cachePoint": {
+              "type": "default"
+            }
+          }
+        ],
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "bedrock-cache-unsupported-invalid-redacted": {
+      "headers": {},
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          }
+        ],
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "bedrock-nonclaude-reasoning": {
+      "headers": {},
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          }
+        ],
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "bedrock-tool-any": {
+      "headers": {},
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          }
+        ],
+        "toolConfig": {
+          "toolChoice": {
+            "any": {}
+          },
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "bedrock-tool-named": {
+      "headers": {},
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          }
+        ],
+        "toolConfig": {
+          "toolChoice": {
+            "tool": {
+              "name": "read"
+            }
+          },
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Read data",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "read"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

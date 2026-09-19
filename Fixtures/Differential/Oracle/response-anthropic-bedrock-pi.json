@@ -1,0 +1,848 @@
+{
+  "caseID": "response-anthropic-bedrock-pi-v1",
+  "scenarios": {
+    "anthropic-error-event": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IGVycm9yCmRhdGE6IHsidHlwZSI6ImVycm9yIiwiZXJyb3IiOnsidHlwZSI6Im92ZXJsb2FkZWRfZXJyb3IiLCJtZXNzYWdlIjoiZml4dHVyZSBvdmVybG9hZGVkIn19Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "{\"type\":\"error\",\"error\":{\"type\":\"overloaded_error\",\"message\":\"fixture overloaded\"}}",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "anthropic-missing-terminal": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRoLXBhcnRpYWwiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEsIm91dHB1dF90b2tlbnMiOjB9fX0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "Anthropic stream ended before message_stop",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": null,
+        "responseID": "anth-partial",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 1,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 1
+        }
+      }
+    },
+    "anthropic-redacted-pause-usage": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRoLXJlZGFjdGVkIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxMCwib3V0cHV0X3Rva2VucyI6MCwiY2FjaGVfcmVhZF9pbnB1dF90b2tlbnMiOjIsImNhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucyI6M319fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdGFydCIsImluZGV4IjowLCJjb250ZW50X2Jsb2NrIjp7InR5cGUiOiJyZWRhY3RlZF90aGlua2luZyIsImRhdGEiOiJvcGFxdWUtcmVkYWN0ZWQifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0b3AKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdG9wIiwiaW5kZXgiOjB9CgpldmVudDogbWVzc2FnZV9kZWx0YQpkYXRhOiB7InR5cGUiOiJtZXNzYWdlX2RlbHRhIiwiZGVsdGEiOnsic3RvcF9yZWFzb24iOiJwYXVzZV90dXJuIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjUsImNhY2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucyI6NCwib3V0cHV0X3Rva2Vuc19kZXRhaWxzIjp7InRoaW5raW5nX3Rva2VucyI6MX19fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "[Reasoning redacted]",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "opaque-redacted",
+          "type": "reasoningSignatureDelta"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "redacted": true,
+            "thinking": "[Reasoning redacted]",
+            "thinkingSignature": "opaque-redacted",
+            "type": "thinking"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "pause_turn",
+        "responseID": "anth-redacted",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 4,
+          "input": 10,
+          "output": 5,
+          "reasoning": 1,
+          "totalTokens": 21
+        }
+      }
+    },
+    "anthropic-refusal": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRoLXJlZnVzYWwiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEsIm91dHB1dF90b2tlbnMiOjB9fX0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6InJlZnVzYWwiLCJzdG9wX2RldGFpbHMiOnsiZXhwbGFuYXRpb24iOiJmaXh0dXJlIHJlZnVzYWwifX0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjB9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "fixture refusal",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "refusal",
+        "responseID": "anth-refusal",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 1,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 1
+        }
+      }
+    },
+    "anthropic-signed-length": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRoLWxlbmd0aCIsIm1vZGVsIjoiZml4dHVyZS1tb2RlbCIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6NCwib3V0cHV0X3Rva2VucyI6MH19fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdGFydCIsImluZGV4IjowLCJjb250ZW50X2Jsb2NrIjp7InR5cGUiOiJ0aGlua2luZyIsInRoaW5raW5nIjoiIn19CgpldmVudDogY29udGVudF9ibG9ja19kZWx0YQpkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX2RlbHRhIiwiaW5kZXgiOjAsImRlbHRhIjp7InR5cGUiOiJ0aGlua2luZ19kZWx0YSIsInRoaW5raW5nIjoiaW5zcGVjdCJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfZGVsdGEKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19kZWx0YSIsImluZGV4IjowLCJkZWx0YSI6eyJ0eXBlIjoic2lnbmF0dXJlX2RlbHRhIiwic2lnbmF0dXJlIjoib3BhcXVlLXNpZ25hdHVyZSJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RvcApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0b3AiLCJpbmRleCI6MH0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6Im1heF90b2tlbnMifSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6N319CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "inspect",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "opaque-signature",
+          "type": "reasoningSignatureDelta"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "thinking": "inspect",
+            "thinkingSignature": "opaque-signature",
+            "type": "thinking"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "max_tokens",
+        "responseID": "anth-length",
+        "responseModel": null,
+        "stopReason": "length",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 4,
+          "output": 7,
+          "reasoning": null,
+          "totalTokens": 11
+        }
+      }
+    },
+    "anthropic-tool-use": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRoLXRvb2wiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjMsIm91dHB1dF90b2tlbnMiOjB9fX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0YXJ0CmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RhcnQiLCJpbmRleCI6MCwiY29udGVudF9ibG9jayI6eyJ0eXBlIjoidG9vbF91c2UiLCJpZCI6ImNhbGwtMSIsIm5hbWUiOiJsb29rdXAiLCJpbnB1dCI6e319fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfZGVsdGEKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19kZWx0YSIsImluZGV4IjowLCJkZWx0YSI6eyJ0eXBlIjoiaW5wdXRfanNvbl9kZWx0YSIsInBhcnRpYWxfanNvbiI6IntcInF1ZXJ5XCI6XCJTd2lmdFwifSJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RvcApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0b3AiLCJpbmRleCI6MH0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6InRvb2xfdXNlIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjJ9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "id": "call-1",
+          "name": "lookup",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"query\":\"Swift\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "type": "toolCall"
+          },
+          "type": "toolCallCompleted"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "type": "toolCall"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "tool_use",
+        "responseID": "anth-tool",
+        "responseModel": null,
+        "stopReason": "toolUse",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 3,
+          "output": 2,
+          "reasoning": null,
+          "totalTokens": 5
+        }
+      }
+    },
+    "bedrock-exception": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAkAAAAGGOkam3DTptZXNzYWdlLXR5cGUHAAlleGNlcHRpb24POmV4Y2VwdGlvbi10eXBlBwATdGhyb3R0bGluZ0V4Y2VwdGlvbg06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsibWVzc2FnZSI6ImZpeHR1cmUgdGhyb3R0bGVkIn0KF40f"
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "fixture throttled\n  Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-missing-terminal": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAmQAAAFdMO15fDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsidGV4dCI6InBhcnRpYWwifX0r9z6U"
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "partial",
+          "type": "textDelta"
+        }
+      ],
+      "outcome": "failure",
+      "terminal": {
+        "content": [
+          {
+            "text": "partial",
+            "type": "text"
+          }
+        ],
+        "errorMessage": "Bedrock stream ended without a stop reason",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-provider-stop-error": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAhgAAAFFH6Ps5DTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoiZ3VhcmRyYWlsX2ludGVydmVuZWQifVYf5Yc="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "Provider stopped with: guardrail_intervened",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "guardrail_intervened",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-redacted-length-usage": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAtgAAAFcPquaKDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsicmVhc29uaW5nQ29udGVudCI6eyJyZWRhY3RlZENvbnRlbnQiOiJBUUk9In19fSEtaRA=",
+          "AAAAtgAAAFcPquaKDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsicmVhc29uaW5nQ29udGVudCI6eyJyZWRhY3RlZENvbnRlbnQiOiJBd1E9In19fWLF5UA=",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjowfVh+qsI=",
+          "AAAAfAAAAFFFbLPFDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoibWF4X3Rva2VucyJ9g1OFTA==",
+          "AAAAzwAAAE6fA8z0DTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6MTAsIm91dHB1dFRva2VucyI6NSwiY2FjaGVSZWFkSW5wdXRUb2tlbnMiOjIsImNhY2hlV3JpdGVJbnB1dFRva2VucyI6NCwidG90YWxUb2tlbnMiOjk5fX0a1NfG"
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "[Reasoning redacted]",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "AQIDBA==",
+          "type": "reasoningSignatureDelta"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "redacted": true,
+            "thinking": "[Reasoning redacted]",
+            "thinkingSignature": "AQIDBA==",
+            "type": "thinking"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "max_tokens",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "length",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 4,
+          "input": 10,
+          "output": 5,
+          "reasoning": null,
+          "totalTokens": 99
+        }
+      }
+    },
+    "bedrock-stop": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAlgAAAFfOa8mODTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsidGV4dCI6ImRvbmUifX00Xjgy",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjowfVh+qsI=",
+          "AAAAegAAAFHKLEZlDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoiZW5kX3R1cm4ifT3DO/o=",
+          "AAAAmgAAAE5v8IxPDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6Miwib3V0cHV0VG9rZW5zIjoxLCJ0b3RhbFRva2VucyI6M319VCbCQQ=="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "done",
+          "type": "textDelta"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "text": "done",
+            "type": "text"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "end_turn",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 2,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "bedrock-tool-use": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAuQAAAFeN+nFbDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja1N0YXJ0DTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwic3RhcnQiOnsidG9vbFVzZSI6eyJ0b29sVXNlSWQiOiJjYWxsLTEiLCJuYW1lIjoibG9va3VwIn19fXIY0t8=",
+          "AAAAtAAAAFd1arXqDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsidG9vbFVzZSI6eyJpbnB1dCI6IntcInF1ZXJ5XCI6XCJTd2lmdFwifSJ9fX3bqQXj",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjowfVh+qsI=",
+          "AAAAegAAAFHKLEZlDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoidG9vbF91c2Uiff+3G4c=",
+          "AAAAmgAAAE5v8IxPDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6Miwib3V0cHV0VG9rZW5zIjoxLCJ0b3RhbFRva2VucyI6M319VCbCQQ=="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [
+        {
+          "id": "call-1",
+          "name": "lookup",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"query\":\"Swift\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "type": "toolCall"
+          },
+          "type": "toolCallCompleted"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "type": "toolCall"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "tool_use",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "toolUse",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 2,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "pi-error-event": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoiZXJyb3IiLCJyZWFzb24iOiJlcnJvciIsInVzYWdlIjp7ImlucHV0IjoxMCwib3V0cHV0Ijo1LCJyZWFzb25pbmciOjEsImNhY2hlUmVhZCI6MiwiY2FjaGVXcml0ZSI6NCwidG90YWxUb2tlbnMiOjk5LCJjb3N0Ijp7ImlucHV0IjowLCJvdXRwdXQiOjAsImNhY2hlUmVhZCI6MCwiY2FjaGVXcml0ZSI6MCwidG90YWwiOjB9fSwiZXJyb3JNZXNzYWdlIjoiZml4dHVyZSBwaSBlcnJvciIsInJlc3BvbnNlSWQiOiJwaS1lcnJvciJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "fixture pi error",
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": "pi-error",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 4,
+          "input": 10,
+          "output": 5,
+          "reasoning": 1,
+          "totalTokens": 99
+        }
+      }
+    },
+    "pi-invalid-tool-end": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoidG9vbGNhbGxfc3RhcnQiLCJjb250ZW50SW5kZXgiOjAsImlkIjoiY2FsbC0xIiwidG9vbE5hbWUiOiJsb29rdXAifQoKZGF0YTogeyJ0eXBlIjoidG9vbGNhbGxfZW5kIiwiY29udGVudEluZGV4IjowLCJ0b29sQ2FsbCI6eyJ0eXBlIjoidG9vbENhbGwiLCJpZCI6ImRpZmZlcmVudCIsIm5hbWUiOiJsb29rdXAiLCJhcmd1bWVudHMiOnt9fX0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "id": "different",
+          "name": "lookup",
+          "type": "toolCallStarted"
+        },
+        {
+          "toolCall": {
+            "arguments": {},
+            "id": "different",
+            "name": "lookup",
+            "type": "toolCall"
+          },
+          "type": "toolCallCompleted"
+        }
+      ],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "fixture-pi stream ended without a terminal event",
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "pi-missing-terminal": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "fixture-pi stream ended without a terminal event",
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "pi-signatures-namespace-length": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoidGV4dF9zdGFydCIsImNvbnRlbnRJbmRleCI6MH0KCmRhdGE6IHsidHlwZSI6InRleHRfZGVsdGEiLCJjb250ZW50SW5kZXgiOjAsImRlbHRhIjoiYW5zd2VyIn0KCmRhdGE6IHsidHlwZSI6InRleHRfZW5kIiwiY29udGVudEluZGV4IjowLCJjb250ZW50IjoiYW5zd2VyIiwiY29udGVudFNpZ25hdHVyZSI6InRleHQtc2lnbmF0dXJlIn0KCmRhdGE6IHsidHlwZSI6InRoaW5raW5nX3N0YXJ0IiwiY29udGVudEluZGV4IjoxfQoKZGF0YTogeyJ0eXBlIjoidGhpbmtpbmdfZW5kIiwiY29udGVudEluZGV4IjoxLCJjb250ZW50IjoiW1JlYXNvbmluZyByZWRhY3RlZF0iLCJjb250ZW50U2lnbmF0dXJlIjoicmVhc29uaW5nLXNpZ25hdHVyZSIsInJlZGFjdGVkIjp0cnVlfQoKZGF0YTogeyJ0eXBlIjoidG9vbGNhbGxfc3RhcnQiLCJjb250ZW50SW5kZXgiOjIsImlkIjoiY2FsbC0xIiwidG9vbE5hbWUiOiJsb29rdXAifQoKZGF0YTogeyJ0eXBlIjoidG9vbGNhbGxfZGVsdGEiLCJjb250ZW50SW5kZXgiOjIsImRlbHRhIjoie1wicXVlcnlcIjpcIlN3aWZ0XCJ9In0KCmRhdGE6IHsidHlwZSI6InRvb2xjYWxsX2VuZCIsImNvbnRlbnRJbmRleCI6MiwidG9vbENhbGwiOnsidHlwZSI6InRvb2xDYWxsIiwiaWQiOiJjYWxsLTEiLCJuYW1lIjoibG9va3VwIiwiYXJndW1lbnRzIjp7InF1ZXJ5IjoiU3dpZnQifSwidGhvdWdodFNpZ25hdHVyZSI6InRvb2wtc2lnbmF0dXJlIiwibmFtZXNwYWNlIjoiZml4dHVyZS5uYW1lc3BhY2UifX0KCmRhdGE6IHsidHlwZSI6ImRvbmUiLCJyZWFzb24iOiJsZW5ndGgiLCJ1c2FnZSI6eyJpbnB1dCI6MTAsIm91dHB1dCI6NSwicmVhc29uaW5nIjoxLCJjYWNoZVJlYWQiOjIsImNhY2hlV3JpdGUiOjQsInRvdGFsVG9rZW5zIjo5OSwiY29zdCI6eyJpbnB1dCI6MCwib3V0cHV0IjowLCJjYWNoZVJlYWQiOjAsImNhY2hlV3JpdGUiOjAsInRvdGFsIjowfX0sInJlc3BvbnNlSWQiOiJwaS1yZXNwb25zZSJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "answer",
+          "type": "textDelta"
+        },
+        {
+          "delta": "[Reasoning redacted]",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "reasoning-signature",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "id": "call-1",
+          "name": "lookup",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"query\":\"Swift\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "namespace": "fixture.namespace",
+            "thoughtSignature": "tool-signature",
+            "type": "toolCall"
+          },
+          "type": "toolCallCompleted"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "text": "answer",
+            "textSignature": "text-signature",
+            "type": "text"
+          },
+          {
+            "redacted": true,
+            "thinking": "[Reasoning redacted]",
+            "thinkingSignature": "reasoning-signature",
+            "type": "thinking"
+          },
+          {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "namespace": "fixture.namespace",
+            "thoughtSignature": "tool-signature",
+            "type": "toolCall"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": "pi-response",
+        "responseModel": null,
+        "stopReason": "length",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 4,
+          "input": 10,
+          "output": 5,
+          "reasoning": 1,
+          "totalTokens": 99
+        }
+      }
+    },
+    "pi-stop": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoidGV4dF9zdGFydCIsImNvbnRlbnRJbmRleCI6MH0KCmRhdGE6IHsidHlwZSI6InRleHRfZGVsdGEiLCJjb250ZW50SW5kZXgiOjAsImRlbHRhIjoiZG9uZSJ9CgpkYXRhOiB7InR5cGUiOiJ0ZXh0X2VuZCIsImNvbnRlbnRJbmRleCI6MCwiY29udGVudCI6ImRvbmUifQoKZGF0YTogeyJ0eXBlIjoiZG9uZSIsInJlYXNvbiI6InN0b3AiLCJ1c2FnZSI6eyJpbnB1dCI6Miwib3V0cHV0IjoxLCJjYWNoZVJlYWQiOjAsImNhY2hlV3JpdGUiOjAsInRvdGFsVG9rZW5zIjozLCJjb3N0Ijp7ImlucHV0IjowLCJvdXRwdXQiOjAsImNhY2hlUmVhZCI6MCwiY2FjaGVXcml0ZSI6MCwidG90YWwiOjB9fSwicmVzcG9uc2VJZCI6InBpLXN0b3AifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "done",
+          "type": "textDelta"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "text": "done",
+            "type": "text"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": "pi-stop",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 2,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "pi-tool-use": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoidG9vbGNhbGxfc3RhcnQiLCJjb250ZW50SW5kZXgiOjAsImlkIjoiY2FsbC0xIiwidG9vbE5hbWUiOiJsb29rdXAifQoKZGF0YTogeyJ0eXBlIjoidG9vbGNhbGxfZGVsdGEiLCJjb250ZW50SW5kZXgiOjAsImRlbHRhIjoie1wicXVlcnlcIjpcIlN3aWZ0XCJ9In0KCmRhdGE6IHsidHlwZSI6InRvb2xjYWxsX2VuZCIsImNvbnRlbnRJbmRleCI6MCwidG9vbENhbGwiOnsidHlwZSI6InRvb2xDYWxsIiwiaWQiOiJjYWxsLTEiLCJuYW1lIjoibG9va3VwIiwiYXJndW1lbnRzIjp7InF1ZXJ5IjoiU3dpZnQifX19CgpkYXRhOiB7InR5cGUiOiJkb25lIiwicmVhc29uIjoidG9vbFVzZSIsInVzYWdlIjp7ImlucHV0IjoyLCJvdXRwdXQiOjEsImNhY2hlUmVhZCI6MCwiY2FjaGVXcml0ZSI6MCwidG90YWxUb2tlbnMiOjMsImNvc3QiOnsiaW5wdXQiOjAsIm91dHB1dCI6MCwiY2FjaGVSZWFkIjowLCJjYWNoZVdyaXRlIjowLCJ0b3RhbCI6MH19LCJyZXNwb25zZUlkIjoicGktdG9vbCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "id": "call-1",
+          "name": "lookup",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"query\":\"Swift\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "type": "toolCall"
+          },
+          "type": "toolCallCompleted"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "type": "toolCall"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": "pi-tool",
+        "responseModel": null,
+        "stopReason": "toolUse",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 2,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "caseID": "response-rich-v1",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "excludedProtocols": [],
+  "protocols": [
+    { "protocolID": "anthropic-messages", "providerID": "kimi-coding", "modelID": "k3-256k", "baseURL": "https://fixture.invalid", "driver": "http-sse" },
+    { "protocolID": "openai-completions", "providerID": "fixture-openai-completions", "modelID": "fixture-chat", "baseURL": "https://fixture.invalid/v1", "driver": "http-sse" },
+    { "protocolID": "openai-responses", "providerID": "fixture-openai-responses", "modelID": "fixture-responses", "baseURL": "https://fixture.invalid/v1", "driver": "http-sse" },
+    { "protocolID": "azure-openai-responses", "providerID": "fixture-azure", "modelID": "fixture-deployment", "baseURL": "https://fixture.openai.azure.com/openai/v1", "driver": "http-sse" },
+    { "protocolID": "openai-codex-responses", "providerID": "openai-codex", "modelID": "gpt-5.1-codex", "baseURL": "https://chatgpt.com/backend-api", "driver": "http-sse" },
+    { "protocolID": "google-generative-ai", "providerID": "fixture-google", "modelID": "gemini-3-flash-preview", "baseURL": "https://generativelanguage.googleapis.com", "driver": "decoded-sdk-events" },
+    { "protocolID": "google-vertex", "providerID": "fixture-vertex", "modelID": "gemini-3-flash-preview", "baseURL": "https://us-central1-aiplatform.googleapis.com", "driver": "decoded-sdk-events" },
+    { "protocolID": "mistral-conversations", "providerID": "fixture-mistral", "modelID": "mistral-fixture", "baseURL": "https://api.mistral.ai", "driver": "http-sse" },
+    { "protocolID": "pi-messages", "providerID": "fixture-pi", "modelID": "pi-fixture", "baseURL": "https://fixture.invalid", "driver": "http-sse" },
+    { "protocolID": "bedrock-converse-stream", "providerID": "amazon-bedrock", "modelID": "anthropic.fixture-v1:0", "baseURL": "http://127.0.0.1", "driver": "aws-eventstream" },
+    { "protocolID": "openrouter-images", "providerID": "openrouter", "modelID": "fixture-image", "baseURL": "https://openrouter.ai/api/v1", "driver": "http-json" }
+  ]
+}

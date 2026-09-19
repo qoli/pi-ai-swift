@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "caseID": "failure-cancellation-v1",
+  "protocolsFrom": "request-rich-v1",
+  "stimulusKind": "cancellation",
+  "expectedCategory": "cancellation"
+}

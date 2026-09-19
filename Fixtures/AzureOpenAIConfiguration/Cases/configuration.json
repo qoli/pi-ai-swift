@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "azure-config-explicit-precedence",
+      "modelID": "source-model",
+      "modelBaseURL": "https://model.invalid/model-root",
+      "options": {
+        "azureBaseUrl": " https://explicit.openai.azure.com/ ",
+        "azureResourceName": "explicit-resource",
+        "azureApiVersion": "2026-01-01-preview",
+        "azureDeploymentName": "explicit-deployment",
+        "env": {
+          "AZURE_OPENAI_BASE_URL": "https://environment.openai.azure.com/openai",
+          "AZURE_OPENAI_RESOURCE_NAME": "environment-resource",
+          "AZURE_OPENAI_API_VERSION": "environment-version",
+          "AZURE_OPENAI_DEPLOYMENT_NAME_MAP": "source-model=environment-deployment"
+        }
+      }
+    },
+    {
+      "id": "azure-config-environment-base-and-map",
+      "modelID": "source-model",
+      "modelBaseURL": "https://model.invalid/model-root",
+      "options": {
+        "env": {
+          "AZURE_OPENAI_BASE_URL": " https://environment.cognitiveservices.azure.com/openai/v1/responses?stale=true ",
+          "AZURE_OPENAI_RESOURCE_NAME": "ignored-resource",
+          "AZURE_OPENAI_API_VERSION": "2025-04-01-preview",
+          "AZURE_OPENAI_DEPLOYMENT_NAME_MAP": " ignored, other=other-deployment, source-model = mapped-deployment, malformed= "
+        }
+      }
+    },
+    {
+      "id": "azure-config-explicit-resource",
+      "modelID": "source-model",
+      "modelBaseURL": "https://model.invalid/model-root",
+      "options": {
+        "azureResourceName": "explicit-resource",
+        "env": { "AZURE_OPENAI_RESOURCE_NAME": "environment-resource" }
+      }
+    },
+    {
+      "id": "azure-config-environment-resource",
+      "modelID": "source-model",
+      "options": {
+        "env": { "AZURE_OPENAI_RESOURCE_NAME": "environment-resource" }
+      }
+    },
+    {
+      "id": "azure-config-model-azure-normalization",
+      "modelID": "source-model",
+      "modelBaseURL": "https://model.ai.azure.com/openai/",
+      "options": {}
+    },
+    {
+      "id": "azure-config-model-proxy-path-preserved",
+      "modelID": "source-model",
+      "modelBaseURL": "https://proxy.invalid/custom/root/",
+      "options": { "azureApiVersion": "proxy-version" }
+    },
+    {
+      "id": "azure-config-empty-explicit-uses-environment",
+      "modelID": "source-model",
+      "modelBaseURL": "https://model.invalid/model-root",
+      "options": {
+        "azureBaseUrl": "   ",
+        "env": { "AZURE_OPENAI_BASE_URL": "https://environment.openai.azure.com" }
+      }
+    },
+    {
+      "id": "azure-config-map-miss-uses-model-id",
+      "modelID": "source-model",
+      "modelBaseURL": "https://proxy.invalid/root",
+      "options": {
+        "env": { "AZURE_OPENAI_DEPLOYMENT_NAME_MAP": "other=other-deployment, broken" }
+      }
+    },
+    {
+      "id": "azure-config-missing-base-failure",
+      "modelID": "source-model",
+      "options": {}
+    },
+    {
+      "id": "azure-config-invalid-base-failure",
+      "modelID": "source-model",
+      "options": { "azureBaseUrl": "not a valid URL" }
+    }
+  ]
+}

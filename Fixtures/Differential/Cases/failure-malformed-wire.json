@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "caseID": "failure-malformed-wire-v1",
+  "stimulusKind": "malformedWire",
+  "expectedCategory": "malformedWireSyntax",
+  "protocolsFrom": "request-rich-v1"
+}

@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 1,
+  "responsesServiceTierUsage": {
+    "input_tokens": 10,
+    "output_tokens": 4,
+    "total_tokens": 14,
+    "input_tokens_details": { "cached_tokens": 2, "cache_write_tokens": 3 },
+    "output_tokens_details": { "reasoning_tokens": 1 }
+  },
+  "responsesCustomEvents": [
+    {
+      "type": "response.created",
+      "response": { "id": "resp-created", "model": "gpt-model" }
+    },
+    {
+      "type": "response.output_item.added",
+      "output_index": 0,
+      "item": {
+        "type": "custom_tool_call",
+        "id": "ctc_1",
+        "call_id": "call_1",
+        "name": "sample_tool",
+        "input": ""
+      }
+    },
+    {
+      "type": "response.custom_tool_call_input.delta",
+      "output_index": 0,
+      "item_id": "ctc_1",
+      "delta": "ab"
+    },
+    {
+      "type": "response.custom_tool_call_input.done",
+      "output_index": 0,
+      "item_id": "ctc_1",
+      "input": "abc"
+    },
+    {
+      "type": "response.output_item.done",
+      "output_index": 0,
+      "item": {
+        "type": "custom_tool_call",
+        "id": "ctc_1",
+        "call_id": "call_1",
+        "name": "sample_tool",
+        "input": "abc",
+        "namespace": "dynamic_tools"
+      }
+    },
+    {
+      "type": "response.completed",
+      "response": {
+        "id": "resp-terminal",
+        "status": "completed",
+        "usage": {
+          "input_tokens": 20,
+          "output_tokens": 7,
+          "total_tokens": 27,
+          "input_tokens_details": { "cached_tokens": 2, "cache_write_tokens": 3 },
+          "output_tokens_details": { "reasoning_tokens": 1 }
+        }
+      }
+    }
+  ],
+  "responsesIncompleteEvents": [
+    {
+      "type": "response.created",
+      "response": { "id": "resp-created", "model": "gpt-model" }
+    },
+    {
+      "type": "response.incomplete",
+      "response": {
+        "id": "resp-incomplete",
+        "status": "incomplete",
+        "incomplete_details": { "reason": "max_output_tokens" },
+        "usage": {
+          "input_tokens": 30,
+          "output_tokens": 12,
+          "total_tokens": 42,
+          "input_tokens_details": { "cached_tokens": 5 }
+        }
+      }
+    }
+  ],
+  "responsesReasoningEvents": [
+    {
+      "type": "response.created",
+      "response": { "id": "resp-reasoning", "model": "gpt-model" }
+    },
+    {
+      "type": "response.output_item.added",
+      "output_index": 0,
+      "item": { "type": "reasoning", "id": "rs_1", "summary": [] }
+    },
+    {
+      "type": "response.reasoning_summary_text.delta",
+      "output_index": 0,
+      "delta": "summary"
+    },
+    { "type": "response.reasoning_summary_part.done", "output_index": 0 },
+    {
+      "type": "response.reasoning_text.delta",
+      "output_index": 0,
+      "delta": "detail"
+    },
+    {
+      "type": "response.output_item.done",
+      "output_index": 0,
+      "item": {
+        "type": "reasoning",
+        "id": "rs_1",
+        "summary": [{ "type": "summary_text", "text": "summary" }]
+      }
+    },
+    {
+      "type": "response.output_item.done",
+      "output_index": 1,
+      "item": {
+        "type": "message",
+        "id": "msg_phase",
+        "role": "assistant",
+        "status": "completed",
+        "phase": "final_answer",
+        "content": [{ "type": "output_text", "text": "answer", "annotations": [] }]
+      }
+    },
+    {
+      "type": "response.completed",
+      "response": {
+        "id": "resp-reasoning",
+        "status": "completed",
+        "output": [{
+          "type": "reasoning",
+          "id": "rs_1",
+          "summary": [{ "type": "summary_text", "text": "summary" }],
+          "encrypted_content": "encrypted"
+        }],
+        "usage": { "input_tokens": 1, "output_tokens": 1, "total_tokens": 2 }
+      }
+    }
+  ],
+  "responsesFailureEvents": {
+    "failedError": [{
+      "type": "response.failed",
+      "response": {
+        "status": "failed",
+        "error": { "code": "server_error", "message": "boom" }
+      }
+    }],
+    "failedDetails": [{
+      "type": "response.failed",
+      "response": { "status": "failed", "incomplete_details": { "reason": "policy" } }
+    }],
+    "streamError": [{ "type": "error", "code": "bad_event", "message": "bad stream" }],
+    "contentFilter": [{
+      "type": "response.incomplete",
+      "response": {
+        "id": "resp-filter", "status": "incomplete",
+        "incomplete_details": { "reason": "content_filter" }
+      }
+    }],
+    "unknownStatus": [{
+      "type": "response.completed",
+      "response": { "id": "resp-unknown", "status": "mystery" }
+    }]
+  },
+  "completionChunks": [
+    {
+      "id": "chat-1",
+      "model": "routed-model",
+      "choices": [{
+        "delta": {
+          "reasoning": "think",
+          "reasoning_details": [
+            { "type": "reasoning.text", "text": "a", "id": "r1" },
+            { "type": "reasoning.text", "text": "b", "signature": "sig" },
+            { "type": "reasoning.summary", "summary": "sum" },
+            { "type": "reasoning.encrypted", "data": "opaque" }
+          ]
+        },
+        "finish_reason": null
+      }]
+    },
+    {
+      "id": "chat-1",
+      "model": "routed-model",
+      "choices": [{ "delta": { "content": "answer" }, "finish_reason": "stop" }]
+    },
+    {
+      "id": "chat-1",
+      "model": "routed-model",
+      "choices": [],
+      "usage": {
+        "prompt_tokens": 10,
+        "completion_tokens": 4,
+        "prompt_tokens_details": { "cached_tokens": 2, "cache_write_tokens": 1 },
+        "completion_tokens_details": { "reasoning_tokens": 1 }
+      }
+    }
+  ],
+  "completionBranchChunks": {
+    "stop": [
+      {
+        "id": "chat-stop",
+        "choices": [{ "delta": { "content": "done" }, "finish_reason": "stop" }]
+      }
+    ],
+    "length": [
+      {
+        "id": "chat-length",
+        "choices": [{ "delta": { "content": "partial" }, "finish_reason": "length" }]
+      }
+    ],
+    "toolUse": [
+      {
+        "id": "chat-tool",
+        "choices": [{
+          "delta": {
+            "tool_calls": [{
+              "index": 0,
+              "id": "call_tool",
+              "function": { "name": "sample_tool", "arguments": "{\"value\":1}" }
+            }]
+          },
+          "finish_reason": "tool_calls"
+        }]
+      }
+    ],
+    "reasoningPrecedenceChoiceUsage": [
+      {
+        "id": "chat-reasoning-precedence",
+        "choices": [{
+          "delta": {
+            "reasoning_content": "preferred",
+            "reasoning": "duplicate",
+            "reasoning_text": "duplicate-text"
+          },
+          "usage": {
+            "prompt_tokens": 5,
+            "completion_tokens": 3,
+            "prompt_tokens_details": { "cached_tokens": 1 },
+            "completion_tokens_details": { "reasoning_tokens": 2 }
+          },
+          "finish_reason": "stop"
+        }]
+      }
+    ],
+    "customTool": [
+      {
+        "id": "chat-custom",
+        "choices": [{
+          "delta": {
+            "tool_calls": [{
+              "index": 0,
+              "id": "call_custom",
+              "type": "custom",
+              "custom": { "name": "sample_tool", "input": "abc" }
+            }]
+          },
+          "finish_reason": "tool_calls"
+        }]
+      }
+    ],
+    "missingFinish": [
+      {
+        "id": "chat-missing-finish",
+        "choices": [{ "delta": { "content": "compat" }, "finish_reason": null }]
+      }
+    ],
+    "contentFilter": [
+      {
+        "id": "chat-filter",
+        "choices": [{ "delta": {}, "finish_reason": "content_filter" }]
+      }
+    ],
+    "networkError": [
+      {
+        "id": "chat-network",
+        "choices": [{ "delta": {}, "finish_reason": "network_error" }]
+      }
+    ],
+    "unknownFinish": [
+      {
+        "id": "chat-unknown",
+        "choices": [{ "delta": {}, "finish_reason": "mystery" }]
+      }
+    ]
+  }
+}

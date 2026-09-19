@@ -1,0 +1,108 @@
+{
+  "caseID": "failure-cancellation-v1",
+  "category": "cancellation",
+  "protocols": {
+    "anthropic-messages": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "azure-openai-responses": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "bedrock-converse-stream": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "google-generative-ai": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "google-vertex": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "mistral-conversations": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "openai-codex-responses": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "openai-completions": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "openai-responses": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "openrouter-images": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    },
+    "pi-messages": {
+      "decoderInput": null,
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "aborted",
+        "type": "error"
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/earendil-works/pi.git",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

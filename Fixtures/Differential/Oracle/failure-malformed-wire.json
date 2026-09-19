@@ -1,0 +1,188 @@
+{
+  "caseID": "failure-malformed-wire-v1",
+  "category": "malformedWireSyntax",
+  "protocols": {
+    "anthropic-messages": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "azure-openai-responses": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "bedrock-converse-stream": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAACAAAAAA="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-failure"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "google-generative-ai": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "google-vertex": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "mistral-conversations": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-codex-responses": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-completions": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-responses": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openrouter-images": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "rawBodyBase64": "e25vdC1qc29u",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "pi-messages": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/earendil-works/pi.git",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

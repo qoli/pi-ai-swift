@@ -1,0 +1,476 @@
+{
+  "cases": {
+    "completions.abort": {
+      "content": [],
+      "errorMessage": "Request aborted",
+      "stopReason": "aborted",
+      "usage": {
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "input": 0,
+        "output": 0,
+        "totalTokens": 0
+      }
+    },
+    "completions.http-raw-metadata": {
+      "content": [],
+      "errorMessage": "400: {\"message\":\"bad request\",\"type\":\"invalid_request_error\",\"metadata\":{\"raw\":\"provider raw detail\"}}",
+      "stopReason": "error",
+      "usage": {
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "input": 0,
+        "output": 0,
+        "totalTokens": 0
+      }
+    },
+    "completions.reasoning-details-response-model": {
+      "content": [
+        {
+          "thinking": "think",
+          "thinkingSignature": [
+            {
+              "id": "r1",
+              "signature": "sig",
+              "text": "ab",
+              "type": "reasoning.text"
+            },
+            {
+              "summary": "sum",
+              "type": "reasoning.summary"
+            },
+            {
+              "data": "opaque",
+              "type": "reasoning.encrypted"
+            }
+          ],
+          "type": "thinking"
+        },
+        {
+          "text": "answer",
+          "type": "text"
+        }
+      ],
+      "rawStopReason": "stop",
+      "responseId": "chat-1",
+      "responseModel": "routed-model",
+      "stopReason": "stop",
+      "usage": {
+        "cacheRead": 2,
+        "cacheWrite": 1,
+        "input": 7,
+        "output": 4,
+        "reasoning": 1,
+        "totalTokens": 14
+      }
+    },
+    "completions.stop-reason-response-branches": {
+      "contentFilter": {
+        "content": [],
+        "errorMessage": "Provider finish_reason: content_filter",
+        "rawStopReason": "content_filter",
+        "responseId": "chat-filter",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "customTool": {
+        "content": [
+          {
+            "arguments": {
+              "payload": "abc"
+            },
+            "id": "call_custom",
+            "name": "sample_tool",
+            "type": "toolCall"
+          }
+        ],
+        "rawStopReason": "tool_calls",
+        "responseId": "chat-custom",
+        "stopReason": "toolUse",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "length": {
+        "content": [
+          {
+            "text": "partial",
+            "type": "text"
+          }
+        ],
+        "rawStopReason": "length",
+        "responseId": "chat-length",
+        "stopReason": "length",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "missingFinish": {
+        "content": [
+          {
+            "text": "compat",
+            "type": "text"
+          }
+        ],
+        "responseId": "chat-missing-finish",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "networkError": {
+        "content": [],
+        "errorMessage": "Provider finish_reason: network_error",
+        "rawStopReason": "network_error",
+        "responseId": "chat-network",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "reasoningPrecedenceChoiceUsage": {
+        "content": [
+          {
+            "thinking": "preferred",
+            "thinkingSignature": "reasoning_content",
+            "type": "thinking"
+          }
+        ],
+        "rawStopReason": "stop",
+        "responseId": "chat-reasoning-precedence",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 1,
+          "cacheWrite": 0,
+          "input": 4,
+          "output": 3,
+          "reasoning": 2,
+          "totalTokens": 8
+        }
+      },
+      "stop": {
+        "content": [
+          {
+            "text": "done",
+            "type": "text"
+          }
+        ],
+        "rawStopReason": "stop",
+        "responseId": "chat-stop",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "toolUse": {
+        "content": [
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_tool",
+            "name": "sample_tool",
+            "type": "toolCall"
+          }
+        ],
+        "rawStopReason": "tool_calls",
+        "responseId": "chat-tool",
+        "stopReason": "toolUse",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "unknownFinish": {
+        "content": [],
+        "errorMessage": "Provider finish_reason: mystery",
+        "rawStopReason": "mystery",
+        "responseId": "chat-unknown",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      }
+    },
+    "responses.custom-namespace-usage": {
+      "content": [
+        {
+          "arguments": {
+            "payload": "abc"
+          },
+          "id": "call_1|ctc_1",
+          "name": "sample_tool",
+          "namespace": "dynamic_tools",
+          "type": "toolCall"
+        }
+      ],
+      "rawStopReason": "completed",
+      "responseId": "resp-terminal",
+      "stopReason": "toolUse",
+      "usage": {
+        "cacheRead": 2,
+        "cacheWrite": 3,
+        "cost": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "input": 15,
+        "output": 7,
+        "reasoning": 1,
+        "totalTokens": 27
+      }
+    },
+    "responses.failure-branches": {
+      "contentFilter": {
+        "errorMessage": "Response incomplete: content_filter",
+        "rawStopReason": "incomplete.content_filter",
+        "stopReason": "error"
+      },
+      "failedDetails": {
+        "thrown": "incomplete: policy"
+      },
+      "failedError": {
+        "thrown": "server_error: boom"
+      },
+      "streamError": {
+        "thrown": "Error Code bad_event: bad stream"
+      },
+      "unknownStatus": {
+        "thrown": "Unhandled stop reason: mystery"
+      }
+    },
+    "responses.incomplete-raw-total": {
+      "content": [],
+      "rawStopReason": "incomplete.max_output_tokens",
+      "responseId": "resp-incomplete",
+      "stopReason": "length",
+      "usage": {
+        "cacheRead": 5,
+        "cacheWrite": 0,
+        "cost": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "input": 25,
+        "output": 12,
+        "reasoning": 0,
+        "totalTokens": 42
+      }
+    },
+    "responses.reasoning-signature-backfill-phase": {
+      "content": [
+        {
+          "thinking": "summary",
+          "thinkingSignature": {
+            "encrypted_content": "encrypted",
+            "id": "rs_1",
+            "summary": [
+              {
+                "text": "summary",
+                "type": "summary_text"
+              }
+            ],
+            "type": "reasoning"
+          },
+          "type": "thinking"
+        },
+        {
+          "text": "answer",
+          "textSignature": {
+            "id": "msg_phase",
+            "phase": "final_answer",
+            "v": 1
+          },
+          "type": "text"
+        }
+      ],
+      "rawStopReason": "completed",
+      "responseId": "resp-reasoning",
+      "stopReason": "stop",
+      "usage": {
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "cost": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "input": 1,
+        "output": 1,
+        "reasoning": 0,
+        "totalTokens": 2
+      }
+    },
+    "responses.service-tier-cost-matrix": {
+      "azure-response-priority-unadjusted": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-azure-response-priority-unadjusted",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 12,
+            "input": 5,
+            "output": 8,
+            "total": 31
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 14
+        }
+      },
+      "codex-default-resolves-request-flex": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-codex-default-resolves-request-flex",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 6,
+            "input": 2.5,
+            "output": 4,
+            "total": 15.5
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 14
+        }
+      },
+      "codex-response-priority": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-codex-response-priority",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 12,
+            "cacheWrite": 24,
+            "input": 10,
+            "output": 16,
+            "total": 62
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 14
+        }
+      },
+      "standard-gpt-5.5-priority": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-standard-gpt-5.5-priority",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 15,
+            "cacheWrite": 30,
+            "input": 12.5,
+            "output": 20,
+            "total": 77.5
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 14
+        }
+      },
+      "standard-request-flex": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-standard-request-flex",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 6,
+            "input": 2.5,
+            "output": 4,
+            "total": 15.5
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 14
+        }
+      },
+      "standard-response-priority": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-standard-response-priority",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 12,
+            "cacheWrite": 24,
+            "input": 10,
+            "output": 16,
+            "total": 62
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 14
+        }
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

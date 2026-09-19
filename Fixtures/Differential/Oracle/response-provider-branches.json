@@ -1,0 +1,1902 @@
+{
+  "cases": {
+    "google-max-tokens": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "partial"
+                      }
+                    ]
+                  },
+                  "finishReason": "MAX_TOKENS"
+                }
+              ],
+              "responseId": "google-length"
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-google",
+              "responseID": "google-length",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "partial",
+              "type": "textDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "reasoningTokens": null,
+              "type": "usage"
+            },
+            {
+              "reason": "length",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "partial",
+                "type": "text"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-google",
+            "rawStopReason": "MAX_TOKENS",
+            "responseID": "google-length",
+            "responseModel": null,
+            "stopReason": "length",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 0,
+              "output": 0,
+              "reasoning": null,
+              "totalTokens": 0
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "partial"
+                      }
+                    ]
+                  },
+                  "finishReason": "MAX_TOKENS"
+                }
+              ],
+              "responseId": "google-length"
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-vertex",
+              "responseID": "google-length",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "partial",
+              "type": "textDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "reasoningTokens": null,
+              "type": "usage"
+            },
+            {
+              "reason": "length",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "partial",
+                "type": "text"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-vertex",
+            "rawStopReason": "MAX_TOKENS",
+            "responseID": "google-length",
+            "responseModel": null,
+            "stopReason": "length",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 0,
+              "output": 0,
+              "reasoning": null,
+              "totalTokens": 0
+            }
+          }
+        }
+      }
+    },
+    "google-missing-finish": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [],
+              "responseId": "google-no-finish"
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Google stream ended without a finish reason",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [],
+              "responseId": "google-no-finish"
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Google Vertex stream ended without a finish reason",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      }
+    },
+    "google-mixed-tool-signatures-usage": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "inspect",
+                        "thought": true,
+                        "thoughtSignature": "dGhpbms="
+                      },
+                      {
+                        "text": "ready",
+                        "thoughtSignature": "dGV4dA=="
+                      },
+                      {
+                        "functionCall": {
+                          "args": {
+                            "city": "Taipei"
+                          },
+                          "id": "call-1",
+                          "name": "weather"
+                        },
+                        "thoughtSignature": "dG9vbA=="
+                      }
+                    ]
+                  },
+                  "finishReason": "STOP"
+                }
+              ],
+              "responseId": "google-mixed",
+              "usageMetadata": {
+                "cachedContentTokenCount": 3,
+                "candidatesTokenCount": 5,
+                "promptTokenCount": 12,
+                "thoughtsTokenCount": 2,
+                "totalTokenCount": 19
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-google",
+              "responseID": "google-mixed",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "inspect",
+              "type": "reasoningDelta"
+            },
+            {
+              "delta": "dGhpbms=",
+              "type": "reasoningSignatureDelta"
+            },
+            {
+              "delta": "ready",
+              "type": "textDelta"
+            },
+            {
+              "delta": "dGV4dA==",
+              "type": "reasoningSignatureDelta"
+            },
+            {
+              "delta": "dG9vbA==",
+              "type": "reasoningSignatureDelta"
+            },
+            {
+              "id": "call-1",
+              "name": "weather",
+              "type": "toolCallStarted"
+            },
+            {
+              "delta": "{\"city\":\"Taipei\"}",
+              "id": "call-1",
+              "type": "toolInputDelta"
+            },
+            {
+              "toolCall": {
+                "arguments": {
+                  "city": "Taipei"
+                },
+                "id": "call-1",
+                "name": "weather"
+              },
+              "type": "toolCallCompleted"
+            },
+            {
+              "cachedInputTokens": 3,
+              "inputTokens": 9,
+              "outputTokens": 7,
+              "reasoningTokens": 2,
+              "type": "usage"
+            },
+            {
+              "reason": "toolCalls",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "thinking": "inspect",
+                "thinkingSignature": "dGhpbms=",
+                "type": "thinking"
+              },
+              {
+                "text": "ready",
+                "textSignature": "dGV4dA==",
+                "type": "text"
+              },
+              {
+                "arguments": {
+                  "city": "Taipei"
+                },
+                "id": "call-1",
+                "name": "weather",
+                "thoughtSignature": "dG9vbA==",
+                "type": "toolCall"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-google",
+            "rawStopReason": "STOP",
+            "responseID": "google-mixed",
+            "responseModel": null,
+            "stopReason": "toolCalls",
+            "usage": {
+              "cacheRead": 3,
+              "cacheWrite": 0,
+              "input": 9,
+              "output": 7,
+              "reasoning": 2,
+              "totalTokens": 19
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "inspect",
+                        "thought": true,
+                        "thoughtSignature": "dGhpbms="
+                      },
+                      {
+                        "text": "ready",
+                        "thoughtSignature": "dGV4dA=="
+                      },
+                      {
+                        "functionCall": {
+                          "args": {
+                            "city": "Taipei"
+                          },
+                          "id": "call-1",
+                          "name": "weather"
+                        },
+                        "thoughtSignature": "dG9vbA=="
+                      }
+                    ]
+                  },
+                  "finishReason": "STOP"
+                }
+              ],
+              "responseId": "google-mixed",
+              "usageMetadata": {
+                "cachedContentTokenCount": 3,
+                "candidatesTokenCount": 5,
+                "promptTokenCount": 12,
+                "thoughtsTokenCount": 2,
+                "totalTokenCount": 19
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-vertex",
+              "responseID": "google-mixed",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "inspect",
+              "type": "reasoningDelta"
+            },
+            {
+              "delta": "dGhpbms=",
+              "type": "reasoningSignatureDelta"
+            },
+            {
+              "delta": "ready",
+              "type": "textDelta"
+            },
+            {
+              "delta": "dGV4dA==",
+              "type": "reasoningSignatureDelta"
+            },
+            {
+              "delta": "dG9vbA==",
+              "type": "reasoningSignatureDelta"
+            },
+            {
+              "id": "call-1",
+              "name": "weather",
+              "type": "toolCallStarted"
+            },
+            {
+              "delta": "{\"city\":\"Taipei\"}",
+              "id": "call-1",
+              "type": "toolInputDelta"
+            },
+            {
+              "toolCall": {
+                "arguments": {
+                  "city": "Taipei"
+                },
+                "id": "call-1",
+                "name": "weather"
+              },
+              "type": "toolCallCompleted"
+            },
+            {
+              "cachedInputTokens": 3,
+              "inputTokens": 9,
+              "outputTokens": 7,
+              "reasoningTokens": 2,
+              "type": "usage"
+            },
+            {
+              "reason": "toolCalls",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "thinking": "inspect",
+                "thinkingSignature": "dGhpbms=",
+                "type": "thinking"
+              },
+              {
+                "text": "ready",
+                "textSignature": "dGV4dA==",
+                "type": "text"
+              },
+              {
+                "arguments": {
+                  "city": "Taipei"
+                },
+                "id": "call-1",
+                "name": "weather",
+                "thoughtSignature": "dG9vbA==",
+                "type": "toolCall"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-vertex",
+            "rawStopReason": "STOP",
+            "responseID": "google-mixed",
+            "responseModel": null,
+            "stopReason": "toolCalls",
+            "usage": {
+              "cacheRead": 3,
+              "cacheWrite": 0,
+              "input": 9,
+              "output": 7,
+              "reasoning": 2,
+              "totalTokens": 19
+            }
+          }
+        }
+      }
+    },
+    "google-safety-stop": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "finishReason": "SAFETY"
+                }
+              ],
+              "responseId": "google-safety"
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: SAFETY",
+          "kind": "failure",
+          "rawStopReason": "SAFETY",
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "finishReason": "SAFETY"
+                }
+              ],
+              "responseId": "google-safety"
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: SAFETY",
+          "kind": "failure",
+          "rawStopReason": "SAFETY",
+          "stopReason": "error"
+        }
+      }
+    },
+    "google-sdk-error": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "errorMessage": "fixture SDK failure",
+          "kind": "decoded-sdk-error",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "fixture SDK failure",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "errorMessage": "fixture SDK failure",
+          "kind": "decoded-sdk-error",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "fixture SDK failure",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      }
+    },
+    "google-stop": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "done"
+                      }
+                    ]
+                  },
+                  "finishReason": "STOP"
+                }
+              ],
+              "responseId": "google-stop",
+              "usageMetadata": {
+                "cachedContentTokenCount": 0,
+                "candidatesTokenCount": 1,
+                "promptTokenCount": 2,
+                "totalTokenCount": 3
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-google",
+              "responseID": "google-stop",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "done",
+              "type": "textDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 2,
+              "outputTokens": 1,
+              "reasoningTokens": 0,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "done",
+                "type": "text"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-google",
+            "rawStopReason": "STOP",
+            "responseID": "google-stop",
+            "responseModel": null,
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 2,
+              "output": 1,
+              "reasoning": 0,
+              "totalTokens": 3
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "done"
+                      }
+                    ]
+                  },
+                  "finishReason": "STOP"
+                }
+              ],
+              "responseId": "google-stop",
+              "usageMetadata": {
+                "cachedContentTokenCount": 0,
+                "candidatesTokenCount": 1,
+                "promptTokenCount": 2,
+                "totalTokenCount": 3
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-vertex",
+              "responseID": "google-stop",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "done",
+              "type": "textDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 2,
+              "outputTokens": 1,
+              "reasoningTokens": 0,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "done",
+                "type": "text"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-vertex",
+            "rawStopReason": "STOP",
+            "responseID": "google-stop",
+            "responseModel": null,
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 2,
+              "output": 1,
+              "reasoning": 0,
+              "totalTokens": 3
+            }
+          }
+        }
+      }
+    },
+    "google-text-signature-not-base64": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "ready",
+                        "thoughtSignature": "opaque-signature"
+                      }
+                    ]
+                  },
+                  "finishReason": "STOP"
+                }
+              ],
+              "responseId": "google-opaque",
+              "usageMetadata": {
+                "candidatesTokenCount": 1,
+                "promptTokenCount": 1,
+                "totalTokenCount": 2
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-google",
+              "responseID": "google-opaque",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "ready",
+              "type": "textDelta"
+            },
+            {
+              "delta": "opaque-signature",
+              "type": "reasoningSignatureDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 1,
+              "outputTokens": 1,
+              "reasoningTokens": 0,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "ready",
+                "textSignature": "opaque-signature",
+                "type": "text"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-google",
+            "rawStopReason": "STOP",
+            "responseID": "google-opaque",
+            "responseModel": null,
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 1,
+              "output": 1,
+              "reasoning": 0,
+              "totalTokens": 2
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "ready",
+                        "thoughtSignature": "opaque-signature"
+                      }
+                    ]
+                  },
+                  "finishReason": "STOP"
+                }
+              ],
+              "responseId": "google-opaque",
+              "usageMetadata": {
+                "candidatesTokenCount": 1,
+                "promptTokenCount": 1,
+                "totalTokenCount": 2
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-vertex",
+              "responseID": "google-opaque",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "ready",
+              "type": "textDelta"
+            },
+            {
+              "delta": "opaque-signature",
+              "type": "reasoningSignatureDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 1,
+              "outputTokens": 1,
+              "reasoningTokens": 0,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "ready",
+                "textSignature": "opaque-signature",
+                "type": "text"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-vertex",
+            "rawStopReason": "STOP",
+            "responseID": "google-opaque",
+            "responseModel": null,
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 1,
+              "output": 1,
+              "reasoning": 0,
+              "totalTokens": 2
+            }
+          }
+        }
+      }
+    },
+    "google-unknown-stop": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "finishReason": "FUTURE_REASON"
+                }
+              ],
+              "responseId": "google-unknown"
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Unhandled stop reason: FUTURE_REASON",
+          "kind": "failure",
+          "rawStopReason": "FUTURE_REASON",
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "finishReason": "FUTURE_REASON"
+                }
+              ],
+              "responseId": "google-unknown"
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Unhandled stop reason: FUTURE_REASON",
+          "kind": "failure",
+          "rawStopReason": "FUTURE_REASON",
+          "stopReason": "error"
+        }
+      }
+    },
+    "mistral-error-stop": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "events": [
+            {
+              "choices": [
+                {
+                  "delta": {},
+                  "finish_reason": "error"
+                }
+              ],
+              "id": "mistral-error"
+            }
+          ],
+          "kind": "http-sse",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: error",
+          "kind": "failure",
+          "rawStopReason": "error",
+          "stopReason": "error"
+        }
+      }
+    },
+    "mistral-http-error": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "body": {
+            "error": {
+              "message": "rate limited"
+            }
+          },
+          "kind": "http-json",
+          "status": 429
+        },
+        "sourceOutcome": {
+          "errorMessage": "Mistral API error (429): {\"error\":{\"message\":\"rate limited\"}}",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      }
+    },
+    "mistral-malformed-event": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "kind": "http-sse-raw",
+          "rawEvents": [
+            "not-json"
+          ],
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Unexpected token 'o', \"not-json\" is not valid JSON",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      }
+    },
+    "mistral-missing-finish": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "events": [
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "content": "partial"
+                  }
+                }
+              ],
+              "id": "mistral-no-finish"
+            }
+          ],
+          "kind": "http-sse",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Mistral stream ended without a finish reason",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      }
+    },
+    "mistral-mixed-reasoning-tool-usage": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "events": [
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "content": "Checking"
+                  }
+                }
+              ],
+              "id": "mistral-mixed"
+            },
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "content": [
+                      {
+                        "thinking": [
+                          {
+                            "text": "Need lookup",
+                            "type": "text"
+                          }
+                        ],
+                        "type": "thinking"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "id": "mistral-mixed"
+            },
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "tool_calls": [
+                      {
+                        "function": {
+                          "arguments": "{\"city\":\"Tai",
+                          "name": "weather"
+                        },
+                        "id": "call-1",
+                        "index": 0
+                      }
+                    ]
+                  }
+                }
+              ],
+              "id": "mistral-mixed"
+            },
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "tool_calls": [
+                      {
+                        "function": {
+                          "arguments": "pei\"}",
+                          "name": ""
+                        },
+                        "index": 0
+                      }
+                    ]
+                  }
+                }
+              ],
+              "id": "mistral-mixed"
+            },
+            {
+              "choices": [
+                {
+                  "delta": {},
+                  "finish_reason": "tool_calls"
+                }
+              ],
+              "id": "mistral-mixed",
+              "usage": {
+                "completion_tokens": 7,
+                "prompt_tokens": 12,
+                "prompt_tokens_details": {
+                  "cached_tokens": 3
+                },
+                "total_tokens": 19
+              }
+            }
+          ],
+          "kind": "http-sse",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "mistral-fixture",
+              "providerID": "fixture-mistral",
+              "responseID": null,
+              "type": "responseStarted"
+            },
+            {
+              "delta": "Checking",
+              "type": "textDelta"
+            },
+            {
+              "delta": "Need lookup",
+              "type": "reasoningDelta"
+            },
+            {
+              "id": "call-1",
+              "name": "weather",
+              "type": "toolCallStarted"
+            },
+            {
+              "delta": "{\"city\":\"Tai",
+              "id": "call-1",
+              "type": "toolInputDelta"
+            },
+            {
+              "delta": "pei\"}",
+              "id": "call-1",
+              "type": "toolInputDelta"
+            },
+            {
+              "toolCall": {
+                "arguments": {
+                  "city": "Taipei"
+                },
+                "id": "call-1",
+                "name": "weather"
+              },
+              "type": "toolCallCompleted"
+            },
+            {
+              "cachedInputTokens": 3,
+              "inputTokens": 9,
+              "outputTokens": 7,
+              "reasoningTokens": null,
+              "type": "usage"
+            },
+            {
+              "reason": "toolCalls",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "Checking",
+                "type": "text"
+              },
+              {
+                "thinking": "Need lookup",
+                "type": "thinking"
+              },
+              {
+                "arguments": {
+                  "city": "Taipei"
+                },
+                "id": "call-1",
+                "name": "weather",
+                "type": "toolCall"
+              }
+            ],
+            "modelID": "mistral-fixture",
+            "providerID": "fixture-mistral",
+            "rawStopReason": "tool_calls",
+            "responseID": "mistral-mixed",
+            "responseModel": null,
+            "stopReason": "toolCalls",
+            "usage": {
+              "cacheRead": 3,
+              "cacheWrite": 0,
+              "input": 9,
+              "output": 7,
+              "reasoning": null,
+              "totalTokens": 19
+            }
+          }
+        }
+      }
+    },
+    "mistral-model-length": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "events": [
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "content": [
+                      {
+                        "text": "partial",
+                        "type": "text"
+                      }
+                    ]
+                  },
+                  "finish_reason": "model_length"
+                }
+              ],
+              "id": "mistral-length"
+            }
+          ],
+          "kind": "http-sse",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "mistral-fixture",
+              "providerID": "fixture-mistral",
+              "responseID": null,
+              "type": "responseStarted"
+            },
+            {
+              "delta": "partial",
+              "type": "textDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "reasoningTokens": null,
+              "type": "usage"
+            },
+            {
+              "reason": "length",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "partial",
+                "type": "text"
+              }
+            ],
+            "modelID": "mistral-fixture",
+            "providerID": "fixture-mistral",
+            "rawStopReason": "model_length",
+            "responseID": "mistral-length",
+            "responseModel": null,
+            "stopReason": "length",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 0,
+              "output": 0,
+              "reasoning": null,
+              "totalTokens": 0
+            }
+          }
+        }
+      }
+    },
+    "mistral-null-tool-id": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "events": [
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "tool_calls": [
+                      {
+                        "function": {
+                          "arguments": "{}",
+                          "name": "weather"
+                        },
+                        "id": "null",
+                        "index": 2
+                      }
+                    ]
+                  },
+                  "finish_reason": "tool_calls"
+                }
+              ],
+              "id": "mistral-null-id"
+            }
+          ],
+          "kind": "http-sse",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "mistral-fixture",
+              "providerID": "fixture-mistral",
+              "responseID": null,
+              "type": "responseStarted"
+            },
+            {
+              "id": "toolcall2",
+              "name": "weather",
+              "type": "toolCallStarted"
+            },
+            {
+              "delta": "{}",
+              "id": "toolcall2",
+              "type": "toolInputDelta"
+            },
+            {
+              "toolCall": {
+                "arguments": {},
+                "id": "toolcall2",
+                "name": "weather"
+              },
+              "type": "toolCallCompleted"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "reasoningTokens": null,
+              "type": "usage"
+            },
+            {
+              "reason": "toolCalls",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "arguments": {},
+                "id": "toolcall2",
+                "name": "weather",
+                "type": "toolCall"
+              }
+            ],
+            "modelID": "mistral-fixture",
+            "providerID": "fixture-mistral",
+            "rawStopReason": "tool_calls",
+            "responseID": "mistral-null-id",
+            "responseModel": null,
+            "stopReason": "toolCalls",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 0,
+              "output": 0,
+              "reasoning": null,
+              "totalTokens": 0
+            }
+          }
+        }
+      }
+    },
+    "mistral-stop": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "events": [
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "content": "done"
+                  },
+                  "finish_reason": "stop"
+                }
+              ],
+              "id": "mistral-stop",
+              "usage": {
+                "completion_tokens": 1,
+                "prompt_tokens": 2,
+                "total_tokens": 3
+              }
+            }
+          ],
+          "kind": "http-sse",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "mistral-fixture",
+              "providerID": "fixture-mistral",
+              "responseID": null,
+              "type": "responseStarted"
+            },
+            {
+              "delta": "done",
+              "type": "textDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 2,
+              "outputTokens": 1,
+              "reasoningTokens": null,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "done",
+                "type": "text"
+              }
+            ],
+            "modelID": "mistral-fixture",
+            "providerID": "fixture-mistral",
+            "rawStopReason": "stop",
+            "responseID": "mistral-stop",
+            "responseModel": null,
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 2,
+              "output": 1,
+              "reasoning": null,
+              "totalTokens": 3
+            }
+          }
+        }
+      }
+    },
+    "mistral-unknown-stop": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "events": [
+            {
+              "choices": [
+                {
+                  "delta": {},
+                  "finish_reason": "future_reason"
+                }
+              ],
+              "id": "mistral-unknown"
+            }
+          ],
+          "kind": "http-sse",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: future_reason",
+          "kind": "failure",
+          "rawStopReason": "future_reason",
+          "stopReason": "error"
+        }
+      }
+    },
+    "openrouter-empty-output": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "choices": [],
+            "id": "image-empty",
+            "model": "fixture-image"
+          },
+          "kind": "http-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "fixture-image",
+              "providerID": "fixture-openrouter",
+              "responseID": "image-empty",
+              "type": "responseStarted"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "modelID": "fixture-image",
+            "output": [],
+            "providerID": "fixture-openrouter",
+            "responseID": "image-empty",
+            "stopReason": "stop",
+            "usage": null
+          }
+        },
+        "swiftExplicitFailure": false
+      }
+    },
+    "openrouter-http-error": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "error": {
+              "message": "rate limited"
+            }
+          },
+          "kind": "http-json",
+          "status": 429
+        },
+        "sourceOutcome": {
+          "errorMessage": "429: {\"message\":\"rate limited\"}",
+          "kind": "failure",
+          "stopReason": "error"
+        },
+        "swiftExplicitFailure": false
+      }
+    },
+    "openrouter-image-and-text": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "choices": [
+              {
+                "message": {
+                  "content": "created",
+                  "images": [
+                    {
+                      "image_url": {
+                        "url": "data:image/jpeg;base64,/9g="
+                      }
+                    }
+                  ],
+                  "role": "assistant"
+                }
+              }
+            ],
+            "id": "image-text",
+            "model": "fixture-image"
+          },
+          "kind": "http-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "fixture-image",
+              "providerID": "fixture-openrouter",
+              "responseID": "image-text",
+              "type": "responseStarted"
+            },
+            {
+              "delta": "created",
+              "type": "textDelta"
+            },
+            {
+              "dataBase64": "/9g=",
+              "id": "image-text-image-0",
+              "kind": "image",
+              "mimeType": "image/jpeg",
+              "type": "asset"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "modelID": "fixture-image",
+            "output": [
+              {
+                "text": "created",
+                "type": "text"
+              },
+              {
+                "data": "/9g=",
+                "mimeType": "image/jpeg",
+                "type": "image"
+              }
+            ],
+            "providerID": "fixture-openrouter",
+            "responseID": "image-text",
+            "stopReason": "stop",
+            "usage": null
+          }
+        },
+        "swiftExplicitFailure": false
+      }
+    },
+    "openrouter-image-only": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "choices": [
+              {
+                "message": {
+                  "content": null,
+                  "images": [
+                    {
+                      "image_url": "data:image/png;base64,AQI="
+                    }
+                  ],
+                  "role": "assistant"
+                }
+              }
+            ],
+            "id": "image-only",
+            "model": "fixture-image",
+            "usage": {
+              "completion_tokens": 4,
+              "prompt_tokens": 10,
+              "prompt_tokens_details": {
+                "cache_write_tokens": 1,
+                "cached_tokens": 3
+              },
+              "total_tokens": 14
+            }
+          },
+          "kind": "http-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "fixture-image",
+              "providerID": "fixture-openrouter",
+              "responseID": "image-only",
+              "type": "responseStarted"
+            },
+            {
+              "dataBase64": "AQI=",
+              "id": "image-only-image-0",
+              "kind": "image",
+              "mimeType": "image/png",
+              "type": "asset"
+            },
+            {
+              "cachedInputTokens": 2,
+              "inputTokens": 7,
+              "outputTokens": 4,
+              "reasoningTokens": null,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "modelID": "fixture-image",
+            "output": [
+              {
+                "data": "AQI=",
+                "mimeType": "image/png",
+                "type": "image"
+              }
+            ],
+            "providerID": "fixture-openrouter",
+            "responseID": "image-only",
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 2,
+              "cacheWrite": 1,
+              "input": 7,
+              "output": 4,
+              "totalTokens": 14
+            }
+          }
+        },
+        "swiftExplicitFailure": false
+      }
+    },
+    "openrouter-invalid-base64": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "choices": [
+              {
+                "message": {
+                  "content": null,
+                  "images": [
+                    {
+                      "image_url": "data:image/png;base64,%%%"
+                    }
+                  ],
+                  "role": "assistant"
+                }
+              }
+            ],
+            "id": "image-invalid-base64",
+            "model": "fixture-image"
+          },
+          "kind": "http-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "fixture-image",
+              "providerID": "fixture-openrouter",
+              "responseID": "image-invalid-base64",
+              "type": "responseStarted"
+            },
+            {
+              "dataBase64": "%%%",
+              "id": "image-invalid-base64-image-0",
+              "kind": "image",
+              "mimeType": "image/png",
+              "type": "asset"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "modelID": "fixture-image",
+            "output": [
+              {
+                "data": "%%%",
+                "mimeType": "image/png",
+                "type": "image"
+              }
+            ],
+            "providerID": "fixture-openrouter",
+            "responseID": "image-invalid-base64",
+            "stopReason": "stop",
+            "usage": null
+          }
+        },
+        "swiftExplicitFailure": true
+      }
+    },
+    "openrouter-malformed-data-url-skipped": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "choices": [
+              {
+                "message": {
+                  "content": null,
+                  "images": [
+                    {
+                      "image_url": "data:image/png,not-base64"
+                    }
+                  ],
+                  "role": "assistant"
+                }
+              }
+            ],
+            "id": "image-malformed-url",
+            "model": "fixture-image"
+          },
+          "kind": "http-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "fixture-image",
+              "providerID": "fixture-openrouter",
+              "responseID": "image-malformed-url",
+              "type": "responseStarted"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "modelID": "fixture-image",
+            "output": [],
+            "providerID": "fixture-openrouter",
+            "responseID": "image-malformed-url",
+            "stopReason": "stop",
+            "usage": null
+          }
+        },
+        "swiftExplicitFailure": false
+      }
+    },
+    "openrouter-malformed-json": {
+      "openrouter-images": {
+        "decoderInput": {
+          "kind": "http-raw",
+          "rawBody": "not-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Unexpected token 'o', \"not-json\" is not valid JSON",
+          "kind": "failure",
+          "stopReason": "error"
+        },
+        "swiftExplicitFailure": false
+      }
+    },
+    "openrouter-missing-id": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "choices": [],
+            "model": "fixture-image"
+          },
+          "kind": "http-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "fixture-image",
+              "providerID": "fixture-openrouter",
+              "responseID": null,
+              "type": "responseStarted"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "modelID": "fixture-image",
+            "output": [],
+            "providerID": "fixture-openrouter",
+            "responseID": null,
+            "stopReason": "stop",
+            "usage": null
+          }
+        },
+        "swiftExplicitFailure": false
+      }
+    },
+    "openrouter-provider-error": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "error": {
+              "code": "bad_image",
+              "message": "provider rejected image"
+            }
+          },
+          "kind": "http-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Cannot read properties of undefined (reading '0')",
+          "kind": "failure",
+          "stopReason": "error"
+        },
+        "swiftExplicitFailure": false
+      }
+    },
+    "openrouter-remote-image-skipped": {
+      "openrouter-images": {
+        "decoderInput": {
+          "body": {
+            "choices": [
+              {
+                "message": {
+                  "content": null,
+                  "images": [
+                    {
+                      "image_url": "https://example.invalid/image.png"
+                    }
+                  ],
+                  "role": "assistant"
+                }
+              }
+            ],
+            "id": "image-remote",
+            "model": "fixture-image"
+          },
+          "kind": "http-json",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "fixture-image",
+              "providerID": "fixture-openrouter",
+              "responseID": "image-remote",
+              "type": "responseStarted"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "modelID": "fixture-image",
+            "output": [],
+            "providerID": "fixture-openrouter",
+            "responseID": "image-remote",
+            "stopReason": "stop",
+            "usage": null
+          }
+        },
+        "swiftExplicitFailure": false
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

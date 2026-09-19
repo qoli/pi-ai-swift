@@ -1,0 +1,1601 @@
+{
+  "caseID": "response-rich-v1",
+  "excludedProtocols": [],
+  "protocolSet": [
+    "anthropic-messages",
+    "azure-openai-responses",
+    "bedrock-converse-stream",
+    "google-generative-ai",
+    "google-vertex",
+    "mistral-conversations",
+    "openai-codex-responses",
+    "openai-completions",
+    "openai-responses",
+    "openrouter-images",
+    "pi-messages"
+  ],
+  "protocols": {
+    "anthropic-messages": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 6,
+          "cacheWrite": 12,
+          "input": 12,
+          "output": 16,
+          "total": 46
+        },
+        "tier": {
+          "cacheRead": 14,
+          "cacheWrite": 36,
+          "input": 60,
+          "output": 48,
+          "total": 158
+        }
+      },
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibQ==",
+          "ZXNzYWdlX3N0YXJ0IiwibWVzc2FnZSI6eyJpZCI6Im1lc3NhZ2UtMSIsIm1vZGVsIjoiazMtMjU2ayIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MTIsIm91dHB1dF90b2tlbnMiOjAsImNhY2hlX3JlYWRfaW5wdXRfdG9rZW5zIjoyLCJjYQ==",
+          "Y2hlX2NyZWF0aW9uX2lucHV0X3Rva2VucyI6NCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MiwiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6Mn19fX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0YXJ0CmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RhcnQiLCJpbmRleCI6MCwiY29udGVudF9ibG9jayI6eyJ0eXBlIjoidGV4dCIsInRleHQiOiIifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX2RlbHRhCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfZGVsdGEiLCJpbmRleCI6MCwiZGVsdGEiOnsidHlwZSI6InRleHRfZGVsdGEiLCJ0ZXh0IjoiQ2hlY2tpbmcifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0b3AKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdG9wIiwiaW5kZXgiOjB9CgpldmVudDogY29udGVudF9ibG9ja19zdGFydApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0YXJ0IiwiaW5kZXgiOjEsImNvbnRlbnRfYmxvY2siOnsidHlwZSI6InRoaW5raW5nIiwidGhpbmtpbmciOiIifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX2RlbHRhCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfZGVsdGEiLCJpbmRleCI6MSwiZGVsdGEiOnsidHlwZSI6InRoaW5raW5nX2RlbHRhIiwidGhpbmtpbmciOiJpbnNwZWN0In19CgpldmVudDogY29udGVudF9ibG9ja19kZWx0YQpkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX2RlbHRhIiwiaW5kZXgiOjEsImRlbHRhIjp7InR5cGUiOiJzaWduYXR1cmVfZGVsdGEiLCJzaWduYXR1cmUiOiJvcGFxdWUtc2lnbmF0dXJlIn19CgpldmVudDogY29udGVudF9ibG9ja19zdG9wCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RvcCIsImluZGV4IjoxfQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdGFydCIsImluZGV4IjoyLCJjb250ZW50X2Jsb2NrIjp7InR5cGUiOiJ0b29sX3VzZSIsImlkIjoidG9vbC0xIiwibmFtZSI6IndlYXRoZXIiLCJpbnB1dCI6e319fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfZGVsdGEKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19kZWx0YSIsImluZGV4IjoyLCJkZWx0YSI6eyJ0eXBlIjoiaW5wdXRfanNvbl9kZWx0YSIsInBhcnRpYWxfanNvbiI6IntcImNpdHlcIjpcIlRhaSJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfZGVsdGEKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19kZWx0YSIsImluZGV4IjoyLCJkZWx0YSI6eyJ0eXBlIjoiaW5wdXRfanNvbl9kZWx0YSIsInBhcnRpYWxfanNvbiI6InBlaVwifSJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RvcApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0b3AiLCJpbmRleCI6Mn0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6InRvb2xfdXNlIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjgsIm91dHB1dF90b2tlbnNfZGV0YWlscyI6eyJ0aGlua2luZ190b2tlbnMiOjJ9fX0KCmV2ZW50OiBtZXNzYWdlX3N0b3AKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdG9wIn0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "k3-256k",
+          "providerID": "kimi-coding",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "Checking",
+          "type": "textDelta"
+        },
+        {
+          "delta": "inspect",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "opaque-signature",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "id": "tool-1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":\"Tai",
+          "id": "tool-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "delta": "pei\"}",
+          "id": "tool-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "tool-1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 2,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 12,
+            "input": 12,
+            "output": 16,
+            "total": 46
+          },
+          "inputTokens": 12,
+          "outputTokens": 8,
+          "reasoningTokens": 2,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/anthropic-messages.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "Checking",
+            "type": "text"
+          },
+          {
+            "thinking": "inspect",
+            "thinkingSignature": "opaque-signature",
+            "type": "thinking"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "tool-1",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "k3-256k",
+        "providerID": "kimi-coding",
+        "rawStopReason": "tool_use",
+        "responseID": "message-1",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 4,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 12,
+            "input": 12,
+            "output": 16,
+            "total": 46
+          },
+          "input": 12,
+          "output": 8,
+          "reasoning": 2,
+          "totalTokens": 26
+        }
+      }
+    },
+    "azure-openai-responses": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 3,
+          "cacheWrite": 0,
+          "input": 5,
+          "output": 8,
+          "total": 16
+        },
+        "tier": {
+          "cacheRead": 7,
+          "cacheWrite": 0,
+          "input": 25,
+          "output": 24,
+          "total": 56
+        }
+      },
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuY3JlYXRlZCIsInJlcw==",
+          "cG9uc2UiOnsiaWQiOiJyZXNwb25zZS0xIiwibW9kZWwiOiJmaXh0dXJlLXJlc3BvbnNlcyJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uYWRkZWQiLCJvdXRwdXRfaW5kZXgiOjAsIml0ZW0iOnsidHlwZSI6InJlYQ==",
+          "c29uaW5nIiwiaWQiOiJyc18xIiwic3VtbWFyeSI6W119fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UucmVhc29uaW5nX3RleHQuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjAsImRlbHRhIjoiaW5zcGVjdCJ9CgpkYXRhOiB7InR5cGUiOiJyZXNwb25zZS5vdXRwdXRfaXRlbS5kb25lIiwib3V0cHV0X2luZGV4IjowLCJpdGVtIjp7InR5cGUiOiJyZWFzb25pbmciLCJpZCI6InJzXzEiLCJzdW1tYXJ5IjpbeyJ0eXBlIjoic3VtbWFyeV90ZXh0IiwidGV4dCI6Imluc3BlY3QifV0sImVuY3J5cHRlZF9jb250ZW50IjoiZW5jcnlwdGVkLXJlYXNvbmluZyJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uYWRkZWQiLCJvdXRwdXRfaW5kZXgiOjEsIml0ZW0iOnsidHlwZSI6Im1lc3NhZ2UiLCJpZCI6Im1zZ18xIiwicm9sZSI6ImFzc2lzdGFudCIsInN0YXR1cyI6ImluX3Byb2dyZXNzIiwiY29udGVudCI6W119fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X3RleHQuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjEsImRlbHRhIjoiaGVsbG8ifQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uZG9uZSIsIm91dHB1dF9pbmRleCI6MSwiaXRlbSI6eyJ0eXBlIjoibWVzc2FnZSIsImlkIjoibXNnXzEiLCJyb2xlIjoiYXNzaXN0YW50Iiwic3RhdHVzIjoiY29tcGxldGVkIiwicGhhc2UiOiJmaW5hbF9hbnN3ZXIiLCJjb250ZW50IjpbeyJ0eXBlIjoib3V0cHV0X3RleHQiLCJ0ZXh0IjoiaGVsbG8iLCJhbm5vdGF0aW9ucyI6W119XX19CgpkYXRhOiB7InR5cGUiOiJyZXNwb25zZS5vdXRwdXRfaXRlbS5hZGRlZCIsIm91dHB1dF9pbmRleCI6MiwiaXRlbSI6eyJ0eXBlIjoiZnVuY3Rpb25fY2FsbCIsImlkIjoiZmNfMSIsImNhbGxfaWQiOiJjYWxsXzEiLCJuYW1lIjoid2VhdGhlciIsImFyZ3VtZW50cyI6IiJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuZnVuY3Rpb25fY2FsbF9hcmd1bWVudHMuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjIsIml0ZW1faWQiOiJmY18xIiwiZGVsdGEiOiJ7XCJjaXR5XCI6XCJUYWlwZWlcIn0ifQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uZG9uZSIsIm91dHB1dF9pbmRleCI6MiwiaXRlbSI6eyJ0eXBlIjoiZnVuY3Rpb25fY2FsbCIsImlkIjoiZmNfMSIsImNhbGxfaWQiOiJjYWxsXzEiLCJuYW1lIjoid2VhdGhlciIsImFyZ3VtZW50cyI6IntcImNpdHlcIjpcIlRhaXBlaVwifSIsInN0YXR1cyI6ImNvbXBsZXRlZCJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuY29tcGxldGVkIiwicmVzcG9uc2UiOnsiaWQiOiJyZXNwb25zZS0xIiwic3RhdHVzIjoiY29tcGxldGVkIiwib3V0cHV0IjpbXSwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjo2LCJvdXRwdXRfdG9rZW5zIjo0LCJ0b3RhbF90b2tlbnMiOjEwLCJpbnB1dF90b2tlbnNfZGV0YWlscyI6eyJjYWNoZWRfdG9rZW5zIjoxfSwib3V0cHV0X3Rva2Vuc19kZXRhaWxzIjp7InJlYXNvbmluZ190b2tlbnMiOjF9fX19CgpkYXRhOiBbRE9ORV0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-deployment",
+          "providerID": "fixture-azure",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "inspect",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "{\"encrypted_content\":\"encrypted-reasoning\",\"id\":\"rs_1\",\"summary\":[{\"text\":\"inspect\",\"type\":\"summary_text\"}],\"type\":\"reasoning\"}",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "delta": "hello",
+          "type": "textDelta"
+        },
+        {
+          "id": "call_1|fc_1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":\"Taipei\"}",
+          "id": "call_1|fc_1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call_1|fc_1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 1,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 0,
+            "input": 5,
+            "output": 8,
+            "total": 16
+          },
+          "inputTokens": 5,
+          "outputTokens": 4,
+          "reasoningTokens": 1,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/azure-openai-responses.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "thinking": "inspect",
+            "thinkingSignature": "{\"encrypted_content\":\"encrypted-reasoning\",\"id\":\"rs_1\",\"summary\":[{\"text\":\"inspect\",\"type\":\"summary_text\"}],\"type\":\"reasoning\"}",
+            "type": "thinking"
+          },
+          {
+            "text": "hello",
+            "textSignature": "{\"v\":1,\"id\":\"msg_1\",\"phase\":\"final_answer\"}",
+            "type": "text"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call_1|fc_1",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "fixture-deployment",
+        "providerID": "fixture-azure",
+        "rawStopReason": "completed",
+        "responseID": "response-1",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 1,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 0,
+            "input": 5,
+            "output": 8,
+            "total": 16
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 10
+        }
+      }
+    },
+    "bedrock-converse-stream": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 6,
+          "cacheWrite": 0,
+          "input": 12,
+          "output": 16,
+          "total": 34
+        },
+        "tier": {
+          "cacheRead": 14,
+          "cacheWrite": 0,
+          "input": 60,
+          "output": 48,
+          "total": 122
+        }
+      },
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAArgAAAFdfOjrJDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsicmVhc29uaW5nQ29udGVudCI6eyJ0ZXh0IjoiaW5zcGVjdCJ9fX0CT0/+",
+          "AAAAugAAAFfKWguLDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsicmVhc29uaW5nQ29udGVudCI6eyJzaWduYXR1cmUiOiJvcGFxdWUtYmVkcm9jayJ9fX0ZgVac",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjowfVh+qsI=",
+          "AAAAmgAAAFcLmySPDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MSwiZGVsdGEiOnsidGV4dCI6IkNoZWNraW5nIn19rN2BMQ==",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjoxfUFlm4M=",
+          "AAAAugAAAFfKWguLDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja1N0YXJ0DTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6Miwic3RhcnQiOnsidG9vbFVzZSI6eyJ0b29sVXNlSWQiOiJ0b29sLTEiLCJuYW1lIjoid2VhdGhlciJ9fX1ITjxb",
+          "AAAArgAAAFdfOjrJDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MiwiZGVsdGEiOnsidG9vbFVzZSI6eyJpbnB1dCI6IntcImNpdHlcIjpcIlRhaSJ9fX21v5hK",
+          "AAAApQAAAFco6gvYDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MiwiZGVsdGEiOnsidG9vbFVzZSI6eyJpbnB1dCI6InBlaVwifSJ9fX2dYByw",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjoyfWpIyEA=",
+          "AAAAegAAAFHKLEZlDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoidG9vbF91c2Uiff+3G4c=",
+          "AAAAtQAAAE4sYTSaDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6MTIsIm91dHB1dFRva2VucyI6OCwiY2FjaGVSZWFkSW5wdXRUb2tlbnMiOjIsInRvdGFsVG9rZW5zIjoyMH196uqtqQ=="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-response"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "driver": "aws-eventstream",
+      "normalizedEvents": [
+        {
+          "modelID": "anthropic.fixture-v1:0",
+          "providerID": "amazon-bedrock",
+          "responseID": "bedrock-response",
+          "type": "responseStarted"
+        },
+        {
+          "delta": "inspect",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "opaque-bedrock",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "delta": "Checking",
+          "type": "textDelta"
+        },
+        {
+          "id": "tool-1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":\"Tai",
+          "id": "tool-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "delta": "pei\"}",
+          "id": "tool-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "tool-1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 2,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 0,
+            "input": 12,
+            "output": 16,
+            "total": 34
+          },
+          "inputTokens": 12,
+          "outputTokens": 8,
+          "reasoningTokens": null,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/bedrock-converse-stream.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "thinking": "inspect",
+            "thinkingSignature": "opaque-bedrock",
+            "type": "thinking"
+          },
+          {
+            "text": "Checking",
+            "type": "text"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "tool-1",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "anthropic.fixture-v1:0",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "tool_use",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 0,
+            "input": 12,
+            "output": 16,
+            "total": 34
+          },
+          "input": 12,
+          "output": 8,
+          "reasoning": null,
+          "totalTokens": 20
+        }
+      }
+    },
+    "google-generative-ai": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 9,
+          "cacheWrite": 0,
+          "input": 9,
+          "output": 14,
+          "total": 32
+        },
+        "tier": {
+          "cacheRead": 21,
+          "cacheWrite": 0,
+          "input": 45,
+          "output": 42,
+          "total": 108
+        }
+      },
+      "decoderInput": {
+        "events": [
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": "inspect",
+                      "thought": true,
+                      "thoughtSignature": "YWJjZA=="
+                    },
+                    {
+                      "text": "ready"
+                    },
+                    {
+                      "functionCall": {
+                        "args": {
+                          "city": "Taipei"
+                        },
+                        "id": "call-1",
+                        "name": "weather"
+                      },
+                      "thoughtSignature": "ZWZnaA=="
+                    }
+                  ],
+                  "role": "model"
+                },
+                "finishReason": "STOP"
+              }
+            ],
+            "responseId": "google-response-1",
+            "usageMetadata": {
+              "cachedContentTokenCount": 3,
+              "candidatesTokenCount": 5,
+              "promptTokenCount": 12,
+              "thoughtsTokenCount": 2,
+              "totalTokenCount": 19
+            }
+          }
+        ],
+        "kind": "decoded-sdk-events"
+      },
+      "driver": "decoded-sdk-events",
+      "normalizedEvents": [
+        {
+          "modelID": "gemini-3-flash-preview",
+          "providerID": "fixture-google",
+          "responseID": "google-response-1",
+          "type": "responseStarted"
+        },
+        {
+          "delta": "inspect",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "YWJjZA==",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "delta": "ready",
+          "type": "textDelta"
+        },
+        {
+          "delta": "ZWZnaA==",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "id": "call-1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":\"Taipei\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call-1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 3,
+          "cost": {
+            "cacheRead": 9,
+            "cacheWrite": 0,
+            "input": 9,
+            "output": 14,
+            "total": 32
+          },
+          "inputTokens": 9,
+          "outputTokens": 7,
+          "reasoningTokens": 2,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/google-generative-ai.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "thinking": "inspect",
+            "thinkingSignature": "YWJjZA==",
+            "type": "thinking"
+          },
+          {
+            "text": "ready",
+            "type": "text"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call-1",
+            "name": "weather",
+            "thoughtSignature": "ZWZnaA==",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "gemini-3-flash-preview",
+        "providerID": "fixture-google",
+        "rawStopReason": "STOP",
+        "responseID": "google-response-1",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 3,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 9,
+            "cacheWrite": 0,
+            "input": 9,
+            "output": 14,
+            "total": 32
+          },
+          "input": 9,
+          "output": 7,
+          "reasoning": 2,
+          "totalTokens": 19
+        }
+      }
+    },
+    "google-vertex": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 9,
+          "cacheWrite": 0,
+          "input": 9,
+          "output": 14,
+          "total": 32
+        },
+        "tier": {
+          "cacheRead": 21,
+          "cacheWrite": 0,
+          "input": 45,
+          "output": 42,
+          "total": 108
+        }
+      },
+      "decoderInput": {
+        "events": [
+          {
+            "candidates": [
+              {
+                "content": {
+                  "parts": [
+                    {
+                      "text": "inspect",
+                      "thought": true,
+                      "thoughtSignature": "YWJjZA=="
+                    },
+                    {
+                      "text": "ready"
+                    },
+                    {
+                      "functionCall": {
+                        "args": {
+                          "city": "Taipei"
+                        },
+                        "id": "call-1",
+                        "name": "weather"
+                      },
+                      "thoughtSignature": "ZWZnaA=="
+                    }
+                  ],
+                  "role": "model"
+                },
+                "finishReason": "STOP"
+              }
+            ],
+            "responseId": "google-response-1",
+            "usageMetadata": {
+              "cachedContentTokenCount": 3,
+              "candidatesTokenCount": 5,
+              "promptTokenCount": 12,
+              "thoughtsTokenCount": 2,
+              "totalTokenCount": 19
+            }
+          }
+        ],
+        "kind": "decoded-sdk-events"
+      },
+      "driver": "decoded-sdk-events",
+      "normalizedEvents": [
+        {
+          "modelID": "gemini-3-flash-preview",
+          "providerID": "fixture-vertex",
+          "responseID": "google-response-1",
+          "type": "responseStarted"
+        },
+        {
+          "delta": "inspect",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "YWJjZA==",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "delta": "ready",
+          "type": "textDelta"
+        },
+        {
+          "delta": "ZWZnaA==",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "id": "call-1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":\"Taipei\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call-1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 3,
+          "cost": {
+            "cacheRead": 9,
+            "cacheWrite": 0,
+            "input": 9,
+            "output": 14,
+            "total": 32
+          },
+          "inputTokens": 9,
+          "outputTokens": 7,
+          "reasoningTokens": 2,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/google-vertex.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "thinking": "inspect",
+            "thinkingSignature": "YWJjZA==",
+            "type": "thinking"
+          },
+          {
+            "text": "ready",
+            "type": "text"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call-1",
+            "name": "weather",
+            "thoughtSignature": "ZWZnaA==",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "gemini-3-flash-preview",
+        "providerID": "fixture-vertex",
+        "rawStopReason": "STOP",
+        "responseID": "google-response-1",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 3,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 9,
+            "cacheWrite": 0,
+            "input": 9,
+            "output": 14,
+            "total": 32
+          },
+          "input": 9,
+          "output": 7,
+          "reasoning": 2,
+          "totalTokens": 19
+        }
+      }
+    },
+    "mistral-conversations": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 9,
+          "cacheWrite": 0,
+          "input": 9,
+          "output": 14,
+          "total": 32
+        },
+        "tier": {
+          "cacheRead": 21,
+          "cacheWrite": 0,
+          "input": 45,
+          "output": 42,
+          "total": 108
+        }
+      },
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6Im1pc3RyYWwtcmVzcG9uc2UiLCJjaG9pYw==",
+          "ZXMiOlt7ImRlbHRhIjp7ImNvbnRlbnQiOiJDaGVja2luZyJ9fV19CgpkYXRhOiB7ImlkIjoibWlzdHJhbC1yZXNwb25zZSIsImNob2ljZXMiOlt7ImRlbHRhIjp7ImNvbnRlbnQiOlt7InR5cGUiOiJ0aGlua2luZyIsInRoaW5raW5nIjpbew==",
+          "InR5cGUiOiJ0ZXh0IiwidGV4dCI6Ik5lZWQgYSBsb29rdXAifV19XX19XX0KCmRhdGE6IHsiaWQiOiJtaXN0cmFsLXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsidG9vbF9jYWxscyI6W3siaW5kZXgiOjAsImlkIjoiY2FsbC0xIiwiZnVuY3Rpb24iOnsibmFtZSI6IndlYXRoZXIiLCJhcmd1bWVudHMiOiJ7XCJjaXR5XCI6XCJUYWkifX1dfX1dfQoKZGF0YTogeyJpZCI6Im1pc3RyYWwtcmVzcG9uc2UiLCJjaG9pY2VzIjpbeyJkZWx0YSI6eyJ0b29sX2NhbGxzIjpbeyJpbmRleCI6MCwiZnVuY3Rpb24iOnsibmFtZSI6IiIsImFyZ3VtZW50cyI6InBlaVwifSJ9fV19fV19CgpkYXRhOiB7ImlkIjoibWlzdHJhbC1yZXNwb25zZSIsInVzYWdlIjp7InByb21wdF90b2tlbnMiOjEyLCJjb21wbGV0aW9uX3Rva2VucyI6NywidG90YWxfdG9rZW5zIjoxOSwicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjp7ImNhY2hlZF90b2tlbnMiOjN9fSwiY2hvaWNlcyI6W3siZmluaXNoX3JlYXNvbiI6InRvb2xfY2FsbHMiLCJkZWx0YSI6e319XX0KCmRhdGE6IFtET05FXQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "mistral-fixture",
+          "providerID": "fixture-mistral",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "Checking",
+          "type": "textDelta"
+        },
+        {
+          "delta": "Need a lookup",
+          "type": "reasoningDelta"
+        },
+        {
+          "id": "call-1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":\"Tai",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "delta": "pei\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call-1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 3,
+          "cost": {
+            "cacheRead": 9,
+            "cacheWrite": 0,
+            "input": 9,
+            "output": 14,
+            "total": 32
+          },
+          "inputTokens": 9,
+          "outputTokens": 7,
+          "reasoningTokens": null,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/mistral-conversations.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "Checking",
+            "type": "text"
+          },
+          {
+            "thinking": "Need a lookup",
+            "type": "thinking"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call-1",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "mistral-fixture",
+        "providerID": "fixture-mistral",
+        "rawStopReason": "tool_calls",
+        "responseID": "mistral-response",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 3,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 9,
+            "cacheWrite": 0,
+            "input": 9,
+            "output": 14,
+            "total": 32
+          },
+          "input": 9,
+          "output": 7,
+          "reasoning": null,
+          "totalTokens": 19
+        }
+      }
+    },
+    "openai-codex-responses": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 3,
+          "cacheWrite": 0,
+          "input": 5,
+          "output": 8,
+          "total": 16
+        },
+        "tier": {
+          "cacheRead": 7,
+          "cacheWrite": 0,
+          "input": 25,
+          "output": 24,
+          "total": 56
+        }
+      },
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuY3JlYXRlZCIsInJlcw==",
+          "cG9uc2UiOnsiaWQiOiJyZXNwb25zZS0xIiwibW9kZWwiOiJmaXh0dXJlLXJlc3BvbnNlcyJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uYWRkZWQiLCJvdXRwdXRfaW5kZXgiOjAsIml0ZW0iOnsidHlwZSI6InJlYQ==",
+          "c29uaW5nIiwiaWQiOiJyc18xIiwic3VtbWFyeSI6W119fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UucmVhc29uaW5nX3RleHQuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjAsImRlbHRhIjoiaW5zcGVjdCJ9CgpkYXRhOiB7InR5cGUiOiJyZXNwb25zZS5vdXRwdXRfaXRlbS5kb25lIiwib3V0cHV0X2luZGV4IjowLCJpdGVtIjp7InR5cGUiOiJyZWFzb25pbmciLCJpZCI6InJzXzEiLCJzdW1tYXJ5IjpbeyJ0eXBlIjoic3VtbWFyeV90ZXh0IiwidGV4dCI6Imluc3BlY3QifV0sImVuY3J5cHRlZF9jb250ZW50IjoiZW5jcnlwdGVkLXJlYXNvbmluZyJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uYWRkZWQiLCJvdXRwdXRfaW5kZXgiOjEsIml0ZW0iOnsidHlwZSI6Im1lc3NhZ2UiLCJpZCI6Im1zZ18xIiwicm9sZSI6ImFzc2lzdGFudCIsInN0YXR1cyI6ImluX3Byb2dyZXNzIiwiY29udGVudCI6W119fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X3RleHQuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjEsImRlbHRhIjoiaGVsbG8ifQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uZG9uZSIsIm91dHB1dF9pbmRleCI6MSwiaXRlbSI6eyJ0eXBlIjoibWVzc2FnZSIsImlkIjoibXNnXzEiLCJyb2xlIjoiYXNzaXN0YW50Iiwic3RhdHVzIjoiY29tcGxldGVkIiwicGhhc2UiOiJmaW5hbF9hbnN3ZXIiLCJjb250ZW50IjpbeyJ0eXBlIjoib3V0cHV0X3RleHQiLCJ0ZXh0IjoiaGVsbG8iLCJhbm5vdGF0aW9ucyI6W119XX19CgpkYXRhOiB7InR5cGUiOiJyZXNwb25zZS5vdXRwdXRfaXRlbS5hZGRlZCIsIm91dHB1dF9pbmRleCI6MiwiaXRlbSI6eyJ0eXBlIjoiZnVuY3Rpb25fY2FsbCIsImlkIjoiZmNfMSIsImNhbGxfaWQiOiJjYWxsXzEiLCJuYW1lIjoid2VhdGhlciIsImFyZ3VtZW50cyI6IiJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuZnVuY3Rpb25fY2FsbF9hcmd1bWVudHMuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjIsIml0ZW1faWQiOiJmY18xIiwiZGVsdGEiOiJ7XCJjaXR5XCI6XCJUYWlwZWlcIn0ifQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uZG9uZSIsIm91dHB1dF9pbmRleCI6MiwiaXRlbSI6eyJ0eXBlIjoiZnVuY3Rpb25fY2FsbCIsImlkIjoiZmNfMSIsImNhbGxfaWQiOiJjYWxsXzEiLCJuYW1lIjoid2VhdGhlciIsImFyZ3VtZW50cyI6IntcImNpdHlcIjpcIlRhaXBlaVwifSIsInN0YXR1cyI6ImNvbXBsZXRlZCJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuZG9uZSIsInJlc3BvbnNlIjp7ImlkIjoicmVzcG9uc2UtMSIsInN0YXR1cyI6ImNvbXBsZXRlZCIsIm91dHB1dCI6W10sInVzYWdlIjp7ImlucHV0X3Rva2VucyI6Niwib3V0cHV0X3Rva2VucyI6NCwidG90YWxfdG9rZW5zIjoxMCwiaW5wdXRfdG9rZW5zX2RldGFpbHMiOnsiY2FjaGVkX3Rva2VucyI6MX0sIm91dHB1dF90b2tlbnNfZGV0YWlscyI6eyJyZWFzb25pbmdfdG9rZW5zIjoxfX19fQoKZGF0YTogW0RPTkVdCgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "gpt-5.1-codex",
+          "providerID": "openai-codex",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "inspect",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "{\"encrypted_content\":\"encrypted-reasoning\",\"id\":\"rs_1\",\"summary\":[{\"text\":\"inspect\",\"type\":\"summary_text\"}],\"type\":\"reasoning\"}",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "delta": "hello",
+          "type": "textDelta"
+        },
+        {
+          "id": "call_1|fc_1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":\"Taipei\"}",
+          "id": "call_1|fc_1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call_1|fc_1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 1,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 0,
+            "input": 5,
+            "output": 8,
+            "total": 16
+          },
+          "inputTokens": 5,
+          "outputTokens": 4,
+          "reasoningTokens": 1,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-codex-responses.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "thinking": "inspect",
+            "thinkingSignature": "{\"encrypted_content\":\"encrypted-reasoning\",\"id\":\"rs_1\",\"summary\":[{\"text\":\"inspect\",\"type\":\"summary_text\"}],\"type\":\"reasoning\"}",
+            "type": "thinking"
+          },
+          {
+            "text": "hello",
+            "textSignature": "{\"v\":1,\"id\":\"msg_1\",\"phase\":\"final_answer\"}",
+            "type": "text"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call_1|fc_1",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "gpt-5.1-codex",
+        "providerID": "openai-codex",
+        "rawStopReason": "completed",
+        "responseID": "response-1",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 1,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 0,
+            "input": 5,
+            "output": 8,
+            "total": 16
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 10
+        }
+      }
+    },
+    "openai-completions": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 3,
+          "cacheWrite": 0,
+          "input": 4,
+          "output": 6,
+          "total": 13
+        },
+        "tier": {
+          "cacheRead": 7,
+          "cacheWrite": 0,
+          "input": 20,
+          "output": 18,
+          "total": 45
+        }
+      },
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImNoYXQtMSIsIm1vZGVsIjoiZml4dHVyZQ==",
+          "LWNoYXQiLCJjaG9pY2VzIjpbeyJkZWx0YSI6eyJjb250ZW50IjoiaGVsbG8iLCJyZWFzb25pbmdfY29udGVudCI6InRoaW5rIiwidG9vbF9jYWxscyI6W3siaW5kZXgiOjAsImlkIjoiY2FsbC0xIiwiZnVuY3Rpb24iOnsibmFtZSI6IndlYQ==",
+          "dGhlciIsImFyZ3VtZW50cyI6IntcImNpdHlcIjoifX1dfSwiZmluaXNoX3JlYXNvbiI6bnVsbH1dfQoKZGF0YTogeyJpZCI6ImNoYXQtMSIsIm1vZGVsIjoiZml4dHVyZS1jaGF0IiwiY2hvaWNlcyI6W3siZGVsdGEiOnsidG9vbF9jYWxscyI6W3siaW5kZXgiOjAsImZ1bmN0aW9uIjp7ImFyZ3VtZW50cyI6IlwiVGFpcGVpXCJ9In19XX0sImZpbmlzaF9yZWFzb24iOiJ0b29sX2NhbGxzIn1dfQoKZGF0YTogeyJpZCI6ImNoYXQtMSIsIm1vZGVsIjoiZml4dHVyZS1jaGF0IiwiY2hvaWNlcyI6W10sInVzYWdlIjp7InByb21wdF90b2tlbnMiOjUsImNvbXBsZXRpb25fdG9rZW5zIjozLCJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOnsiY2FjaGVkX3Rva2VucyI6MX0sImNvbXBsZXRpb25fdG9rZW5zX2RldGFpbHMiOnsicmVhc29uaW5nX3Rva2VucyI6MX19fQoKZGF0YTogW0RPTkVdCgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-chat",
+          "providerID": "fixture-openai-completions",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "hello",
+          "type": "textDelta"
+        },
+        {
+          "delta": "think",
+          "type": "reasoningDelta"
+        },
+        {
+          "id": "call-1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "delta": "\"Taipei\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "delta": "reasoning_content",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call-1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 1,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 0,
+            "input": 4,
+            "output": 6,
+            "total": 13
+          },
+          "inputTokens": 4,
+          "outputTokens": 3,
+          "reasoningTokens": 1,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text"
+          },
+          {
+            "thinking": "think",
+            "thinkingSignature": "reasoning_content",
+            "type": "thinking"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call-1",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "fixture-chat",
+        "providerID": "fixture-openai-completions",
+        "rawStopReason": "tool_calls",
+        "responseID": "chat-1",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 1,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 0,
+            "input": 4,
+            "output": 6,
+            "total": 13
+          },
+          "input": 4,
+          "output": 3,
+          "reasoning": 1,
+          "totalTokens": 8
+        }
+      }
+    },
+    "openai-responses": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 3,
+          "cacheWrite": 0,
+          "input": 5,
+          "output": 8,
+          "total": 16
+        },
+        "tier": {
+          "cacheRead": 7,
+          "cacheWrite": 0,
+          "input": 25,
+          "output": 24,
+          "total": 56
+        }
+      },
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuY3JlYXRlZCIsInJlcw==",
+          "cG9uc2UiOnsiaWQiOiJyZXNwb25zZS0xIiwibW9kZWwiOiJmaXh0dXJlLXJlc3BvbnNlcyJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uYWRkZWQiLCJvdXRwdXRfaW5kZXgiOjAsIml0ZW0iOnsidHlwZSI6InJlYQ==",
+          "c29uaW5nIiwiaWQiOiJyc18xIiwic3VtbWFyeSI6W119fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UucmVhc29uaW5nX3RleHQuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjAsImRlbHRhIjoiaW5zcGVjdCJ9CgpkYXRhOiB7InR5cGUiOiJyZXNwb25zZS5vdXRwdXRfaXRlbS5kb25lIiwib3V0cHV0X2luZGV4IjowLCJpdGVtIjp7InR5cGUiOiJyZWFzb25pbmciLCJpZCI6InJzXzEiLCJzdW1tYXJ5IjpbeyJ0eXBlIjoic3VtbWFyeV90ZXh0IiwidGV4dCI6Imluc3BlY3QifV0sImVuY3J5cHRlZF9jb250ZW50IjoiZW5jcnlwdGVkLXJlYXNvbmluZyJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uYWRkZWQiLCJvdXRwdXRfaW5kZXgiOjEsIml0ZW0iOnsidHlwZSI6Im1lc3NhZ2UiLCJpZCI6Im1zZ18xIiwicm9sZSI6ImFzc2lzdGFudCIsInN0YXR1cyI6ImluX3Byb2dyZXNzIiwiY29udGVudCI6W119fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X3RleHQuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjEsImRlbHRhIjoiaGVsbG8ifQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uZG9uZSIsIm91dHB1dF9pbmRleCI6MSwiaXRlbSI6eyJ0eXBlIjoibWVzc2FnZSIsImlkIjoibXNnXzEiLCJyb2xlIjoiYXNzaXN0YW50Iiwic3RhdHVzIjoiY29tcGxldGVkIiwicGhhc2UiOiJmaW5hbF9hbnN3ZXIiLCJjb250ZW50IjpbeyJ0eXBlIjoib3V0cHV0X3RleHQiLCJ0ZXh0IjoiaGVsbG8iLCJhbm5vdGF0aW9ucyI6W119XX19CgpkYXRhOiB7InR5cGUiOiJyZXNwb25zZS5vdXRwdXRfaXRlbS5hZGRlZCIsIm91dHB1dF9pbmRleCI6MiwiaXRlbSI6eyJ0eXBlIjoiZnVuY3Rpb25fY2FsbCIsImlkIjoiZmNfMSIsImNhbGxfaWQiOiJjYWxsXzEiLCJuYW1lIjoid2VhdGhlciIsImFyZ3VtZW50cyI6IiJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuZnVuY3Rpb25fY2FsbF9hcmd1bWVudHMuZGVsdGEiLCJvdXRwdXRfaW5kZXgiOjIsIml0ZW1faWQiOiJmY18xIiwiZGVsdGEiOiJ7XCJjaXR5XCI6XCJUYWlwZWlcIn0ifQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2Uub3V0cHV0X2l0ZW0uZG9uZSIsIm91dHB1dF9pbmRleCI6MiwiaXRlbSI6eyJ0eXBlIjoiZnVuY3Rpb25fY2FsbCIsImlkIjoiZmNfMSIsImNhbGxfaWQiOiJjYWxsXzEiLCJuYW1lIjoid2VhdGhlciIsImFyZ3VtZW50cyI6IntcImNpdHlcIjpcIlRhaXBlaVwifSIsInN0YXR1cyI6ImNvbXBsZXRlZCJ9fQoKZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuY29tcGxldGVkIiwicmVzcG9uc2UiOnsiaWQiOiJyZXNwb25zZS0xIiwic3RhdHVzIjoiY29tcGxldGVkIiwib3V0cHV0IjpbXSwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjo2LCJvdXRwdXRfdG9rZW5zIjo0LCJ0b3RhbF90b2tlbnMiOjEwLCJpbnB1dF90b2tlbnNfZGV0YWlscyI6eyJjYWNoZWRfdG9rZW5zIjoxfSwib3V0cHV0X3Rva2Vuc19kZXRhaWxzIjp7InJlYXNvbmluZ190b2tlbnMiOjF9fX19CgpkYXRhOiBbRE9ORV0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-responses",
+          "providerID": "fixture-openai-responses",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "inspect",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "{\"encrypted_content\":\"encrypted-reasoning\",\"id\":\"rs_1\",\"summary\":[{\"text\":\"inspect\",\"type\":\"summary_text\"}],\"type\":\"reasoning\"}",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "delta": "hello",
+          "type": "textDelta"
+        },
+        {
+          "id": "call_1|fc_1",
+          "name": "weather",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"city\":\"Taipei\"}",
+          "id": "call_1|fc_1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call_1|fc_1",
+            "name": "weather"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 1,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 0,
+            "input": 5,
+            "output": 8,
+            "total": 16
+          },
+          "inputTokens": 5,
+          "outputTokens": 4,
+          "reasoningTokens": 1,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-responses.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "thinking": "inspect",
+            "thinkingSignature": "{\"encrypted_content\":\"encrypted-reasoning\",\"id\":\"rs_1\",\"summary\":[{\"text\":\"inspect\",\"type\":\"summary_text\"}],\"type\":\"reasoning\"}",
+            "type": "thinking"
+          },
+          {
+            "text": "hello",
+            "textSignature": "{\"v\":1,\"id\":\"msg_1\",\"phase\":\"final_answer\"}",
+            "type": "text"
+          },
+          {
+            "arguments": {
+              "city": "Taipei"
+            },
+            "id": "call_1|fc_1",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "fixture-responses",
+        "providerID": "fixture-openai-responses",
+        "rawStopReason": "completed",
+        "responseID": "response-1",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 1,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 3,
+            "cacheWrite": 0,
+            "input": 5,
+            "output": 8,
+            "total": 16
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 10
+        }
+      }
+    },
+    "openrouter-images": {
+      "costVariants": {
+        "base": {
+          "cacheRead": 6,
+          "cacheWrite": 4,
+          "input": 7,
+          "output": 8,
+          "total": 25
+        }
+      },
+      "decoderInput": {
+        "body": {
+          "choices": [
+            {
+              "message": {
+                "content": "created",
+                "images": [
+                  {
+                    "image_url": "data:image/png;base64,iVA="
+                  },
+                  {
+                    "image_url": {
+                      "url": "data:image/jpeg;base64,/9g="
+                    }
+                  },
+                  {
+                    "image_url": "https://example.invalid/ignored"
+                  }
+                ],
+                "role": "assistant"
+              }
+            }
+          ],
+          "id": "image-response-1",
+          "model": "fixture-image",
+          "usage": {
+            "completion_tokens": 4,
+            "prompt_tokens": 10,
+            "prompt_tokens_details": {
+              "cache_write_tokens": 1,
+              "cached_tokens": 3
+            }
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 200
+      },
+      "driver": "http-json",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-image",
+          "providerID": "openrouter",
+          "responseID": "image-response-1",
+          "type": "responseStarted"
+        },
+        {
+          "delta": "created",
+          "type": "textDelta"
+        },
+        {
+          "dataBase64": "iVA=",
+          "id": "image-response-1-image-0",
+          "kind": "image",
+          "mimeType": "image/png",
+          "type": "asset"
+        },
+        {
+          "dataBase64": "/9g=",
+          "id": "image-response-1-image-1",
+          "kind": "image",
+          "mimeType": "image/jpeg",
+          "type": "asset"
+        },
+        {
+          "cachedInputTokens": 2,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 4,
+            "input": 7,
+            "output": 8,
+            "total": 25
+          },
+          "inputTokens": 7,
+          "outputTokens": 4,
+          "reasoningTokens": null,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "generateImages",
+        "module": "packages/ai/src/api/openrouter-images.ts"
+      },
+      "terminalReplay": {
+        "modelID": "fixture-image",
+        "output": [
+          {
+            "text": "created",
+            "type": "text"
+          },
+          {
+            "data": "iVA=",
+            "mimeType": "image/png",
+            "type": "image"
+          },
+          {
+            "data": "/9g=",
+            "mimeType": "image/jpeg",
+            "type": "image"
+          }
+        ],
+        "providerID": "openrouter",
+        "responseID": "image-response-1",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 1,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 4,
+            "input": 7,
+            "output": 8,
+            "total": 25
+          },
+          "input": 7,
+          "output": 4,
+          "totalTokens": 14
+        }
+      }
+    },
+    "pi-messages": {
+      "costVariants": {
+        "direct": {
+          "cacheRead": 9,
+          "cacheWrite": 0,
+          "input": 8,
+          "output": 10,
+          "total": 27
+        }
+      },
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIg==",
+          "OiJ0ZXh0X3N0YXJ0IiwiY29udGVudEluZGV4IjowfQoKZGF0YTogeyJ0eXBlIjoidGV4dF9kZWx0YSIsImNvbnRlbnRJbmRleCI6MCwiZGVsdGEiOiJoZWxsbyJ9CgpkYXRhOiB7InR5cGUiOiJ0ZXh0X2VuZCIsImNvbnRlbnRJbmRleCI6MA==",
+          "LCJjb250ZW50IjoiaGVsbG8ifQoKZGF0YTogeyJ0eXBlIjoidGhpbmtpbmdfc3RhcnQiLCJjb250ZW50SW5kZXgiOjF9CgpkYXRhOiB7InR5cGUiOiJ0aGlua2luZ19kZWx0YSIsImNvbnRlbnRJbmRleCI6MSwiZGVsdGEiOiJ0aGlua2luZyJ9CgpkYXRhOiB7InR5cGUiOiJ0aGlua2luZ19lbmQiLCJjb250ZW50SW5kZXgiOjEsImNvbnRlbnQiOiJ0aGlua2luZyIsImNvbnRlbnRTaWduYXR1cmUiOiJvcGFxdWUifQoKZGF0YTogeyJ0eXBlIjoidG9vbGNhbGxfc3RhcnQiLCJjb250ZW50SW5kZXgiOjIsImlkIjoiY2FsbC0xIiwidG9vbE5hbWUiOiJsb29rdXAifQoKZGF0YTogeyJ0eXBlIjoidG9vbGNhbGxfZGVsdGEiLCJjb250ZW50SW5kZXgiOjIsImRlbHRhIjoie1wicXVlcnlcIjpcIlN3aWZ0XCJ9In0KCmRhdGE6IHsidHlwZSI6InRvb2xjYWxsX2VuZCIsImNvbnRlbnRJbmRleCI6MiwidG9vbENhbGwiOnsidHlwZSI6InRvb2xDYWxsIiwiaWQiOiJjYWxsLTEiLCJuYW1lIjoibG9va3VwIiwiYXJndW1lbnRzIjp7InF1ZXJ5IjoiU3dpZnQifX19CgpkYXRhOiB7InR5cGUiOiJkb25lIiwicmVhc29uIjoidG9vbFVzZSIsInVzYWdlIjp7ImlucHV0Ijo4LCJvdXRwdXQiOjUsInJlYXNvbmluZyI6MiwiY2FjaGVSZWFkIjozLCJjYWNoZVdyaXRlIjowLCJ0b3RhbFRva2VucyI6MTYsImNvc3QiOnsiaW5wdXQiOjgsIm91dHB1dCI6MTAsImNhY2hlUmVhZCI6OSwiY2FjaGVXcml0ZSI6MCwidG90YWwiOjI3fX0sInJlc3BvbnNlSWQiOiJyZXNwb25zZS0xIn0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "pi-fixture",
+          "providerID": "fixture-pi",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "hello",
+          "type": "textDelta"
+        },
+        {
+          "delta": "thinking",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "opaque",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "id": "call-1",
+          "name": "lookup",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"query\":\"Swift\"}",
+          "id": "call-1",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 3,
+          "cost": {
+            "cacheRead": 9,
+            "cacheWrite": 0,
+            "input": 8,
+            "output": 10,
+            "total": 27
+          },
+          "inputTokens": 8,
+          "outputTokens": 5,
+          "reasoningTokens": 2,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/pi-messages.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text"
+          },
+          {
+            "thinking": "thinking",
+            "thinkingSignature": "opaque",
+            "type": "thinking"
+          },
+          {
+            "arguments": {
+              "query": "Swift"
+            },
+            "id": "call-1",
+            "name": "lookup",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "pi-fixture",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": "response-1",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 3,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 9,
+            "cacheWrite": 0,
+            "input": 8,
+            "output": 10,
+            "total": 27
+          },
+          "input": 8,
+          "output": 5,
+          "reasoning": 2,
+          "totalTokens": 16
+        }
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/earendil-works/pi.git",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

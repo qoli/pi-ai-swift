@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "caseID": "failure-http-provider-v1",
+  "stimulusKind": "httpStatus",
+  "stimulus": {
+    "status": 429,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "error": {
+        "code": "fixture_rate_limit",
+        "message": "fixture provider rejected request"
+      }
+    }
+  },
+  "expectedCategory": "httpProviderError",
+  "protocolsFrom": "request-rich-v1"
+}

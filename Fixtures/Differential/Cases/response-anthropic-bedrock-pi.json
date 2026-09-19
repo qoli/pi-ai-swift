@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "caseID": "response-anthropic-bedrock-pi-v1",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "scenarios": [
+    {"caseID":"anthropic-redacted-pause-usage","protocolID":"anthropic-messages","category":"success"},
+    {"caseID":"anthropic-signed-length","protocolID":"anthropic-messages","category":"success"},
+    {"caseID":"anthropic-tool-use","protocolID":"anthropic-messages","category":"success"},
+    {"caseID":"anthropic-refusal","protocolID":"anthropic-messages","category":"providerError"},
+    {"caseID":"anthropic-error-event","protocolID":"anthropic-messages","category":"providerError"},
+    {"caseID":"anthropic-missing-terminal","protocolID":"anthropic-messages","category":"invalidResponse"},
+    {"caseID":"bedrock-redacted-length-usage","protocolID":"bedrock-converse-stream","category":"success"},
+    {"caseID":"bedrock-stop","protocolID":"bedrock-converse-stream","category":"success"},
+    {"caseID":"bedrock-tool-use","protocolID":"bedrock-converse-stream","category":"success"},
+    {"caseID":"bedrock-provider-stop-error","protocolID":"bedrock-converse-stream","category":"providerError"},
+    {"caseID":"bedrock-exception","protocolID":"bedrock-converse-stream","category":"providerError"},
+    {"caseID":"bedrock-missing-terminal","protocolID":"bedrock-converse-stream","category":"invalidResponse"},
+    {"caseID":"pi-signatures-namespace-length","protocolID":"pi-messages","category":"success"},
+    {"caseID":"pi-stop","protocolID":"pi-messages","category":"success"},
+    {"caseID":"pi-tool-use","protocolID":"pi-messages","category":"success"},
+    {"caseID":"pi-error-event","protocolID":"pi-messages","category":"providerError"},
+    {"caseID":"pi-invalid-tool-end","protocolID":"pi-messages","category":"invalidResponse"},
+    {"caseID":"pi-missing-terminal","protocolID":"pi-messages","category":"invalidResponse"}
+  ]
+}

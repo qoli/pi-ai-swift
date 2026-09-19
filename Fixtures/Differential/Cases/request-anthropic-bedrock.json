@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "caseID": "request-anthropic-bedrock-v1",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "scenarios": [
+    {"caseID":"anthropic-api-key-system-cache-short","protocolID":"anthropic-messages","branches":["anthropic.auth-and-system","anthropic.compat-tools-and-temperature","common.cache"]},
+    {"caseID":"anthropic-oauth-named-tool","protocolID":"anthropic-messages","branches":["anthropic.auth-and-system","protocol.tool-choice.advanced"]},
+    {"caseID":"anthropic-header-owned","protocolID":"anthropic-messages","branches":["anthropic.auth-and-system"]},
+    {"caseID":"anthropic-missing-auth","protocolID":"anthropic-messages","branches":["anthropic.auth-and-system"]},
+    {"caseID":"anthropic-copilot","protocolID":"anthropic-messages","branches":["anthropic.auth-and-system"]},
+    {"caseID":"anthropic-compat-suppression","protocolID":"anthropic-messages","branches":["anthropic.compat-tools-and-temperature","common.cache"]},
+    {"caseID":"anthropic-budget-custom-omitted","protocolID":"anthropic-messages","branches":["anthropic.reasoning-family","common.reasoning.custom-budgets"]},
+    {"caseID":"anthropic-budget-default-answer-room-clamp","protocolID":"anthropic-messages","branches":["anthropic.reasoning-family","common.reasoning.custom-budgets"]},
+    {"caseID":"anthropic-adaptive-xhigh","protocolID":"anthropic-messages","branches":["anthropic.reasoning-family"]},
+    {"caseID":"anthropic-tool-any","protocolID":"anthropic-messages","branches":["protocol.tool-choice.advanced"]},
+    {"caseID":"anthropic-disabled","protocolID":"anthropic-messages","branches":["anthropic.reasoning-family"]},
+    {"caseID":"anthropic-server-fallback-source","protocolID":"anthropic-messages","branches":["anthropic.server-fallback-policy"]},
+    {"caseID":"bedrock-cache-short-signed","protocolID":"bedrock-converse-stream","branches":["bedrock.cache-and-replay","common.cache"]},
+    {"caseID":"bedrock-cache-long-forced-nonclaude","protocolID":"bedrock-converse-stream","branches":["bedrock.cache-and-replay","common.cache"]},
+    {"caseID":"bedrock-cache-unsupported-invalid-redacted","protocolID":"bedrock-converse-stream","branches":["bedrock.cache-and-replay"]},
+    {"caseID":"bedrock-budget-custom-interleaved","protocolID":"bedrock-converse-stream","branches":["bedrock.reasoning-and-tool-choice","common.reasoning.custom-budgets"]},
+    {"caseID":"bedrock-budget-default-answer-room-clamp","protocolID":"bedrock-converse-stream","branches":["bedrock.reasoning-and-tool-choice","common.reasoning.custom-budgets"]},
+    {"caseID":"bedrock-adaptive-govcloud","protocolID":"bedrock-converse-stream","branches":["bedrock.reasoning-and-tool-choice"]},
+    {"caseID":"bedrock-nonclaude-reasoning","protocolID":"bedrock-converse-stream","branches":["bedrock.reasoning-and-tool-choice"]},
+    {"caseID":"bedrock-tool-any","protocolID":"bedrock-converse-stream","branches":["bedrock.reasoning-and-tool-choice","protocol.tool-choice.advanced"]},
+    {"caseID":"bedrock-tool-named","protocolID":"bedrock-converse-stream","branches":["bedrock.reasoning-and-tool-choice","protocol.tool-choice.advanced"]}
+  ]
+}

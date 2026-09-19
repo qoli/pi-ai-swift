@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "scenarios": [
+    {
+      "caseID": "same-source-replay",
+      "sameSource": true
+    },
+    {
+      "caseID": "cross-source-replay",
+      "sameSource": false
+    },
+    {
+      "caseID": "aborted-assistant-is-not-replayed",
+      "sameSource": true,
+      "assistantStopReason": "aborted"
+    },
+    {
+      "caseID": "same-source-redacted-replay",
+      "sameSource": true,
+      "redactedReasoning": true
+    },
+    {
+      "caseID": "cross-source-redacted-is-dropped",
+      "sameSource": false,
+      "redactedReasoning": true
+    },
+    {
+      "caseID": "orphaned-tool-call-gets-explicit-result",
+      "sameSource": true,
+      "omitToolResult": true
+    },
+    {
+      "caseID": "tool-result-error-request",
+      "sameSource": true,
+      "toolResultError": true
+    },
+    {
+      "caseID": "consecutive-tool-results-request",
+      "sameSource": true,
+      "consecutiveToolResults": true
+    },
+    {
+      "caseID": "deferred-tool-added-once-request",
+      "sameSource": true,
+      "addedToolNames": ["lookup"],
+      "protocolIDs": [
+        "anthropic-messages",
+        "openai-completions",
+        "openai-responses",
+        "openai-codex-responses",
+        "pi-messages"
+      ]
+    },
+    {
+      "caseID": "user-turn-closes-orphaned-tool-call",
+      "sameSource": true,
+      "omitToolResult": true,
+      "appendUserAfterAssistant": true
+    },
+    {
+      "caseID": "reasoning-high-request",
+      "sameSource": true,
+      "reasoningEffort": "high"
+    },
+    {
+      "caseID": "reasoning-off-request",
+      "sameSource": true,
+      "reasoningEffort": "off"
+    },
+    {
+      "caseID": "reasoning-minimal-request",
+      "sameSource": true,
+      "reasoningEffort": "minimal"
+    },
+    {
+      "caseID": "reasoning-low-request",
+      "sameSource": true,
+      "reasoningEffort": "low"
+    },
+    {
+      "caseID": "reasoning-medium-request",
+      "sameSource": true,
+      "reasoningEffort": "medium"
+    },
+    {
+      "caseID": "long-cache-session-request",
+      "sameSource": true,
+      "cacheRetention": "long",
+      "sessionID": "replay-session"
+    },
+    {
+      "caseID": "short-cache-session-request",
+      "sameSource": true,
+      "cacheRetention": "short",
+      "sessionID": "replay-session"
+    },
+    {
+      "caseID": "long-cache-no-session-request",
+      "sameSource": true,
+      "cacheRetention": "long"
+    },
+    {
+      "caseID": "long-cache-clamped-session-request",
+      "sameSource": true,
+      "cacheRetention": "long",
+      "sessionID": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-extra-cache-key"
+    },
+    {
+      "caseID": "tool-choice-auto-request",
+      "sameSource": true,
+      "toolChoice": "auto"
+    },
+    {
+      "caseID": "tool-choice-none-request",
+      "sameSource": true,
+      "toolChoice": "none"
+    },
+    {
+      "caseID": "multimodal-user-request",
+      "sameSource": true,
+      "imageInput": true
+    },
+    {
+      "caseID": "multimodal-tool-result-request",
+      "sameSource": true,
+      "toolResultImage": true
+    },
+    {
+      "caseID": "strict-prefer-tool-request",
+      "sameSource": true,
+      "constrainedSampling": "strict-prefer"
+    },
+    {
+      "caseID": "root-ref-tool-schema-request",
+      "sameSource": true,
+      "toolSchema": "root-ref"
+    },
+    {
+      "caseID": "strict-prefer-unsupported-schema-request",
+      "sameSource": true,
+      "constrainedSampling": "strict-prefer",
+      "toolSchema": "root-ref"
+    },
+    {
+      "caseID": "strict-require-responses-tool-request",
+      "sameSource": true,
+      "constrainedSampling": "strict-require",
+      "forceStrictSupport": true,
+      "protocolIDs": [
+        "openai-responses",
+        "azure-openai-responses",
+        "openai-codex-responses"
+      ]
+    },
+    {
+      "caseID": "grammar-codex-tool-request",
+      "sameSource": true,
+      "constrainedSampling": "grammar",
+      "forceGrammarSupport": true,
+      "protocolIDs": [
+        "openai-codex-responses"
+      ]
+    },
+    {
+      "caseID": "grammar-regex-codex-tool-request",
+      "sameSource": true,
+      "constrainedSampling": "grammar-regex",
+      "forceGrammarSupport": true,
+      "protocolIDs": [
+        "openai-codex-responses"
+      ]
+    },
+    {
+      "caseID": "grammar-unsupported-falls-back-request",
+      "sameSource": true,
+      "constrainedSampling": "grammar",
+      "protocolIDs": [
+        "openai-completions",
+        "openai-responses",
+        "openai-codex-responses"
+      ]
+    },
+    {
+      "caseID": "temperature-request",
+      "sameSource": true,
+      "temperature": 0.25
+    },
+    {
+      "caseID": "maximum-output-omitted-request",
+      "sameSource": true,
+      "omitMaximumOutputTokens": true
+    }
+  ]
+}

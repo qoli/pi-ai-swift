@@ -1,0 +1,44 @@
+{
+  "cases": {
+    "azure-config-empty-explicit-uses-environment": {
+      "model": "source-model",
+      "url": "https://environment.openai.azure.com/openai/v1/responses?api-version=v1"
+    },
+    "azure-config-environment-base-and-map": {
+      "model": "mapped-deployment",
+      "url": "https://environment.cognitiveservices.azure.com/openai/v1/responses?api-version=2025-04-01-preview"
+    },
+    "azure-config-environment-resource": {
+      "model": "source-model",
+      "url": "https://environment-resource.openai.azure.com/openai/v1/responses?api-version=v1"
+    },
+    "azure-config-explicit-precedence": {
+      "model": "explicit-deployment",
+      "url": "https://explicit.openai.azure.com/openai/v1/responses?api-version=2026-01-01-preview"
+    },
+    "azure-config-explicit-resource": {
+      "model": "source-model",
+      "url": "https://explicit-resource.openai.azure.com/openai/v1/responses?api-version=v1"
+    },
+    "azure-config-invalid-base-failure": {
+      "errorMessage": "Invalid Azure OpenAI base URL: not a valid URL"
+    },
+    "azure-config-map-miss-uses-model-id": {
+      "model": "source-model",
+      "url": "https://proxy.invalid/root/responses?api-version=v1"
+    },
+    "azure-config-missing-base-failure": {
+      "errorMessage": "Azure OpenAI base URL is required. Set AZURE_OPENAI_BASE_URL or AZURE_OPENAI_RESOURCE_NAME, or pass azureBaseUrl, azureResourceName, or model.baseUrl."
+    },
+    "azure-config-model-azure-normalization": {
+      "model": "source-model",
+      "url": "https://model.ai.azure.com/openai/v1/responses?api-version=v1"
+    },
+    "azure-config-model-proxy-path-preserved": {
+      "model": "source-model",
+      "url": "https://proxy.invalid/custom/root/responses?api-version=proxy-version"
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

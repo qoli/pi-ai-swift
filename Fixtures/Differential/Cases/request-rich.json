@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "caseID": "request-rich-v1",
+  "systemPrompt": "Be concise",
+  "userText": "Use the echo tool",
+  "tool": {
+    "name": "echo",
+    "description": "Echo a value",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ]
+    }
+  },
+  "options": {
+    "maximumOutputTokens": 64,
+    "temperature": 0.2,
+    "sessionID": "fixture-session",
+    "cacheRetention": "none",
+    "toolChoice": "auto"
+  },
+  "protocols": [
+    {
+      "protocolID": "anthropic-messages",
+      "providerID": "kimi-coding",
+      "modelID": "k3-256k",
+      "baseURL": "https://api.kimi.com/coding",
+      "reasoning": true,
+      "maximumOutputTokens": 32768,
+      "compat": {
+        "supportsEagerToolInputStreaming": false,
+        "supportsStrictTools": false
+      }
+    },
+    {
+      "protocolID": "openai-completions",
+      "providerID": "fixture-openai-completions",
+      "modelID": "fixture-chat",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "openai-responses",
+      "providerID": "fixture-openai-responses",
+      "modelID": "fixture-responses",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "azure-openai-responses",
+      "providerID": "fixture-azure",
+      "modelID": "fixture-deployment",
+      "baseURL": "https://fixture.openai.azure.com/openai",
+      "reasoning": false,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "openai-codex-responses",
+      "providerID": "openai-codex",
+      "modelID": "gpt-5.1-codex",
+      "baseURL": "https://chatgpt.com/backend-api/codex",
+      "reasoning": true,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "google-generative-ai",
+      "providerID": "fixture-google",
+      "modelID": "gemini-fixture",
+      "baseURL": "https://generativelanguage.googleapis.com",
+      "reasoning": false,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "google-vertex",
+      "providerID": "fixture-vertex",
+      "modelID": "gemini-fixture",
+      "baseURL": "https://us-central1-aiplatform.googleapis.com",
+      "reasoning": false,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "mistral-conversations",
+      "providerID": "fixture-mistral",
+      "modelID": "mistral-fixture",
+      "baseURL": "https://api.mistral.ai",
+      "reasoning": false,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "pi-messages",
+      "providerID": "fixture-pi",
+      "modelID": "pi-fixture",
+      "baseURL": "https://fixture.invalid",
+      "reasoning": false,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "bedrock-converse-stream",
+      "providerID": "amazon-bedrock",
+      "modelID": "anthropic.fixture-v1:0",
+      "baseURL": "https://bedrock-runtime.us-east-1.amazonaws.com",
+      "reasoning": false,
+      "maximumOutputTokens": 4096
+    },
+    {
+      "protocolID": "openrouter-images",
+      "providerID": "openrouter",
+      "modelID": "fixture-image-model",
+      "baseURL": "https://openrouter.ai/api/v1",
+      "reasoning": false,
+      "maximumOutputTokens": 4096,
+      "output": [
+        "text",
+        "image"
+      ]
+    }
+  ]
+}

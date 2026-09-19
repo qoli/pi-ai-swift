@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "requiredCaseClasses": [
+    "request",
+    "responseEvents",
+    "typedFailures"
+  ],
+  "requestBranchInventory": "Fixtures/Differential/RequestBranchInventory.json",
+  "responseEventsBranchInventory": "Fixtures/Differential/ResponseBranchInventory.json",
+  "typedFailuresBranchInventory": "Fixtures/Differential/FailureBranchInventory.json",
+  "protocols": {
+    "anthropic-messages": ["request", "responseEvents", "typedFailures"],
+    "azure-openai-responses": ["request", "responseEvents", "typedFailures"],
+    "bedrock-converse-stream": ["request", "responseEvents", "typedFailures"],
+    "google-generative-ai": ["request", "responseEvents", "typedFailures"],
+    "google-vertex": ["request", "responseEvents", "typedFailures"],
+    "mistral-conversations": ["request", "responseEvents", "typedFailures"],
+    "openai-codex-responses": ["request", "responseEvents", "typedFailures"],
+    "openai-completions": ["request", "responseEvents", "typedFailures"],
+    "openai-responses": ["request", "responseEvents", "typedFailures"],
+    "openrouter-images": ["request", "responseEvents", "typedFailures"],
+    "pi-messages": ["request", "responseEvents", "typedFailures"]
+  }
+}

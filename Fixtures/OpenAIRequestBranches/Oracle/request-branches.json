@@ -1,0 +1,1677 @@
+{
+  "cases": {
+    "azure-openai-responses.grammar-failure-empty-values": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "azure-openai-responses.grammar-failure-empty-variants": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "azure-openai-responses.grammar-failure-missing-required-property": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires a properties entry for missing."
+    },
+    "azure-openai-responses.grammar-failure-non-object": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires an object parameter schema."
+    },
+    "azure-openai-responses.grammar-failure-non-string": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling property payload must have type string."
+    },
+    "azure-openai-responses.grammar-failure-required-two": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires exactly one required string property."
+    },
+    "azure-openai-responses.grammar-failure-required-zero": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires exactly one required string property."
+    },
+    "azure-openai-responses.grammar-lark": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "start: /[a-z]+/",
+              "syntax": "lark",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "azure-openai-responses.grammar-lark-precedence": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "start: /[a-z]+/",
+              "syntax": "lark",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "azure-openai-responses.grammar-regex": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "[a-z]+",
+              "syntax": "regex",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "azure-openai-responses.replay-custom-output": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "call_id": "call_1",
+            "id": "ctc_1",
+            "input": "abc",
+            "name": "sample_tool",
+            "namespace": "dynamic_tools",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_1",
+            "output": "done",
+            "type": "custom_tool_call_output"
+          }
+        ]
+      }
+    },
+    "azure-openai-responses.replay-different-model": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "arguments": "{\"payload\":\"abc\"}",
+            "call_id": "call_1",
+            "name": "sample_tool",
+            "type": "function_call"
+          },
+          {
+            "call_id": "call_1",
+            "output": "done",
+            "type": "function_call_output"
+          }
+        ]
+      }
+    },
+    "azure-openai-responses.replay-text-id-hash": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "text": "answer",
+                "type": "output_text"
+              }
+            ],
+            "id": "msg_tmmpzgchk7t0",
+            "phase": "final_answer",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message"
+          }
+        ]
+      }
+    },
+    "azure-openai-responses.tool-choice-required": {
+      "requestBody": {
+        "tool_choice": "required"
+      }
+    },
+    "azure.configuration": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "model": "deployment-branch",
+        "prompt_cache_key": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-O",
+        "reasoning": {
+          "effort": "minimal",
+          "summary": "auto"
+        },
+        "tool": {
+          "description": "Sample tool",
+          "name": "sample_tool",
+          "parameters": {
+            "properties": {
+              "payload": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "payload"
+            ],
+            "type": "object"
+          },
+          "strict": false,
+          "type": "function"
+        }
+      }
+    },
+    "azure.environment-configuration": {
+      "requestBody": {
+        "model": "environment-deployment",
+        "tool": {
+          "description": "Sample tool",
+          "name": "sample_tool",
+          "parameters": {
+            "properties": {
+              "payload": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "payload"
+            ],
+            "type": "object"
+          },
+          "strict": false,
+          "type": "function"
+        }
+      }
+    },
+    "azure.missing-base-configuration": {
+      "errorMessage": "Azure OpenAI base URL is required. Set AZURE_OPENAI_BASE_URL or AZURE_OPENAI_RESOURCE_NAME, or pass azureBaseUrl, azureResourceName, or model.baseUrl."
+    },
+    "azure.named-tool-choice": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "model": "source-model",
+        "store": false,
+        "stream": true,
+        "tool_choice": {
+          "name": "sample_tool",
+          "type": "function"
+        },
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "strict": false,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "azure.resource-configuration": {
+      "requestBody": {
+        "model": "source-model",
+        "tool": {
+          "description": "Sample tool",
+          "name": "sample_tool",
+          "parameters": {
+            "properties": {
+              "payload": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "payload"
+            ],
+            "type": "object"
+          },
+          "strict": false,
+          "type": "function"
+        }
+      }
+    },
+    "azure.sampling-last-wins": {
+      "requestBody": {
+        "max_output_tokens": 77,
+        "temperature": 0.7
+      }
+    },
+    "codex.default-instructions": {
+      "requestBody": {
+        "instructions": "You are a helpful assistant.",
+        "text": {
+          "verbosity": "low"
+        }
+      }
+    },
+    "codex.defaults-and-cache": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "instructions": "System branch fixture",
+        "parallel_tool_calls": true,
+        "prompt_cache_key": "codex-session",
+        "service_tier": "priority",
+        "store": false,
+        "temperature": 0.4,
+        "text": {
+          "verbosity": "low"
+        },
+        "tool": {
+          "description": "Sample tool",
+          "name": "sample_tool",
+          "parameters": {
+            "properties": {
+              "payload": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "payload"
+            ],
+            "type": "object"
+          },
+          "strict": null,
+          "type": "function"
+        },
+        "tool_choice": "auto"
+      }
+    },
+    "codex.deferred-additional-tools": {
+      "requestBody": {
+        "added": [
+          {
+            "role": "developer",
+            "tools": [
+              {
+                "description": "Deferred lookup",
+                "name": "lookup",
+                "parameters": {
+                  "properties": {
+                    "query": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "strict": null,
+                "type": "function"
+              }
+            ],
+            "type": "additional_tools"
+          }
+        ],
+        "topLevelToolNames": [
+          "sample_tool"
+        ]
+      }
+    },
+    "codex.explicit-verbosity": {
+      "requestBody": {
+        "instructions": "System branch fixture",
+        "text": {
+          "verbosity": "high"
+        }
+      }
+    },
+    "completions.anthropic-cache-long": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "cache_control": {
+                  "ttl": "1h",
+                  "type": "ephemeral"
+                },
+                "text": "System branch fixture",
+                "type": "text"
+              }
+            ],
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "cache_control": {
+                  "ttl": "1h",
+                  "type": "ephemeral"
+                },
+                "text": "hello",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "tools": [
+          {
+            "cache_control": {
+              "ttl": "1h",
+              "type": "ephemeral"
+            },
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "completions.anthropic-cache-short": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "cache_control": {
+                  "type": "ephemeral"
+                },
+                "text": "System branch fixture",
+                "type": "text"
+              }
+            ],
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "cache_control": {
+                  "type": "ephemeral"
+                },
+                "text": "hello",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "tools": [
+          {
+            "cache_control": {
+              "type": "ephemeral"
+            },
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "completions.budget-thinking_budget": {
+      "requestBody": {
+        "max_completion_tokens": 2048,
+        "reasoning_effort": "high",
+        "thinking_budget": 1024
+      }
+    },
+    "completions.budget-thinking_budget_tokens": {
+      "requestBody": {
+        "max_completion_tokens": 2048,
+        "reasoning_effort": "high",
+        "thinking_budget_tokens": 1024
+      }
+    },
+    "completions.budget-thinking_token_budget": {
+      "requestBody": {
+        "max_completion_tokens": 2048,
+        "reasoning_effort": "high",
+        "thinking_token_budget": 1024
+      }
+    },
+    "completions.compat-assistant-bridge": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "answer",
+            "reasoning_content": "private thought",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{\"payload\":\"abc\"}",
+                  "name": "sample_tool"
+                },
+                "id": "call_compat",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "done",
+            "role": "tool",
+            "tool_call_id": "call_compat"
+          },
+          {
+            "content": "I have processed the tool results.",
+            "role": "assistant"
+          },
+          {
+            "content": "continue",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions.compat-flags": {
+      "requestBody": {
+        "max_tokens": 12,
+        "tool": {
+          "function": {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "function"
+        },
+        "tool_choice": "auto"
+      }
+    },
+    "completions.compat-reasoning-content": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
+          {
+            "content": "answer",
+            "reasoning": "private thought",
+            "reasoning_content": "",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{\"payload\":\"abc\"}",
+                  "name": "sample_tool"
+                },
+                "id": "call_compat",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "done",
+            "role": "tool",
+            "tool_call_id": "call_compat"
+          },
+          {
+            "content": "continue",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions.compat-thinking-as-text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
+          {
+            "content": [
+              {
+                "text": "private thought",
+                "type": "text"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{\"payload\":\"abc\"}",
+                  "name": "sample_tool"
+                },
+                "id": "call_compat",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "done",
+            "role": "tool",
+            "tool_call_id": "call_compat"
+          },
+          {
+            "content": "continue",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions.compat-tool-result-name": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "answer",
+            "reasoning_content": "private thought",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{\"payload\":\"abc\"}",
+                  "name": "sample_tool"
+                },
+                "id": "call_compat",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "done",
+            "name": "sample_tool",
+            "role": "tool",
+            "tool_call_id": "call_compat"
+          },
+          {
+            "content": "continue",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions.compat-zai-tool-stream": {
+      "requestBody": {
+        "tool_stream": true,
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "completions.custom-reasoning-budget": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "reasoning-model",
+        "reasoning_effort": "high",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "thinking_token_budget": 3072,
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "completions.default-budget-clamp": {
+      "requestBody": {
+        "max_completion_tokens": 2048,
+        "reasoning_effort": "high",
+        "thinking_token_budget": 1024
+      }
+    },
+    "completions.deferred-kimi": {
+      "requestBody": {
+        "systemTools": [
+          [
+            {
+              "function": {
+                "description": "Deferred lookup",
+                "name": "lookup",
+                "parameters": {
+                  "properties": {
+                    "query": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "strict": false
+              },
+              "type": "function"
+            }
+          ]
+        ],
+        "topLevelToolNames": [
+          "sample_tool"
+        ]
+      }
+    },
+    "completions.grammar": {
+      "requestBody": {
+        "tool": {
+          "custom": {
+            "description": "Sample tool",
+            "format": {
+              "grammar": {
+                "definition": "start: /[a-z]+/",
+                "syntax": "lark"
+              },
+              "type": "grammar"
+            },
+            "name": "sample_tool"
+          },
+          "type": "custom"
+        }
+      }
+    },
+    "completions.named-tool-choice": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "chat-model",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "tool_choice": {
+          "function": {
+            "name": "sample_tool"
+          },
+          "type": "function"
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "completions.reasoning-ant-ling-enabled": {
+      "requestBody": {
+        "reasoning": {
+          "effort": "source-low"
+        }
+      }
+    },
+    "completions.reasoning-ant-ling-mapped-null": {
+      "requestBody": {}
+    },
+    "completions.reasoning-ant-ling-off": {
+      "requestBody": {}
+    },
+    "completions.reasoning-baseten-enabled": {
+      "requestBody": {
+        "chat_template_args": {
+          "budget": 2048,
+          "enabled": true,
+          "level": "source-low"
+        },
+        "reasoning_effort": "source-low"
+      }
+    },
+    "completions.reasoning-baseten-mapped-null": {
+      "requestBody": {
+        "chat_template_args": {
+          "enabled": false
+        }
+      }
+    },
+    "completions.reasoning-baseten-off": {
+      "requestBody": {
+        "chat_template_args": {
+          "enabled": false
+        }
+      }
+    },
+    "completions.reasoning-chat-template-enabled": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "budget": 2048,
+          "enabled": true,
+          "level": "source-low"
+        }
+      }
+    },
+    "completions.reasoning-chat-template-mapped-null": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "enabled": false
+        }
+      }
+    },
+    "completions.reasoning-chat-template-off": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "enabled": false
+        }
+      }
+    },
+    "completions.reasoning-deepseek-enabled": {
+      "requestBody": {
+        "reasoning_effort": "source-low",
+        "thinking": {
+          "type": "enabled"
+        }
+      }
+    },
+    "completions.reasoning-deepseek-mapped-null": {
+      "requestBody": {}
+    },
+    "completions.reasoning-deepseek-off": {
+      "requestBody": {
+        "thinking": {
+          "type": "disabled"
+        }
+      }
+    },
+    "completions.reasoning-openai-enabled": {
+      "requestBody": {
+        "reasoning_effort": "source-low"
+      }
+    },
+    "completions.reasoning-openai-mapped-null": {
+      "requestBody": {}
+    },
+    "completions.reasoning-openai-off": {
+      "requestBody": {}
+    },
+    "completions.reasoning-openrouter-enabled": {
+      "requestBody": {
+        "reasoning": {
+          "effort": "source-low"
+        }
+      }
+    },
+    "completions.reasoning-openrouter-mapped-null": {
+      "requestBody": {}
+    },
+    "completions.reasoning-openrouter-off": {
+      "requestBody": {
+        "reasoning": {
+          "effort": "none"
+        }
+      }
+    },
+    "completions.reasoning-qwen-chat-template-enabled": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "enable_thinking": true,
+          "preserve_thinking": true
+        }
+      }
+    },
+    "completions.reasoning-qwen-chat-template-mapped-null": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "enable_thinking": false,
+          "preserve_thinking": true
+        }
+      }
+    },
+    "completions.reasoning-qwen-chat-template-off": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "enable_thinking": false,
+          "preserve_thinking": true
+        }
+      }
+    },
+    "completions.reasoning-qwen-enabled": {
+      "requestBody": {
+        "enable_thinking": true,
+        "reasoning_effort": "source-low"
+      }
+    },
+    "completions.reasoning-qwen-mapped-null": {
+      "requestBody": {
+        "enable_thinking": false
+      }
+    },
+    "completions.reasoning-qwen-off": {
+      "requestBody": {
+        "enable_thinking": false
+      }
+    },
+    "completions.reasoning-string-thinking-enabled": {
+      "requestBody": {
+        "thinking": "source-low"
+      }
+    },
+    "completions.reasoning-string-thinking-mapped-null": {
+      "requestBody": {}
+    },
+    "completions.reasoning-string-thinking-off": {
+      "requestBody": {
+        "thinking": "none"
+      }
+    },
+    "completions.reasoning-together-enabled": {
+      "requestBody": {
+        "reasoning": {
+          "enabled": true
+        },
+        "reasoning_effort": "source-low"
+      }
+    },
+    "completions.reasoning-together-mapped-null": {
+      "requestBody": {
+        "reasoning": {
+          "enabled": false
+        }
+      }
+    },
+    "completions.reasoning-together-off": {
+      "requestBody": {
+        "reasoning": {
+          "enabled": false
+        }
+      }
+    },
+    "completions.reasoning-zai-enabled": {
+      "requestBody": {
+        "reasoning_effort": "source-low",
+        "thinking": {
+          "clear_thinking": false,
+          "type": "enabled"
+        }
+      }
+    },
+    "completions.reasoning-zai-mapped-null": {
+      "requestBody": {
+        "thinking": {
+          "type": "disabled"
+        }
+      }
+    },
+    "completions.reasoning-zai-off": {
+      "requestBody": {
+        "thinking": {
+          "type": "disabled"
+        }
+      }
+    },
+    "completions.routing-and-cache": {
+      "requestBody": {
+        "prompt_cache_key": "branch-session",
+        "prompt_cache_retention": "24h",
+        "provider": {
+          "only": [
+            "anthropic"
+          ]
+        },
+        "reasoning": {
+          "effort": "xhigh"
+        }
+      }
+    },
+    "completions.sampling-last-wins": {
+      "requestBody": {
+        "max_completion_tokens": 77,
+        "temperature": 0.7
+      }
+    },
+    "completions.vercel-routing": {
+      "requestBody": {
+        "providerOptions": {
+          "gateway": {
+            "only": [
+              "anthropic"
+            ],
+            "order": [
+              "anthropic",
+              "openai"
+            ]
+          }
+        }
+      }
+    },
+    "openai-codex-responses.grammar-failure-empty-values": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "openai-codex-responses.grammar-failure-empty-variants": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "openai-codex-responses.grammar-failure-missing-required-property": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires a properties entry for missing."
+    },
+    "openai-codex-responses.grammar-failure-non-object": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires an object parameter schema."
+    },
+    "openai-codex-responses.grammar-failure-non-string": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling property payload must have type string."
+    },
+    "openai-codex-responses.grammar-failure-required-two": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires exactly one required string property."
+    },
+    "openai-codex-responses.grammar-failure-required-zero": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires exactly one required string property."
+    },
+    "openai-codex-responses.grammar-lark": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "start: /[a-z]+/",
+              "syntax": "lark",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-codex-responses.grammar-lark-precedence": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "start: /[a-z]+/",
+              "syntax": "lark",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-codex-responses.grammar-regex": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "[a-z]+",
+              "syntax": "regex",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-codex-responses.replay-custom-output": {
+      "requestBody": {
+        "input": [
+          {
+            "call_id": "call_1",
+            "id": "ctc_1",
+            "input": "abc",
+            "name": "sample_tool",
+            "namespace": "dynamic_tools",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_1",
+            "output": "done",
+            "type": "custom_tool_call_output"
+          }
+        ]
+      }
+    },
+    "openai-codex-responses.replay-different-model": {
+      "requestBody": {
+        "input": [
+          {
+            "arguments": "{\"payload\":\"abc\"}",
+            "call_id": "call_1",
+            "name": "sample_tool",
+            "type": "function_call"
+          },
+          {
+            "call_id": "call_1",
+            "output": "done",
+            "type": "function_call_output"
+          }
+        ]
+      }
+    },
+    "openai-codex-responses.replay-text-id-hash": {
+      "requestBody": {
+        "input": [
+          {
+            "content": [
+              {
+                "annotations": [],
+                "text": "answer",
+                "type": "output_text"
+              }
+            ],
+            "id": "msg_tmmpzgchk7t0",
+            "phase": "final_answer",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message"
+          }
+        ]
+      }
+    },
+    "openai-codex-responses.tool-choice-required": {
+      "requestBody": {
+        "tool_choice": "required"
+      }
+    },
+    "openai-completions.grammar-failure-empty-values": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "openai-completions.grammar-failure-empty-variants": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "openai-completions.grammar-failure-missing-required-property": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires a properties entry for missing."
+    },
+    "openai-completions.grammar-failure-non-object": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires an object parameter schema."
+    },
+    "openai-completions.grammar-failure-non-string": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling property payload must have type string."
+    },
+    "openai-completions.grammar-failure-required-two": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires exactly one required string property."
+    },
+    "openai-completions.grammar-failure-required-zero": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires exactly one required string property."
+    },
+    "openai-completions.grammar-lark": {
+      "requestBody": {
+        "tools": [
+          {
+            "custom": {
+              "description": "Sample tool",
+              "format": {
+                "grammar": {
+                  "definition": "start: /[a-z]+/",
+                  "syntax": "lark"
+                },
+                "type": "grammar"
+              },
+              "name": "sample_tool"
+            },
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-completions.grammar-lark-precedence": {
+      "requestBody": {
+        "tools": [
+          {
+            "custom": {
+              "description": "Sample tool",
+              "format": {
+                "grammar": {
+                  "definition": "start: /[a-z]+/",
+                  "syntax": "lark"
+                },
+                "type": "grammar"
+              },
+              "name": "sample_tool"
+            },
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-completions.grammar-regex": {
+      "requestBody": {
+        "tools": [
+          {
+            "custom": {
+              "description": "Sample tool",
+              "format": {
+                "grammar": {
+                  "definition": "[a-z]+",
+                  "syntax": "regex"
+                },
+                "type": "grammar"
+              },
+              "name": "sample_tool"
+            },
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-completions.tool-choice-required": {
+      "requestBody": {
+        "tool_choice": "required"
+      }
+    },
+    "openai-responses.grammar-failure-empty-values": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "openai-responses.grammar-failure-empty-variants": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "openai-responses.grammar-failure-missing-required-property": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires a properties entry for missing."
+    },
+    "openai-responses.grammar-failure-non-object": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires an object parameter schema."
+    },
+    "openai-responses.grammar-failure-non-string": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling property payload must have type string."
+    },
+    "openai-responses.grammar-failure-required-two": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires exactly one required string property."
+    },
+    "openai-responses.grammar-failure-required-zero": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling requires exactly one required string property."
+    },
+    "openai-responses.grammar-lark": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "start: /[a-z]+/",
+              "syntax": "lark",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-responses.grammar-lark-precedence": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "start: /[a-z]+/",
+              "syntax": "lark",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-responses.grammar-regex": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "format": {
+              "definition": "[a-z]+",
+              "syntax": "regex",
+              "type": "grammar"
+            },
+            "name": "sample_tool",
+            "type": "custom"
+          }
+        ]
+      }
+    },
+    "openai-responses.replay-custom-output": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "call_id": "call_1",
+            "id": "ctc_1",
+            "input": "abc",
+            "name": "sample_tool",
+            "namespace": "dynamic_tools",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_1",
+            "output": "done",
+            "type": "custom_tool_call_output"
+          }
+        ]
+      }
+    },
+    "openai-responses.replay-different-model": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "arguments": "{\"payload\":\"abc\"}",
+            "call_id": "call_1",
+            "name": "sample_tool",
+            "type": "function_call"
+          },
+          {
+            "call_id": "call_1",
+            "output": "done",
+            "type": "function_call_output"
+          }
+        ]
+      }
+    },
+    "openai-responses.replay-text-id-hash": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "text": "answer",
+                "type": "output_text"
+              }
+            ],
+            "id": "msg_tmmpzgchk7t0",
+            "phase": "final_answer",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message"
+          }
+        ]
+      }
+    },
+    "openai-responses.tool-choice-required": {
+      "requestBody": {
+        "tool_choice": "required"
+      }
+    },
+    "responses.cache-env-long": {
+      "requestBody": {
+        "prompt_cache_key": "cache-session",
+        "prompt_cache_retention": "24h"
+      }
+    },
+    "responses.cache-github": {
+      "requestBody": {}
+    },
+    "responses.cache-none-unsupported": {
+      "requestBody": {}
+    },
+    "responses.cache-reasoning-default": {
+      "requestBody": {
+        "prompt_cache_options": {
+          "mode": "explicit"
+        },
+        "reasoning": {
+          "effort": "none"
+        }
+      }
+    },
+    "responses.cache-xai-min16": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "max_output_tokens": 16,
+        "reasoning": {
+          "effort": "none"
+        }
+      }
+    },
+    "responses.deferred-additional-tools": {
+      "requestBody": {
+        "added": [
+          {
+            "role": "developer",
+            "tools": [
+              {
+                "description": "Deferred lookup",
+                "name": "lookup",
+                "parameters": {
+                  "properties": {
+                    "query": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "type": "function"
+              }
+            ],
+            "type": "additional_tools"
+          }
+        ],
+        "topLevelToolNames": [
+          "sample_tool"
+        ]
+      }
+    },
+    "responses.deferred-tool-search": {
+      "requestBody": {
+        "calls": [
+          {
+            "arguments": {
+              "limit": 1,
+              "query": "lookup"
+            },
+            "call_id": "pi_tool_load_2mixmbicdzth",
+            "execution": "client",
+            "status": "completed",
+            "type": "tool_search_call"
+          }
+        ],
+        "outputs": [
+          {
+            "call_id": "pi_tool_load_2mixmbicdzth",
+            "execution": "client",
+            "status": "completed",
+            "tools": [
+              {
+                "defer_loading": true,
+                "description": "Deferred lookup",
+                "name": "lookup",
+                "parameters": {
+                  "properties": {
+                    "query": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "type": "function"
+              }
+            ],
+            "type": "tool_search_output"
+          }
+        ],
+        "topLevelToolNames": [
+          "sample_tool"
+        ]
+      }
+    },
+    "responses.grammar-invalid-schema-failure": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: grammar constrained sampling property payload must have type string."
+    },
+    "responses.grammar-missing-variant-failure": {
+      "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
+    },
+    "responses.long-unsupported": {
+      "requestBody": {
+        "prompt_cache_key": "cache-session"
+      }
+    },
+    "responses.named-tool-choice": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "model": "gpt-model",
+        "store": false,
+        "stream": true,
+        "tool_choice": {
+          "name": "sample_tool",
+          "type": "function"
+        },
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "responses.reasoning-summary-only": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "reasoning": {
+          "effort": "medium",
+          "summary": "detailed"
+        }
+      }
+    },
+    "responses.replay-custom-output": {
+      "requestBody": {
+        "items": [
+          {
+            "call_id": "call_1",
+            "id": "ctc_1",
+            "input": "abc",
+            "name": "sample_tool",
+            "namespace": "dynamic_tools",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_1",
+            "output": "done",
+            "type": "custom_tool_call_output"
+          }
+        ]
+      }
+    },
+    "responses.replay-different-model": {
+      "requestBody": {
+        "items": [
+          {
+            "arguments": "{\"payload\":\"abc\"}",
+            "call_id": "call_1",
+            "name": "sample_tool",
+            "type": "function_call"
+          },
+          {
+            "call_id": "call_1",
+            "output": "done",
+            "type": "function_call_output"
+          }
+        ]
+      }
+    },
+    "responses.replay-text-id-hash": {
+      "requestBody": {
+        "items": [
+          {
+            "content": [
+              {
+                "annotations": [],
+                "text": "answer",
+                "type": "output_text"
+              }
+            ],
+            "id": "msg_tmmpzgchk7t0",
+            "phase": "final_answer",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message"
+          }
+        ]
+      }
+    },
+    "responses.sampling-last-wins": {
+      "requestBody": {
+        "max_output_tokens": 77,
+        "temperature": 0.7
+      }
+    },
+    "responses.strict-invalid-required-failure": {
+      "errorMessage": "Tool \"sample_tool\" requires JSON-schema constrained sampling, but required contains an unknown property."
+    },
+    "responses.strict-require-failure": {
+      "errorMessage": "Tool \"sample_tool\" requires JSON-schema constrained sampling, but strict tools are unsupported."
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

@@ -1,0 +1,520 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "completions.compat-flags",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "chat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "compat": {
+        "supportsUsageInStreaming": false,
+        "supportsStore": false,
+        "supportsStrictMode": false,
+        "maxTokensField": "max_tokens"
+      },
+      "options": { "maxTokens": 12, "temperature": 0.25, "toolChoice": "auto" }
+    },
+    {
+      "id": "completions.grammar",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "chat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "compat": { "supportsOpenAIGrammarTools": true },
+      "toolConstraint": {
+        "type": "grammar",
+        "variants": { "openai_lark": "start: /[a-z]+/" }
+      },
+      "options": {}
+    },
+    {
+      "id": "completions.routing-and-cache",
+      "protocolID": "openai-completions",
+      "providerID": "openrouter",
+      "modelID": "anthropic/model",
+      "baseURL": "https://openrouter.ai/api/v1",
+      "reasoning": true,
+      "thinkingLevelMap": { "high": "xhigh" },
+      "compat": {
+        "thinkingFormat": "openrouter",
+        "openRouterRouting": { "only": ["anthropic"] },
+        "supportsLongCacheRetention": true
+      },
+      "options": {
+        "reasoningEffort": "high",
+        "sessionId": "branch-session",
+        "cacheRetention": "long"
+      }
+    },
+    {
+      "id": "responses.cache-reasoning-default",
+      "protocolID": "openai-responses",
+      "providerID": "openai",
+      "modelID": "gpt-model",
+      "baseURL": "https://api.openai.com/v1",
+      "reasoning": true,
+      "thinkingLevelMap": { "off": "none" },
+      "compat": { "supportsExplicitPromptCacheMode": true },
+      "options": { "cacheRetention": "none" }
+    },
+    {
+      "id": "responses.strict-require-failure",
+      "protocolID": "openai-responses",
+      "providerID": "fixture",
+      "modelID": "response-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "compat": { "supportsStrictMode": false },
+      "toolConstraint": { "type": "json_schema", "strict": "require" },
+      "options": {}
+    },
+    {
+      "id": "responses.strict-invalid-required-failure",
+      "protocolID": "openai-responses",
+      "providerID": "fixture",
+      "modelID": "response-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "compat": { "supportsStrictMode": true },
+      "invalidRequired": true,
+      "toolConstraint": {
+        "type": "json_schema",
+        "strict": "require"
+      },
+      "options": {}
+    },
+    {
+      "id": "responses.grammar-missing-variant-failure",
+      "protocolID": "openai-responses",
+      "providerID": "fixture",
+      "modelID": "response-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "compat": { "supportsOpenAIGrammarTools": true },
+      "toolConstraint": { "type": "grammar", "variants": {} },
+      "options": {}
+    },
+    {
+      "id": "responses.grammar-invalid-schema-failure",
+      "protocolID": "openai-responses",
+      "providerID": "fixture",
+      "modelID": "response-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "compat": { "supportsOpenAIGrammarTools": true },
+      "grammarInvalidSchema": true,
+      "toolConstraint": {
+        "type": "grammar",
+        "variants": { "openai_lark": "start: /[a-z]+/" }
+      },
+      "options": {}
+    },
+    {
+      "id": "azure.configuration",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": true,
+      "thinkingLevelMap": { "low": "minimal" },
+      "options": {
+        "azureDeploymentName": "deployment-branch",
+        "azureApiVersion": "2025-04-01-preview",
+        "reasoningEffort": "low",
+        "sessionId": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-OVERFLOW"
+      }
+    },
+    {
+      "id": "azure.environment-configuration",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "",
+      "reasoning": false,
+      "options": {
+        "env": {
+          "AZURE_OPENAI_BASE_URL": "https://environment.openai.azure.com/openai/v1",
+          "AZURE_OPENAI_API_VERSION": "2025-04-01-preview",
+          "AZURE_OPENAI_DEPLOYMENT_NAME_MAP": "source-model=environment-deployment"
+        }
+      }
+    },
+    {
+      "id": "azure.resource-configuration",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "",
+      "reasoning": false,
+      "options": { "azureResourceName": "fixture-resource" }
+    },
+    {
+      "id": "azure.missing-base-configuration",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "",
+      "reasoning": false,
+      "options": {}
+    },
+    {
+      "id": "codex.defaults-and-cache",
+      "protocolID": "openai-codex-responses",
+      "providerID": "openai-codex",
+      "modelID": "gpt-5.1-codex",
+      "baseURL": "https://chatgpt.com/backend-api/codex",
+      "reasoning": true,
+      "options": {
+        "sessionId": "codex-session",
+        "cacheRetention": "short",
+        "serviceTier": "priority",
+        "temperature": 0.4
+      }
+    },
+    {
+      "id": "responses.deferred-additional-tools",
+      "protocolID": "openai-responses",
+      "providerID": "openai",
+      "modelID": "gpt-model",
+      "baseURL": "https://api.openai.com/v1",
+      "reasoning": false,
+      "deferredTranscript": true,
+      "compat": { "supportsAdditionalTools": true },
+      "options": {}
+    },
+    {
+      "id": "responses.deferred-tool-search",
+      "protocolID": "openai-responses",
+      "providerID": "openai",
+      "modelID": "gpt-model",
+      "baseURL": "https://api.openai.com/v1",
+      "reasoning": false,
+      "deferredTranscript": true,
+      "compat": { "supportsToolSearch": true },
+      "options": {}
+    },
+    {
+      "id": "codex.deferred-additional-tools",
+      "protocolID": "openai-codex-responses",
+      "providerID": "openai-codex",
+      "modelID": "gpt-5.1-codex",
+      "baseURL": "https://chatgpt.com/backend-api/codex",
+      "reasoning": true,
+      "deferredTranscript": true,
+      "compat": { "supportsAdditionalTools": true },
+      "options": {}
+    },
+    {
+      "id": "completions.deferred-kimi",
+      "protocolID": "openai-completions",
+      "providerID": "kimi",
+      "modelID": "kimi-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "deferredTranscript": true,
+      "compat": { "deferredToolsMode": "kimi" },
+      "options": {}
+    },
+    {
+      "id": "completions.sampling-last-wins",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "chat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "options": {
+        "maxTokens": 10,
+        "temperature": 0.1,
+        "samplingParams": { "max_completion_tokens": 77, "temperature": 0.7 }
+      }
+    },
+    {
+      "id": "responses.sampling-last-wins",
+      "protocolID": "openai-responses",
+      "providerID": "openai",
+      "modelID": "gpt-model",
+      "baseURL": "https://api.openai.com/v1",
+      "reasoning": false,
+      "options": {
+        "maxTokens": 10,
+        "temperature": 0.1,
+        "samplingParams": { "max_output_tokens": 77, "temperature": 0.7 }
+      }
+    },
+    {
+      "id": "azure.sampling-last-wins",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {
+        "maxTokens": 10,
+        "temperature": 0.1,
+        "samplingParams": { "max_output_tokens": 77, "temperature": 0.7 }
+      }
+    },
+    {
+      "id": "responses.replay-text-id-hash",
+      "protocolID": "openai-responses",
+      "providerID": "openai",
+      "modelID": "gpt-model",
+      "baseURL": "https://api.openai.com/v1",
+      "reasoning": false,
+      "replayVariant": "text-id-hash",
+      "options": {}
+    },
+    {
+      "id": "responses.replay-different-model",
+      "protocolID": "openai-responses",
+      "providerID": "openai",
+      "modelID": "gpt-model",
+      "baseURL": "https://api.openai.com/v1",
+      "reasoning": false,
+      "replayVariant": "different-model",
+      "options": {}
+    },
+    {
+      "id": "responses.replay-custom-output",
+      "protocolID": "openai-responses",
+      "providerID": "openai",
+      "modelID": "gpt-model",
+      "baseURL": "https://api.openai.com/v1",
+      "reasoning": false,
+      "replayVariant": "custom-output",
+      "compat": { "supportsOpenAIGrammarTools": true },
+      "toolConstraint": {
+        "type": "grammar",
+        "variants": { "openai_lark": "start: /[a-z]+/" }
+      },
+      "options": {}
+    },
+    {
+      "id": "completions.custom-reasoning-budget",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "reasoning-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget"
+      },
+      "options": {
+        "maxTokens": 4096,
+        "reasoningEffort": "high",
+        "thinkingBudgets": { "high": 3072 }
+      }
+    },
+    {
+      "id": "completions.named-tool-choice",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "chat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "options": {
+        "toolChoice": { "type": "function", "function": { "name": "sample_tool" } }
+      }
+    },
+    {
+      "id": "responses.named-tool-choice",
+      "protocolID": "openai-responses",
+      "providerID": "openai",
+      "modelID": "gpt-model",
+      "baseURL": "https://api.openai.com/v1",
+      "reasoning": false,
+      "options": { "toolChoice": { "type": "function", "name": "sample_tool" } }
+    },
+    {
+      "id": "azure.named-tool-choice",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": { "toolChoice": { "type": "function", "name": "sample_tool" } }
+    }
+  ],
+  "matrices": {
+    "grammarValid": [
+      { "id": "lark", "variants": { "openai_lark": "start: /[a-z]+/" } },
+      { "id": "regex", "variants": { "openai_regex": "[a-z]+" } },
+      {
+        "id": "lark-precedence",
+        "variants": { "openai_lark": "start: /[a-z]+/", "openai_regex": "[0-9]+" }
+      }
+    ],
+    "grammarFailures": [
+      "non-object",
+      "required-zero",
+      "required-two",
+      "missing-required-property",
+      "non-string",
+      "empty-variants",
+      "empty-values"
+    ],
+    "requiredToolChoiceProtocols": [
+      "openai-completions",
+      "openai-responses",
+      "azure-openai-responses",
+      "openai-codex-responses"
+    ],
+    "replayVariants": ["text-id-hash", "different-model", "custom-output"],
+    "reasoningFormats": [
+      { "format": "deepseek" },
+      { "format": "together" },
+      {
+        "format": "baseten",
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": { "$var": "thinking.enabled" },
+            "level": { "$var": "thinking.level" },
+            "budget": { "$var": "thinking.budget", "omitWhenOff": true }
+          }
+        }
+      },
+      { "format": "zai" },
+      { "format": "qwen" },
+      { "format": "qwen-chat-template" },
+      {
+        "format": "chat-template",
+        "compat": {
+          "chatTemplateKwargs": {
+            "enabled": { "$var": "thinking.enabled" },
+            "level": { "$var": "thinking.level" },
+            "budget": { "$var": "thinking.budget", "omitWhenOff": true }
+          }
+        }
+      },
+      { "format": "string-thinking" },
+      { "format": "ant-ling" },
+      { "format": "openrouter", "providerID": "openrouter" },
+      { "format": "openai" }
+    ],
+    "budgetFields": ["thinking_token_budget", "thinking_budget", "thinking_budget_tokens"],
+    "additionalCases": [
+      {
+        "id": "completions.compat-tool-result-name",
+        "protocolID": "openai-completions", "providerID": "fixture", "modelID": "chat-model",
+        "baseURL": "https://fixture.invalid/v1", "reasoning": false,
+        "transcriptVariant": "compat", "compat": { "requiresToolResultName": true },
+        "options": {}, "projectFields": ["messages"]
+      },
+      {
+        "id": "completions.compat-assistant-bridge",
+        "protocolID": "openai-completions", "providerID": "fixture", "modelID": "chat-model",
+        "baseURL": "https://fixture.invalid/v1", "reasoning": false,
+        "transcriptVariant": "compat", "compat": { "requiresAssistantAfterToolResult": true },
+        "options": {}, "projectFields": ["messages"]
+      },
+      {
+        "id": "completions.compat-thinking-as-text",
+        "protocolID": "openai-completions", "providerID": "fixture", "modelID": "chat-model",
+        "baseURL": "https://fixture.invalid/v1", "reasoning": true,
+        "transcriptVariant": "compat", "compat": { "requiresThinkingAsText": true },
+        "options": {}, "projectFields": ["messages"]
+      },
+      {
+        "id": "completions.compat-reasoning-content",
+        "protocolID": "openai-completions", "providerID": "fixture", "modelID": "chat-model",
+        "baseURL": "https://fixture.invalid/v1", "reasoning": true,
+        "transcriptVariant": "compat", "thinkingSignature": "reasoning",
+        "compat": { "requiresReasoningContentOnAssistantMessages": true },
+        "options": {}, "projectFields": ["messages"]
+      },
+      {
+        "id": "completions.compat-zai-tool-stream",
+        "protocolID": "openai-completions", "providerID": "fixture", "modelID": "chat-model",
+        "baseURL": "https://fixture.invalid/v1", "reasoning": false,
+        "compat": { "zaiToolStream": true }, "options": {},
+        "projectFields": ["tool_stream", "tools"]
+      },
+      {
+        "id": "completions.vercel-routing",
+        "protocolID": "openai-completions", "providerID": "vercel", "modelID": "chat-model",
+        "baseURL": "https://ai-gateway.vercel.sh/v1", "reasoning": false,
+        "compat": { "vercelGatewayRouting": { "only": ["anthropic"], "order": ["anthropic", "openai"] } },
+        "options": {}, "projectFields": ["providerOptions"]
+      },
+      {
+        "id": "completions.anthropic-cache-short",
+        "protocolID": "openai-completions", "providerID": "openrouter", "modelID": "anthropic/model",
+        "baseURL": "https://openrouter.ai/api/v1", "reasoning": false,
+        "compat": { "cacheControlFormat": "anthropic" },
+        "options": { "cacheRetention": "short" }, "projectFields": ["messages", "tools"]
+      },
+      {
+        "id": "completions.anthropic-cache-long",
+        "protocolID": "openai-completions", "providerID": "openrouter", "modelID": "anthropic/model",
+        "baseURL": "https://openrouter.ai/api/v1", "reasoning": false,
+        "compat": { "cacheControlFormat": "anthropic", "supportsLongCacheRetention": true },
+        "options": { "cacheRetention": "long" }, "projectFields": ["messages", "tools"]
+      },
+      {
+        "id": "responses.cache-github",
+        "protocolID": "openai-responses", "providerID": "github-copilot", "modelID": "gpt-model",
+        "baseURL": "https://api.githubcopilot.com", "reasoning": true,
+        "options": {}, "projectFields": ["reasoning", "include"]
+      },
+      {
+        "id": "responses.cache-xai-min16",
+        "protocolID": "openai-responses", "providerID": "xai", "modelID": "grok-model",
+        "baseURL": "https://api.x.ai/v1", "reasoning": true,
+        "options": { "maxTokens": 1 }, "projectFields": ["max_output_tokens", "reasoning", "include"]
+      },
+      {
+        "id": "responses.reasoning-summary-only",
+        "protocolID": "openai-responses", "providerID": "openai", "modelID": "gpt-model",
+        "baseURL": "https://api.openai.com/v1", "reasoning": true,
+        "options": { "reasoningSummary": "detailed" }, "projectFields": ["reasoning", "include"]
+      },
+      {
+        "id": "responses.long-unsupported",
+        "protocolID": "openai-responses", "providerID": "fixture", "modelID": "gpt-model",
+        "baseURL": "https://fixture.invalid/v1", "reasoning": false,
+        "compat": { "supportsLongCacheRetention": false },
+        "options": { "sessionId": "cache-session", "cacheRetention": "long" },
+        "projectFields": ["prompt_cache_key", "prompt_cache_retention"]
+      },
+      {
+        "id": "responses.cache-env-long",
+        "protocolID": "openai-responses", "providerID": "openai", "modelID": "gpt-model",
+        "baseURL": "https://api.openai.com/v1", "reasoning": false,
+        "options": { "sessionId": "cache-session", "env": { "PI_CACHE_RETENTION": "long" } },
+        "projectFields": ["prompt_cache_key", "prompt_cache_retention"]
+      },
+      {
+        "id": "responses.cache-none-unsupported",
+        "protocolID": "openai-responses", "providerID": "fixture", "modelID": "gpt-model",
+        "baseURL": "https://fixture.invalid/v1", "reasoning": false,
+        "compat": { "supportsExplicitPromptCacheMode": false },
+        "options": { "sessionId": "cache-session", "cacheRetention": "none" },
+        "projectFields": ["prompt_cache_key", "prompt_cache_options"]
+      },
+      {
+        "id": "codex.default-instructions",
+        "protocolID": "openai-codex-responses", "providerID": "openai-codex", "modelID": "codex-model",
+        "baseURL": "https://chatgpt.com/backend-api/codex", "reasoning": true,
+        "emptySystemPrompt": true, "options": {}, "projectFields": ["instructions", "text"]
+      },
+      {
+        "id": "codex.explicit-verbosity",
+        "protocolID": "openai-codex-responses", "providerID": "openai-codex", "modelID": "codex-model",
+        "baseURL": "https://chatgpt.com/backend-api/codex", "reasoning": true,
+        "options": { "textVerbosity": "high" }, "projectFields": ["instructions", "text"]
+      },
+      {
+        "id": "completions.default-budget-clamp",
+        "protocolID": "openai-completions", "providerID": "fixture", "modelID": "reasoning-model",
+        "baseURL": "https://fixture.invalid/v1", "reasoning": true,
+        "compat": { "supportsReasoningEffort": true, "supportsThinkingTokenBudget": true },
+        "options": { "reasoningEffort": "high", "maxTokens": 2048 },
+        "projectFields": ["max_completion_tokens", "reasoning_effort", "thinking_token_budget"]
+      }
+    ]
+  }
+}

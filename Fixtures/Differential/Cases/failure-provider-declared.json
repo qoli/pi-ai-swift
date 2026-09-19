@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "caseID": "failure-provider-declared-v1",
+  "stimulusKind": "providerDeclaredError",
+  "expectedCategory": "providerDeclaredError",
+  "protocolsFrom": "request-rich-v1"
+}

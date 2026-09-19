@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "stopReasonApplicability": {
+    "google-generative-ai": ["stop", "length", "toolCalls"],
+    "google-vertex": ["stop", "length", "toolCalls"],
+    "mistral-conversations": ["stop", "length", "toolCalls"],
+    "openrouter-images": ["stop"]
+  },
+  "scenarios": [
+    {
+      "caseID": "google-mixed-tool-signatures-usage",
+      "protocolIDs": ["google-generative-ai", "google-vertex"],
+      "driver": "decoded-sdk-events",
+      "events": [{
+        "responseId": "google-mixed",
+        "candidates": [{"content": {"parts": [
+          {"text": "inspect", "thought": true, "thoughtSignature": "dGhpbms="},
+          {"text": "ready", "thoughtSignature": "dGV4dA=="},
+          {"functionCall": {"id": "call-1", "name": "weather", "args": {"city": "Taipei"}}, "thoughtSignature": "dG9vbA=="}
+        ]}, "finishReason": "STOP"}],
+        "usageMetadata": {"promptTokenCount": 12, "candidatesTokenCount": 5, "thoughtsTokenCount": 2, "cachedContentTokenCount": 3, "totalTokenCount": 19}
+      }]
+    },
+    {
+      "caseID": "google-text-signature-not-base64",
+      "protocolIDs": ["google-generative-ai", "google-vertex"],
+      "driver": "decoded-sdk-events",
+      "events": [{"responseId": "google-opaque", "candidates": [{"content": {"parts": [{"text": "ready", "thoughtSignature": "opaque-signature"}]}, "finishReason": "STOP"}], "usageMetadata": {"promptTokenCount": 1, "candidatesTokenCount": 1, "totalTokenCount": 2}}]
+    },
+    {
+      "caseID": "google-stop",
+      "protocolIDs": ["google-generative-ai", "google-vertex"],
+      "driver": "decoded-sdk-events",
+      "events": [{"responseId": "google-stop", "candidates": [{"content": {"parts": [{"text": "done"}]}, "finishReason": "STOP"}], "usageMetadata": {"promptTokenCount": 2, "candidatesTokenCount": 1, "cachedContentTokenCount": 0, "totalTokenCount": 3}}]
+    },
+    {
+      "caseID": "google-max-tokens",
+      "protocolIDs": ["google-generative-ai", "google-vertex"],
+      "driver": "decoded-sdk-events",
+      "events": [{"responseId": "google-length", "candidates": [{"content": {"parts": [{"text": "partial"}]}, "finishReason": "MAX_TOKENS"}]}]
+    },
+    {
+      "caseID": "google-safety-stop",
+      "protocolIDs": ["google-generative-ai", "google-vertex"],
+      "driver": "decoded-sdk-events",
+      "events": [{"responseId": "google-safety", "candidates": [{"finishReason": "SAFETY"}]}],
+      "expectsFailure": true
+    },
+    {
+      "caseID": "google-unknown-stop",
+      "protocolIDs": ["google-generative-ai", "google-vertex"],
+      "driver": "decoded-sdk-events",
+      "events": [{"responseId": "google-unknown", "candidates": [{"finishReason": "FUTURE_REASON"}]}],
+      "expectsFailure": true
+    },
+    {
+      "caseID": "google-missing-finish",
+      "protocolIDs": ["google-generative-ai", "google-vertex"],
+      "driver": "decoded-sdk-events",
+      "events": [{"responseId": "google-no-finish", "candidates": []}],
+      "expectsFailure": true
+    },
+    {
+      "caseID": "google-sdk-error",
+      "protocolIDs": ["google-generative-ai", "google-vertex"],
+      "driver": "decoded-sdk-error",
+      "errorMessage": "fixture SDK failure",
+      "expectsFailure": true
+    },
+    {
+      "caseID": "mistral-mixed-reasoning-tool-usage",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-sse",
+      "events": [
+        {"id": "mistral-mixed", "choices": [{"delta": {"content": "Checking"}}]},
+        {"id": "mistral-mixed", "choices": [{"delta": {"content": [{"type": "thinking", "thinking": [{"type": "text", "text": "Need lookup"}]}]}}]},
+        {"id": "mistral-mixed", "choices": [{"delta": {"tool_calls": [{"index": 0, "id": "call-1", "function": {"name": "weather", "arguments": "{\"city\":\"Tai"}}]}}]},
+        {"id": "mistral-mixed", "choices": [{"delta": {"tool_calls": [{"index": 0, "function": {"name": "", "arguments": "pei\"}"}}]}}]},
+        {"id": "mistral-mixed", "usage": {"prompt_tokens": 12, "completion_tokens": 7, "total_tokens": 19, "prompt_tokens_details": {"cached_tokens": 3}}, "choices": [{"finish_reason": "tool_calls", "delta": {}}]}
+      ]
+    },
+    {
+      "caseID": "mistral-model-length",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-sse",
+      "events": [{"id": "mistral-length", "choices": [{"delta": {"content": [{"type": "text", "text": "partial"}]}, "finish_reason": "model_length"}]}]
+    },
+    {
+      "caseID": "mistral-stop",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-sse",
+      "events": [{"id": "mistral-stop", "usage": {"prompt_tokens": 2, "completion_tokens": 1, "total_tokens": 3}, "choices": [{"delta": {"content": "done"}, "finish_reason": "stop"}]}]
+    },
+    {
+      "caseID": "mistral-null-tool-id",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-sse",
+      "events": [{"id": "mistral-null-id", "choices": [{"delta": {"tool_calls": [{"index": 2, "id": "null", "function": {"name": "weather", "arguments": "{}"}}]}, "finish_reason": "tool_calls"}]}]
+    },
+    {
+      "caseID": "mistral-error-stop",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-sse",
+      "events": [{"id": "mistral-error", "choices": [{"delta": {}, "finish_reason": "error"}]}],
+      "expectsFailure": true
+    },
+    {
+      "caseID": "mistral-unknown-stop",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-sse",
+      "events": [{"id": "mistral-unknown", "choices": [{"delta": {}, "finish_reason": "future_reason"}]}],
+      "expectsFailure": true
+    },
+    {
+      "caseID": "mistral-missing-finish",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-sse",
+      "events": [{"id": "mistral-no-finish", "choices": [{"delta": {"content": "partial"}}]}],
+      "expectsFailure": true
+    },
+    {
+      "caseID": "mistral-http-error",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-json",
+      "status": 429,
+      "body": {"error": {"message": "rate limited"}},
+      "expectsFailure": true
+    },
+    {
+      "caseID": "mistral-malformed-event",
+      "protocolIDs": ["mistral-conversations"],
+      "driver": "http-sse-raw",
+      "rawEvents": ["not-json"],
+      "expectsFailure": true
+    },
+    {
+      "caseID": "openrouter-image-only",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "body": {"id": "image-only", "model": "fixture-image", "choices": [{"message": {"role": "assistant", "content": null, "images": [{"image_url": "data:image/png;base64,AQI="}]}}], "usage": {"prompt_tokens": 10, "completion_tokens": 4, "total_tokens": 14, "prompt_tokens_details": {"cached_tokens": 3, "cache_write_tokens": 1}}}
+    },
+    {
+      "caseID": "openrouter-image-and-text",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "body": {"id": "image-text", "model": "fixture-image", "choices": [{"message": {"role": "assistant", "content": "created", "images": [{"image_url": {"url": "data:image/jpeg;base64,/9g="}}]}}]}
+    },
+    {
+      "caseID": "openrouter-empty-output",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "body": {"id": "image-empty", "model": "fixture-image", "choices": []}
+    },
+    {
+      "caseID": "openrouter-remote-image-skipped",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "body": {"id": "image-remote", "model": "fixture-image", "choices": [{"message": {"role": "assistant", "content": null, "images": [{"image_url": "https://example.invalid/image.png"}]}}]}
+    },
+    {
+      "caseID": "openrouter-malformed-data-url-skipped",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "body": {"id": "image-malformed-url", "model": "fixture-image", "choices": [{"message": {"role": "assistant", "content": null, "images": [{"image_url": "data:image/png,not-base64"}]}}]}
+    },
+    {
+      "caseID": "openrouter-invalid-base64",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "body": {"id": "image-invalid-base64", "model": "fixture-image", "choices": [{"message": {"role": "assistant", "content": null, "images": [{"image_url": "data:image/png;base64,%%%"}]}}]},
+      "swiftExplicitFailure": true
+    },
+    {
+      "caseID": "openrouter-missing-id",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "body": {"model": "fixture-image", "choices": []}
+    },
+    {
+      "caseID": "openrouter-provider-error",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "body": {"error": {"message": "provider rejected image", "code": "bad_image"}},
+      "expectsFailure": true
+    },
+    {
+      "caseID": "openrouter-http-error",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-json",
+      "status": 429,
+      "body": {"error": {"message": "rate limited"}},
+      "expectsFailure": true
+    },
+    {
+      "caseID": "openrouter-malformed-json",
+      "protocolIDs": ["openrouter-images"],
+      "driver": "http-raw",
+      "rawBody": "not-json",
+      "expectsFailure": true
+    }
+  ]
+}

@@ -1,0 +1,240 @@
+{
+  "caseID": "failure-http-provider-v1",
+  "category": "httpProviderError",
+  "protocols": {
+    "anthropic-messages": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "azure-openai-responses": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "bedrock-converse-stream": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "google-generative-ai": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "google-vertex": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "mistral-conversations": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-codex-responses": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-completions": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-responses": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openrouter-images": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "pi-messages": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_rate_limit",
+            "message": "fixture provider rejected request"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 429
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/earendil-works/pi.git",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

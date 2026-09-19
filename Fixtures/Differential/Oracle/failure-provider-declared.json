@@ -1,0 +1,193 @@
+{
+  "caseID": "failure-provider-declared-v1",
+  "category": "providerDeclaredError",
+  "protocols": {
+    "anthropic-messages": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZXZlbnQ6IGVycm9yCmRhdGE6IHsidHlwZSI6ImVycm9yIiwiZXJyb3IiOnsidHlwZSI6Im92ZXJsb2FkZWRfZXJyb3IiLCJtZXNzYWdlIjoiZml4dHVyZSBwcm92aWRlciBlcnJvciJ9fQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "azure-openai-responses": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuZmFpbGVkIiwicmVzcG9uc2UiOnsiaWQiOiJmYWlsdXJlIiwic3RhdHVzIjoiZmFpbGVkIiwiZXJyb3IiOnsiY29kZSI6ImZpeHR1cmVfZXJyb3IiLCJtZXNzYWdlIjoiZml4dHVyZSBwcm92aWRlciBlcnJvciJ9fX0KCg==",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "bedrock-converse-stream": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAogAAAGe8E+dkDTptZXNzYWdlLXR5cGUHAAlleGNlcHRpb24POmV4Y2VwdGlvbi10eXBlBwAZbW9kZWxTdHJlYW1FcnJvckV4Y2VwdGlvbg06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsibWVzc2FnZSI6ImZpeHR1cmUgcHJvdmlkZXIgc3RyZWFtIGVycm9yIn1Uw/os"
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-failure"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "google-generative-ai": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YTogeyJyZXNwb25zZUlkIjoiZmFpbHVyZSIsImNhbmRpZGF0ZXMiOlt7ImZpbmlzaFJlYXNvbiI6IlNBRkVUWSJ9XX0KCg==",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "google-vertex": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YTogeyJyZXNwb25zZUlkIjoiZmFpbHVyZSIsImNhbmRpZGF0ZXMiOlt7ImZpbmlzaFJlYXNvbiI6IlNBRkVUWSJ9XX0KCg==",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "mistral-conversations": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YTogeyJpZCI6ImZhaWx1cmUiLCJjaG9pY2VzIjpbeyJkZWx0YSI6e30sImZpbmlzaF9yZWFzb24iOiJlcnJvciJ9XX0KCg==",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-codex-responses": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuZmFpbGVkIiwicmVzcG9uc2UiOnsiaWQiOiJmYWlsdXJlIiwic3RhdHVzIjoiZmFpbGVkIiwiZXJyb3IiOnsiY29kZSI6ImZpeHR1cmVfZXJyb3IiLCJtZXNzYWdlIjoiZml4dHVyZSBwcm92aWRlciBlcnJvciJ9fX0KCg==",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-completions": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YTogeyJpZCI6ImZhaWx1cmUiLCJtb2RlbCI6ImZpeHR1cmUiLCJjaG9pY2VzIjpbeyJkZWx0YSI6e30sImZpbmlzaF9yZWFzb24iOiJjb250ZW50X2ZpbHRlciJ9XX0KCg==",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openai-responses": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YTogeyJ0eXBlIjoicmVzcG9uc2UuZmFpbGVkIiwicmVzcG9uc2UiOnsiaWQiOiJmYWlsdXJlIiwic3RhdHVzIjoiZmFpbGVkIiwiZXJyb3IiOnsiY29kZSI6ImZpeHR1cmVfZXJyb3IiLCJtZXNzYWdlIjoiZml4dHVyZSBwcm92aWRlciBlcnJvciJ9fX0KCg==",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "openrouter-images": {
+      "decoderInput": {
+        "body": {
+          "error": {
+            "code": "fixture_error",
+            "message": "fixture provider error"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    },
+    "pi-messages": {
+      "decoderInput": {
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "rawBodyBase64": "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoiZXJyb3IiLCJyZWFzb24iOiJlcnJvciIsImVycm9yTWVzc2FnZSI6ImZpeHR1cmUgcHJvdmlkZXIgZXJyb3IifQoK",
+        "status": 200
+      },
+      "outcome": "failure",
+      "partialEventTypes": [],
+      "sourceTerminal": {
+        "reason": "error",
+        "type": "error"
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/earendil-works/pi.git",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

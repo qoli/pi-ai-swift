@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "responseCoverageStatus": "complete",
+  "evidenceSources": [
+    {
+      "oracle": "Fixtures/Differential/Oracle/response-rich.json",
+      "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+      "shape": "protocols"
+    },
+    {
+      "oracle": "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
+      "cases": "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
+      "test": "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift",
+      "shape": "scenarios-from-case-file"
+    },
+    {
+      "oracle": "Fixtures/Differential/Oracle/response-provider-branches.json",
+      "cases": "Fixtures/Differential/Cases/response-provider-branches.json",
+      "test": "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift",
+      "shape": "case-protocol-map"
+    },
+    {
+      "oracle": "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+      "cases": "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+      "test": "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift",
+      "shape": "declared-case-map",
+      "caseProtocols": {
+        "completions.reasoning-details-response-model": ["openai-completions"],
+        "completions.stop-reason-response-branches": ["openai-completions"],
+        "responses.custom-namespace-usage": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
+        "responses.incomplete-raw-total": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
+        "responses.reasoning-signature-backfill-phase": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
+        "responses.service-tier-cost-matrix": ["openai-responses", "azure-openai-responses", "openai-codex-responses"]
+      }
+    }
+  ],
+  "branches": [
+    {
+      "id": "common.stream-lifecycle",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
+      "variants": ["response-started", "terminal-replay", "completed"],
+      "sourceSymbols": ["AssistantMessageEventStream", "stream", "done"],
+      "expected": "A successful source stream starts once, yields a reconstructable terminal response, and completes exactly once.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["response-started", "terminal-replay", "completed"]}
+      ]
+    },
+    {
+      "id": "common.streaming-content",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["text", "reasoning", "reasoning-signature", "tool-start", "tool-input-delta", "tool-completed"],
+      "sourceSymbols": ["text_delta", "thinking_delta", "toolcall_delta", "toolcall_end"],
+      "expected": "All source content block types and fragmented tool inputs normalize to ordered events and replayable terminal blocks.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["text", "reasoning", "reasoning-signature", "tool-start", "tool-input-delta", "tool-completed"]}
+      ]
+    },
+    {
+      "id": "common.usage-normalization",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
+      "variants": ["input", "output", "reasoning", "cache-read", "cache-write", "total"],
+      "sourceSymbols": ["usage", "parseUsage", "calculateCost"],
+      "expected": "Provider counters normalize without double counting cache or reasoning tokens and preserve provider totals.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["input", "output", "reasoning", "cache-read", "cache-write", "total"]}
+      ]
+    },
+    {
+      "id": "common.monetary-cost-base",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images"],
+      "variants": ["base-rates", "total"],
+      "sourceSymbols": ["Usage.cost", "calculateCost", "parseUsage"],
+      "expected": "Every rate-priced protocol preserves exact input, output, cache-read, cache-write, and total monetary cost.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images"], "coversVariants": ["base-rates", "total"]}
+      ]
+    },
+    {
+      "id": "common.monetary-cost-tier",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses"],
+      "variants": ["tier-rates"],
+      "sourceSymbols": ["ModelCost.tiers", "calculateCost"],
+      "expected": "Every calculateCost protocol selects the highest applicable full-request input threshold.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses"], "coversVariants": ["tier-rates"]}
+      ]
+    },
+    {
+      "id": "anthropic.monetary-cost-1h-cache-write",
+      "required": true,
+      "protocols": ["anthropic-messages"],
+      "variants": ["one-hour-cache-write"],
+      "sourceSymbols": ["cacheWrite1h", "ephemeral_1h_input_tokens", "calculateCost"],
+      "expected": "Anthropic 1h cache writes use twice the selected base input rate while 5m writes use cache-write pricing.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages"], "coversVariants": ["one-hour-cache-write"]}
+      ]
+    },
+    {
+      "id": "pi.monetary-cost-direct",
+      "required": true,
+      "protocols": ["pi-messages"],
+      "variants": ["direct-provider-cost", "total"],
+      "sourceSymbols": ["PiMessagesUsage", "event.usage"],
+      "expected": "Pi Messages preserves the five monetary values supplied by the upstream event without recalculation.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["pi-messages"], "coversVariants": ["direct-provider-cost", "total"]}
+      ]
+    },
+    {
+      "id": "openai-responses.monetary-cost-service-tier",
+      "required": true,
+      "protocols": ["openai-responses", "openai-codex-responses"],
+      "variants": ["flex", "priority", "response-precedence", "codex-default-resolution"],
+      "sourceSymbols": ["resolveCodexServiceTier", "applyServiceTierPricing"],
+      "expected": "Standard and Codex Responses apply exact flex and priority multipliers with source request/response precedence.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "responses.service-tier-cost-matrix", "protocols": ["openai-responses", "openai-codex-responses"], "coversVariants": ["flex", "priority", "response-precedence", "codex-default-resolution"]}
+      ]
+    },
+    {
+      "id": "azure-openai-responses.monetary-cost-service-tier",
+      "required": true,
+      "protocols": ["azure-openai-responses"],
+      "variants": ["unadjusted"],
+      "sourceSymbols": ["processResponsesStream"],
+      "expected": "Azure Responses preserves base model pricing because pinned source does not install service-tier adjustment.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "responses.service-tier-cost-matrix", "protocols": ["azure-openai-responses"], "coversVariants": ["unadjusted"]}
+      ]
+    },
+    {
+      "id": "common.stop-reason-matrix",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["stop", "length", "tool-use"],
+      "sourceSymbols": ["mapStopReason", "finishReason", "finish_reason", "stop_reason"],
+      "expected": "Every successful terminal source reason maps explicitly to stop, length, or tool use for every applicable protocol.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["tool-use"]},
+        {"caseID": "anthropic-signed-length", "protocols": ["anthropic-messages"], "coversVariants": ["length"]},
+        {"caseID": "anthropic-redacted-pause-usage", "protocols": ["anthropic-messages"], "coversVariants": ["stop"]},
+        {"caseID": "anthropic-tool-use", "protocols": ["anthropic-messages"], "coversVariants": ["tool-use"]},
+        {"caseID": "bedrock-redacted-length-usage", "protocols": ["bedrock-converse-stream"], "coversVariants": ["length"]},
+        {"caseID": "bedrock-stop", "protocols": ["bedrock-converse-stream"], "coversVariants": ["stop"]},
+        {"caseID": "bedrock-tool-use", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-use"]},
+        {"caseID": "pi-signatures-namespace-length", "protocols": ["pi-messages"], "coversVariants": ["length"]},
+        {"caseID": "pi-stop", "protocols": ["pi-messages"], "coversVariants": ["stop"]},
+        {"caseID": "pi-tool-use", "protocols": ["pi-messages"], "coversVariants": ["tool-use"]},
+        {"caseID": "google-max-tokens", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["length"]},
+        {"caseID": "google-stop", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["stop"]},
+        {"caseID": "mistral-model-length", "protocols": ["mistral-conversations"], "coversVariants": ["length"]},
+        {"caseID": "mistral-stop", "protocols": ["mistral-conversations"], "coversVariants": ["stop"]},
+        {"caseID": "completions.stop-reason-response-branches", "protocols": ["openai-completions"], "coversVariants": ["stop", "length", "tool-use"]},
+        {"caseID": "responses.reasoning-signature-backfill-phase", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["stop"]},
+        {"caseID": "responses.incomplete-raw-total", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["length"]},
+        {"caseID": "responses.custom-namespace-usage", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["tool-use"]}
+      ]
+    },
+    {
+      "id": "anthropic.response-specials",
+      "required": true,
+      "protocols": ["anthropic-messages"],
+      "variants": ["redacted-thinking", "signed-thinking", "pause-turn", "reasoning-usage", "cache-usage"],
+      "sourceSymbols": ["redacted_thinking", "signature_delta", "pause_turn", "output_tokens_details"],
+      "expected": "Anthropic redaction, signatures, pause semantics, and extended usage remain replayable.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "anthropic-redacted-pause-usage", "protocols": ["anthropic-messages"], "coversVariants": ["redacted-thinking", "pause-turn", "reasoning-usage", "cache-usage"]},
+        {"caseID": "anthropic-signed-length", "protocols": ["anthropic-messages"], "coversVariants": ["signed-thinking"]}
+      ]
+    },
+    {
+      "id": "bedrock.response-specials",
+      "required": true,
+      "protocols": ["bedrock-converse-stream"],
+      "variants": ["redacted-thinking", "signed-thinking", "reasoning-usage", "cache-usage"],
+      "sourceSymbols": ["reasoningContent", "redactedContent", "metadata", "metrics"],
+      "expected": "Bedrock reasoning content and metadata usage preserve all source fields.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "bedrock-redacted-length-usage", "protocols": ["bedrock-converse-stream"], "coversVariants": ["redacted-thinking", "signed-thinking", "reasoning-usage", "cache-usage"]}
+      ]
+    },
+    {
+      "id": "pi.response-specials",
+      "required": true,
+      "protocols": ["pi-messages"],
+      "variants": ["text-signature", "reasoning-signature", "tool-thought-signature", "namespace"],
+      "sourceSymbols": ["textSignature", "thinkingSignature", "thoughtSignature", "namespace"],
+      "expected": "Pi-native opaque replay metadata is preserved in its exact content block.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "pi-signatures-namespace-length", "protocols": ["pi-messages"], "coversVariants": ["text-signature", "reasoning-signature", "tool-thought-signature", "namespace"]}
+      ]
+    },
+    {
+      "id": "google.response-specials",
+      "required": true,
+      "protocols": ["google-generative-ai", "google-vertex"],
+      "variants": ["thought-signature", "text-signature", "tool-signature", "tool-arguments", "reasoning-usage", "cache-usage"],
+      "sourceSymbols": ["thoughtSignature", "functionCall", "usageMetadata"],
+      "expected": "Google thought signatures attach to the correct text, reasoning, or tool block and usage excludes cached input.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "google-mixed-tool-signatures-usage", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["thought-signature", "text-signature", "tool-signature", "tool-arguments", "reasoning-usage", "cache-usage"]}
+      ]
+    },
+    {
+      "id": "mistral.response-specials",
+      "required": true,
+      "protocols": ["mistral-conversations"],
+      "variants": ["string-content", "typed-content", "fragmented-tool", "null-tool-id", "reasoning-content", "cache-usage"],
+      "sourceSymbols": ["content", "thinking", "tool_calls", "cached_tokens"],
+      "expected": "Mistral content unions, reasoning blocks, tool fragments, null IDs, and cache usage normalize deterministically.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "response-rich-v1", "protocols": ["mistral-conversations"], "coversVariants": ["string-content", "typed-content"]},
+        {"caseID": "mistral-mixed-reasoning-tool-usage", "protocols": ["mistral-conversations"], "coversVariants": ["fragmented-tool", "reasoning-content", "cache-usage"]},
+        {"caseID": "mistral-null-tool-id", "protocols": ["mistral-conversations"], "coversVariants": ["null-tool-id"]}
+      ]
+    },
+    {
+      "id": "openrouter-images.response-specials",
+      "required": true,
+      "protocols": ["openrouter-images"],
+      "variants": ["image-only", "image-and-text", "empty-output", "remote-image-skipped", "malformed-data-url-skipped", "usage"],
+      "sourceSymbols": ["image_url", "parseDataUrl", "parseUsage"],
+      "expected": "Image responses preserve supported data URLs, text, empty output, and usage while deterministically skipping unsupported URLs.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "openrouter-image-only", "protocols": ["openrouter-images"], "coversVariants": ["image-only", "usage"]},
+        {"caseID": "openrouter-image-and-text", "protocols": ["openrouter-images"], "coversVariants": ["image-and-text"]},
+        {"caseID": "openrouter-empty-output", "protocols": ["openrouter-images"], "coversVariants": ["empty-output"]},
+        {"caseID": "openrouter-remote-image-skipped", "protocols": ["openrouter-images"], "coversVariants": ["remote-image-skipped"]},
+        {"caseID": "openrouter-malformed-data-url-skipped", "protocols": ["openrouter-images"], "coversVariants": ["malformed-data-url-skipped"]}
+      ]
+    },
+    {
+      "id": "openai-completions.response-branches",
+      "required": true,
+      "protocols": ["openai-completions"],
+      "variants": ["response-model", "reasoning-field-precedence", "reasoning-details", "choice-usage", "custom-tool", "missing-finish-compat"],
+      "sourceSymbols": ["reasoning_content", "reasoning_details", "choice.usage", "custom", "supportsFinishReason"],
+      "expected": "OpenAI-compatible completion extensions and compatibility branches are independently source-derived.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "completions.reasoning-details-response-model", "protocols": ["openai-completions"], "coversVariants": ["response-model", "reasoning-details"]},
+        {"caseID": "completions.stop-reason-response-branches", "protocols": ["openai-completions"], "coversVariants": ["reasoning-field-precedence", "choice-usage", "custom-tool", "missing-finish-compat"]}
+      ]
+    },
+    {
+      "id": "openai-responses.response-branches",
+      "required": true,
+      "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
+      "variants": ["reasoning-summary", "reasoning-text", "signature-backfill", "message-phase", "namespace", "custom-tool", "incomplete-max-output", "service-tier-usage"],
+      "sourceSymbols": ["processResponsesStream", "backfillReasoningSignatures", "custom_tool_call", "incomplete_details", "service_tier"],
+      "expected": "Responses API item variants, replay signatures, terminal status details, and service-tier usage are independently source-derived for standard, Azure, and Codex.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "responses.custom-namespace-usage", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["namespace", "custom-tool"]},
+        {"caseID": "responses.incomplete-raw-total", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["incomplete-max-output"]},
+        {"caseID": "responses.reasoning-signature-backfill-phase", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["reasoning-summary", "reasoning-text", "signature-backfill", "message-phase"]},
+        {"caseID": "responses.service-tier-cost-matrix", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["service-tier-usage"]}
+      ]
+    }
+  ]
+}

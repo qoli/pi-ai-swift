@@ -1,0 +1,481 @@
+{
+  "caseID": "request-rich-v1",
+  "protocols": {
+    "anthropic-messages": {
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Use the echo tool",
+            "role": "user"
+          }
+        ],
+        "model": "k3-256k",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "temperature": 0.2,
+        "thinking": {
+          "type": "disabled"
+        },
+        "tool_choice": {
+          "type": "auto"
+        },
+        "tools": [
+          {
+            "description": "Echo a value",
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "echo"
+          }
+        ]
+      }
+    },
+    "azure-openai-responses": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "Use the echo tool",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 64,
+        "model": "fixture-deployment",
+        "prompt_cache_key": "fixture-session",
+        "store": false,
+        "stream": true,
+        "temperature": 0.2,
+        "tool_choice": "auto",
+        "tools": [
+          {
+            "description": "Echo a value",
+            "name": "echo",
+            "parameters": {
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "strict": false,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "bedrock-converse-stream": {
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 64,
+          "temperature": 0.2
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "Use the echo tool"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "system": [
+          {
+            "text": "Be concise"
+          }
+        ],
+        "toolConfig": {
+          "toolChoice": {
+            "auto": {}
+          },
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Echo a value",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "echo"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "google-generative-ai": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "Use the echo tool"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "generationConfig": {
+          "maxOutputTokens": 64,
+          "temperature": 0.2
+        },
+        "systemInstruction": {
+          "parts": [
+            {
+              "text": "Be concise"
+            }
+          ]
+        },
+        "toolConfig": {
+          "functionCallingConfig": {
+            "mode": "AUTO"
+          }
+        },
+        "tools": [
+          {
+            "functionDeclarations": [
+              {
+                "description": "Echo a value",
+                "name": "echo",
+                "parametersJsonSchema": {
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "type": "object"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "google-vertex": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "Use the echo tool"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "generationConfig": {
+          "maxOutputTokens": 64,
+          "temperature": 0.2
+        },
+        "systemInstruction": {
+          "parts": [
+            {
+              "text": "Be concise"
+            }
+          ]
+        },
+        "toolConfig": {
+          "functionCallingConfig": {
+            "mode": "AUTO"
+          }
+        },
+        "tools": [
+          {
+            "functionDeclarations": [
+              {
+                "description": "Echo a value",
+                "name": "echo",
+                "parametersJsonSchema": {
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "type": "object"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "mistral-conversations": {
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Use the echo tool",
+            "role": "user"
+          }
+        ],
+        "model": "mistral-fixture",
+        "stream": true,
+        "temperature": 0.2,
+        "tool_choice": "auto",
+        "tools": [
+          {
+            "function": {
+              "description": "Echo a value",
+              "name": "echo",
+              "parameters": {
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "openai-codex-responses": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "input": [
+          {
+            "content": [
+              {
+                "text": "Use the echo tool",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "instructions": "Be concise",
+        "model": "gpt-5.1-codex",
+        "parallel_tool_calls": true,
+        "store": false,
+        "stream": true,
+        "temperature": 0.2,
+        "text": {
+          "verbosity": "low"
+        },
+        "tool_choice": "auto",
+        "tools": [
+          {
+            "description": "Echo a value",
+            "name": "echo",
+            "parameters": {
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "strict": null,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "openai-completions": {
+      "requestBody": {
+        "max_completion_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Use the echo tool",
+            "role": "user"
+          }
+        ],
+        "model": "fixture-chat",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "temperature": 0.2,
+        "tool_choice": "auto",
+        "tools": [
+          {
+            "function": {
+              "description": "Echo a value",
+              "name": "echo",
+              "parameters": {
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "openai-responses": {
+      "requestBody": {
+        "input": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "Use the echo tool",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 64,
+        "model": "fixture-responses",
+        "store": false,
+        "stream": true,
+        "temperature": 0.2,
+        "tool_choice": "auto",
+        "tools": [
+          {
+            "description": "Echo a value",
+            "name": "echo",
+            "parameters": {
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "openrouter-images": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "Use the echo tool",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "model": "fixture-image-model",
+        "stream": false
+      }
+    },
+    "pi-messages": {
+      "requestBody": {
+        "context": {
+          "messages": [
+            {
+              "content": "Use the echo tool",
+              "role": "user",
+              "timestamp": 0
+            }
+          ],
+          "systemPrompt": "Be concise",
+          "tools": [
+            {
+              "description": "Echo a value",
+              "name": "echo",
+              "parameters": {
+                "properties": {
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              }
+            }
+          ]
+        },
+        "model": "pi-fixture",
+        "options": {
+          "cacheRetention": "none",
+          "maxTokens": 64,
+          "sessionId": "fixture-session",
+          "temperature": 0.2,
+          "toolChoice": "auto"
+        }
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/earendil-works/pi.git",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "failureCoverageStatus": "complete",
+  "evidenceSources": [
+    {"oracle": "Fixtures/Differential/Oracle/failure-http.json", "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift", "shape": "protocols"},
+    {"oracle": "Fixtures/Differential/Oracle/failure-malformed-wire.json", "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift", "shape": "protocols"},
+    {"oracle": "Fixtures/Differential/Oracle/failure-missing-terminal.json", "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift", "shape": "protocols"},
+    {"oracle": "Fixtures/Differential/Oracle/failure-provider-declared.json", "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift", "shape": "protocols"},
+    {"oracle": "Fixtures/Differential/Oracle/failure-cancellation.json", "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift", "shape": "protocols"},
+    {"oracle": "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json", "cases": "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json", "test": "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift", "shape": "scenarios-from-case-file"},
+    {"oracle": "Fixtures/Differential/Oracle/response-provider-branches.json", "cases": "Fixtures/Differential/Cases/response-provider-branches.json", "test": "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift", "shape": "case-protocol-map"}
+    ,{
+      "oracle": "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+      "cases": "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+      "test": "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift",
+      "shape": "declared-case-map",
+      "caseProtocols": {
+        "completions.stop-reason-response-branches": ["openai-completions"],
+        "completions.http-raw-metadata": ["openai-completions"],
+        "responses.failure-branches": ["openai-responses", "azure-openai-responses", "openai-codex-responses"]
+      }
+    }
+  ],
+  "branches": [
+    {
+      "id": "common.http-provider-error",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
+      "variants": ["non-success-status", "typed-transport-failure"],
+      "sourceSymbols": ["normalizeProviderError", "formatProviderError"],
+      "expected": "HTTP provider errors terminate as typed transport failures without a completed event.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "failure-http-provider-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["non-success-status", "typed-transport-failure"]}
+      ]
+    },
+    {
+      "id": "common.malformed-wire",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
+      "variants": ["malformed-syntax", "typed-invalid-response"],
+      "sourceSymbols": ["iterateSseMessages", "JSON.parse", "eventstream"],
+      "expected": "Malformed SSE, JSON, or AWS eventstream input fails explicitly as invalid response.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "failure-malformed-wire-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["malformed-syntax", "typed-invalid-response"]}
+      ]
+    },
+    {
+      "id": "common.missing-terminal",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["partial-stream", "no-terminal", "typed-invalid-response"],
+      "sourceSymbols": ["pending", "sawTerminalResponseEvent", "hasFinishReason"],
+      "expected": "A streaming response ending without its protocol terminal marker fails explicitly and preserves only permitted partial deltas.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "failure-missing-terminal-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["partial-stream", "no-terminal", "typed-invalid-response"]}
+      ]
+    },
+    {
+      "id": "common.provider-declared-error",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
+      "variants": ["wire-declared-error", "typed-transport-failure"],
+      "sourceSymbols": ["error", "response.failed", "finish_reason"],
+      "expected": "Provider-declared error events and payloads fail explicitly without successful completion.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "failure-provider-declared-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["wire-declared-error", "typed-transport-failure"]}
+      ]
+    },
+    {
+      "id": "common.cancellation",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
+      "variants": ["source-aborted", "swift-cancellation-propagated", "no-substitute-output"],
+      "sourceSymbols": ["AbortSignal", "signal.aborted", "stopReason = aborted"],
+      "expected": "An aborted source request terminates as aborted, while Swift propagates CancellationError without manufacturing provider events.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "failure-cancellation-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["source-aborted", "swift-cancellation-propagated", "no-substitute-output"]}
+      ]
+    },
+    {
+      "id": "anthropic.failure-branches",
+      "required": true,
+      "protocols": ["anthropic-messages"],
+      "variants": ["refusal", "sse-error-event", "missing-stop-reason"],
+      "sourceSymbols": ["refusal", "event === error", "pending"],
+      "expected": "Anthropic refusal, SSE error, and missing stop reason map to explicit typed failures.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "anthropic-refusal", "protocols": ["anthropic-messages"], "coversVariants": ["refusal"]},
+        {"caseID": "anthropic-error-event", "protocols": ["anthropic-messages"], "coversVariants": ["sse-error-event"]},
+        {"caseID": "anthropic-missing-terminal", "protocols": ["anthropic-messages"], "coversVariants": ["missing-stop-reason"]}
+      ]
+    },
+    {
+      "id": "bedrock.failure-branches",
+      "required": true,
+      "protocols": ["bedrock-converse-stream"],
+      "variants": ["provider-stop-error", "eventstream-exception", "missing-terminal"],
+      "sourceSymbols": ["stopReason", "exception", "messageStop"],
+      "expected": "Bedrock provider stop errors, AWS exceptions, and truncated streams fail with typed semantics.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "bedrock-provider-stop-error", "protocols": ["bedrock-converse-stream"], "coversVariants": ["provider-stop-error"]},
+        {"caseID": "bedrock-exception", "protocols": ["bedrock-converse-stream"], "coversVariants": ["eventstream-exception"]},
+        {"caseID": "bedrock-missing-terminal", "protocols": ["bedrock-converse-stream"], "coversVariants": ["missing-terminal"]}
+      ]
+    },
+    {
+      "id": "pi.failure-branches",
+      "required": true,
+      "protocols": ["pi-messages"],
+      "variants": ["error-event", "invalid-tool-end", "missing-terminal"],
+      "sourceSymbols": ["error", "toolcall_end", "done"],
+      "expected": "Pi-native error events, invalid tool completion, and absent terminal events fail explicitly.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "pi-error-event", "protocols": ["pi-messages"], "coversVariants": ["error-event"]},
+        {"caseID": "pi-invalid-tool-end", "protocols": ["pi-messages"], "coversVariants": ["invalid-tool-end"]},
+        {"caseID": "pi-missing-terminal", "protocols": ["pi-messages"], "coversVariants": ["missing-terminal"]}
+      ]
+    },
+    {
+      "id": "google.failure-branches",
+      "required": true,
+      "protocols": ["google-generative-ai", "google-vertex"],
+      "variants": ["safety-stop", "unknown-stop", "missing-finish", "sdk-error"],
+      "sourceSymbols": ["mapStopReason", "finishReason", "catch"],
+      "expected": "Google safety, unknown stop reasons, absent finish reason, and SDK errors are typed failures.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "google-safety-stop", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["safety-stop"]},
+        {"caseID": "google-unknown-stop", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["unknown-stop"]},
+        {"caseID": "google-missing-finish", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["missing-finish"]},
+        {"caseID": "google-sdk-error", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["sdk-error"]}
+      ]
+    },
+    {
+      "id": "mistral.failure-branches",
+      "required": true,
+      "protocols": ["mistral-conversations"],
+      "variants": ["error-stop", "unknown-stop", "missing-finish", "http-error", "malformed-event"],
+      "sourceSymbols": ["finish_reason", "error", "parse"],
+      "expected": "Mistral terminal errors, unknown reasons, truncation, HTTP errors, and malformed events fail explicitly.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "mistral-error-stop", "protocols": ["mistral-conversations"], "coversVariants": ["error-stop"]},
+        {"caseID": "mistral-unknown-stop", "protocols": ["mistral-conversations"], "coversVariants": ["unknown-stop"]},
+        {"caseID": "mistral-missing-finish", "protocols": ["mistral-conversations"], "coversVariants": ["missing-finish"]},
+        {"caseID": "mistral-http-error", "protocols": ["mistral-conversations"], "coversVariants": ["http-error"]},
+        {"caseID": "mistral-malformed-event", "protocols": ["mistral-conversations"], "coversVariants": ["malformed-event"]}
+      ]
+    },
+    {
+      "id": "openrouter-images.failure-branches",
+      "required": true,
+      "protocols": ["openrouter-images"],
+      "variants": ["invalid-base64", "missing-id", "provider-error", "http-error", "malformed-json"],
+      "sourceSymbols": ["parseDataUrl", "response.id", "error", "JSON.parse"],
+      "expected": "Invalid image bytes, missing identity, provider/HTTP errors, and malformed JSON fail explicitly.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "openrouter-invalid-base64", "protocols": ["openrouter-images"], "coversVariants": ["invalid-base64"]},
+        {"caseID": "openrouter-missing-id", "protocols": ["openrouter-images"], "coversVariants": ["missing-id"]},
+        {"caseID": "openrouter-provider-error", "protocols": ["openrouter-images"], "coversVariants": ["provider-error"]},
+        {"caseID": "openrouter-http-error", "protocols": ["openrouter-images"], "coversVariants": ["http-error"]},
+        {"caseID": "openrouter-malformed-json", "protocols": ["openrouter-images"], "coversVariants": ["malformed-json"]}
+      ]
+    },
+    {
+      "id": "openai-completions.failure-branches",
+      "required": true,
+      "protocols": ["openai-completions"],
+      "variants": ["content-filter", "network-error", "unknown-finish", "abort", "raw-metadata"],
+      "sourceSymbols": ["mapStopReason", "content_filter", "network_error", "metadata.raw"],
+      "expected": "Every OpenAI-compatible error finish reason, abort, and raw provider metadata path has typed source-derived evidence.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "completions.stop-reason-response-branches", "protocols": ["openai-completions"], "coversVariants": ["content-filter", "network-error", "unknown-finish"]},
+        {"caseID": "failure-cancellation-v1", "protocols": ["openai-completions"], "coversVariants": ["abort"]},
+        {"caseID": "completions.http-raw-metadata", "protocols": ["openai-completions"], "coversVariants": ["raw-metadata"]}
+      ]
+    },
+    {
+      "id": "openai-responses.failure-branches",
+      "required": true,
+      "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
+      "variants": ["response-failed-error", "response-failed-details", "stream-error", "incomplete-content-filter", "unknown-status", "abort"],
+      "sourceSymbols": ["response.failed", "response.incomplete", "error", "mapStopReason"],
+      "expected": "Responses API failed, incomplete, stream error, unknown status, and abort branches have typed source-derived evidence for all three protocol variants.",
+      "status": "covered",
+      "cases": [
+        {"caseID": "responses.failure-branches", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["response-failed-error", "response-failed-details", "stream-error", "incomplete-content-filter", "unknown-status"]},
+        {"caseID": "failure-cancellation-v1", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["abort"]}
+      ]
+    }
+  ]
+}

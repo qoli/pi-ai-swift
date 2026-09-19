@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "caseID": "failure-missing-terminal-v1",
+  "stimulusKind": "missingTerminal",
+  "expectedCategory": "missingTerminal",
+  "protocolsFrom": "request-rich-v1"
+}

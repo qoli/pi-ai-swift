@@ -1,0 +1,727 @@
+{
+  "cases": {
+    "mistral-cache-long": {
+      "headers": {
+        "x-affinity": "mistral-session"
+      },
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Hello",
+            "role": "user"
+          }
+        ],
+        "model": "mistral-fixture",
+        "prompt_cache_key": "mistral-session",
+        "stream": true,
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "mistral-cache-none": {
+      "headers": {},
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Hello",
+            "role": "user"
+          }
+        ],
+        "model": "mistral-fixture",
+        "stream": true,
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "mistral-image-unsupported": {
+      "headers": {},
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "(image omitted: model does not support images)",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "model": "mistral-fixture",
+        "stream": true,
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "mistral-prompt-mode": {
+      "headers": {},
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Hello",
+            "role": "user"
+          }
+        ],
+        "model": "mistral-fixture",
+        "prompt_mode": "reasoning",
+        "stream": true,
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "mistral-reasoning-effort": {
+      "headers": {},
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Hello",
+            "role": "user"
+          }
+        ],
+        "model": "mistral-small-2603",
+        "reasoning_effort": "high",
+        "stream": true,
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "mistral-tool-choice-any": {
+      "headers": {},
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Hello",
+            "role": "user"
+          }
+        ],
+        "model": "mistral-fixture",
+        "stream": true,
+        "tool_choice": "any",
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "mistral-tool-choice-named": {
+      "headers": {},
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Hello",
+            "role": "user"
+          }
+        ],
+        "model": "mistral-fixture",
+        "stream": true,
+        "tool_choice": {
+          "function": {
+            "name": "weather"
+          },
+          "type": "function"
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "mistral-tool-choice-required": {
+      "headers": {},
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Hello",
+            "role": "user"
+          }
+        ],
+        "model": "mistral-fixture",
+        "stream": true,
+        "tool_choice": "required",
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "mistral-tool-image-unsupported-error": {
+      "headers": {},
+      "protocolID": "mistral-conversations",
+      "requestBody": {
+        "max_tokens": 64,
+        "messages": [
+          {
+            "content": "Be concise",
+            "role": "system"
+          },
+          {
+            "content": "Hello",
+            "role": "user"
+          },
+          {
+            "prefix": false,
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{\"city\":\"Taipei\"}",
+                  "name": "weather"
+                },
+                "id": "call-1",
+                "index": 0,
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": [
+              {
+                "text": "[tool error] failed\n(tool image omitted: model does not support images)",
+                "type": "text"
+              }
+            ],
+            "name": "weather",
+            "role": "tool",
+            "tool_call_id": "call-1"
+          }
+        ],
+        "model": "mistral-fixture",
+        "stream": true,
+        "tools": [
+          {
+            "function": {
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "openrouter-empty-input": {
+      "protocolID": "openrouter-images",
+      "requestBody": {
+        "messages": [
+          {
+            "content": [],
+            "role": "user"
+          }
+        ],
+        "modalities": [
+          "image"
+        ],
+        "model": "openrouter/fixture-image",
+        "stream": false
+      }
+    },
+    "openrouter-image-input": {
+      "protocolID": "openrouter-images",
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "image_url": {
+                  "url": "data:image/png;base64,AQI="
+                },
+                "type": "image_url"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "modalities": [
+          "image"
+        ],
+        "model": "openrouter/fixture-image",
+        "stream": false
+      }
+    },
+    "openrouter-image-only-output": {
+      "protocolID": "openrouter-images",
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "Draw",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "modalities": [
+          "image"
+        ],
+        "model": "openrouter/fixture-image",
+        "stream": false
+      }
+    },
+    "openrouter-image-text-output": {
+      "protocolID": "openrouter-images",
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "Draw",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "modalities": [
+          "image",
+          "text"
+        ],
+        "model": "openrouter/fixture-image",
+        "stream": false
+      }
+    },
+    "openrouter-mixed-input": {
+      "protocolID": "openrouter-images",
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "Draw",
+                "type": "text"
+              },
+              {
+                "image_url": {
+                  "url": "data:image/png;base64,AQI="
+                },
+                "type": "image_url"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "modalities": [
+          "image"
+        ],
+        "model": "openrouter/fixture-image",
+        "stream": false
+      }
+    },
+    "openrouter-text-input": {
+      "protocolID": "openrouter-images",
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "Draw",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "modalities": [
+          "image"
+        ],
+        "model": "openrouter/fixture-image",
+        "stream": false
+      }
+    },
+    "pi-debug-query": {
+      "protocolID": "pi-messages",
+      "requestBody": {
+        "context": {
+          "messages": [
+            {
+              "content": "First",
+              "role": "user",
+              "timestamp": 11
+            }
+          ],
+          "systemPrompt": "Keep metadata",
+          "tools": [
+            {
+              "constrainedSampling": {
+                "strict": "prefer",
+                "type": "json_schema"
+              },
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              }
+            },
+            {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "type": "object"
+              }
+            }
+          ]
+        },
+        "model": "fixture-pi",
+        "options": {
+          "cacheRetention": "short",
+          "maxTokens": 96,
+          "reasoning": "high",
+          "sessionId": "pi-session",
+          "temperature": 0.25,
+          "toolChoice": "auto"
+        }
+      },
+      "url": "https://radius.invalid/v1/messages?debug=1"
+    },
+    "pi-full-context": {
+      "protocolID": "pi-messages",
+      "requestBody": {
+        "context": {
+          "messages": [
+            {
+              "content": "First",
+              "role": "user",
+              "timestamp": 11
+            },
+            {
+              "api": "pi-messages",
+              "content": [
+                {
+                  "text": "answer",
+                  "textSignature": "text-signature",
+                  "type": "text"
+                },
+                {
+                  "thinking": "analysis",
+                  "thinkingSignature": "thinking-signature",
+                  "type": "thinking"
+                },
+                {
+                  "arguments": {
+                    "city": "Taipei"
+                  },
+                  "id": "call-1",
+                  "name": "weather",
+                  "namespace": "fixture.namespace",
+                  "thoughtSignature": "tool-signature",
+                  "type": "toolCall"
+                }
+              ],
+              "model": "fixture-pi",
+              "provider": "radius",
+              "rawStopReason": "tool_use",
+              "responseId": "response-1",
+              "responseModel": "fixture-pi-runtime",
+              "role": "assistant",
+              "stopReason": "toolUse",
+              "timestamp": 12,
+              "usage": {
+                "cacheRead": 3,
+                "cacheWrite": 4,
+                "cost": {
+                  "cacheRead": 0,
+                  "cacheWrite": 0,
+                  "input": 0,
+                  "output": 0,
+                  "total": 0
+                },
+                "input": 1,
+                "output": 2,
+                "reasoning": 1,
+                "totalTokens": 10
+              }
+            },
+            {
+              "addedToolNames": [
+                "lookup"
+              ],
+              "content": [
+                {
+                  "text": "sunny",
+                  "type": "text"
+                }
+              ],
+              "isError": false,
+              "role": "toolResult",
+              "timestamp": 13,
+              "toolCallId": "call-1",
+              "toolName": "weather"
+            }
+          ],
+          "systemPrompt": "Keep metadata",
+          "tools": [
+            {
+              "constrainedSampling": {
+                "strict": "prefer",
+                "type": "json_schema"
+              },
+              "description": "Weather",
+              "name": "weather",
+              "parameters": {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city"
+                ],
+                "type": "object"
+              }
+            },
+            {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "type": "object"
+              }
+            }
+          ]
+        },
+        "model": "fixture-pi",
+        "options": {
+          "cacheRetention": "short",
+          "maxTokens": 96,
+          "reasoning": "high",
+          "sessionId": "pi-session",
+          "temperature": 0.25,
+          "toolChoice": "auto"
+        }
+      },
+      "url": "https://radius.invalid/v1/messages"
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/earendil-works/pi.git",
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "protocols": ["google-generative-ai", "google-vertex"],
+  "cases": [
+    { "caseID": "same-model-signatures", "modelID": "gemini-3-flash-preview", "variant": "replay", "sameSource": true },
+    { "caseID": "cross-model-signatures-dropped", "modelID": "gemini-3-flash-preview", "variant": "replay", "sameSource": false },
+    { "caseID": "tool-id-required", "modelID": "gemini-3-flash-preview", "variant": "tool-result" },
+    { "caseID": "tool-id-omitted", "modelID": "gemini-2.5-flash", "variant": "tool-result" },
+    { "caseID": "function-response-error", "modelID": "gemini-3-flash-preview", "variant": "tool-result", "toolError": true },
+    { "caseID": "gemini3-image-nested", "modelID": "gemini-3-flash-preview", "variant": "tool-result", "toolImage": true },
+    { "caseID": "legacy-image-separate", "modelID": "gemini-2.5-flash", "variant": "tool-result", "toolImage": true },
+    { "caseID": "consecutive-results-merged", "modelID": "gemini-3-flash-preview", "variant": "consecutive-tool-results" },
+    { "caseID": "enabled-level", "modelID": "gemini-3-flash-preview", "variant": "reasoning", "reasoning": "medium" },
+    { "caseID": "enabled-budget", "modelID": "gemini-2.5-flash", "variant": "reasoning", "reasoning": "low" },
+    { "caseID": "custom-budget", "modelID": "gemini-2.5-flash", "variant": "reasoning", "reasoning": "low", "customBudget": 1234 },
+    { "caseID": "disabled-gemini3-pro-low", "modelID": "gemini-3.1-pro-preview", "variant": "reasoning", "reasoning": "off" },
+    { "caseID": "disabled-flash-minimal", "modelID": "gemini-3-flash-preview", "variant": "reasoning", "reasoning": "off" },
+    { "caseID": "disabled-gemma-minimal", "modelID": "gemma-4-27b-it", "variant": "reasoning", "reasoning": "off", "protocols": ["google-generative-ai"] },
+    { "caseID": "disabled-gemini2-budget-zero", "modelID": "gemini-2.5-pro", "variant": "reasoning", "reasoning": "off" },
+    { "caseID": "json-schema", "modelID": "gemini-2.5-flash", "variant": "tools" },
+    { "caseID": "strict-validated", "modelID": "gemini-3-flash-preview", "variant": "strict-tools" },
+    { "caseID": "choice-none", "modelID": "gemini-3-flash-preview", "variant": "strict-tools", "toolChoice": "none" },
+    { "caseID": "choice-any", "modelID": "gemini-3-flash-preview", "variant": "tools", "toolChoice": "any" },
+    { "caseID": "generation-options", "modelID": "gemini-2.5-flash", "variant": "generation" },
+    { "caseID": "cache-none", "modelID": "gemini-2.5-flash", "variant": "cache", "cacheRetention": "none" },
+    { "caseID": "cache-long", "modelID": "gemini-2.5-flash", "variant": "cache", "cacheRetention": "long" },
+    { "caseID": "api-key-without-adc-config", "modelID": "gemini-2.5-flash", "variant": "vertex-config", "protocols": ["google-vertex"], "vertexAuth": "api-key" },
+    { "caseID": "adc-explicit-config", "modelID": "gemini-2.5-flash", "variant": "vertex-config", "protocols": ["google-vertex"], "vertexAuth": "adc", "project": "explicit-project", "location": "europe-west1" },
+    { "caseID": "adc-env-config", "modelID": "gemini-2.5-flash", "variant": "vertex-config", "protocols": ["google-vertex"], "vertexAuth": "adc", "envProject": "env-project", "envLocation": "asia-east1" },
+    { "caseID": "adc-project-missing", "modelID": "gemini-2.5-flash", "variant": "vertex-config", "protocols": ["google-vertex"], "vertexAuth": "adc", "envLocation": "asia-east1" },
+    { "caseID": "adc-location-missing", "modelID": "gemini-2.5-flash", "variant": "vertex-config", "protocols": ["google-vertex"], "vertexAuth": "adc", "envProject": "env-project" },
+    { "caseID": "placeholder-key-uses-adc", "modelID": "gemini-2.5-flash", "variant": "vertex-config", "protocols": ["google-vertex"], "vertexAuth": "placeholder", "envProject": "env-project", "envLocation": "asia-east1" }
+    ,{ "caseID": "custom-base-versioned", "modelID": "gemini-2.5-flash", "variant": "vertex-wire", "protocols": ["google-vertex"], "vertexAuth": "api-key", "baseURL": "https://gateway.example.com/v1" }
+    ,{ "caseID": "custom-base-unversioned", "modelID": "gemini-2.5-flash", "variant": "vertex-wire", "protocols": ["google-vertex"], "vertexAuth": "api-key", "baseURL": "https://gateway.example.com" }
+    ,{ "caseID": "placeholder-base", "modelID": "gemini-2.5-flash", "variant": "vertex-wire", "protocols": ["google-vertex"], "vertexAuth": "api-key", "baseURL": "https://{location}-aiplatform.googleapis.com" }
+  ]
+}

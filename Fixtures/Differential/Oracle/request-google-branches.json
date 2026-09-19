@@ -1,0 +1,1825 @@
+{
+  "cases": {
+    "adc-env-config": {
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "adc-explicit-config": {
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "adc-location-missing": {
+      "google-vertex": {
+        "error": "Vertex AI requires a location. Set GOOGLE_CLOUD_LOCATION or pass location in options."
+      }
+    },
+    "adc-project-missing": {
+      "google-vertex": {
+        "error": "Vertex AI requires a project ID. Set GOOGLE_CLOUD_PROJECT/GCLOUD_PROJECT or pass project in options."
+      }
+    },
+    "api-key-without-adc-config": {
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "cache-long": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "cache-none": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "choice-any": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "toolConfig": {
+            "functionCallingConfig": {
+              "mode": "ANY"
+            }
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "city"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "toolConfig": {
+            "functionCallingConfig": {
+              "mode": "ANY"
+            }
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "city"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "choice-none": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "toolConfig": {
+            "functionCallingConfig": {
+              "mode": "NONE"
+            }
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "city",
+                      "units"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "toolConfig": {
+            "functionCallingConfig": {
+              "mode": "NONE"
+            }
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "city",
+                      "units"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "consecutive-results-merged": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                },
+                {
+                  "functionCall": {
+                    "args": {
+                      "zone": "UTC"
+                    },
+                    "id": "call-2",
+                    "name": "time"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                },
+                {
+                  "functionResponse": {
+                    "id": "call-2",
+                    "name": "time",
+                    "response": {
+                      "output": "12:00"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                },
+                {
+                  "functionCall": {
+                    "args": {
+                      "zone": "UTC"
+                    },
+                    "id": "call-2",
+                    "name": "time"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                },
+                {
+                  "functionResponse": {
+                    "id": "call-2",
+                    "name": "time",
+                    "response": {
+                      "output": "12:00"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "cross-model-signatures-dropped": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "text": "answer"
+                },
+                {
+                  "text": "analysis"
+                },
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "error": "No result provided"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "text": "answer"
+                },
+                {
+                  "text": "analysis"
+                },
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "error": "No result provided"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "custom-base-unversioned": {
+      "google-vertex": {
+        "wireRequest": {
+          "headers": {
+            "content-type": "application/json",
+            "user-agent": "pi (darwin 27.0.0; arm64)",
+            "x-goog-api-client": "google-genai-sdk/1.52.0 gl-node/v26.0.0",
+            "x-goog-api-key": "fixture-key"
+          },
+          "url": "https://gateway.example.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
+        }
+      }
+    },
+    "custom-base-versioned": {
+      "google-vertex": {
+        "wireRequest": {
+          "headers": {
+            "content-type": "application/json",
+            "user-agent": "pi (darwin 27.0.0; arm64)",
+            "x-goog-api-client": "google-genai-sdk/1.52.0 gl-node/v26.0.0",
+            "x-goog-api-key": "fixture-key"
+          },
+          "url": "https://gateway.example.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
+        }
+      }
+    },
+    "custom-budget": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 1234
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 1234
+            }
+          }
+        }
+      }
+    },
+    "disabled-flash-minimal": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "thinkingLevel": "MINIMAL"
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "thinkingLevel": "MINIMAL"
+            }
+          }
+        }
+      }
+    },
+    "disabled-gemini2-budget-zero": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "thinkingBudget": 0
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "thinkingBudget": 0
+            }
+          }
+        }
+      }
+    },
+    "disabled-gemini3-pro-low": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "thinkingLevel": "LOW"
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "thinkingLevel": "LOW"
+            }
+          }
+        }
+      }
+    },
+    "disabled-gemma-minimal": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "thinkingLevel": "MINIMAL"
+            }
+          }
+        }
+      }
+    },
+    "enabled-budget": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 2048
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 2048
+            }
+          }
+        }
+      }
+    },
+    "enabled-level": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingLevel": "MEDIUM"
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingLevel": "MEDIUM"
+            }
+          }
+        }
+      }
+    },
+    "function-response-error": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "error": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "error": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "gemini3-image-nested": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "parts": [
+                      {
+                        "inlineData": {
+                          "data": "AQI=",
+                          "mimeType": "image/png"
+                        }
+                      }
+                    ],
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "parts": [
+                      {
+                        "inlineData": {
+                          "data": "AQI=",
+                          "mimeType": "image/png"
+                        }
+                      }
+                    ],
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "generation-options": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 321,
+            "temperature": 0.25
+          },
+          "systemInstruction": {
+            "parts": [
+              {
+                "text": "be concise"
+              }
+            ]
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "city"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 321,
+            "temperature": 0.25
+          },
+          "systemInstruction": {
+            "parts": [
+              {
+                "text": "be concise"
+              }
+            ]
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "city"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "json-schema": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "city"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "city"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "legacy-image-separate": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "name": "weather",
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "text": "Tool result image:"
+                },
+                {
+                  "inlineData": {
+                    "data": "AQI=",
+                    "mimeType": "image/png"
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "name": "weather",
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "text": "Tool result image:"
+                },
+                {
+                  "inlineData": {
+                    "data": "AQI=",
+                    "mimeType": "image/png"
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "placeholder-base": {
+      "google-vertex": {
+        "wireRequest": {
+          "headers": {
+            "content-type": "application/json",
+            "user-agent": "pi (darwin 27.0.0; arm64)",
+            "x-goog-api-client": "google-genai-sdk/1.52.0 gl-node/v26.0.0",
+            "x-goog-api-key": "fixture-key"
+          },
+          "url": "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
+        }
+      }
+    },
+    "placeholder-key-uses-adc": {
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "same-model-signatures": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "text": "answer",
+                  "thoughtSignature": "dGV4dA=="
+                },
+                {
+                  "text": "analysis",
+                  "thought": true,
+                  "thoughtSignature": "dGhpbms="
+                },
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  },
+                  "thoughtSignature": "dG9vbA=="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "error": "No result provided"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "text": "answer",
+                  "thoughtSignature": "dGV4dA=="
+                },
+                {
+                  "text": "analysis",
+                  "thought": true,
+                  "thoughtSignature": "dGhpbms="
+                },
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  },
+                  "thoughtSignature": "dG9vbA=="
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "error": "No result provided"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "strict-validated": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "toolConfig": {
+            "functionCallingConfig": {
+              "mode": "VALIDATED"
+            }
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "city",
+                      "units"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "toolConfig": {
+            "functionCallingConfig": {
+              "mode": "VALIDATED"
+            }
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "units": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "city",
+                      "units"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "tool-id-omitted": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "name": "weather",
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "name": "weather",
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "tool-id-required": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "first"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "parts": [
+                {
+                  "functionCall": {
+                    "args": {
+                      "city": "Taipei"
+                    },
+                    "id": "call-1",
+                    "name": "weather"
+                  }
+                }
+              ],
+              "role": "model"
+            },
+            {
+              "parts": [
+                {
+                  "functionResponse": {
+                    "id": "call-1",
+                    "name": "weather",
+                    "response": {
+                      "output": "sunny"
+                    }
+                  }
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          }
+        }
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+}

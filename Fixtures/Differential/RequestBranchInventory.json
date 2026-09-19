@@ -1,0 +1,712 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "requestCoverageStatus": "complete",
+  "invalidSourceEvidence": {
+    "tool-choice-required-request": "Pinned SimpleStreamOptions.toolChoice accepts only auto or none; required must be exercised through a protocol-specific stream oracle."
+  },
+  "statusDefinitions": {
+    "covered": "Every listed protocol has an executable pinned-source oracle case for every branch variant.",
+    "uncovered": "The branch is representable but executable source-derived evidence is incomplete.",
+    "blocked": "The canonical request seam cannot represent the upstream input without a recorded seam or policy change."
+  },
+  "expressibilityDefinitions": {
+    "providerRequest": "The canonical ProviderRequest DTO represents the input directly.",
+    "context": "The input is represented by WireProtocolContext, model compatibility, or credential state rather than ProviderRequest.",
+    "unsupported": "The current canonical seam cannot represent the upstream input.",
+    "notComparableInput": "The Swift and pinned TypeScript input domains differ and no approved canonical mapping exists."
+  },
+  "branches": [
+    {
+      "id": "common.system.presence",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["present"],
+      "sourceSymbols": ["Context.systemPrompt", "buildParams", "buildRequestBody", "buildChatPayload", "buildSystemPrompt"],
+      "expected": "A single canonical system prompt is emitted in the protocol-owned location.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [{"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["present"]}]
+    },
+    {
+      "id": "common.system.multiple",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["ordered-multiple-system-messages"],
+      "sourceSymbols": ["Context.systemPrompt"],
+      "expected": "No arbitrary concatenation is allowed: pinned pi exposes one systemPrompt while ProviderRequest permits multiple system messages.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [{"caseID": "multiple-system-explicit-failure", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["ordered-multiple-system-messages"]}]
+    },
+    {
+      "id": "common.user.multimodal",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
+      "variants": ["text", "data-image"],
+      "variantProtocols": {
+        "data-image": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"]
+      },
+      "sourceSymbols": ["convertMessages", "toChatMessages", "buildParams"],
+      "expected": "Text and base64 image inputs preserve order, MIME type, and bytes.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["text"]},
+        {"caseID": "multimodal-user-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["data-image"]}
+        ,{"caseID": "openrouter-image-input", "protocols": ["openrouter-images"], "coversVariants": ["data-image"]}
+      ]
+    },
+    {
+      "id": "common.assistant.replay-identity",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["same-source", "cross-source", "aborted-not-replayed"],
+      "sourceSymbols": ["transformMessages", "convertResponsesMessages", "convertMessages"],
+      "expected": "Replay metadata is retained only for compatible source identity; aborted assistant output is excluded.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "same-source-replay", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["same-source"]},
+        {"caseID": "cross-source-replay", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["cross-source"]},
+        {"caseID": "aborted-assistant-is-not-replayed", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["aborted-not-replayed"]}
+      ]
+    },
+    {
+      "id": "common.replay.signatures",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["text-signature", "reasoning-signature", "tool-thought-signature", "namespace", "redacted-reasoning"],
+      "sourceSymbols": ["convertResponsesMessages", "google-shared.convertMessages", "anthropic-messages.convertMessages", "bedrock-converse-stream.convertMessages"],
+      "expected": "Opaque replay identity and signatures round-trip for the same source and are lowered or dropped for foreign sources.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "same-source-replay", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["text-signature", "reasoning-signature", "tool-thought-signature", "namespace"]},
+        {"caseID": "same-source-redacted-replay", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["redacted-reasoning"]},
+        {"caseID": "cross-source-redacted-is-dropped", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["redacted-reasoning"]}
+      ]
+    },
+    {
+      "id": "common.tool-results",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["text", "image", "error", "consecutive", "orphan-synthetic-result"],
+      "sourceSymbols": ["convertToolResult", "convertToolResultOutput", "convertToolResultContent", "toChatMessages", "transformMessages"],
+      "expected": "Tool results preserve call identity, error status, supported images, grouping, and explicit orphan closure.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "same-source-replay", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["text"]},
+        {"caseID": "multimodal-tool-result-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"]},
+        {"caseID": "multimodal-tool-result-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["image"]},
+        {"caseID": "tool-result-error-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["error"]},
+        {"caseID": "consecutive-tool-results-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["consecutive"]},
+        {"caseID": "orphaned-tool-call-gets-explicit-result", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["orphan-synthetic-result"]}
+      ]
+    },
+    {
+      "id": "common.tool-schema.plain-root-ref",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["plain-object", "root-ref-with-defs"],
+      "sourceSymbols": ["getJsonSchemaToolParameters", "convertTools", "convertToolConfig"],
+      "expected": "The exact source-derived protocol schema conversion is compared, including a root-ref regression case.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["plain-object"]},
+        {"caseID": "root-ref-tool-schema-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["root-ref-with-defs"]}
+      ]
+    },
+    {
+      "id": "common.tool-schema.strict",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["prefer-supported", "prefer-unsupported-fallback", "require-supported", "require-unsupported-failure", "invalid-required-property-failure"],
+      "variantProtocols": {
+        "require-supported": ["azure-openai-responses", "openai-codex-responses", "openai-responses"],
+        "require-unsupported-failure": ["openai-responses"],
+        "invalid-required-property-failure": ["openai-responses"]
+      },
+      "sourceSymbols": ["resolveJsonSchemaStrictSampling", "makeStrictJsonSchema"],
+      "expected": "Strict schema transformation or explicit failure matches model capability and preference.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "strict-prefer-tool-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["prefer-supported"]},
+        {"caseID": "strict-prefer-unsupported-schema-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["prefer-unsupported-fallback"]},
+        {"caseID": "strict-require-responses-tool-request", "protocols": ["azure-openai-responses", "openai-codex-responses", "openai-responses"], "coversVariants": ["require-supported"]},
+        {"caseID": "responses.strict-require-failure", "protocols": ["openai-responses"], "coversVariants": ["require-unsupported-failure"]},
+        {"caseID": "responses.strict-invalid-required-failure", "protocols": ["openai-responses"], "coversVariants": ["invalid-required-property-failure"]}
+      ]
+    },
+    {
+      "id": "common.tool-schema.grammar",
+      "required": true,
+      "protocols": ["openai-codex-responses", "openai-completions", "openai-responses"],
+      "variants": ["lark", "regex", "unsupported-fallback", "missing-variant-failure", "invalid-input-schema-failure"],
+      "variantProtocols": {
+        "missing-variant-failure": ["openai-responses"],
+        "invalid-input-schema-failure": ["openai-responses"]
+      },
+      "sourceSymbols": ["resolveGrammarConstrainedSampling", "createGrammarToolInputProperties", "convertResponsesTools"],
+      "expected": "Grammar tools use the selected grammar or fail explicitly for invalid required inputs.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "completions.grammar", "protocols": ["openai-completions"], "coversVariants": ["lark"]},
+        {"caseID": "grammar-codex-tool-request", "protocols": ["openai-codex-responses"], "coversVariants": ["lark"]},
+        {"caseID": "grammar-regex-codex-tool-request", "protocols": ["openai-codex-responses"], "coversVariants": ["regex"]},
+        {"caseID": "openai-responses.grammar-lark", "protocols": ["openai-responses"], "coversVariants": ["lark"]},
+        {"caseID": "openai-responses.grammar-regex", "protocols": ["openai-responses"], "coversVariants": ["regex"]},
+        {"caseID": "openai-completions.grammar-regex", "protocols": ["openai-completions"], "coversVariants": ["regex"]},
+        {"caseID": "grammar-unsupported-falls-back-request", "protocols": ["openai-codex-responses", "openai-completions", "openai-responses"], "coversVariants": ["unsupported-fallback"]},
+        {"caseID": "responses.grammar-missing-variant-failure", "protocols": ["openai-responses"], "coversVariants": ["missing-variant-failure"]},
+        {"caseID": "responses.grammar-invalid-schema-failure", "protocols": ["openai-responses"], "coversVariants": ["invalid-input-schema-failure"]}
+      ]
+    },
+    {
+      "id": "common.deferred-tools",
+      "required": true,
+      "protocols": ["anthropic-messages", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["immediate", "deferred", "all-deferred-promoted", "added-tools-load-once", "additional-tools", "tool-search", "kimi-system-tools"],
+      "variantProtocols": {
+        "additional-tools": ["openai-codex-responses", "openai-responses"],
+        "tool-search": ["openai-responses"],
+        "kimi-system-tools": ["openai-completions"]
+      },
+      "sourceSymbols": ["splitDeferredTools", "convertResponsesMessages", "convertToolResult"],
+      "expected": "Deferred definitions are omitted initially and loaded exactly once at the transcript load point.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["immediate"]},
+        {"caseID": "deferred-tool-added-once-request", "protocols": ["anthropic-messages", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["deferred", "all-deferred-promoted", "added-tools-load-once"]},
+        {"caseID": "responses.deferred-additional-tools", "protocols": ["openai-responses"], "coversVariants": ["additional-tools"]},
+        {"caseID": "codex.deferred-additional-tools", "protocols": ["openai-codex-responses"], "coversVariants": ["additional-tools"]},
+        {"caseID": "responses.deferred-tool-search", "protocols": ["openai-responses"], "coversVariants": ["tool-search"]},
+        {"caseID": "completions.deferred-kimi", "protocols": ["openai-completions"], "coversVariants": ["kimi-system-tools"]}
+      ]
+    },
+    {
+      "id": "common.tool-choice",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["omitted", "auto", "none"],
+      "sourceSymbols": ["mapToolChoice", "resolveGoogleFunctionCallingMode", "convertToolConfig", "buildParams"],
+      "expected": "The pinned SimpleStreamOptions contract accepts only auto or none; omission keeps protocol defaults.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["omitted"]},
+        {"caseID": "tool-choice-auto-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["auto"]},
+        {"caseID": "tool-choice-none-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["none"]}
+      ]
+    },
+    {
+      "id": "protocol.tool-choice.advanced",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses"],
+      "variants": ["any", "required", "named"],
+      "variantProtocols": {
+        "any": ["anthropic-messages", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations"],
+        "required": ["azure-openai-responses", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses"],
+        "named": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "mistral-conversations", "openai-completions", "openai-responses"]
+      },
+      "sourceSymbols": ["AnthropicOptions.toolChoice", "BedrockOptions.toolChoice", "GoogleOptions.toolChoice", "MistralOptions.toolChoice", "OpenAIResponsesOptions.toolChoice"],
+      "expected": "Advanced choices are proven through protocol-specific stream inputs, not by passing invalid values through streamSimple.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "anthropic-tool-any", "protocols": ["anthropic-messages"], "coversVariants": ["any"]},
+        {"caseID": "anthropic-oauth-named-tool", "protocols": ["anthropic-messages"], "coversVariants": ["named"]},
+        {"caseID": "bedrock-tool-any", "protocols": ["bedrock-converse-stream"], "coversVariants": ["any"]},
+        {"caseID": "bedrock-tool-named", "protocols": ["bedrock-converse-stream"], "coversVariants": ["named"]},
+        {"caseID": "choice-any", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["any"]},
+        {"caseID": "mistral-tool-choice-any", "protocols": ["mistral-conversations"], "coversVariants": ["any"]},
+        {"caseID": "mistral-tool-choice-required", "protocols": ["mistral-conversations"], "coversVariants": ["required"]},
+        {"caseID": "mistral-tool-choice-named", "protocols": ["mistral-conversations"], "coversVariants": ["named"]},
+        {"caseID": "completions.named-tool-choice", "protocols": ["openai-completions"], "coversVariants": ["named"]},
+        {"caseID": "responses.named-tool-choice", "protocols": ["openai-responses"], "coversVariants": ["named"]},
+        {"caseID": "azure.named-tool-choice", "protocols": ["azure-openai-responses"], "coversVariants": ["named"]}
+        ,{"caseID": "openai-completions.tool-choice-required", "protocols": ["openai-completions"], "coversVariants": ["required"]}
+        ,{"caseID": "openai-responses.tool-choice-required", "protocols": ["openai-responses"], "coversVariants": ["required"]}
+        ,{"caseID": "azure-openai-responses.tool-choice-required", "protocols": ["azure-openai-responses"], "coversVariants": ["required"]}
+        ,{"caseID": "openai-codex-responses.tool-choice-required", "protocols": ["openai-codex-responses"], "coversVariants": ["required"]}
+      ],
+      "invalidEvidence": ["tool-choice-required-request"]
+    },
+    {
+      "id": "common.reasoning.selection",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["omitted", "minimal", "low", "medium", "high", "mapped", "mapped-null"],
+      "sourceSymbols": ["streamSimple", "buildParams", "buildAdditionalModelRequestFields", "mapReasoningEffort"],
+      "expected": "Reasoning mode, effort mapping, disabled representation, and unsupported mapping are explicit.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["omitted"]},
+        {"caseID": "reasoning-minimal-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["minimal"]},
+        {"caseID": "reasoning-low-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["low"]},
+        {"caseID": "reasoning-medium-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["medium"]},
+        {"caseID": "reasoning-high-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["high", "mapped"]},
+        {"caseID": "reasoning-mapped-null-explicit-failure", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["mapped-null"]}
+      ]
+    },
+    {
+      "id": "protocol.reasoning.explicit-disabled",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["simple-omission", "protocol-disabled-wire-form"],
+      "sourceSymbols": ["SimpleStreamOptions.reasoning", "streamSimple", "buildParams", "buildAdditionalModelRequestFields"],
+      "expected": "At the pinned streamSimple boundary disabled reasoning is represented by omission; any explicit wire-level disabled form needs a protocol-specific stream fixture.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "reasoning-off-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["simple-omission", "protocol-disabled-wire-form"]}
+      ]
+    },
+    {
+      "id": "common.reasoning.custom-budgets",
+      "required": true,
+      "protocols": ["anthropic-messages", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "openai-completions"],
+      "variants": ["custom", "default", "answer-room-clamp"],
+      "variantProtocols": {
+        "answer-room-clamp": ["anthropic-messages", "bedrock-converse-stream", "openai-completions"]
+      },
+      "sourceSymbols": ["thinkingBudgetForLevel", "adjustMaxTokensForThinking", "getGoogleBudget", "buildAdditionalModelRequestFields"],
+      "expected": "Custom and default budgets are clamped without consuming all answer tokens.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "anthropic-budget-custom-omitted", "protocols": ["anthropic-messages"], "coversVariants": ["custom"]},
+        {"caseID": "anthropic-budget-default-answer-room-clamp", "protocols": ["anthropic-messages"], "coversVariants": ["default", "answer-room-clamp"]},
+        {"caseID": "bedrock-budget-custom-interleaved", "protocols": ["bedrock-converse-stream"], "coversVariants": ["custom"]},
+        {"caseID": "bedrock-budget-default-answer-room-clamp", "protocols": ["bedrock-converse-stream"], "coversVariants": ["default", "answer-room-clamp"]},
+        {"caseID": "custom-budget", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["custom"]},
+        {"caseID": "enabled-budget", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["default"]},
+        {"caseID": "completions.custom-reasoning-budget", "protocols": ["openai-completions"], "coversVariants": ["custom", "answer-room-clamp"]},
+        {"caseID": "completions.default-budget-clamp", "protocols": ["openai-completions"], "coversVariants": ["default", "answer-room-clamp"]}
+      ]
+    },
+    {
+      "id": "common.cache",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+      "variants": ["none", "short", "long", "session-absent", "session-present", "session-clamped"],
+      "sourceSymbols": ["resolveCacheRetention", "getCacheControl", "getPromptCacheRetention", "shouldUsePromptCaching"],
+      "expected": "Cache markers, retention, and affinity keys follow protocol/model capability.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["none", "session-present"]},
+        {"caseID": "short-cache-session-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["short"]},
+        {"caseID": "long-cache-session-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["long", "session-present"]},
+        {"caseID": "long-cache-no-session-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["session-absent"]},
+        {"caseID": "long-cache-clamped-session-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["session-clamped"]}
+      ]
+    },
+    {
+      "id": "common.generation-options",
+      "required": true,
+      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
+      "variants": ["max-present", "max-absent", "temperature-present", "temperature-absent", "service-tier"],
+      "variantProtocols": {
+        "max-present": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+        "max-absent": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+        "temperature-present": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+        "temperature-absent": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
+        "service-tier": ["openai-codex-responses"]
+      },
+      "sourceSymbols": ["buildParams", "buildRequestBody", "buildChatPayload"],
+      "expected": "Named generation options are emitted only when applicable.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["max-present", "temperature-present"]},
+        {"caseID": "maximum-output-omitted-request", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["max-absent", "temperature-absent"]},
+        {"caseID": "codex.defaults-and-cache", "protocols": ["openai-codex-responses"], "coversVariants": ["service-tier"]}
+      ]
+    },
+    {
+      "id": "openai.sampling-params",
+      "required": true,
+      "protocols": ["azure-openai-responses", "openai-completions", "openai-responses"],
+      "variants": ["last-wins"],
+      "sourceSymbols": ["OpenAICompletionsOptions.samplingParams", "OpenAIResponsesOptions.samplingParams", "AzureOpenAIResponsesOptions.samplingParams"],
+      "expected": "Provider sampling parameters are applied after named generation fields and therefore win on collisions.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "completions.sampling-last-wins", "protocols": ["openai-completions"], "coversVariants": ["last-wins"]},
+        {"caseID": "responses.sampling-last-wins", "protocols": ["openai-responses"], "coversVariants": ["last-wins"]},
+        {"caseID": "azure.sampling-last-wins", "protocols": ["azure-openai-responses"], "coversVariants": ["last-wins"]}
+      ]
+    },
+    {
+      "id": "anthropic.auth-and-system",
+      "required": true,
+      "protocols": ["anthropic-messages"],
+      "variants": ["api-key", "oauth", "github-copilot", "header-owned", "missing-failure", "oauth-identity-system", "oauth-tool-name-normalization"],
+      "sourceSymbols": ["assertRequestAuth", "createClient", "buildParams", "toClaudeCodeName"],
+      "expected": "Credential-specific headers, identity system text, and tool casing match pinned source.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "anthropic-api-key-system-cache-short", "protocols": ["anthropic-messages"], "coversVariants": ["api-key"]},
+        {"caseID": "anthropic-missing-auth", "protocols": ["anthropic-messages"], "coversVariants": ["missing-failure"]},
+        {"caseID": "anthropic-oauth-named-tool", "protocols": ["anthropic-messages"], "coversVariants": ["oauth", "oauth-identity-system", "oauth-tool-name-normalization"]},
+        {"caseID": "anthropic-copilot", "protocols": ["anthropic-messages"], "coversVariants": ["github-copilot"]},
+        {"caseID": "anthropic-header-owned", "protocols": ["anthropic-messages"], "coversVariants": ["header-owned"]}
+      ]
+    },
+    {
+      "id": "anthropic.compat-tools-and-temperature",
+      "required": true,
+      "protocols": ["anthropic-messages"],
+      "variants": ["eager-input", "fine-grained-beta", "tool-cache-supported", "tool-cache-unsupported", "temperature-enabled", "temperature-suppressed-thinking", "temperature-suppressed-model"],
+      "sourceSymbols": ["getAnthropicCompat", "shouldUseFineGrainedToolStreamingBeta", "convertTools", "buildParams"],
+      "expected": "Compatibility flags alter beta headers, tool fields, cache markers, and temperature omission.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "anthropic-api-key-system-cache-short", "protocols": ["anthropic-messages"], "coversVariants": ["eager-input", "fine-grained-beta", "tool-cache-supported", "temperature-enabled"]},
+        {"caseID": "anthropic-compat-suppression", "protocols": ["anthropic-messages"], "coversVariants": ["tool-cache-unsupported", "temperature-suppressed-thinking", "temperature-suppressed-model"]}
+      ]
+    },
+    {
+      "id": "anthropic.reasoning-family",
+      "required": true,
+      "protocols": ["anthropic-messages"],
+      "variants": ["adaptive", "budget", "disabled", "display-summarized", "display-omitted", "native-xhigh"],
+      "sourceSymbols": ["mapThinkingLevelToEffort", "streamSimple", "buildParams"],
+      "expected": "Model family selects adaptive output_config or budget thinking and preserves explicit display.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "anthropic-budget-custom-omitted", "protocols": ["anthropic-messages"], "coversVariants": ["budget", "display-omitted"]},
+        {"caseID": "anthropic-adaptive-xhigh", "protocols": ["anthropic-messages"], "coversVariants": ["adaptive", "display-omitted", "native-xhigh"]},
+        {"caseID": "anthropic-disabled", "protocols": ["anthropic-messages"], "coversVariants": ["disabled", "display-summarized"]}
+      ]
+    },
+    {
+      "id": "anthropic.server-fallback-policy",
+      "required": true,
+      "protocols": ["anthropic-messages"],
+      "variants": ["allowedFallbackModels-present"],
+      "sourceSymbols": ["shouldUseServerSideFallbackBeta", "buildParams"],
+      "expected": "The upstream fallback branch must be explicitly rejected or adopted by policy; it must not be silently omitted.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [{"caseID": "anthropic-server-fallback-source", "protocols": ["anthropic-messages"], "coversVariants": ["allowedFallbackModels-present"]}]
+    },
+    {
+      "id": "openai-completions.compat-flags",
+      "required": true,
+      "protocols": ["openai-completions"],
+      "variants": ["usage-stream", "store", "max-token-field", "developer-role", "tool-result-name", "assistant-bridge", "thinking-as-text", "reasoning-content-required", "zai-tool-stream"],
+      "sourceSymbols": ["getCompat", "buildParams", "convertMessages"],
+      "expected": "Every compatibility flag changes the observable request exactly as pinned source.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "completions.compat-flags", "protocols": ["openai-completions"], "coversVariants": ["usage-stream", "store", "max-token-field"]},
+        {"caseID": "completions.compat-tool-result-name", "protocols": ["openai-completions"], "coversVariants": ["tool-result-name"]},
+        {"caseID": "completions.compat-assistant-bridge", "protocols": ["openai-completions"], "coversVariants": ["assistant-bridge"]},
+        {"caseID": "completions.compat-thinking-as-text", "protocols": ["openai-completions"], "coversVariants": ["developer-role", "thinking-as-text"]},
+        {"caseID": "completions.compat-reasoning-content", "protocols": ["openai-completions"], "coversVariants": ["developer-role", "reasoning-content-required"]},
+        {"caseID": "completions.compat-zai-tool-stream", "protocols": ["openai-completions"], "coversVariants": ["zai-tool-stream"]}
+      ]
+    },
+    {
+      "id": "openai-completions.reasoning-formats",
+      "required": true,
+      "protocols": ["openai-completions"],
+      "variants": ["openai", "openrouter", "deepseek", "together", "baseten", "zai", "qwen", "qwen-chat-template", "chat-template", "string-thinking", "ant-ling", "budget-field"],
+      "sourceSymbols": ["buildParams", "buildChatTemplateValues", "resolveThinkingTokenBudgetField"],
+      "expected": "Each mutually exclusive thinking format emits its provider-specific shape and mapped effort.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "completions.reasoning-openai-enabled", "protocols": ["openai-completions"], "coversVariants": ["openai"]},
+        {"caseID": "completions.reasoning-openrouter-enabled", "protocols": ["openai-completions"], "coversVariants": ["openrouter"]},
+        {"caseID": "completions.reasoning-deepseek-enabled", "protocols": ["openai-completions"], "coversVariants": ["deepseek"]},
+        {"caseID": "completions.reasoning-together-enabled", "protocols": ["openai-completions"], "coversVariants": ["together"]},
+        {"caseID": "completions.reasoning-baseten-enabled", "protocols": ["openai-completions"], "coversVariants": ["baseten"]},
+        {"caseID": "completions.reasoning-zai-enabled", "protocols": ["openai-completions"], "coversVariants": ["zai"]},
+        {"caseID": "completions.reasoning-qwen-enabled", "protocols": ["openai-completions"], "coversVariants": ["qwen"]},
+        {"caseID": "completions.reasoning-qwen-chat-template-enabled", "protocols": ["openai-completions"], "coversVariants": ["qwen-chat-template"]},
+        {"caseID": "completions.reasoning-chat-template-enabled", "protocols": ["openai-completions"], "coversVariants": ["chat-template"]},
+        {"caseID": "completions.reasoning-string-thinking-enabled", "protocols": ["openai-completions"], "coversVariants": ["string-thinking"]},
+        {"caseID": "completions.reasoning-ant-ling-enabled", "protocols": ["openai-completions"], "coversVariants": ["ant-ling"]},
+        {"caseID": "completions.budget-thinking_token_budget", "protocols": ["openai-completions"], "coversVariants": ["budget-field"]},
+        {"caseID": "completions.budget-thinking_budget", "protocols": ["openai-completions"], "coversVariants": ["budget-field"]},
+        {"caseID": "completions.budget-thinking_budget_tokens", "protocols": ["openai-completions"], "coversVariants": ["budget-field"]}
+      ]
+    },
+    {
+      "id": "openai-completions.routing-and-cache",
+      "required": true,
+      "protocols": ["openai-completions"],
+      "variants": ["openrouter-routing", "vercel-routing", "anthropic-cache-markers", "long-retention", "prompt-cache-key"],
+      "sourceSymbols": ["buildParams", "applyAnthropicCacheControl"],
+      "expected": "Routing preferences and provider-compatible cache markers are source-equivalent.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "completions.routing-and-cache", "protocols": ["openai-completions"], "coversVariants": ["openrouter-routing", "long-retention", "prompt-cache-key"]},
+        {"caseID": "completions.vercel-routing", "protocols": ["openai-completions"], "coversVariants": ["vercel-routing"]},
+        {"caseID": "completions.anthropic-cache-long", "protocols": ["openai-completions"], "coversVariants": ["anthropic-cache-markers", "long-retention"]}
+      ]
+    },
+    {
+      "id": "responses.shared-replay",
+      "required": true,
+      "protocols": ["azure-openai-responses", "openai-codex-responses", "openai-responses"],
+      "variants": ["text-id-fallback", "text-id-signature", "text-id-hash", "reasoning-item", "same-model-tool-id", "different-model-tool-id", "foreign-tool-id", "namespace-keep", "namespace-drop", "function-output", "custom-output"],
+      "sourceSymbols": ["convertResponsesMessages"],
+      "expected": "Response item identity, signatures, namespaces, and outputs follow source identity rules.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "same-source-replay", "protocols": ["azure-openai-responses", "openai-codex-responses", "openai-responses"], "coversVariants": ["text-id-signature", "reasoning-item", "same-model-tool-id", "namespace-keep", "function-output"]},
+        {"caseID": "cross-source-replay", "protocols": ["azure-openai-responses", "openai-codex-responses", "openai-responses"], "coversVariants": ["text-id-fallback", "foreign-tool-id", "namespace-drop"]},
+        {"caseID": "responses.replay-text-id-hash", "protocols": ["openai-responses"], "coversVariants": ["text-id-hash"]},
+        {"caseID": "responses.replay-different-model", "protocols": ["openai-responses"], "coversVariants": ["different-model-tool-id", "namespace-drop"]},
+        {"caseID": "responses.replay-custom-output", "protocols": ["openai-responses"], "coversVariants": ["custom-output"]},
+        {"caseID": "azure-openai-responses.replay-text-id-hash", "protocols": ["azure-openai-responses"], "coversVariants": ["text-id-hash"]},
+        {"caseID": "azure-openai-responses.replay-different-model", "protocols": ["azure-openai-responses"], "coversVariants": ["different-model-tool-id", "namespace-drop"]},
+        {"caseID": "azure-openai-responses.replay-custom-output", "protocols": ["azure-openai-responses"], "coversVariants": ["custom-output"]},
+        {"caseID": "openai-codex-responses.replay-text-id-hash", "protocols": ["openai-codex-responses"], "coversVariants": ["text-id-hash"]},
+        {"caseID": "openai-codex-responses.replay-different-model", "protocols": ["openai-codex-responses"], "coversVariants": ["different-model-tool-id", "namespace-drop"]},
+        {"caseID": "openai-codex-responses.replay-custom-output", "protocols": ["openai-codex-responses"], "coversVariants": ["custom-output"]}
+      ]
+    },
+    {
+      "id": "openai-responses.cache-reasoning",
+      "required": true,
+      "protocols": ["openai-responses"],
+      "variants": ["none-explicit", "none-unsupported", "short-key", "long-retention", "long-unsupported", "environment-long", "reasoning-requested", "reasoning-summary-only", "default-off", "github-off-omitted", "xai-force-include", "max-clamp-16"],
+      "sourceSymbols": ["openai-responses.buildParams", "getPromptCacheRetention"],
+      "expected": "Cache and reasoning defaults follow compatibility and provider identity.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "responses.cache-reasoning-default", "protocols": ["openai-responses"], "coversVariants": ["none-explicit", "default-off"]},
+        {"caseID": "short-cache-session-request", "protocols": ["openai-responses"], "coversVariants": ["short-key"]},
+        {"caseID": "long-cache-session-request", "protocols": ["openai-responses"], "coversVariants": ["long-retention"]},
+        {"caseID": "reasoning-low-request", "protocols": ["openai-responses"], "coversVariants": ["reasoning-requested"]},
+        {"caseID": "responses.reasoning-summary-only", "protocols": ["openai-responses"], "coversVariants": ["reasoning-summary-only"]},
+        {"caseID": "responses.long-unsupported", "protocols": ["openai-responses"], "coversVariants": ["long-unsupported"]},
+        {"caseID": "responses.cache-env-long", "protocols": ["openai-responses"], "coversVariants": ["environment-long"]},
+        {"caseID": "responses.cache-none-unsupported", "protocols": ["openai-responses"], "coversVariants": ["none-unsupported"]},
+        {"caseID": "responses.cache-github", "protocols": ["openai-responses"], "coversVariants": ["github-off-omitted"]},
+        {"caseID": "responses.cache-xai-min16", "protocols": ["openai-responses"], "coversVariants": ["xai-force-include", "max-clamp-16"]}
+      ]
+    },
+    {
+      "id": "azure.configuration",
+      "required": true,
+      "protocols": ["azure-openai-responses"],
+      "variants": ["explicit-base", "environment-base", "resource-derived-base", "environment-resource", "model-base", "missing-base-failure", "invalid-base-failure", "host-path-normalization", "api-version-explicit", "api-version-environment", "api-version-default", "deployment-explicit", "deployment-map", "deployment-model-fallback"],
+      "sourceSymbols": ["resolveAzureConfig", "normalizeAzureBaseUrl", "resolveDeploymentName"],
+      "expected": "Azure endpoint, API version, and deployment resolution are deterministic or fail explicitly.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "azure-config-explicit-precedence", "protocols": ["azure-openai-responses"], "coversVariants": ["explicit-base", "api-version-explicit", "deployment-explicit"]},
+        {"caseID": "azure-config-environment-base-and-map", "protocols": ["azure-openai-responses"], "coversVariants": ["environment-base", "api-version-environment", "deployment-map"]},
+        {"caseID": "azure-config-explicit-resource", "protocols": ["azure-openai-responses"], "coversVariants": ["resource-derived-base", "api-version-default", "deployment-model-fallback"]},
+        {"caseID": "azure-config-environment-resource", "protocols": ["azure-openai-responses"], "coversVariants": ["environment-resource", "api-version-default", "deployment-model-fallback"]},
+        {"caseID": "azure-config-model-azure-normalization", "protocols": ["azure-openai-responses"], "coversVariants": ["model-base", "host-path-normalization", "api-version-default", "deployment-model-fallback"]},
+        {"caseID": "azure-config-model-proxy-path-preserved", "protocols": ["azure-openai-responses"], "coversVariants": ["model-base", "host-path-normalization", "api-version-explicit", "deployment-model-fallback"]},
+        {"caseID": "azure-config-map-miss-uses-model-id", "protocols": ["azure-openai-responses"], "coversVariants": ["deployment-model-fallback"]},
+        {"caseID": "azure-config-missing-base-failure", "protocols": ["azure-openai-responses"], "coversVariants": ["missing-base-failure"]},
+        {"caseID": "azure-config-invalid-base-failure", "protocols": ["azure-openai-responses"], "coversVariants": ["invalid-base-failure"]}
+      ]
+    },
+    {
+      "id": "codex.defaults-and-cache",
+      "required": true,
+      "protocols": ["openai-codex-responses"],
+      "variants": ["default-instructions", "explicit-instructions", "default-verbosity", "explicit-verbosity", "default-tool-choice", "explicit-tool-choice", "parallel-tools", "session-cache", "no-cache", "service-tier"],
+      "sourceSymbols": ["openai-codex-responses.buildRequestBody"],
+      "expected": "Codex defaults and session-affinity request fields match pinned source.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "codex.default-instructions", "protocols": ["openai-codex-responses"], "coversVariants": ["default-instructions", "default-verbosity"]},
+        {"caseID": "codex.defaults-and-cache", "protocols": ["openai-codex-responses"], "coversVariants": ["explicit-instructions", "default-verbosity", "default-tool-choice", "parallel-tools", "session-cache", "service-tier"]},
+        {"caseID": "codex.explicit-verbosity", "protocols": ["openai-codex-responses"], "coversVariants": ["explicit-instructions", "explicit-verbosity"]},
+        {"caseID": "openai-codex-responses.tool-choice-required", "protocols": ["openai-codex-responses"], "coversVariants": ["explicit-tool-choice"]},
+        {"caseID": "request-rich-v1", "protocols": ["openai-codex-responses"], "coversVariants": ["no-cache"]}
+      ]
+    },
+    {
+      "id": "google.replay-and-tool-results",
+      "required": true,
+      "protocols": ["google-generative-ai", "google-vertex"],
+      "variants": ["same-model-signatures", "cross-model-signatures-dropped", "tool-id-required", "tool-id-omitted", "function-response-error", "gemini3-image-nested", "legacy-image-separate", "consecutive-results-merged"],
+      "sourceSymbols": ["google-shared.convertMessages", "requiresToolCallId", "supportsMultimodalFunctionResponse"],
+      "expected": "Google replay identity, function response grouping, and model-family image placement match source.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "same-model-signatures", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["same-model-signatures"]},
+        {"caseID": "cross-model-signatures-dropped", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["cross-model-signatures-dropped"]},
+        {"caseID": "tool-id-required", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["tool-id-required"]},
+        {"caseID": "tool-id-omitted", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["tool-id-omitted"]},
+        {"caseID": "function-response-error", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["function-response-error"]},
+        {"caseID": "gemini3-image-nested", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["gemini3-image-nested"]},
+        {"caseID": "legacy-image-separate", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["legacy-image-separate"]},
+        {"caseID": "consecutive-results-merged", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["consecutive-results-merged"]}
+      ]
+    },
+    {
+      "id": "google.reasoning-model-families",
+      "required": true,
+      "protocols": ["google-generative-ai", "google-vertex"],
+      "variants": ["enabled-level", "enabled-budget", "disabled-gemini3-pro-low", "disabled-flash-minimal", "disabled-gemma-minimal", "disabled-gemini2-budget-zero"],
+      "variantProtocols": {
+        "disabled-gemma-minimal": ["google-generative-ai"]
+      },
+      "sourceSymbols": ["getDisabledThinkingConfig", "getThinkingLevel", "getGemini3ThinkingLevel", "getGoogleBudget"],
+      "expected": "Thinking level/budget encoding follows exact model family.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "enabled-level", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["enabled-level"]},
+        {"caseID": "enabled-budget", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["enabled-budget"]},
+        {"caseID": "disabled-gemini3-pro-low", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["disabled-gemini3-pro-low"]},
+        {"caseID": "disabled-flash-minimal", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["disabled-flash-minimal"]},
+        {"caseID": "disabled-gemma-minimal", "protocols": ["google-generative-ai"], "coversVariants": ["disabled-gemma-minimal"]},
+        {"caseID": "disabled-gemini2-budget-zero", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["disabled-gemini2-budget-zero"]}
+      ]
+    },
+    {
+      "id": "google.tool-strict-mode",
+      "required": true,
+      "protocols": ["google-generative-ai", "google-vertex"],
+      "variants": ["json-schema", "strict-validated", "choice-none", "choice-any"],
+      "sourceSymbols": ["google-shared.convertTools", "resolveGoogleFunctionCallingMode"],
+      "expected": "Schema field and validated calling mode follow model/API capability.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "json-schema", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["json-schema"]},
+        {"caseID": "strict-validated", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["strict-validated"]},
+        {"caseID": "choice-none", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["choice-none"]},
+        {"caseID": "choice-any", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["choice-any"]}
+      ],
+      "unreachableSourceBranches": {"openapi-sanitized": "Pinned Google and Vertex adapters always call convertTools with useOpenAPISchema=false."}
+    },
+    {
+      "id": "vertex.configuration",
+      "required": true,
+      "protocols": ["google-vertex"],
+      "variants": ["api-key", "adc", "project-explicit", "project-env", "project-missing-failure", "location-explicit", "location-env", "location-missing-failure", "custom-base-versioned", "custom-base-unversioned", "placeholder-base"],
+      "sourceSymbols": ["resolveApiKey", "resolveProject", "resolveLocation", "resolveCustomBaseUrl", "baseUrlIncludesApiVersion"],
+      "expected": "Vertex auth/config resolution is deterministic and missing configuration fails before transport.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "api-key-without-adc-config", "protocols": ["google-vertex"], "coversVariants": ["api-key"]},
+        {"caseID": "adc-explicit-config", "protocols": ["google-vertex"], "coversVariants": ["adc", "project-explicit", "location-explicit"]},
+        {"caseID": "adc-env-config", "protocols": ["google-vertex"], "coversVariants": ["adc", "project-env", "location-env"]},
+        {"caseID": "adc-project-missing", "protocols": ["google-vertex"], "coversVariants": ["project-missing-failure"]},
+        {"caseID": "adc-location-missing", "protocols": ["google-vertex"], "coversVariants": ["location-missing-failure"]},
+        {"caseID": "custom-base-versioned", "protocols": ["google-vertex"], "coversVariants": ["custom-base-versioned"]},
+        {"caseID": "custom-base-unversioned", "protocols": ["google-vertex"], "coversVariants": ["custom-base-unversioned"]},
+        {"caseID": "placeholder-base", "protocols": ["google-vertex"], "coversVariants": ["placeholder-base"]}
+      ]
+    },
+    {
+      "id": "mistral.model-capability",
+      "required": true,
+      "protocols": ["mistral-conversations"],
+      "variants": ["image-placeholder", "tool-image-placeholder", "reasoning-effort-model", "prompt-mode-model", "cache-session", "cache-none"],
+      "sourceSymbols": ["toChatMessages", "usesReasoningEffort", "usesPromptModeReasoning", "shouldUsePromptCaching"],
+      "expected": "Image handling, reasoning option, and prompt-cache key follow model capability.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "mistral-image-unsupported", "protocols": ["mistral-conversations"], "coversVariants": ["image-placeholder"]},
+        {"caseID": "mistral-tool-image-unsupported-error", "protocols": ["mistral-conversations"], "coversVariants": ["tool-image-placeholder"]},
+        {"caseID": "mistral-reasoning-effort", "protocols": ["mistral-conversations"], "coversVariants": ["reasoning-effort-model"]},
+        {"caseID": "mistral-prompt-mode", "protocols": ["mistral-conversations"], "coversVariants": ["prompt-mode-model"]},
+        {"caseID": "mistral-cache-long", "protocols": ["mistral-conversations"], "coversVariants": ["cache-session"]},
+        {"caseID": "mistral-cache-none", "protocols": ["mistral-conversations"], "coversVariants": ["cache-none"]}
+      ]
+    },
+    {
+      "id": "pi-messages.full-context",
+      "required": true,
+      "protocols": ["pi-messages"],
+      "variants": ["timestamps", "source-identity", "replay-metadata", "added-tool-names", "debug-query"],
+      "sourceSymbols": ["pi-messages.stream"],
+      "expected": "The complete canonical context and options survive serialization; debug affects only the query.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "pi-full-context", "protocols": ["pi-messages"], "coversVariants": ["timestamps", "source-identity", "replay-metadata", "added-tool-names"]},
+        {"caseID": "pi-debug-query", "protocols": ["pi-messages"], "coversVariants": ["debug-query"]}
+      ]
+    },
+    {
+      "id": "bedrock.cache-and-replay",
+      "required": true,
+      "protocols": ["bedrock-converse-stream"],
+      "variants": ["cache-unsupported", "cache-short", "cache-long", "cache-forced", "system-cache-point", "last-user-cache-point", "claude-signed", "claude-unsigned-text", "nonclaude-no-signature", "redacted-valid", "redacted-invalid-drop"],
+      "sourceSymbols": ["supportsPromptCaching", "buildSystemPrompt", "convertMessages", "decodeRedactedContent"],
+      "expected": "Bedrock cache points and reasoning replay follow model family and signature validity.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "bedrock-cache-short-signed", "protocols": ["bedrock-converse-stream"], "coversVariants": ["cache-short", "system-cache-point", "last-user-cache-point", "claude-signed"]},
+        {"caseID": "bedrock-cache-long-forced-nonclaude", "protocols": ["bedrock-converse-stream"], "coversVariants": ["cache-long", "cache-forced", "nonclaude-no-signature"]},
+        {"caseID": "bedrock-cache-unsupported-invalid-redacted", "protocols": ["bedrock-converse-stream"], "coversVariants": ["cache-unsupported", "redacted-invalid-drop"]},
+        {"caseID": "same-source-replay", "protocols": ["bedrock-converse-stream"], "coversVariants": ["claude-unsigned-text"]},
+        {"caseID": "same-source-redacted-replay", "protocols": ["bedrock-converse-stream"], "coversVariants": ["redacted-valid"]}
+      ]
+    },
+    {
+      "id": "bedrock.reasoning-and-tool-choice",
+      "required": true,
+      "protocols": ["bedrock-converse-stream"],
+      "variants": ["nonclaude-omit", "claude-adaptive", "claude-budget", "govcloud-display-omit", "interleaved-beta", "tool-none", "tool-auto", "tool-any", "tool-named"],
+      "sourceSymbols": ["buildAdditionalModelRequestFields", "isGovCloudBedrockTarget", "convertToolConfig"],
+      "expected": "Additional model fields and Bedrock toolChoice follow exact model, region, and options.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "bedrock-nonclaude-reasoning", "protocols": ["bedrock-converse-stream"], "coversVariants": ["nonclaude-omit"]},
+        {"caseID": "bedrock-adaptive-govcloud", "protocols": ["bedrock-converse-stream"], "coversVariants": ["claude-adaptive", "govcloud-display-omit"]},
+        {"caseID": "bedrock-budget-custom-interleaved", "protocols": ["bedrock-converse-stream"], "coversVariants": ["claude-budget", "interleaved-beta"]},
+        {"caseID": "tool-choice-none-request", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-none"]},
+        {"caseID": "tool-choice-auto-request", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-auto"]},
+        {"caseID": "bedrock-tool-any", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-any"]},
+        {"caseID": "bedrock-tool-named", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-named"]}
+      ]
+    },
+    {
+      "id": "openrouter-images.input-output",
+      "required": true,
+      "protocols": ["openrouter-images"],
+      "variants": ["text", "image", "mixed", "empty", "image-only-output", "image-and-text-output"],
+      "sourceSymbols": ["openrouter-images.buildParams"],
+      "expected": "Image inputs become data URLs in order and modalities follow ImagesModel output capability.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "openrouter-text-input", "protocols": ["openrouter-images"], "coversVariants": ["text"]},
+        {"caseID": "openrouter-image-input", "protocols": ["openrouter-images"], "coversVariants": ["image"]},
+        {"caseID": "openrouter-mixed-input", "protocols": ["openrouter-images"], "coversVariants": ["mixed"]},
+        {"caseID": "openrouter-empty-input", "protocols": ["openrouter-images"], "coversVariants": ["empty"]},
+        {"caseID": "openrouter-image-only-output", "protocols": ["openrouter-images"], "coversVariants": ["image-only-output"]},
+        {"caseID": "openrouter-image-text-output", "protocols": ["openrouter-images"], "coversVariants": ["image-and-text-output"]}
+      ]
+    }
+  ]
+}
