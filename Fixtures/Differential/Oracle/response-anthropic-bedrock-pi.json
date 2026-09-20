@@ -271,7 +271,7 @@
       "outcome": "failure",
       "terminal": {
         "content": [],
-        "errorMessage": "fixture throttled\n  Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.",
+        "errorMessage": "Throttling error: fixture throttled",
         "modelID": "fixture-model",
         "providerID": "amazon-bedrock",
         "rawStopReason": null,
@@ -844,5 +844,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
 }

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "repository": "https://github.com/earendil-works/pi.git",
-  "revision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
-  "packageVersion": "0.84.4",
+  "revision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+  "packageVersion": "0.86.1",
   "entries": [
     {
       "protocolID": "anthropic-messages",
@@ -14,16 +14,19 @@
       "upstreamTests": [
         "packages/ai/test/anthropic-empty-thinking-signature-compat.test.ts",
         "packages/ai/test/anthropic-force-adaptive-thinking.test.ts",
+        "packages/ai/test/anthropic-mid-conversation-effort.test.ts",
         "packages/ai/test/anthropic-sse-parsing.test.ts",
         "packages/ai/test/anthropic-tool-name-normalization.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
-        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesDisabledAndMappedAdaptiveReasoning"
+        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesDisabledAndMappedAdaptiveReasoning",
+        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#preservesManagedEffortInTerminalReplayMetadata",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockRequestBranchDifferentialTests.swift#sourceDerivedBranchMatrixMatchesPinnedAnthropicAndBedrockRequests"
       ],
-      "upstreamSourceSHA256": "a0bc4d4749204603e2c8ad2dfffbee51d44281e9162c051585f853dcbd794fe2",
-      "upstreamTestSHA256": "276af44308f0c63b9f112fa6c32423154f29c0bf21a245734e203a4968d65f3b",
-      "swiftEvidenceSHA256": "38e6b5328d19df33daaf180b4827f13c1e85fb4eb225a9236db842742b7a51de"
+      "upstreamSourceSHA256": "86dd72be52dcd5e94e1c6515269aa413310737d04bc00c61f658c4b198aa98b0",
+      "upstreamTestSHA256": "4f634e080849cc0733e62ec9294fa759fe804540dc604b1139489da46e992af5",
+      "swiftEvidenceSHA256": "427a2844ad4a716aa787efcdc3c64ee72349bff0dcdb15a276f77817dd27bfb1"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -33,14 +36,15 @@
         "packages/ai/src/api/azure-openai-responses.lazy.ts"
       ],
       "upstreamTests": [
+        "packages/ai/test/bedrock-cache-write-1h-cost.test.ts",
         "packages/ai/test/stream.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
       ],
-      "upstreamSourceSHA256": "f8a2bbbf3b60872547c5f4660a73ceddfc94db2ef1cfc07f4dbc72abef247c7b",
-      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "upstreamSourceSHA256": "fe6041b2ab6070d0220e20a9a573ba0cb299a791129a03949d83188626876197",
+      "upstreamTestSHA256": "41fe28f63e482f0e52dc8507bb9b5a3329adb5c18ccdeab8511613270ad0eeed",
       "swiftEvidenceSHA256": "3c23b22b8828db242c06817ff59754bff89ff7a14a23889388796fe90b4f69d3"
     },
     {
@@ -61,8 +65,8 @@
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningContext",
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningFrames"
       ],
-      "upstreamSourceSHA256": "a4b63e63290081609d7a67ed0bb695a6bf8d5971f27455f0b65335e1ff5303ac",
-      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "upstreamSourceSHA256": "d718dd6d65ec97a2b98111b68a7fc189da0d2f0cc102bcc83090f8735e534a3b",
+      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
       "swiftEvidenceSHA256": "8b0f68100e2a4d7c85849161a2ab7cb45fd1a192cbdad54a6f0f58b041543c68"
     },
     {
@@ -81,9 +85,9 @@
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#rejectsOffWhenGoogleCanOnlyHideThoughts",
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning"
       ],
-      "upstreamSourceSHA256": "89b20ffe22db94b159bda8c2d9abe856d84e85fb7c06d02832d76e401cab5cfc",
-      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
-      "swiftEvidenceSHA256": "557919e1ad87c98ff2a7763f30e29aac8393654fde7220da036740dcc78e547b"
+      "upstreamSourceSHA256": "2ac2f394868ddf2ed244b6e02275bda3b195dad358c118451ba067d5650b9345",
+      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
+      "swiftEvidenceSHA256": "a178c47eb9e106a7047ffb286b7cec5f8064f54c01488987478ccc40d6293211"
     },
     {
       "protocolID": "google-vertex",
@@ -102,9 +106,9 @@
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning",
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream"
       ],
-      "upstreamSourceSHA256": "3c2810a8fa0f109ea631b6971c35cad01ab4bce553e2e4848046a4ab9cc2e541",
-      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
-      "swiftEvidenceSHA256": "557919e1ad87c98ff2a7763f30e29aac8393654fde7220da036740dcc78e547b"
+      "upstreamSourceSHA256": "ecfb44bbc7f4b69df3aa985039f18e56668efa243b38edd40841b11a138c07d2",
+      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
+      "swiftEvidenceSHA256": "a178c47eb9e106a7047ffb286b7cec5f8064f54c01488987478ccc40d6293211"
     },
     {
       "protocolID": "mistral-conversations",
@@ -122,8 +126,8 @@
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitlyUnsupportedMapFailsBeforeTransport",
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport"
       ],
-      "upstreamSourceSHA256": "3293cf6bc436761b8d4d7a019f929cd9d09a8c73a5a77b3c3c241c31ad5e72b6",
-      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
+      "upstreamSourceSHA256": "5d943fde660c965b8b872387dbe688087e3550cf48960d029e79ccf784f2233f",
+      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
       "swiftEvidenceSHA256": "fade89c50d5d827227d2d2ec4939698d18e4a65d52454fee60298a02ce6378eb"
     },
     {
@@ -149,8 +153,8 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#codexSSEPreservesCacheAffinityAndNormalizesDoneAlias",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
       ],
-      "upstreamSourceSHA256": "b79fb082a44e61617b8552c3f46d7429d6a92de86b6cca3597020f34129da68a",
-      "upstreamTestSHA256": "36eb7420e65aec4887ba56b698ecfad86c0be902cca5efd4eaedc46e15b0d0d5",
+      "upstreamSourceSHA256": "53f2709609a604c744cd41044d8febcff7e9e56901715a1fa1ee3824ca2860fc",
+      "upstreamTestSHA256": "038bf994aac6dac957b22b8b70a84fcd5ffd9ba710baa89ddb8769a093090ab0",
       "swiftEvidenceSHA256": "3c23b22b8828db242c06817ff59754bff89ff7a14a23889388796fe90b4f69d3"
     },
     {
@@ -167,14 +171,15 @@
         "packages/ai/test/openai-completions-reasoning-details.test.ts",
         "packages/ai/test/openai-completions-retry.test.ts",
         "packages/ai/test/openai-completions-tool-choice.test.ts",
-        "packages/ai/test/openai-completions-tool-result-images.test.ts"
+        "packages/ai/test/openai-completions-tool-result-images.test.ts",
+        "packages/ai/test/openai-completions-vllm-priority.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream",
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#reasoningFormatsEncodeOffAndMappedEffort"
       ],
-      "upstreamSourceSHA256": "45660963d95d8bdc4a8fce2157da25901b41b2f0954e2e81dba488aead580228",
-      "upstreamTestSHA256": "046c2361f5076ae0e5735fbe887fe0f1e8221744fcf89e2d38b213850ce45143",
+      "upstreamSourceSHA256": "af0331c2d9fc88013a17a408e691eb7c68b659451489e6d1885be9f67bbd7805",
+      "upstreamTestSHA256": "c9619da09ecf2f648fbee6b827889c8800f7bbee6d6b1fee5bd647fd73ece786",
       "swiftEvidenceSHA256": "e35ce3e769b69acad4f2139efaaa2618c82836be26537542c95c2bb7d6215f0b"
     },
     {
@@ -195,8 +200,8 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
       ],
-      "upstreamSourceSHA256": "04a5183c7bace4e614ad26f46ca6ac3f904b75e9ab4b804ac9c22188dc9190d0",
-      "upstreamTestSHA256": "8a1b3deca52b3e1499580eaf239ffcba96d4294a907c2fa83c1cfc3b7c9a6070",
+      "upstreamSourceSHA256": "d3ad7ab540823177ca936bc9f87cca2bbe463cb8893ff498c986e1206d5d7b9c",
+      "upstreamTestSHA256": "50638b9b9ad589a3289fcbcef4ea0b6ecd053f497b337d79aacc6a22ef0a1592",
       "swiftEvidenceSHA256": "3c23b22b8828db242c06817ff59754bff89ff7a14a23889388796fe90b4f69d3"
     },
     {
@@ -231,9 +236,9 @@
         "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#encodesContextAndNormalizesTextReasoningToolUsageAndTerminal",
         "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#explicitOffIsForwardedAndNilOmitsReasoning"
       ],
-      "upstreamSourceSHA256": "4cf8bb83af5db9cf10f2e9bc95651624cea7c14314cb0443cf5604b1015cd22e",
-      "upstreamTestSHA256": "d0c6a6b2148affd30b76b7d617303fb14632e8b2931998582b81dcc35d661012",
-      "swiftEvidenceSHA256": "c041a7985defb10d0a28dc853e167e511a5edc2e238e68ff96be5fe32f0ffeee"
+      "upstreamSourceSHA256": "3c9786761e2e055546558d7a0e83ee8b36192cc288b38f5b20147fc96c1acbc6",
+      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
+      "swiftEvidenceSHA256": "8b5449888f6cba236360df9daa1e5abce1be04140021d882fd25c912eee4a4ce"
     }
   ]
 }

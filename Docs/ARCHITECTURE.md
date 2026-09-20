@@ -51,11 +51,35 @@ The module owns:
 The module does not own:
 
 - conversation or agent loops;
+- transcript normalization, system-prompt sections, or instruction history;
+- deciding when tools become available or unavailable in a conversation;
+- replaying conversation state to compute the caller's current instructions and
+  tool set;
 - tool execution or approval policy;
 - browser, document, or shell tools;
 - UI and OAuth presentation;
 - product persistence outside an injected credential store;
 - provider fallback.
+
+## Input assembly seam
+
+The caller supplies a fully assembled, provider-neutral `ProviderRequest`.
+AIReasoningCore or another host owns translating its transcript, instructions,
+schemas, tool lifecycle, and generation choices into that request. pi-ai-swift
+owns validating the request against the selected model and projecting it into
+the exact provider wire format.
+
+This distinction remains true when the TypeScript upstream puts both concerns
+in one package. Upstream `Context`, `TranscriptContext`, system-message replay,
+prompt-section merging, tool-set history, and assistant-frame persistence are
+not automatically Swift port targets. They are inspected only to determine
+whether they change provider capability metadata or the observable wire result
+for inputs already expressible through `ProviderRequest`.
+
+If a new provider capability genuinely requires information the current request
+cannot carry, record that as a cross-repository seam decision. Do not enlarge
+`ProviderRuntime` during routine upstream maintenance and do not reproduce the
+upstream conversation engine inside this module.
 
 ## Internal runtime seam
 
@@ -91,8 +115,9 @@ adapters. Tests assert only through the public provider-runtime seam.
 
 ## Upstream relationship
 
-The pinned pi source is a behavior oracle. Swift code is a semantic port, not a
-line-by-line translation. Observable equivalence is defined by:
+The pinned pi source is a behavior oracle for the provider-owned surface. Swift
+code is a semantic port, not a line-by-line or public-type translation.
+Observable equivalence is defined by:
 
 1. canonical structured input;
 2. exact outbound URL, headers, and body;
@@ -104,6 +129,12 @@ line-by-line translation. Observable equivalence is defined by:
 Catalog-only changes may be automated after tests pass. Authentication,
 endpoint, request, credential-schema, or provider-policy changes require an
 explicit review even when an automated port passes.
+
+An upstream source path can contain both provider-owned behavior and
+caller/session implementation. Mapping that path establishes review provenance,
+not ownership of every exported type or helper in the file. The ownership list
+above is authoritative when the maintenance document or upstream package layout
+would otherwise imply a broader port.
 
 The classification, synchronization, incompatibility, and reconstruction rules
 are defined in [AI_MAINTENANCE.md](AI_MAINTENANCE.md). This document owns the
@@ -135,10 +166,10 @@ minimum-thinking encoding, while non-Claude Bedrock models omit Claude-only
 reasoning fields. The runtime never clamps an unsupported caller selection to
 another level.
 
-The model-store persistence schema is now 2 because catalog descriptors include
-reasoning choices. Older snapshots fail explicitly; no inferred migration or
-silent catalog replacement is performed. Model metadata and persisted choices
-must agree. The upstream pin remains unchanged.
+The model-store persistence schema is now 3 because catalog descriptors include
+reasoning choices and prompt-cache lifetime metadata. Older snapshots fail
+explicitly; no inferred migration or silent catalog replacement is performed.
+Model metadata and persisted choices must agree.
 
 For Google models, `.off` is the canonical caller request for the pinned
 source's model-family-specific hidden/minimum-thinking form; it does not claim

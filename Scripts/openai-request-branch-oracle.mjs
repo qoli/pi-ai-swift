@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) {
@@ -127,7 +128,10 @@ async function capture(testCase) {
     "packages/ai/src/api",
     `${testCase.protocolID}.ts`,
   );
-  const implementation = await import(pathToFileURL(modulePath).href);
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(modulePath).href),
+  );
   let payload;
   const schema = grammarSchema(testCase.grammarSchemaVariant, testCase);
   const tool = {

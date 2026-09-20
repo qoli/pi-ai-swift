@@ -176,6 +176,7 @@
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockRequestBranchDifferentialTests.swift#sourceDerivedBranchMatrixMatchesPinnedAnthropicAndBedrockRequests",
         "Tests/PiAIProviderRuntimeTests/GoogleSourceDerivedRequestTests.swift#googleAndVertexRequestBranchesMatchPinnedSourceOracle",
         "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#pinnedSourceOracleIsReproducible",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#sessionHeadersAndCompatibilityOptionsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#successResponseBranchesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleMistralAndOpenRouterResponsesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#pinnedResponseEventOracleIsReproducible",
@@ -187,6 +188,8 @@
         "Scripts/pi-ai-azure-configuration-oracle.mjs",
         "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
         "Scripts/pi-ai-google-request-oracle.mjs",
+        "Scripts/pi-ai-provider-context.mjs",
+        "Scripts/pi-ai-provider-options-oracle.mjs",
         "Scripts/pi-ai-provider-response-branches-oracle.mjs",
         "Scripts/pi-ai-replay-oracle.mjs",
         "Scripts/pi-ai-request-domain-oracle.mjs",
@@ -202,6 +205,7 @@
         "Fixtures/Differential/Cases/request-domain.json",
         "Fixtures/Differential/Cases/request-anthropic-bedrock.json",
         "Fixtures/Differential/Cases/request-google-branches.json",
+        "Fixtures/Differential/Cases/provider-options.json",
         "Fixtures/Differential/Cases/response-rich.json",
         "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
         "Fixtures/Differential/Cases/response-provider-branches.json",
@@ -219,6 +223,7 @@
         "Fixtures/Differential/Oracle/request-domain.json",
         "Fixtures/Differential/Oracle/request-anthropic-bedrock.json",
         "Fixtures/Differential/Oracle/request-google-branches.json",
+        "Fixtures/Differential/Oracle/provider-options.json",
         "Fixtures/Differential/Oracle/response-rich.json",
         "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
         "Fixtures/Differential/Oracle/response-provider-branches.json",
@@ -878,6 +883,40 @@
       "liveVerificationStatus": "passed"
     },
     {
+      "id": "provider-meta",
+      "providerID": "meta",
+      "responsibility": "Tracked Meta Model API provider, Muse subscription device OAuth, model catalog, endpoint, headers, and OpenAI Responses protocol selection.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/Authorization/MetaOAuthAuthorizationAdapter.swift",
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/auth/oauth/meta.ts",
+        "packages/ai/src/providers/meta.models.ts",
+        "packages/ai/src/providers/meta.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/meta-oauth.test.ts",
+        "packages/ai/test/providers.test.ts"
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "http-transport",
+        "wire-openai-responses"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
+    },
+    {
       "id": "provider-minimax",
       "providerID": "minimax",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for minimax.",
@@ -1159,9 +1198,11 @@
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/opencode.models.ts",
+        "packages/ai/src/providers/opencode-headers.ts",
         "packages/ai/src/providers/opencode.ts"
       ],
       "upstreamTestPaths": [
+        "packages/ai/test/opencode-provider-headers.test.ts",
         "packages/ai/test/providers.test.ts"
       ],
       "dependsOn": [
@@ -1195,9 +1236,11 @@
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/providers/opencode-go.models.ts",
+        "packages/ai/src/providers/opencode-headers.ts",
         "packages/ai/src/providers/opencode-go.ts"
       ],
       "upstreamTestPaths": [
+        "packages/ai/test/opencode-provider-headers.test.ts",
         "packages/ai/test/providers.test.ts"
       ],
       "dependsOn": [
@@ -1367,10 +1410,12 @@
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/radius.ts",
         "packages/ai/src/providers/radius-config.ts",
+        "packages/ai/src/providers/radius.models.ts",
         "packages/ai/src/providers/radius.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/providers.test.ts"
+        "packages/ai/test/providers.test.ts",
+        "packages/ai/test/radius-provider.test.ts"
       ],
       "dependsOn": [
         "builtin-provider-registry",
@@ -1804,6 +1849,7 @@
       "upstreamTestPaths": [
         "packages/ai/test/anthropic-empty-thinking-signature-compat.test.ts",
         "packages/ai/test/anthropic-force-adaptive-thinking.test.ts",
+        "packages/ai/test/anthropic-mid-conversation-effort.test.ts",
         "packages/ai/test/anthropic-sse-parsing.test.ts",
         "packages/ai/test/anthropic-tool-name-normalization.test.ts"
       ],
@@ -1812,9 +1858,11 @@
         "http-transport",
         "wire-common"
       ],
-      "evidence": [
-        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
-        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesDisabledAndMappedAdaptiveReasoning"
+    "evidence": [
+      "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
+      "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesDisabledAndMappedAdaptiveReasoning",
+      "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#preservesManagedEffortInTerminalReplayMetadata",
+      "Tests/PiAIProviderRuntimeTests/AnthropicBedrockRequestBranchDifferentialTests.swift#sourceDerivedBranchMatrixMatchesPinnedAnthropicAndBedrockRequests"
       ],
       "requiredGates": [
         "swift-test"
@@ -1836,6 +1884,7 @@
         "packages/ai/src/api/azure-openai-responses.lazy.ts"
       ],
       "upstreamTestPaths": [
+        "packages/ai/test/bedrock-cache-write-1h-cost.test.ts",
         "packages/ai/test/stream.test.ts"
       ],
       "dependsOn": [
@@ -1897,6 +1946,7 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/ProviderConstrainedSamplingResolver.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/JSONAccessors.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderSessionHeaders.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ServerSentEvents.swift"
       ],
       "plannedSwiftPaths": [],
@@ -1904,7 +1954,6 @@
         "packages/ai/src/api/github-copilot-headers.ts",
         "packages/ai/src/api/simple-options.ts",
         "packages/ai/src/api/transform-messages.ts",
-        "packages/ai/src/utils/deferred-tools.ts",
         "packages/ai/src/utils/diagnostics.ts",
         "packages/ai/src/utils/error-body.ts",
         "packages/ai/src/utils/estimate.ts",
@@ -1918,10 +1967,13 @@
         "packages/ai/src/utils/provider-retry.ts",
         "packages/ai/src/utils/sanitize-unicode.ts",
         "packages/ai/src/utils/sleep.ts",
+        "packages/ai/src/utils/text.ts",
+        "packages/ai/src/utils/transcript.ts",
         "packages/ai/src/utils/uuid.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
+        "packages/ai/test/event-stream.test.ts",
         "packages/ai/test/provider-error-body-regression.test.ts",
         "packages/ai/test/provider-retry.test.ts",
         "packages/ai/test/tool-call-without-result.test.ts",
@@ -2100,7 +2152,8 @@
         "packages/ai/test/openai-completions-reasoning-details.test.ts",
         "packages/ai/test/openai-completions-retry.test.ts",
         "packages/ai/test/openai-completions-tool-choice.test.ts",
-        "packages/ai/test/openai-completions-tool-result-images.test.ts"
+        "packages/ai/test/openai-completions-tool-result-images.test.ts",
+        "packages/ai/test/openai-completions-vllm-priority.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",

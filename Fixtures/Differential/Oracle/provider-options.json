@@ -1,0 +1,43 @@
+{
+  "cases": {
+    "baseten-completions-session": {
+      "headers": {
+        "session_id": "fixture-session",
+        "x-client-request-id": "fixture-session",
+        "x-session-affinity": "fixture-session"
+      }
+    },
+    "opencode-session-wrapper": {
+      "headers": {
+        "x-opencode-session": "fixture-session"
+      }
+    },
+    "openrouter-anthropic-session": {
+      "headers": {
+        "x-session-id": "fixture-session"
+      }
+    },
+    "openrouter-completions-session": {
+      "headers": {
+        "x-session-id": "fixture-session"
+      }
+    },
+    "openrouter-responses-session": {
+      "headers": {
+        "x-session-id": "fixture-session"
+      }
+    },
+    "responses-max-output-disabled": {
+      "requestBody": {
+        "maxOutputTokensPresent": false
+      }
+    },
+    "vllm-priority": {
+      "requestBody": {
+        "priority": 7
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
+}

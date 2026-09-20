@@ -1,7 +1,6 @@
 {
   "schemaVersion": 1,
-  "caseID": "multiple-system-explicit-failure",
-  "additionalCaseIDs": ["reasoning-mapped-null-explicit-failure"],
-  "sourcePath": "packages/ai/src/types.ts",
-  "sourceSymbol": "Context.systemPrompt"
+  "caseID": "reasoning-mapped-null-explicit-failure",
+  "sourcePath": "packages/ai/src/models.ts",
+  "sourceSymbol": "getSupportedThinkingLevels"
 }

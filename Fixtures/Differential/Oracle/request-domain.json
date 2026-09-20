@@ -1,30 +1,17 @@
 {
-  "additionalCases": {
-    "reasoning-mapped-null-explicit-failure": {
-      "sourceSupportedLevels": [
-        "low",
-        "medium",
-        "high",
-        "max"
-      ],
-      "sourceSymbol": "getSupportedThinkingLevels",
-      "swiftDisposition": {
-        "code": "unsupportedCapability",
-        "outcome": "typedFailure"
-      }
-    }
-  },
-  "caseID": "multiple-system-explicit-failure",
+  "caseID": "reasoning-mapped-null-explicit-failure",
   "schemaVersion": 1,
-  "sourceContract": {
-    "maximumSystemPrompts": 1,
-    "type": "optional-string"
-  },
-  "sourcePath": "packages/ai/src/types.ts",
-  "sourceSymbol": "Context.systemPrompt",
+  "sourcePath": "packages/ai/src/models.ts",
+  "sourceSupportedLevels": [
+    "low",
+    "medium",
+    "high",
+    "max"
+  ],
+  "sourceSymbol": "getSupportedThinkingLevels",
   "swiftDisposition": {
-    "code": "invalidRequest",
+    "code": "unsupportedCapability",
     "outcome": "typedFailure"
   },
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
 }

@@ -33,7 +33,7 @@ struct ProviderModelRefreshPayload: Sendable {
 }
 
 actor ProviderModelStore {
-  static let persistenceSchemaVersion = 2
+  static let persistenceSchemaVersion = 3
 
   private let expectedRevision: String
   private let persistenceURL: URL?

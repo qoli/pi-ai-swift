@@ -56,14 +56,26 @@ unknown APIs fail during construction. Credentials remain in the injected
 inventory. `UpstreamMappings/pi-ai.json` records every foundation,
 authorization, wire-protocol, and provider area with a truthful implementation
 status. It is the durable maintenance IR between discovery and implementation;
-tracking a provider does not claim it is already supported. Maintenance is
-human-initiated and may be irregular: an inventory task records a new provider
-as `missing`, while a later implementation task supplies the Swift vertical
-slice and executable evidence. No scheduler or unattended watcher is required.
-Run:
+tracking a provider does not claim it is already supported.
+
+`Scripts/check-upstream.sh` is intentionally only a signal. It prints `YES` when
+the checked-in pin, mappings, hashes, source-derived fixtures, and coverage are
+consistent, or `NO` when maintenance is required. A candidate revision can be
+checked without changing repository state:
 
 ```bash
 ./Scripts/check-upstream.sh
+./Scripts/check-upstream.sh --candidate <full-upstream-commit>
+```
+
+When the candidate signal returns `NO`, run the AI maintenance workflow in
+[`prompts/pi-ai-upstream-maintenance.md`](prompts/pi-ai-upstream-maintenance.md).
+That workflow owns upstream-intent analysis, planning, implementation, evidence
+updates, and final acceptance. The signal script owns none of those tasks.
+
+Repository acceptance remains separate:
+
+```bash
 swift test
 ```
 
@@ -73,6 +85,11 @@ normalized events, authentication transitions, and explicit errors. See
 the [design registry](Docs/README.md),
 [`Docs/ARCHITECTURE.md`](Docs/ARCHITECTURE.md), and
 [`Docs/AI_MAINTENANCE.md`](Docs/AI_MAINTENANCE.md).
+
+The TypeScript package also contains transcript, system-prompt, tool-lifecycle,
+and host utilities that are outside this provider kernel. Their source location
+does not make them Swift port targets. Maintenance applies the architecture
+ownership filter before classifying provider changes.
 
 ## Opt-in live acceptance
 

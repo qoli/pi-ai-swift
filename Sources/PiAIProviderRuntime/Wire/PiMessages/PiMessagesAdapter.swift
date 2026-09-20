@@ -149,37 +149,19 @@ struct PiMessagesAdapter: WireProtocolAdapter {
       guard case .system(let text) = message else { return nil }
       return text
     }.joined(separator: "\n\n")
-    var contextObject: [String: JSONValue] = [
-      "messages": .array(try makeMessages(request.messages, context: context))
-    ]
-    if !systemPrompt.isEmpty {
-      contextObject["systemPrompt"] = .string(systemPrompt)
+    var messages = try makeMessages(request.messages, context: context)
+    if !systemPrompt.isEmpty || !request.tools.isEmpty {
+      var system: [String: JSONValue] = [
+        "role": .string("system"),
+        "content": .string(systemPrompt),
+        "timestamp": .integer(0),
+      ]
+      if !request.tools.isEmpty {
+        system["toolsAdded"] = .array(request.tools.map(makeTool(_:)))
+      }
+      messages.insert(.object(system), at: 0)
     }
-    if !request.tools.isEmpty {
-      contextObject["tools"] = .array(
-        request.tools.map {
-          var tool: [String: JSONValue] = [
-            "name": .string($0.name),
-            "description": .string($0.description),
-            "parameters": $0.inputSchema,
-          ]
-          if let constrainedSampling = $0.constrainedSampling {
-            switch constrainedSampling {
-            case .jsonSchema(let strict):
-              tool["constrainedSampling"] = .object([
-                "type": .string("json_schema"),
-                "strict": .string(strict.rawValue),
-              ])
-            case .grammar(let variants):
-              tool["constrainedSampling"] = .object([
-                "type": .string("grammar"),
-                "variants": .object(variants.mapValues(JSONValue.string)),
-              ])
-            }
-          }
-          return .object(tool)
-        })
-    }
+    let contextObject: [String: JSONValue] = ["messages": .array(messages)]
 
     var options: [String: JSONValue] = [:]
     if let temperature = request.options.temperature {
@@ -274,7 +256,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
         }
         return .object(object)
       case .toolResult(let result):
-        var object: [String: JSONValue] = [
+        let object: [String: JSONValue] = [
           "role": .string("toolResult"),
           "toolCallId": .string(result.toolCallID),
           "toolName": .string(result.toolName),
@@ -282,12 +264,32 @@ struct PiMessagesAdapter: WireProtocolAdapter {
           "isError": .bool(result.isError),
           "timestamp": .integer(result.timestampMilliseconds ?? 0),
         ]
-        if let addedToolNames = result.addedToolNames {
-          object["addedToolNames"] = .array(addedToolNames.map(JSONValue.string))
-        }
         return .object(object)
       }
     }
+  }
+
+  private func makeTool(_ tool: ProviderToolDefinition) -> JSONValue {
+    var object: [String: JSONValue] = [
+      "name": .string(tool.name),
+      "description": .string(tool.description),
+      "parameters": tool.inputSchema,
+    ]
+    if let constrainedSampling = tool.constrainedSampling {
+      switch constrainedSampling {
+      case .jsonSchema(let strict):
+        object["constrainedSampling"] = .object([
+          "type": .string("json_schema"),
+          "strict": .string(strict.rawValue),
+        ])
+      case .grammar(let variants):
+        object["constrainedSampling"] = .object([
+          "type": .string("grammar"),
+          "variants": .object(variants.mapValues(JSONValue.string)),
+        ])
+      }
+    }
+    return .object(object)
   }
 
   private func makeUserContent(_ content: ProviderUserContent) throws -> JSONValue {

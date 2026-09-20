@@ -164,7 +164,12 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     streamingTransport: any ProviderHTTPStreamingTransport,
     authorizationTransport: any ProviderHTTPTransport
   ) throws -> ProviderRuntimeKernel {
-    let definitions = try registry.providers.map {
+    // Keep newly inventoried providers out of the runtime until their complete
+    // authorization and vertical-slice evidence is landed.
+    let unsupportedProviderIDs: Set<String> = ["meta"]
+    let definitions = try registry.providers.filter {
+      !unsupportedProviderIDs.contains($0.id)
+    }.map {
       try makeDefinition(
         $0,
         authorizationTransport: authorizationTransport

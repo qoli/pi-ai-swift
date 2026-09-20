@@ -81,6 +81,17 @@ def main() -> int:
         generate=arguments.generate,
         description="request-domain contract",
     )
+    verify_or_generate_exact(
+        repo=repo,
+        script="pi-ai-provider-options-oracle.mjs",
+        arguments=[
+            str(upstream),
+            str(repo / "Fixtures/Differential/Cases/provider-options.json"),
+        ],
+        output_path=repo / "Fixtures/Differential/Oracle/provider-options.json",
+        generate=arguments.generate,
+        description="provider option and session-header contract",
+    )
     for script, case_relative, oracle_relative, description in [
         (
             "pi-ai-anthropic-bedrock-request-oracle.mjs",

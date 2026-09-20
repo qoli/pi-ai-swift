@@ -332,7 +332,7 @@ struct ContractTests {
   }
 
   @Test
-  func multipleSystemMessagesFailInsteadOfInventingAnUpstreamMapping() throws {
+  func multipleSystemMessagesFailAtTheCallerAssembledRequestSeam() throws {
     let request = ProviderRequest(
       id: "multiple-system-explicit-failure",
       providerID: "fixture",
@@ -350,11 +350,11 @@ struct ContractTests {
 
     do {
       try request.validateSingleSystemMessage(operation: "fixture.request.system")
-      Issue.record("multiple system messages unexpectedly passed source-domain validation")
+      Issue.record("multiple system messages unexpectedly passed request-seam validation")
     } catch let failure as ProviderRuntimeFailure {
       #expect(failure.code == .invalidRequest)
       #expect(failure.operation == "fixture.request.system")
-      #expect(failure.message.contains("one system prompt"))
+      #expect(failure.message.contains("one caller-assembled current system prompt"))
     }
   }
 
@@ -407,19 +407,20 @@ struct ContractTests {
     #expect(lock.schemaVersion == 3)
     #expect(lock.revision.count == 40)
     #expect(lock.package.name == "@earendil-works/pi-ai")
-    #expect(lock.package.version == "0.84.4")
-    #expect(lock.trackedBuiltinProviders.count == 40)
+    #expect(lock.package.version == "0.86.1")
+    #expect(lock.trackedBuiltinProviders.count == 41)
     #expect(lock.trackedBuiltinProviders.contains("github-copilot"))
     #expect(lock.trackedBuiltinProviders.contains("xai"))
     #expect(lock.trackedBuiltinProviders.contains("deepseek"))
     #expect(lock.trackedBuiltinProviders.contains("qwen-token-plan"))
+    #expect(lock.trackedBuiltinProviders.contains("meta"))
     #expect(!lock.requiredSourcePaths.isEmpty)
     let mapping = try JSONDecoder().decode(
       UpstreamMapping.self,
       from: Data(contentsOf: mappingURL)
     )
     #expect(mapping.schemaVersion == 3)
-    #expect(mapping.areas.count == 63)
+    #expect(mapping.areas.count == 64)
     #expect(mapping.areas.allSatisfy { !$0.dependsOn.contains($0.id) })
   }
 }

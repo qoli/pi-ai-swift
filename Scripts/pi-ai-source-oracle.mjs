@@ -3,6 +3,7 @@
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) {
@@ -33,7 +34,10 @@ async function captureProtocol(protocol) {
   }
 
   const modulePath = path.join(apiRoot, `${protocol.protocolID}.ts`);
-  const implementation = await import(pathToFileURL(modulePath).href);
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(modulePath).href),
+  );
   if (typeof implementation.streamSimple !== "function") {
     throw new Error(`${protocol.protocolID} has no streamSimple oracle`);
   }

@@ -4,6 +4,7 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) throw new Error("usage: openai-response-event-oracle.mjs UPSTREAM CASE");
@@ -79,9 +80,12 @@ async function runResponses(events, options) {
 }
 
 async function runResponsesFlavor(testCase, usage) {
-  const implementation = await import(pathToFileURL(path.join(
-    upstreamRoot, `packages/ai/src/api/${testCase.api}.ts`,
-  )).href);
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(path.join(
+      upstreamRoot, `packages/ai/src/api/${testCase.api}.ts`,
+    )).href),
+  );
   const model = modelFor(testCase.api, testCase.provider, testCase.model);
   model.cost = { input: 1_000_000, output: 2_000_000, cacheRead: 3_000_000, cacheWrite: 4_000_000 };
   const response = {
@@ -129,9 +133,12 @@ async function runResponsesOutcome(events) {
 }
 
 async function runCompletions(chunks, options = {}) {
-  const implementation = await import(pathToFileURL(path.join(
-    upstreamRoot, "packages/ai/src/api/openai-completions.ts",
-  )).href);
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(path.join(
+      upstreamRoot, "packages/ai/src/api/openai-completions.ts",
+    )).href),
+  );
   const model = modelFor("openai-completions", "fixture", "requested-model");
   model.compat = {
     supportsFinishReason: options.supportsFinishReason ?? true,
@@ -154,9 +161,12 @@ async function runCompletions(chunks, options = {}) {
 }
 
 async function runCompletionHTTPRawMetadata() {
-  const implementation = await import(pathToFileURL(path.join(
-    upstreamRoot, "packages/ai/src/api/openai-completions.ts",
-  )).href);
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(path.join(
+      upstreamRoot, "packages/ai/src/api/openai-completions.ts",
+    )).href),
+  );
   const model = modelFor("openai-completions", "openrouter", "requested-model");
   const stream = implementation.stream(model, {
     messages: [{ role: "user", content: "hello", timestamp: 0 }],
@@ -178,9 +188,12 @@ async function runCompletionHTTPRawMetadata() {
 }
 
 async function runCompletionAbort() {
-  const implementation = await import(pathToFileURL(path.join(
-    upstreamRoot, "packages/ai/src/api/openai-completions.ts",
-  )).href);
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(path.join(
+      upstreamRoot, "packages/ai/src/api/openai-completions.ts",
+    )).href),
+  );
   const controller = new AbortController();
   controller.abort();
   const model = modelFor("openai-completions", "fixture", "requested-model");

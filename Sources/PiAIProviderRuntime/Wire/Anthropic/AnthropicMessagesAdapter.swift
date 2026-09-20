@@ -26,6 +26,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
           var reducer = AnthropicEventReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
+            providerThinkingLevel: managedThinkingLevel(request: request, context: context),
             pricing: try ProviderUsagePricing.parse(
               metadata: context.modelConfiguration.metadata,
               providerID: request.providerID,
@@ -77,32 +78,21 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     urlRequest.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
     urlRequest.setValue("true", forHTTPHeaderField: "anthropic-dangerous-direct-browser-access")
     let isOAuth = isOAuthCredential(context.credential)
-    var betaFeatures: [String] = []
-    if !request.tools.isEmpty, compat.bool("supportsEagerToolInputStreaming") == false {
-      betaFeatures.append("fine-grained-tool-streaming-2025-05-14")
-    }
-    if request.options.providerOptions["interleavedThinking"]?.boolValue != false,
-      compat.bool("forceAdaptiveThinking") != true
-    {
-      betaFeatures.append("interleaved-thinking-2025-05-14")
-    }
+    let betaFeatures = betaFeatures(
+      request: request, compat: compat, isOAuth: isOAuth, headers: context.headers)
     if isOAuth {
-      betaFeatures.insert(contentsOf: ["claude-code-20250219", "oauth-2025-04-20"], at: 0)
-      urlRequest.setValue("claude-cli/2.1.75", forHTTPHeaderField: "User-Agent")
+      urlRequest.setValue("claude-cli/2.1.251", forHTTPHeaderField: "User-Agent")
       urlRequest.setValue("cli", forHTTPHeaderField: "x-app")
     }
     if !betaFeatures.isEmpty {
       urlRequest.setValue(betaFeatures.joined(separator: ","), forHTTPHeaderField: "anthropic-beta")
     }
-    if request.options.cacheRetention != .none,
-      compat.bool("sendSessionAffinityHeaders") == true,
-      let sessionID = request.options.sessionID
-    {
-      urlRequest.setValue(sessionID, forHTTPHeaderField: "x-session-affinity")
-    }
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
+    ProviderSessionHeaders.applyAnthropicAffinity(
+      request: request, context: context, compat: compat, to: &urlRequest)
+    ProviderSessionHeaders.applyOpenCode(request: request, to: &urlRequest)
     applyGitHubCopilotHeaders(
       providerID: request.providerID,
       messages: request.messages,
@@ -111,12 +101,48 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     try applyCredential(
       context.credential, to: &urlRequest, providerID: request.providerID,
       headerOwned: hasCredentialHeader(context.headers))
+    var body = try makeBody(request, context: context, isOAuth: isOAuth)
+    if !betaFeatures.isEmpty { body["betas"] = .array(betaFeatures.map(JSONValue.string)) }
     urlRequest.httpBody = try encodeJSONObject(
-      try makeBody(request, context: context, isOAuth: isOAuth),
+      body,
       providerID: request.providerID,
       operation: "anthropic.request.encode"
     )
     return urlRequest
+  }
+
+  private func betaFeatures(
+    request: ProviderRequest,
+    compat: [String: JSONValue],
+    isOAuth: Bool,
+    headers: [String: String]
+  ) -> [String] {
+    if let configured = headers.first(where: { $0.key.lowercased() == "anthropic-beta" })?.value {
+      return Array(
+        Set(
+          configured.split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        )
+      ).sorted()
+    }
+    var features: [String] = []
+    if isOAuth { features.append(contentsOf: ["claude-code-20250219", "oauth-2025-04-20"]) }
+    if !request.tools.isEmpty, compat.bool("supportsEagerToolInputStreaming") == false {
+      features.append("fine-grained-tool-streaming-2025-05-14")
+    }
+    if request.options.reasoningEffort != nil, request.options.reasoningEffort != .off,
+      request.options.providerOptions["interleavedThinking"]?.boolValue != false,
+      compat.bool("forceAdaptiveThinking") != true
+    {
+      features.append("interleaved-thinking-2025-05-14")
+    }
+    if compat.bool("supportsMidConvoEffort") == true {
+      features.append("mid-conversation-output-config-2026-07-01")
+      features.append("thinking-binding-controls-2026-08-01")
+    }
+    var seen = Set<String>()
+    return features.filter { seen.insert($0).inserted }
   }
 
   private func applyCredential(
@@ -173,10 +199,17 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       }
       return .object(value)
     }()
-    let wireMessages = applyingCacheControlToLastUserMessage(
+    let cachedMessages = applyingCacheControlToLastUserMessage(
       try makeMessages(request.messages.insertingMissingToolResults(), context: context),
       cacheControl: cacheControl
     )
+    let managedEffort = managedThinkingLevel(request: request, context: context)
+    let wireMessages =
+      managedEffort.map {
+        insertingThinkingLevelMessages(
+          cachedMessages, messages: request.messages.insertingMissingToolResults(),
+          activeEffort: $0, providerID: request.providerID)
+      } ?? cachedMessages
     var body: [String: JSONValue] = [
       "model": .string(request.modelID),
       "messages": .array(wireMessages),
@@ -204,11 +237,20 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     }
     if let temperature = request.options.temperature,
       request.options.reasoningEffort == nil || request.options.reasoningEffort == .off,
+      managedEffort == nil,
       compat.bool("supportsTemperature") != false
     {
       body["temperature"] = .number(temperature)
     }
-    if let effort = request.options.reasoningEffort, context.model.capabilities.reasoning {
+    if let managedEffort {
+      let display = request.options.providerOptions["thinkingDisplay"]?.stringValue ?? "summarized"
+      body["thinking"] = .object([
+        "type": .string("adaptive"),
+        "display": .string(display),
+        "block_binding": .object(["prefix_mismatch_behavior": .string("drop_block")]),
+      ])
+      body["output_config"] = .object(["effort": .string("high")])
+    } else if let effort = request.options.reasoningEffort, context.model.capabilities.reasoning {
       let metadata = context.modelConfiguration.metadata
       if effort == .off {
         body["thinking"] = .object(["type": .string("disabled")])
@@ -480,6 +522,70 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     return groupingConsecutiveToolResults(converted)
   }
 
+  private func managedThinkingLevel(
+    request: ProviderRequest,
+    context: WireProtocolContext
+  ) -> String? {
+    guard
+      context.modelConfiguration.metadata.object("compat")?.bool("supportsMidConvoEffort")
+        == true
+    else { return nil }
+    let requested = request.options.reasoningEffort ?? .high
+    guard requested != .off else { return nil }
+    return context.modelConfiguration.metadata.object("thinkingLevelMap")?.string(
+      requested.rawValue)
+      ?? (requested == .minimal ? "low" : requested.rawValue)
+  }
+
+  private func insertingThinkingLevelMessages(
+    _ wireMessages: [JSONValue],
+    messages: [ProviderMessage],
+    activeEffort: String,
+    providerID: String
+  ) -> [JSONValue] {
+    var result: [JSONValue] = []
+    var wireIndex = 0
+    for message in messages {
+      guard case .assistantMessage(let assistant) = message else { continue }
+      guard
+        assistant.replayContent(
+          for: ProviderMessageSource(
+            api: protocolID, providerID: providerID, modelID: assistant.source.modelID)) != nil
+      else { continue }
+      while wireIndex < wireMessages.count,
+        wireMessages[wireIndex].objectValue?.string("role") != "assistant"
+      {
+        result.append(wireMessages[wireIndex])
+        wireIndex += 1
+      }
+      guard wireIndex < wireMessages.count else { break }
+      if assistant.source.api == protocolID,
+        assistant.source.providerID == providerID,
+        let effort = assistant.providerMetadata["providerThinkingLevel"]?.stringValue,
+        isAnthropicEffort(effort)
+      {
+        result.append(thinkingLevelMessage(effort))
+      }
+      result.append(wireMessages[wireIndex])
+      wireIndex += 1
+    }
+    result.append(contentsOf: wireMessages.dropFirst(wireIndex))
+    result.append(thinkingLevelMessage(activeEffort))
+    return result
+  }
+
+  private func thinkingLevelMessage(_ effort: String) -> JSONValue {
+    .object([
+      "role": .string("system"),
+      "content": .array([]),
+      "output_config": .object(["effort": .string(effort)]),
+    ])
+  }
+
+  private func isAnthropicEffort(_ value: String) -> Bool {
+    ["low", "medium", "high", "xhigh", "max"].contains(value)
+  }
+
   private func groupingConsecutiveToolResults(_ messages: [JSONValue]) -> [JSONValue] {
     var grouped: [JSONValue] = []
     for value in messages {
@@ -589,6 +695,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
 private struct AnthropicEventReducer {
   let providerID: String
   let requestedModelID: String
+  let providerThinkingLevel: String?
   let pricing: ProviderUsagePricing?
   private var responseID: String?
   private var responseModelID: String?
@@ -606,9 +713,15 @@ private struct AnthropicEventReducer {
   private var finishReason: ProviderFinishReason?
   private var terminal = false
 
-  init(providerID: String, requestedModelID: String, pricing: ProviderUsagePricing?) {
+  init(
+    providerID: String,
+    requestedModelID: String,
+    providerThinkingLevel: String?,
+    pricing: ProviderUsagePricing?
+  ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
+    self.providerThinkingLevel = providerThinkingLevel
     self.pricing = pricing
   }
 
@@ -885,7 +998,10 @@ private struct AnthropicEventReducer {
         ),
         finishReason: reason,
         rawFinishReason: rawFinishReason,
-        timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000)
+        timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000),
+        providerMetadata: providerThinkingLevel.map {
+          ["providerThinkingLevel": .string($0)]
+        } ?? [:]
       ))
   }
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "caseID": "response-anthropic-bedrock-pi-v1",
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
   "scenarios": [
     {"caseID":"anthropic-redacted-pause-usage","protocolID":"anthropic-messages","category":"success"},
     {"caseID":"anthropic-signed-length","protocolID":"anthropic-messages","category":"success"},

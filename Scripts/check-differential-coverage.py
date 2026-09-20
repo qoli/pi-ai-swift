@@ -75,6 +75,27 @@ def executable_request_cases(repo: pathlib.Path) -> dict[str, set[str]]:
         for additional_case_id in request_domain.get("additionalCases", {}):
             result.setdefault(protocol_id, set()).add(additional_case_id)
 
+    provider_options = load_json(
+        repo / "Fixtures/Differential/Oracle/provider-options.json"
+    ).get("cases", {})
+    provider_option_protocols = {
+        "openrouter-completions-session": ["openai-completions"],
+        "baseten-completions-session": ["openai-completions"],
+        "openrouter-responses-session": ["openai-responses"],
+        "openrouter-anthropic-session": ["anthropic-messages"],
+        "opencode-session-wrapper": [
+            "anthropic-messages", "google-generative-ai",
+            "openai-completions", "openai-responses",
+        ],
+        "vllm-priority": ["openai-completions"],
+        "responses-max-output-disabled": ["openai-responses"],
+    }
+    for case_id, protocols in provider_option_protocols.items():
+        if case_id not in provider_options:
+            raise SystemExit(f"provider-options oracle is missing {case_id}")
+        for protocol_id in protocols:
+            result.setdefault(protocol_id, set()).add(case_id)
+
     anthropic_bedrock_fixture = load_json(
         repo / "Fixtures/Differential/Cases/request-anthropic-bedrock.json"
     )

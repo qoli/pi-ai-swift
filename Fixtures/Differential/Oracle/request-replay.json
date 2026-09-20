@@ -49,6 +49,9 @@
     "aborted-assistant-is-not-replayed": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -394,6 +397,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -519,6 +525,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -584,24 +612,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -615,6 +625,9 @@
     "consecutive-tool-results-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -1356,6 +1369,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -1605,6 +1621,43 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  {
+                    "description": "Read another weather report",
+                    "name": "weather2",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -1691,39 +1744,6 @@
                 "toolCallId": "call-second",
                 "toolName": "weather2"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              },
-              {
-                "description": "Read another weather report",
-                "name": "weather2",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -1737,6 +1757,9 @@
     "cross-source-redacted-is-dropped": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -2208,6 +2231,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -2366,6 +2392,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -2432,24 +2480,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -2463,6 +2493,9 @@
     "cross-source-replay": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -2977,6 +3010,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -3148,6 +3184,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -3213,24 +3271,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -3244,6 +3284,9 @@
     "deferred-tool-added-once-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -3386,6 +3429,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -3611,6 +3657,43 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  {
+                    "description": "Look up a place",
+                    "name": "lookup",
+                    "parameters": {
+                      "properties": {
+                        "query": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "query"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -3664,9 +3747,6 @@
                 }
               },
               {
-                "addedToolNames": [
-                  "lookup"
-                ],
                 "content": [
                   {
                     "text": "sunny",
@@ -3678,39 +3758,6 @@
                 "timestamp": 2,
                 "toolCallId": "call-prior",
                 "toolName": "weather"
-              }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              },
-              {
-                "description": "Look up a place",
-                "name": "lookup",
-                "parameters": {
-                  "properties": {
-                    "query": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "query"
-                  ],
-                  "type": "object"
-                }
               }
             ]
           },
@@ -3780,6 +3827,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -3859,6 +3909,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -3938,6 +3991,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -4110,6 +4166,9 @@
     "long-cache-clamped-session-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -4658,6 +4717,9 @@
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "prompt_cache_key": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-e",
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -4835,6 +4897,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -4899,24 +4983,6 @@
                 "timestamp": 2,
                 "toolCallId": "call-prior",
                 "toolName": "weather"
-              }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
               }
             ]
           },
@@ -4932,6 +4998,9 @@
     "long-cache-no-session-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -5477,6 +5546,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -5652,6 +5724,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -5716,24 +5810,6 @@
                 "timestamp": 2,
                 "toolCallId": "call-prior",
                 "toolName": "weather"
-              }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
               }
             ]
           },
@@ -5748,6 +5824,9 @@
     "long-cache-session-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -6296,6 +6375,9 @@
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "prompt_cache_key": "replay-session",
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -6473,6 +6555,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -6537,24 +6641,6 @@
                 "timestamp": 2,
                 "toolCallId": "call-prior",
                 "toolName": "weather"
-              }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
               }
             ]
           },
@@ -6570,6 +6656,9 @@
     "maximum-output-omitted-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 32768,
           "messages": [
             {
@@ -7103,6 +7192,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -7276,6 +7368,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -7341,24 +7455,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -7371,6 +7467,9 @@
     "multimodal-tool-result-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -7965,6 +8064,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -8163,6 +8265,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -8233,24 +8357,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -8264,6 +8370,9 @@
     "multimodal-user-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -8849,6 +8958,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -9038,6 +9150,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": [
                   {
                     "text": "First turn",
@@ -9113,24 +9247,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -9144,6 +9260,9 @@
     "orphaned-tool-call-gets-explicit-result": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -9677,6 +9796,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -9850,6 +9972,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -9902,24 +10046,6 @@
                   "totalTokens": 3
                 }
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -9933,6 +10059,10 @@
     "reasoning-high-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14",
+            "interleaved-thinking-2025-05-14"
+          ],
           "max_tokens": 16448,
           "messages": [
             {
@@ -10669,6 +10799,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -10734,24 +10886,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -10766,6 +10900,10 @@
     "reasoning-low-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14",
+            "interleaved-thinking-2025-05-14"
+          ],
           "max_tokens": 2112,
           "messages": [
             {
@@ -11502,6 +11640,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -11567,24 +11727,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -11599,6 +11741,10 @@
     "reasoning-medium-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14",
+            "interleaved-thinking-2025-05-14"
+          ],
           "max_tokens": 8256,
           "messages": [
             {
@@ -12335,6 +12481,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -12400,24 +12568,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -12432,6 +12582,10 @@
     "reasoning-minimal-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14",
+            "interleaved-thinking-2025-05-14"
+          ],
           "max_tokens": 1088,
           "messages": [
             {
@@ -13168,6 +13322,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -13233,24 +13409,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -13265,6 +13423,9 @@
     "reasoning-off-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -13807,6 +13968,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -13983,6 +14147,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -14048,24 +14234,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -14079,6 +14247,9 @@
     "root-ref-tool-schema-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -14631,6 +14802,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -14819,6 +14993,33 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "$defs": {
+                        "input": {
+                          "properties": {
+                            "city": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "city"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "$ref": "#/$defs/input"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -14884,29 +15085,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "$defs": {
-                    "input": {
-                      "properties": {
-                        "city": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "city"
-                      ],
-                      "type": "object"
-                    }
-                  },
-                  "$ref": "#/$defs/input"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -14920,6 +15098,9 @@
     "same-source-redacted-replay": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -15445,6 +15626,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -15618,6 +15802,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -15684,24 +15890,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -15715,6 +15903,9 @@
     "same-source-replay": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -16248,6 +16439,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -16421,6 +16615,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -16486,24 +16702,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -16517,6 +16715,9 @@
     "short-cache-session-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -17062,6 +17263,9 @@
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "prompt_cache_key": "replay-session",
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -17236,6 +17440,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -17301,24 +17527,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -17333,6 +17541,9 @@
     "strict-prefer-tool-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -17868,6 +18079,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -18043,6 +18257,32 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "constrainedSampling": {
+                      "strict": "prefer",
+                      "type": "json_schema"
+                    },
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -18108,28 +18348,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "constrainedSampling": {
-                  "strict": "prefer",
-                  "type": "json_schema"
-                },
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -18143,6 +18361,9 @@
     "strict-prefer-unsupported-schema-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -18695,6 +18916,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -18883,6 +19107,37 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "constrainedSampling": {
+                      "strict": "prefer",
+                      "type": "json_schema"
+                    },
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "$defs": {
+                        "input": {
+                          "properties": {
+                            "city": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "city"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "$ref": "#/$defs/input"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -18947,33 +19202,6 @@
                 "timestamp": 2,
                 "toolCallId": "call-prior",
                 "toolName": "weather"
-              }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "constrainedSampling": {
-                  "strict": "prefer",
-                  "type": "json_schema"
-                },
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "$defs": {
-                    "input": {
-                      "properties": {
-                        "city": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "city"
-                      ],
-                      "type": "object"
-                    }
-                  },
-                  "$ref": "#/$defs/input"
-                }
               }
             ]
           },
@@ -19124,6 +19352,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -19237,6 +19468,9 @@
     "temperature-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -19776,6 +20010,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "temperature": 0.25,
@@ -19952,6 +20189,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -20017,24 +20276,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -20049,6 +20290,9 @@
     "tool-choice-auto-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -20600,6 +20844,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -20775,6 +21022,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -20840,24 +21109,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -20872,6 +21123,9 @@
     "tool-choice-none-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -21397,6 +21651,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -21572,6 +21829,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -21637,24 +21916,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -21669,6 +21930,9 @@
     "tool-result-error-request": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -22202,6 +22466,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -22375,6 +22642,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -22440,24 +22729,6 @@
                 "toolCallId": "call-prior",
                 "toolName": "weather"
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -22471,6 +22742,9 @@
     "user-turn-closes-orphaned-tool-call": {
       "anthropic-messages": {
         "requestBody": {
+          "betas": [
+            "fine-grained-tool-streaming-2025-05-14"
+          ],
           "max_tokens": 64,
           "messages": [
             {
@@ -23054,6 +23328,9 @@
           "instructions": "Replay exactly",
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
+          "reasoning": {
+            "effort": "none"
+          },
           "store": false,
           "stream": true,
           "text": {
@@ -23240,6 +23517,28 @@
           "context": {
             "messages": [
               {
+                "content": "Replay exactly",
+                "role": "system",
+                "timestamp": 0,
+                "toolsAdded": [
+                  {
+                    "description": "Read weather",
+                    "name": "weather",
+                    "parameters": {
+                      "properties": {
+                        "city": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "city"
+                      ],
+                      "type": "object"
+                    }
+                  }
+                ]
+              },
+              {
                 "content": "First turn",
                 "role": "user",
                 "timestamp": 0
@@ -23297,24 +23596,6 @@
                 "role": "user",
                 "timestamp": 3
               }
-            ],
-            "systemPrompt": "Replay exactly",
-            "tools": [
-              {
-                "description": "Read weather",
-                "name": "weather",
-                "parameters": {
-                  "properties": {
-                    "city": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "city"
-                  ],
-                  "type": "object"
-                }
-              }
             ]
           },
           "model": "pi-fixture",
@@ -23328,5 +23609,5 @@
   },
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/earendil-works/pi.git",
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
 }

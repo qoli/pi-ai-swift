@@ -54,6 +54,7 @@ public struct ProviderModel: Sendable, Equatable, Codable {
   public let capabilities: ProviderCapabilities
   public let contextWindow: Int?
   public let maximumOutputTokens: Int?
+  public let promptCache: ProviderPromptCache?
   /// Supported explicit selections in increasing effort order. An empty list
   /// means only the provider default (nil) is available.
   public let supportedReasoningEfforts: [ProviderReasoningEffort]
@@ -66,6 +67,7 @@ public struct ProviderModel: Sendable, Equatable, Codable {
     capabilities: ProviderCapabilities,
     contextWindow: Int?,
     maximumOutputTokens: Int?,
+    promptCache: ProviderPromptCache? = nil,
     supportedReasoningEfforts: [ProviderReasoningEffort] = []
   ) {
     self.id = id
@@ -75,7 +77,18 @@ public struct ProviderModel: Sendable, Equatable, Codable {
     self.capabilities = capabilities
     self.contextWindow = contextWindow
     self.maximumOutputTokens = maximumOutputTokens
+    self.promptCache = promptCache
     self.supportedReasoningEfforts = supportedReasoningEfforts
+  }
+}
+
+public struct ProviderPromptCache: Sendable, Equatable, Codable {
+  public let shortLifetimeSeconds: Int?
+  public let longLifetimeSeconds: Int?
+
+  public init(shortLifetimeSeconds: Int?, longLifetimeSeconds: Int?) {
+    self.shortLifetimeSeconds = shortLifetimeSeconds
+    self.longLifetimeSeconds = longLifetimeSeconds
   }
 }
 

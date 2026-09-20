@@ -53,7 +53,6 @@
     "anthropic-api-key-system-cache-short": {
       "headers": {
         "accept": "application/json",
-        "anthropic-beta": "interleaved-thinking-2025-05-14",
         "anthropic-dangerous-direct-browser-access": "true",
         "x-api-key": "fixture-key"
       },
@@ -122,6 +121,9 @@
         "x-api-key": "fixture-key"
       },
       "requestBody": {
+        "betas": [
+          "interleaved-thinking-2025-05-14"
+        ],
         "max_tokens": 3584,
         "messages": [
           {
@@ -170,6 +172,9 @@
         "x-api-key": "fixture-key"
       },
       "requestBody": {
+        "betas": [
+          "interleaved-thinking-2025-05-14"
+        ],
         "max_tokens": 2048,
         "messages": [
           {
@@ -213,11 +218,14 @@
     "anthropic-compat-suppression": {
       "headers": {
         "accept": "application/json",
-        "anthropic-beta": "fine-grained-tool-streaming-2025-05-14,interleaved-thinking-2025-05-14",
+        "anthropic-beta": "fine-grained-tool-streaming-2025-05-14",
         "anthropic-dangerous-direct-browser-access": "true",
         "x-api-key": "fixture-key"
       },
       "requestBody": {
+        "betas": [
+          "fine-grained-tool-streaming-2025-05-14"
+        ],
         "max_tokens": 4096,
         "messages": [
           {
@@ -269,7 +277,6 @@
     "anthropic-copilot": {
       "headers": {
         "accept": "application/json",
-        "anthropic-beta": "interleaved-thinking-2025-05-14",
         "anthropic-dangerous-direct-browser-access": "true",
         "authorization": "Bearer copilot-fixture"
       },
@@ -315,7 +322,6 @@
     "anthropic-disabled": {
       "headers": {
         "accept": "application/json",
-        "anthropic-beta": "interleaved-thinking-2025-05-14",
         "anthropic-dangerous-direct-browser-access": "true",
         "x-api-key": "fixture-key"
       },
@@ -361,7 +367,6 @@
     "anthropic-header-owned": {
       "headers": {
         "accept": "application/json",
-        "anthropic-beta": "interleaved-thinking-2025-05-14",
         "anthropic-dangerous-direct-browser-access": "true",
         "x-api-key": "header-fixture"
       },
@@ -404,6 +409,159 @@
         ]
       }
     },
+    "anthropic-mid-convo-effort-default": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "mid-conversation-output-config-2026-07-01,thinking-binding-controls-2026-08-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "high"
+            },
+            "role": "system"
+          }
+        ],
+        "model": "claude-fable-5-1",
+        "output_config": {
+          "effort": "high"
+        },
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-mid-convo-effort-history": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "mid-conversation-output-config-2026-07-01,thinking-binding-controls-2026-08-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "fixture-key"
+      },
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "signature": "opaque-signature",
+                "thinking": "inspect",
+                "type": "thinking"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "high"
+            },
+            "role": "system"
+          }
+        ],
+        "model": "claude-fable-5-1",
+        "output_config": {
+          "effort": "high"
+        },
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
     "anthropic-missing-auth": {
       "headers": {},
       "requestBody": null,
@@ -415,12 +573,16 @@
     "anthropic-oauth-named-tool": {
       "headers": {
         "accept": "application/json",
-        "anthropic-beta": "claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14",
+        "anthropic-beta": "claude-code-20250219,oauth-2025-04-20",
         "anthropic-dangerous-direct-browser-access": "true",
         "authorization": "Bearer sk-ant-oat-fixture",
         "x-app": "cli"
       },
       "requestBody": {
+        "betas": [
+          "claude-code-20250219",
+          "oauth-2025-04-20"
+        ],
         "max_tokens": 4096,
         "messages": [
           {
@@ -470,11 +632,14 @@
     "anthropic-server-fallback-source": {
       "headers": {
         "accept": "application/json",
-        "anthropic-beta": "interleaved-thinking-2025-05-14,server-side-fallback-2026-07-01",
+        "anthropic-beta": "server-side-fallback-2026-07-01",
         "anthropic-dangerous-direct-browser-access": "true",
         "x-api-key": "fixture-key"
       },
       "requestBody": {
+        "betas": [
+          "server-side-fallback-2026-07-01"
+        ],
         "fallbacks": [
           {
             "model": "claude-haiku-4-5"
@@ -521,7 +686,6 @@
     "anthropic-tool-any": {
       "headers": {
         "accept": "application/json",
-        "anthropic-beta": "interleaved-thinking-2025-05-14",
         "anthropic-dangerous-direct-browser-access": "true",
         "x-api-key": "fixture-key"
       },
@@ -1055,5 +1219,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
 }

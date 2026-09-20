@@ -6,6 +6,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import http from "node:http";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath, outputPath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) throw new Error("usage: oracle UPSTREAM_ROOT CASE_JSON [OUTPUT]");
@@ -29,7 +30,10 @@ if (outputPath) await writeFile(outputPath, rendered, "utf8");
 else process.stdout.write(rendered);
 
 async function runSSE(scenario, input) {
-  const implementation = await import(pathToFileURL(path.join(apiRoot, `${scenario.protocolID}.ts`)).href);
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(path.join(apiRoot, `${scenario.protocolID}.ts`)).href),
+  );
   const stream = implementation.stream(model(scenario.protocolID), context(), {
     apiKey: "fixture-key", maxRetries: 0, cacheRetention: "none", fetch: fakeFetch(input),
   });
@@ -53,7 +57,10 @@ async function runBedrock(scenario, input) {
   try {
     const address = server.address();
     if (!address || typeof address === "string") throw new Error("invalid loopback address");
-    const implementation = await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href);
+    const implementation = await providerStreams(
+      upstreamRoot,
+      await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href),
+    );
     const stream = implementation.stream(
       { ...model(scenario.protocolID), baseUrl: `http://127.0.0.1:${address.port}` },
       context(),

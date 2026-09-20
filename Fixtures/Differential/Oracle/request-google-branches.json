@@ -583,7 +583,7 @@
           "headers": {
             "content-type": "application/json",
             "user-agent": "pi (darwin 27.0.0; arm64)",
-            "x-goog-api-client": "google-genai-sdk/1.52.0 gl-node/v26.0.0",
+            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
             "x-goog-api-key": "fixture-key"
           },
           "url": "https://gateway.example.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
@@ -596,7 +596,7 @@
           "headers": {
             "content-type": "application/json",
             "user-agent": "pi (darwin 27.0.0; arm64)",
-            "x-goog-api-client": "google-genai-sdk/1.52.0 gl-node/v26.0.0",
+            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
             "x-goog-api-key": "fixture-key"
           },
           "url": "https://gateway.example.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
@@ -663,7 +663,7 @@
           "generationConfig": {
             "maxOutputTokens": 64,
             "thinkingConfig": {
-              "thinkingLevel": "MINIMAL"
+              "thinkingBudget": 0
             }
           }
         }
@@ -683,7 +683,7 @@
           "generationConfig": {
             "maxOutputTokens": 64,
             "thinkingConfig": {
-              "thinkingLevel": "MINIMAL"
+              "thinkingBudget": 0
             }
           }
         }
@@ -747,7 +747,7 @@
           "generationConfig": {
             "maxOutputTokens": 64,
             "thinkingConfig": {
-              "thinkingLevel": "LOW"
+              "thinkingBudget": 0
             }
           }
         }
@@ -767,7 +767,7 @@
           "generationConfig": {
             "maxOutputTokens": 64,
             "thinkingConfig": {
-              "thinkingLevel": "LOW"
+              "thinkingBudget": 0
             }
           }
         }
@@ -789,7 +789,7 @@
           "generationConfig": {
             "maxOutputTokens": 64,
             "thinkingConfig": {
-              "thinkingLevel": "MINIMAL"
+              "thinkingBudget": 0
             }
           }
         }
@@ -1389,7 +1389,7 @@
           "headers": {
             "content-type": "application/json",
             "user-agent": "pi (darwin 27.0.0; arm64)",
-            "x-goog-api-client": "google-genai-sdk/1.52.0 gl-node/v26.0.0",
+            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
             "x-goog-api-key": "fixture-key"
           },
           "url": "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
@@ -1821,5 +1821,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
 }

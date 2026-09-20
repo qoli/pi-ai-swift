@@ -1,12 +1,14 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
   "cases": [
     {"caseID": "pi-full-context", "protocolID": "pi-messages"},
     {"caseID": "pi-debug-query", "protocolID": "pi-messages"},
     {"caseID": "mistral-image-unsupported", "protocolID": "mistral-conversations"},
     {"caseID": "mistral-tool-image-unsupported-error", "protocolID": "mistral-conversations"},
     {"caseID": "mistral-reasoning-effort", "protocolID": "mistral-conversations"},
+    {"caseID": "mistral-medium-reasoning-effort", "protocolID": "mistral-conversations"},
+    {"caseID": "mistral-zai-reasoning-effort", "protocolID": "mistral-conversations"},
     {"caseID": "mistral-prompt-mode", "protocolID": "mistral-conversations"},
     {"caseID": "mistral-cache-none", "protocolID": "mistral-conversations"},
     {"caseID": "mistral-cache-long", "protocolID": "mistral-conversations"},

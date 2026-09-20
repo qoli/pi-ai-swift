@@ -3,6 +3,9 @@
   "protocols": {
     "anthropic-messages": {
       "requestBody": {
+        "betas": [
+          "fine-grained-tool-streaming-2025-05-14"
+        ],
         "max_tokens": 64,
         "messages": [
           {
@@ -299,6 +302,9 @@
         "instructions": "Be concise",
         "model": "gpt-5.1-codex",
         "parallel_tool_calls": true,
+        "reasoning": {
+          "effort": "none"
+        },
         "store": false,
         "stream": true,
         "temperature": 0.2,
@@ -440,27 +446,31 @@
         "context": {
           "messages": [
             {
+              "content": "Be concise",
+              "role": "system",
+              "timestamp": 0,
+              "toolsAdded": [
+                {
+                  "description": "Echo a value",
+                  "name": "echo",
+                  "parameters": {
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            },
+            {
               "content": "Use the echo tool",
               "role": "user",
               "timestamp": 0
-            }
-          ],
-          "systemPrompt": "Be concise",
-          "tools": [
-            {
-              "description": "Echo a value",
-              "name": "echo",
-              "parameters": {
-                "properties": {
-                  "value": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "value"
-                ],
-                "type": "object"
-              }
             }
           ]
         },
@@ -477,5 +487,5 @@
   },
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/earendil-works/pi.git",
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
 }

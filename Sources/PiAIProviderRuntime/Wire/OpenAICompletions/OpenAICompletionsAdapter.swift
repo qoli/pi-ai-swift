@@ -204,6 +204,10 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
+    let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    ProviderSessionHeaders.applyOpenAICompletionsAffinity(
+      request: request, context: context, compat: compat, to: &urlRequest)
+    ProviderSessionHeaders.applyOpenCode(request: request, to: &urlRequest)
     applyGitHubCopilotHeaders(
       providerID: request.providerID,
       messages: request.messages,
@@ -285,6 +289,17 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     }
     if let temperature = request.options.temperature {
       body["temperature"] = .number(temperature)
+    }
+    if let priority = compat["vllmPriority"] {
+      switch priority {
+      case .integer, .number:
+        body["priority"] = priority
+      default:
+        throw failure(
+          .invalidRequest, providerID: request.providerID,
+          operation: "openai-completions.request.vllm-priority",
+          message: "vLLM priority must be numeric")
+      }
     }
     if request.options.cacheRetention != .none,
       let sessionID = request.options.sessionID,

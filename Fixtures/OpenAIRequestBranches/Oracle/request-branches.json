@@ -314,33 +314,10 @@
     },
     "codex.deferred-additional-tools": {
       "requestBody": {
-        "added": [
-          {
-            "role": "developer",
-            "tools": [
-              {
-                "description": "Deferred lookup",
-                "name": "lookup",
-                "parameters": {
-                  "properties": {
-                    "query": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "query"
-                  ],
-                  "type": "object"
-                },
-                "strict": null,
-                "type": "function"
-              }
-            ],
-            "type": "additional_tools"
-          }
-        ],
+        "added": [],
         "topLevelToolNames": [
-          "sample_tool"
+          "sample_tool",
+          "lookup"
         ]
       }
     },
@@ -737,31 +714,10 @@
     },
     "completions.deferred-kimi": {
       "requestBody": {
-        "systemTools": [
-          [
-            {
-              "function": {
-                "description": "Deferred lookup",
-                "name": "lookup",
-                "parameters": {
-                  "properties": {
-                    "query": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "query"
-                  ],
-                  "type": "object"
-                },
-                "strict": false
-              },
-              "type": "function"
-            }
-          ]
-        ],
+        "systemTools": [],
         "topLevelToolNames": [
-          "sample_tool"
+          "sample_tool",
+          "lookup"
         ]
       }
     },
@@ -1462,78 +1418,20 @@
     },
     "responses.deferred-additional-tools": {
       "requestBody": {
-        "added": [
-          {
-            "role": "developer",
-            "tools": [
-              {
-                "description": "Deferred lookup",
-                "name": "lookup",
-                "parameters": {
-                  "properties": {
-                    "query": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "query"
-                  ],
-                  "type": "object"
-                },
-                "type": "function"
-              }
-            ],
-            "type": "additional_tools"
-          }
-        ],
+        "added": [],
         "topLevelToolNames": [
-          "sample_tool"
+          "sample_tool",
+          "lookup"
         ]
       }
     },
     "responses.deferred-tool-search": {
       "requestBody": {
-        "calls": [
-          {
-            "arguments": {
-              "limit": 1,
-              "query": "lookup"
-            },
-            "call_id": "pi_tool_load_2mixmbicdzth",
-            "execution": "client",
-            "status": "completed",
-            "type": "tool_search_call"
-          }
-        ],
-        "outputs": [
-          {
-            "call_id": "pi_tool_load_2mixmbicdzth",
-            "execution": "client",
-            "status": "completed",
-            "tools": [
-              {
-                "defer_loading": true,
-                "description": "Deferred lookup",
-                "name": "lookup",
-                "parameters": {
-                  "properties": {
-                    "query": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "query"
-                  ],
-                  "type": "object"
-                },
-                "type": "function"
-              }
-            ],
-            "type": "tool_search_output"
-          }
-        ],
+        "calls": [],
+        "outputs": [],
         "topLevelToolNames": [
-          "sample_tool"
+          "sample_tool",
+          "lookup"
         ]
       }
     },
@@ -1673,5 +1571,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185"
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
 }

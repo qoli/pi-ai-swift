@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "853a80d26c90a14c1886f0ebb8ffaae133ca2185",
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
   "requestCoverageStatus": "complete",
   "invalidSourceEvidence": {
     "tool-choice-required-request": "Pinned SimpleStreamOptions.toolChoice accepts only auto or none; required must be exercised through a protocol-specific stream oracle."
@@ -22,22 +22,11 @@
       "required": true,
       "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
       "variants": ["present"],
-      "sourceSymbols": ["Context.systemPrompt", "buildParams", "buildRequestBody", "buildChatPayload", "buildSystemPrompt"],
-      "expected": "A single canonical system prompt is emitted in the protocol-owned location.",
+      "sourceSymbols": ["getInitialSystemMessage", "buildParams", "buildRequestBody", "buildChatPayload", "buildSystemPrompt"],
+      "expected": "The caller-assembled current system prompt is emitted in the protocol-owned location.",
       "expressibility": "providerRequest",
       "status": "covered",
       "cases": [{"caseID": "request-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["present"]}]
-    },
-    {
-      "id": "common.system.multiple",
-      "required": true,
-      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
-      "variants": ["ordered-multiple-system-messages"],
-      "sourceSymbols": ["Context.systemPrompt"],
-      "expected": "No arbitrary concatenation is allowed: pinned pi exposes one systemPrompt while ProviderRequest permits multiple system messages.",
-      "expressibility": "providerRequest",
-      "status": "covered",
-      "cases": [{"caseID": "multiple-system-explicit-failure", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["ordered-multiple-system-messages"]}]
     },
     {
       "id": "common.user.multimodal",
@@ -626,7 +615,7 @@
       "id": "mistral.model-capability",
       "required": true,
       "protocols": ["mistral-conversations"],
-      "variants": ["image-placeholder", "tool-image-placeholder", "reasoning-effort-model", "prompt-mode-model", "cache-session", "cache-none"],
+      "variants": ["image-placeholder", "tool-image-placeholder", "reasoning-effort-model", "reasoning-effort-medium-family", "reasoning-effort-zai", "prompt-mode-model", "cache-session", "cache-none"],
       "sourceSymbols": ["toChatMessages", "usesReasoningEffort", "usesPromptModeReasoning", "shouldUsePromptCaching"],
       "expected": "Image handling, reasoning option, and prompt-cache key follow model capability.",
       "expressibility": "context",
@@ -635,6 +624,8 @@
         {"caseID": "mistral-image-unsupported", "protocols": ["mistral-conversations"], "coversVariants": ["image-placeholder"]},
         {"caseID": "mistral-tool-image-unsupported-error", "protocols": ["mistral-conversations"], "coversVariants": ["tool-image-placeholder"]},
         {"caseID": "mistral-reasoning-effort", "protocols": ["mistral-conversations"], "coversVariants": ["reasoning-effort-model"]},
+        {"caseID": "mistral-medium-reasoning-effort", "protocols": ["mistral-conversations"], "coversVariants": ["reasoning-effort-medium-family"]},
+        {"caseID": "mistral-zai-reasoning-effort", "protocols": ["mistral-conversations"], "coversVariants": ["reasoning-effort-zai"]},
         {"caseID": "mistral-prompt-mode", "protocols": ["mistral-conversations"], "coversVariants": ["prompt-mode-model"]},
         {"caseID": "mistral-cache-long", "protocols": ["mistral-conversations"], "coversVariants": ["cache-session"]},
         {"caseID": "mistral-cache-none", "protocols": ["mistral-conversations"], "coversVariants": ["cache-none"]}
@@ -644,13 +635,13 @@
       "id": "pi-messages.full-context",
       "required": true,
       "protocols": ["pi-messages"],
-      "variants": ["timestamps", "source-identity", "replay-metadata", "added-tool-names", "debug-query"],
+      "variants": ["timestamps", "source-identity", "replay-metadata", "tool-declarations", "debug-query"],
       "sourceSymbols": ["pi-messages.stream"],
       "expected": "The complete canonical context and options survive serialization; debug affects only the query.",
       "expressibility": "providerRequest",
       "status": "covered",
       "cases": [
-        {"caseID": "pi-full-context", "protocols": ["pi-messages"], "coversVariants": ["timestamps", "source-identity", "replay-metadata", "added-tool-names"]},
+        {"caseID": "pi-full-context", "protocols": ["pi-messages"], "coversVariants": ["timestamps", "source-identity", "replay-metadata", "tool-declarations"]},
         {"caseID": "pi-debug-query", "protocols": ["pi-messages"], "coversVariants": ["debug-query"]}
       ]
     },
@@ -688,6 +679,46 @@
         {"caseID": "tool-choice-auto-request", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-auto"]},
         {"caseID": "bedrock-tool-any", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-any"]},
         {"caseID": "bedrock-tool-named", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-named"]}
+      ]
+    },
+    {
+      "id": "common.provider-session-headers",
+      "required": true,
+      "protocols": ["anthropic-messages", "google-generative-ai", "openai-completions", "openai-responses"],
+      "variants": ["openrouter", "baseten", "opencode"],
+      "variantProtocols": {
+        "openrouter": ["anthropic-messages", "openai-completions", "openai-responses"],
+        "baseten": ["openai-completions"],
+        "opencode": ["anthropic-messages", "google-generative-ai", "openai-completions", "openai-responses"]
+      },
+      "sourceSymbols": ["createClient", "withOpenCodeSessionHeader"],
+      "expected": "Provider session identifiers use the exact provider-specific header names and remain request scoped.",
+      "expressibility": "providerRequest",
+      "status": "covered",
+      "cases": [
+        {"caseID": "openrouter-completions-session", "protocols": ["openai-completions"], "coversVariants": ["openrouter"]},
+        {"caseID": "baseten-completions-session", "protocols": ["openai-completions"], "coversVariants": ["baseten"]},
+        {"caseID": "openrouter-responses-session", "protocols": ["openai-responses"], "coversVariants": ["openrouter"]},
+        {"caseID": "openrouter-anthropic-session", "protocols": ["anthropic-messages"], "coversVariants": ["openrouter"]},
+        {"caseID": "opencode-session-wrapper", "protocols": ["anthropic-messages", "google-generative-ai", "openai-completions", "openai-responses"], "coversVariants": ["opencode"]}
+      ]
+    },
+    {
+      "id": "openai.compatibility-options",
+      "required": true,
+      "protocols": ["openai-completions", "openai-responses"],
+      "variants": ["vllm-priority", "max-output-disabled"],
+      "variantProtocols": {
+        "vllm-priority": ["openai-completions"],
+        "max-output-disabled": ["openai-responses"]
+      },
+      "sourceSymbols": ["OpenAICompletionsCompat.vllmPriority", "OpenAIResponsesCompat.supportsMaxOutputTokens"],
+      "expected": "vLLM priority is forwarded exactly and unsupported Responses output limits are omitted.",
+      "expressibility": "context",
+      "status": "covered",
+      "cases": [
+        {"caseID": "vllm-priority", "protocols": ["openai-completions"], "coversVariants": ["vllm-priority"]},
+        {"caseID": "responses-max-output-disabled", "protocols": ["openai-responses"], "coversVariants": ["max-output-disabled"]}
       ]
     },
     {

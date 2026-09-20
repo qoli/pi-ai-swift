@@ -4,6 +4,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath, outputPath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) {
@@ -34,8 +35,11 @@ if (outputPath) await writeFile(outputPath, output);
 else process.stdout.write(output);
 
 async function capture(protocolID, testCase) {
-  const implementation = await import(
-    pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${protocolID}.ts`)).href
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(
+      pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${protocolID}.ts`)).href
+    ),
   );
   let payload;
   const providerID = protocolID === "google-vertex" ? "fixture-vertex" : "fixture-google";

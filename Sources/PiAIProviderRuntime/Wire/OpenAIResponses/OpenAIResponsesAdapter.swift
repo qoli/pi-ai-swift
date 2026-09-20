@@ -215,6 +215,12 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
+    let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    if flavor == .standard {
+      ProviderSessionHeaders.applyOpenAIResponsesAffinity(
+        request: request, context: context, compat: compat, to: &urlRequest)
+    }
+    ProviderSessionHeaders.applyOpenCode(request: request, to: &urlRequest)
     applyGitHubCopilotHeaders(
       providerID: request.providerID,
       messages: request.messages,
@@ -423,7 +429,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     if flavor == .codex, !instructions.isEmpty {
       body["instructions"] = .string(instructions.joined(separator: "\n\n"))
     }
-    if flavor != .codex,
+    if flavor != .codex, compat.bool("supportsMaxOutputTokens") != false,
       let maximum = request.options.maximumOutputTokens
         ?? context.model.maximumOutputTokens
     {
@@ -457,7 +463,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       let levelMap = context.modelConfiguration.metadata.object("thinkingLevelMap") ?? [:]
       let mapped = levelMap.string(effort.rawValue)
       if effort == .off {
-        if flavor != .codex, levelMap["off"] != .null {
+        if levelMap["off"] != .null {
           body["reasoning"] = .object([
             "effort": .string(mapped ?? "none")
           ])
@@ -469,7 +475,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         ])
         body["include"] = .array([.string("reasoning.encrypted_content")])
       }
-    } else if flavor != .codex, context.model.capabilities.reasoning,
+    } else if context.model.capabilities.reasoning,
       context.modelConfiguration.metadata.object("thinkingLevelMap")?["off"] != .null,
       request.providerID != "github-copilot"
     {

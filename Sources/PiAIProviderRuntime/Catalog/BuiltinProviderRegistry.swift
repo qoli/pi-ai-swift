@@ -140,6 +140,7 @@ struct BuiltinProviderRecord: Sendable {
         ),
         contextWindow: object.int("contextWindow"),
         maximumOutputTokens: object.int("maxTokens"),
+        promptCache: try Self.promptCache(object["promptCache"], providerID: document.id),
         supportedReasoningEfforts: try ProviderReasoning.supportedEfforts(
           reasoning: reasoning, metadata: object, protocolID: protocolID,
           providerID: providerID, modelID: modelID, modelName: object.string("name") ?? modelID)
@@ -197,8 +198,30 @@ struct BuiltinProviderRecord: Sendable {
       contextWindow: existing.contextWindow ?? incoming.contextWindow,
       maximumOutputTokens: existing.maximumOutputTokens
         ?? incoming.maximumOutputTokens,
+      promptCache: preferIncomingProtocol ? incoming.promptCache : existing.promptCache,
       supportedReasoningEfforts: preferIncomingProtocol
         ? incoming.supportedReasoningEfforts : existing.supportedReasoningEfforts
+    )
+  }
+
+  private static func promptCache(
+    _ value: JSONValue?,
+    providerID: String
+  ) throws -> ProviderPromptCache? {
+    guard let value else { return nil }
+    guard case .object(let object) = value else {
+      throw failure(providerID, "model promptCache must be an object")
+    }
+    func lifetime(_ key: String) throws -> Int? {
+      guard let value = object[key] else { return nil }
+      guard case .integer(let raw) = value, let result = Int(exactly: raw) else {
+        throw failure(providerID, "model promptCache.\(key) must be an integer")
+      }
+      return result
+    }
+    return try ProviderPromptCache(
+      shortLifetimeSeconds: lifetime("short"),
+      longLifetimeSeconds: lifetime("long")
     )
   }
 

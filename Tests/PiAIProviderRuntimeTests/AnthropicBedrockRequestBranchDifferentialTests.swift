@@ -108,6 +108,7 @@ struct AnthropicBedrockRequestBranchDifferentialTests {
     var toolChoice: JSONValue?
     var providerOptions: [String: JSONValue] = [:]
     var budgets: [ProviderReasoningEffort: Int]?
+    var messages: [ProviderMessage] = [.system("Be concise"), .user([.text("hello")])]
 
     switch caseID {
     case "anthropic-api-key-system-cache-short":
@@ -150,6 +151,35 @@ struct AnthropicBedrockRequestBranchDifferentialTests {
       effort = .xhigh
       metadata["compat"] = .object(["forceAdaptiveThinking": .bool(true)])
       providerOptions["thinkingDisplay"] = .string("omitted")
+    case "anthropic-mid-convo-effort-history":
+      modelID = "claude-fable-5-1"
+      effort = .high
+      metadata["compat"] = .object([
+        "forceAdaptiveThinking": .bool(true), "supportsMidConvoEffort": .bool(true),
+      ])
+      messages.append(
+        .assistantMessage(
+          ProviderAssistantMessage(
+            content: [
+              .reasoning(
+                ProviderReasoningContent(
+                  text: "inspect", signature: "opaque-signature", providerMetadata: [:])),
+              .signedText(ProviderTextContent(text: "answer", signature: nil)),
+            ],
+            source: ProviderMessageSource(
+              api: "anthropic-messages", providerID: "anthropic", modelID: modelID),
+            usage: ProviderUsage(
+              inputTokens: 0, outputTokens: 0, reasoningTokens: nil, cachedInputTokens: 0,
+              cacheWriteTokens: 0, totalTokens: 0, providerMetadata: [:]),
+            stopReason: .stop, timestampMilliseconds: 1,
+            providerMetadata: ["providerThinkingLevel": .string("low")])))
+      messages.append(
+        .userMessage(ProviderUserMessage(content: [.text("again")], timestampMilliseconds: 2)))
+    case "anthropic-mid-convo-effort-default":
+      modelID = "claude-fable-5-1"
+      metadata["compat"] = .object([
+        "forceAdaptiveThinking": .bool(true), "supportsMidConvoEffort": .bool(true),
+      ])
     case "anthropic-tool-any":
       toolChoice = .string("any")
     case "anthropic-disabled": effort = .off
@@ -168,7 +198,7 @@ struct AnthropicBedrockRequestBranchDifferentialTests {
       request: branchRequest(
         caseID: caseID, providerID: providerID, modelID: modelID, maximum: maximum,
         temperature: temperature, effort: effort, providerOptions: providerOptions,
-        cache: cache, toolChoice: toolChoice, budgets: budgets),
+        cache: cache, toolChoice: toolChoice, budgets: budgets, messages: messages),
       context: branchContext(
         model: model, headers: headers, credential: credential, metadata: metadata))
   }
@@ -282,11 +312,12 @@ private func branchRequest(
   caseID: String, providerID: String, modelID: String, maximum: Int,
   temperature: Double?, effort: ProviderReasoningEffort?,
   providerOptions: [String: JSONValue], cache: ProviderCacheRetention,
-  toolChoice: JSONValue?, budgets: [ProviderReasoningEffort: Int]?
+  toolChoice: JSONValue?, budgets: [ProviderReasoningEffort: Int]?,
+  messages: [ProviderMessage]? = nil
 ) -> ProviderRequest {
   ProviderRequest(
     id: caseID, providerID: providerID, modelID: modelID,
-    messages: [.system("Be concise"), .user([.text("hello")])], tools: [branchTool()],
+    messages: messages ?? [.system("Be concise"), .user([.text("hello")])], tools: [branchTool()],
     options: ProviderGenerationOptions(
       maximumOutputTokens: maximum, temperature: temperature, reasoningEffort: effort,
       responseSchema: nil, providerOptions: providerOptions, cacheRetention: cache,

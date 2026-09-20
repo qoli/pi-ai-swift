@@ -7,14 +7,12 @@ import Testing
 struct GoogleGenerativeAIAdapterTests {
   @Test
   func encodesPinnedSourceDisabledThinkingByModelFamily() async throws {
-    let cases: [(modelID: String, field: String, value: JSONValue)] = [
-      ("gemini-3.1-pro-preview", "thinkingLevel", .string("LOW")),
-      ("gemini-3-flash-preview", "thinkingLevel", .string("MINIMAL")),
-      ("gemma-4-27b-it", "thinkingLevel", .string("MINIMAL")),
-      ("gemini-2.5-pro", "thinkingBudget", .integer(0)),
+    let modelIDs = [
+      "gemini-3.1-pro-preview", "gemini-3-flash-preview", "gemma-4-27b-it",
+      "gemini-2.5-pro",
     ]
-    for testCase in cases {
-      let model = googleModel(id: testCase.modelID)
+    for modelID in modelIDs {
+      let model = googleModel(id: modelID)
       let transport = GoogleFixtureTransport(statusCode: 200, chunks: googleFixtureChunks())
       let request = ProviderRequest(
         id: "effort", providerID: model.providerID, modelID: model.id,
@@ -29,7 +27,7 @@ struct GoogleGenerativeAIAdapterTests {
       let body = try decodeJSONObject(
         try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
       let thinking = try #require(body.object("generationConfig")?.object("thinkingConfig"))
-      #expect(thinking[testCase.field] == testCase.value)
+      #expect(thinking["thinkingBudget"] == .integer(0))
     }
   }
 

@@ -7,6 +7,14 @@ This repository is a native Swift semantic port of the provider runtime in
 execution, product UI, browser/document tools, AIReasoningCore, AnyLanguageModel,
 and shell runtimes.
 
+The upstream TypeScript package is broader than this repository. Its public
+types and utilities also include transcript normalization, system-prompt
+composition, tool-set history, assistant-frame persistence, and other caller or
+agent concerns. Their location in `packages/ai` and their use by an upstream
+adapter do not transfer ownership to pi-ai-swift. Port only provider-facing
+observable behavior: capability metadata, authentication, request/wire
+projection, response normalization, usage, and provider failure semantics.
+
 ## Public seam
 
 Preserve the three-operation `ProviderRuntime` interface unless a concrete,
@@ -19,27 +27,47 @@ Read `Docs/AI_MAINTENANCE.md` before changing the upstream pin, a provider
 adapter, authentication, normalized events, or reconstruction logic. Its sync
 terminal states and change classes are mandatory.
 
-Maintenance is initiated explicitly by a human and may be irregular; do not
-create a scheduler or unattended sync mechanism. Treat
+`Scripts/check-upstream.sh` is a pure engineering signal. Its normal output is
+exactly `YES` or `NO`; it must not analyze upstream intent, edit files, move the
+pin, or perform maintenance. A human or automation may supply a candidate
+revision. `YES` ends the check without changes. `NO` must trigger the AI workflow
+in `prompts/pi-ai-upstream-maintenance.md`; never modify or weaken the signal to
+obtain `YES`.
+
+Maintenance may be initiated directly by a human or proactively by an agent or
+automation after a candidate signal returns `NO`. Treat
 `UpstreamMappings/pi-ai.json` as the durable maintenance IR. A newly discovered
 built-in provider must first be recorded as `missing` with its provider, model,
 wire-protocol, authentication, test, and planned Swift ownership. A later,
 separately initiated implementation task promotes that area only with executable
 evidence. The IR is not runtime configuration and does not advertise support.
 
-1. Read `Upstream.lock.json` and every affected area in
+1. Run the candidate signal. Stop without edits when it returns `YES`; execute
+   `prompts/pi-ai-upstream-maintenance.md` when it returns `NO`.
+2. Read `Upstream.lock.json` and every affected area in
    `UpstreamMappings/pi-ai.json`.
-2. Compare the pinned revision with the proposed upstream revision.
-3. Inspect the tracked built-in provider inventory, mapped source paths,
+3. Compare the pinned revision with the proposed upstream revision.
+4. Inspect the tracked built-in provider inventory, mapped source paths,
    relevant upstream tests, and the changelog.
-4. Classify every relevant hunk before editing Swift.
-5. Update sanitized fixtures before changing Swift implementation.
-6. Prove TypeScript-to-Swift behavioral equivalence through differential tests.
-7. Run macOS tests, iOS compile/runtime gates, and any explicitly authorized
+5. Apply the ownership filter in `Docs/AI_MAINTENANCE.md`. Separate
+   provider-owned observable semantics from caller/session assembly and
+   upstream host implementation before using the A/B/C/D change classes.
+6. Classify every provider-owned relevant hunk before editing Swift.
+7. Update sanitized fixtures before changing Swift implementation.
+8. Prove TypeScript-to-Swift behavioral equivalence through differential tests.
+9. Run macOS tests, iOS compile/runtime gates, and any explicitly authorized
    live test required by the affected behavior.
-8. Update each affected area's Swift paths, planned paths, upstream paths,
+10. Update each affected area's Swift paths, planned paths, upstream paths,
    tests, and truthful status in the same change.
-9. Update provenance and the exact upstream revision in the same change.
+11. Update provenance and the exact upstream revision in the same change.
+12. Rerun both accepted and candidate signals; both must return `YES` before a
+    compatible result may be reported.
+
+Do not mirror an upstream `Context`, `TranscriptContext`, message-history,
+prompt-section, or tool-lifecycle type merely because provider implementations
+consume it. AIReasoningCore or the host owns assembling current instructions,
+messages, schemas, and tools into `ProviderRequest`. A change to that seam is a
+separate coordinated design task, not an implicit result of upstream sync.
 
 An automated run may end as `upstream_incompatible` or `verification_failed`.
 That is preferable to moving the lock without equivalence. Keep the last

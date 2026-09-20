@@ -24,14 +24,17 @@ Implemented today:
 - macOS tests, iOS builds, and an opt-in iOS Simulator OAuth test;
 - explicit errors instead of provider, protocol, or authentication fallback.
 
-Not implemented yet:
+Intentionally agent-owned rather than implemented in the signal script:
 
-- an automated semantic diff classifier;
-- a shared cross-language request/event runner for newly added semantics that
-  are not yet represented by the protocol fixture suites;
-- a machine-readable sync decision report;
-- live generation evidence for providers without authorized credentials;
-- unattended promotion of any provider implementation.
+- semantic interpretation and Class A/B/C/D classification of upstream drift;
+- planning and porting newly added semantics not represented by existing
+  protocol fixture suites;
+- policy and platform decisions;
+- live generation evidence requiring authorized credentials;
+- promotion of provider implementation status.
+
+The executable agent workflow is `prompts/pi-ai-upstream-maintenance.md`.
+`Scripts/check-upstream.sh` remains a pure `YES`/`NO` signal.
 
 This document governs both updating an existing checkout and reconstructing the
 module from an empty Swift package. It does not authorize live credentials,
@@ -39,12 +42,21 @@ billable requests, release publication, or weakening a compatibility gate.
 
 ## Objective
 
-`pi-ai-swift` is a native semantic port, not compiled TypeScript and not a
-line-by-line translation. The maintenance objective is:
+`pi-ai-swift` is a native semantic port of pi-ai's provider-facing observable
+behavior, not compiled TypeScript, a line-by-line translation, or a port of the
+whole TypeScript package. The maintenance objective is:
 
 > Given a pinned pi-ai revision and canonical fixtures, reproduce the same
 > supported provider behavior through the small Swift `ProviderRuntime` seam,
 > or produce a precise incompatibility result without changing the pin.
+
+"Supported provider behavior" is deliberately narrower than every public type
+or utility exported by `packages/ai`. It includes provider/model capabilities,
+authentication, final request URL/headers/body, provider stream decoding,
+normalized events and usage, replay metadata required by a provider, and typed
+provider failures. It excludes caller/session assembly such as transcript
+normalization, prompt-section history, tool availability history, conversation
+persistence, and agent control flow.
 
 Automation is successful when it reaches a truthful terminal result. A blocked
 sync is a successful maintenance outcome when the proposed upstream behavior
@@ -54,17 +66,54 @@ cannot be represented safely on Apple platforms.
 
 Use these sources in this order:
 
-1. `Upstream.lock.json` for the accepted revision and tracked built-in provider
+1. `Docs/ARCHITECTURE.md` and `AGENTS.md` for the module ownership boundary.
+2. `Upstream.lock.json` for the accepted revision and tracked built-in provider
    inventory.
-2. `UpstreamMappings/pi-ai.json` for ownership between Swift areas and upstream
-   source paths.
-3. Canonical sanitized fixtures and differential test results.
-4. Current Swift code and tests.
-5. The pinned upstream implementation and its tests.
-6. Upstream changelog, release notes, and current provider documentation.
+3. `UpstreamMappings/pi-ai.json` for review provenance between Swift areas and
+   upstream source paths; it cannot expand the architecture boundary.
+4. Canonical sanitized fixtures and differential test results.
+5. Current Swift code and tests.
+6. The pinned upstream implementation and its tests.
+7. Upstream changelog, release notes, and current provider documentation.
 
 Documentation or model names alone never establish wire behavior. A passing
 upstream JavaScript/TypeScript test never establishes native Swift equivalence.
+
+## Ownership filter
+
+Apply this filter before assigning Class A, B, C, or D. Every changed upstream
+hunk belongs to one of three ownership categories:
+
+1. **Provider-owned observable behavior** — provider/model capability metadata,
+   authentication, request or wire projection, response normalization, usage,
+   provider replay metadata, or provider failure semantics. Continue to A/B/C/D
+   classification and deterministic evidence.
+2. **Caller/session-owned assembly** — transcript normalization, system-prompt
+   composition, named prompt sections, tool availability history, conversation
+   persistence, assistant-frame persistence, or agent control flow. Do not port
+   it into pi-ai-swift. Record whether it changes the final provider behavior for
+   an input already expressible through `ProviderRequest`.
+3. **Upstream host implementation** — Node/Bun packaging, process environment,
+   proxy integration, filesystem conventions, Workers bindings, or other host
+   mechanics not required by the Apple provider runtime. Preserve only an
+   observable provider contract that crosses the Swift seam.
+
+An upstream type becoming public, moving into an adapter import closure, or
+being consumed by every TypeScript provider does not by itself make it
+provider-owned. In particular, `Context`, `TranscriptContext`, generic system
+message replay, prompt-section merging, and tool-state reconstruction remain
+caller/session concerns.
+
+If a new provider feature needs caller/session information that the current
+`ProviderRequest` cannot express, maintenance must record a cross-repository
+gate and leave the public seam unchanged. Designing that seam requires a
+separate coordinated AIReasoningCore/pi-ai-swift task. It is not Class C merely
+because the TypeScript upstream changed a public type.
+
+Out-of-scope additions do not make the whole candidate
+`upstream_incompatible`. The pin may move when fixtures prove that the existing
+supported provider surface remains equivalent and the omitted capability is
+truthfully recorded without being advertised as supported.
 
 ## Area coverage ledger
 
@@ -76,9 +125,11 @@ files; every production source in `PiAIProviderRuntime` must belong to at least
 one area. The upstream check enforces these invariants and requires every
 mapped upstream path to remain inside the exact provenance lock.
 
-A mapped path means “this area must absorb or explicitly reject changes from
-this source.” It does not mean the behavior is implemented. Only an area's
-status plus executable evidence establishes completion.
+A mapped path means “this area must review provider-facing consequences from
+this source.” It does not assign ownership of every type or helper in that file.
+The review may conclude that a hunk is caller/session-owned or host-only, with a
+recorded reason and unchanged provider fixtures. Only an area's status plus
+executable evidence establishes completion.
 
 Provider inventory is not a hand-maintained subset. The upstream gate parses
 the pinned `providers/all.ts` `builtinProviders()` list and requires every
@@ -90,12 +141,18 @@ OpenRouter, Qwen Token Plan, Together, and Z.AI. The same gate parses
 
 ## Maintenance trigger and IR lifecycle
 
-Maintenance is human-initiated and may occur at irregular intervals. This
-repository does not require a scheduler, periodic bot, automatic pull request,
-or unattended upstream watcher. Once a maintainer names a candidate upstream
-revision or asks for a provider implementation, an agent may execute the
-bounded workflow in this document. Normal authorization rules for commits,
-publishing, credentials, and billable live tests still apply.
+Maintenance begins when a human names a candidate revision or when an agent or
+automation resolves a candidate and the pure signal returns `NO`:
+
+```sh
+./Scripts/check-upstream.sh --candidate <full-upstream-commit>
+```
+
+The script only detects whether checked-in maintenance evidence covers that
+exact hash. It does not interpret the diff or modify files. A `NO` result invokes
+`prompts/pi-ai-upstream-maintenance.md`, which applies the bounded workflow in
+this document. Normal authorization rules for commits, publishing, credentials,
+and billable live tests still apply.
 
 `UpstreamMappings/pi-ai.json` is the durable intermediate representation
 between upstream discovery and Swift implementation. It is both a coverage
@@ -173,7 +230,8 @@ revision with tests, model data, or provenance from another revision.
 
 ## Change classification
 
-Classify each relevant upstream hunk before editing Swift.
+Only provider-owned observable changes that pass the ownership filter receive
+an A/B/C/D class. Classify each such hunk before editing Swift.
 
 ### Class A — mechanical data
 
@@ -214,7 +272,8 @@ Examples:
 - OAuth client IDs, scopes, redirect URIs, endpoints, or token claims;
 - credential schema, storage, export, refresh ownership, or minimum validity;
 - retry, fallback, proxy, telemetry, or data-retention policy;
-- a public `ProviderRuntime` interface change;
+- a public `ProviderRuntime` interface change required by an already-owned
+  provider behavior and not merely by upstream package structure;
 - new live-account, billing, or entitlement behavior.
 
 AI may investigate, write fixtures, and prepare a candidate patch, but the pin
@@ -236,7 +295,9 @@ Examples:
   secrets or private reasoning.
 
 Do not emulate these with placeholders, WebViews, embedded Node, guessed
-defaults, or a different provider path. End the run as
+defaults, or a different provider path. Class D applies only when the behavior
+is required by the supported provider surface after the ownership filter; an
+unowned upstream subsystem is simply out of scope. End an applicable run as
 `upstream_incompatible`, name the exact invariant, and keep the last compatible
 pin.
 
@@ -251,6 +312,21 @@ Type-only imports, strip-only TypeScript rules, lazy dynamic imports, package
 exports, and Node/Bun bundling changes may have no Swift semantic equivalent.
 Record them as ignored implementation details only after confirming that the
 wire and state-machine fixtures are unchanged.
+
+### Upstream conversation and transcript drift
+
+The TypeScript package may change `Context`, `TranscriptContext`, system-message
+replay, prompt sections, tool-set history, or assistant-frame persistence. These
+are not Swift port targets by structure. Inspect their downstream effect on
+provider requests, then:
+
+- port changed capability metadata or final wire behavior for inputs already
+  expressible through `ProviderRequest`;
+- keep transcript and tool-lifecycle assembly in AIReasoningCore or the host;
+- record a cross-repository gate when a new capability needs additional caller
+  information; and
+- never copy the upstream conversation model into pi-ai-swift merely to make a
+  differential fixture easier to express.
 
 ### Runtime and scheduling drift
 
@@ -284,10 +360,11 @@ provider transport semantics.
 
 ## Existing-checkout synchronization workflow
 
-After a human initiates an inventory or implementation sync, an AI maintainer
-must execute the applicable stages in order. An inventory sync normally stops
-after recording and verifying the decision; an implementation sync continues
-through fixtures, porting, and the full verification matrix.
+After a candidate signal returns `NO`, an AI maintainer must execute the
+applicable stages in order using `prompts/pi-ai-upstream-maintenance.md`. An
+inventory sync normally stops after recording and verifying the decision; an
+implementation sync continues through fixtures, porting, and the full
+verification matrix.
 
 ### 1. Establish a clean baseline
 
@@ -309,9 +386,22 @@ through fixtures, porting, and the full verification matrix.
 - Expand the mapping before proceeding if behavior moved outside the current
   paths. Missing mapping coverage is `verification_failed`, not “no change.”
 
-### 3. Build a semantic change inventory
+### 3. Build an ownership inventory
 
-For every relevant hunk, record:
+For every changed upstream hunk, record:
+
+- provider-owned observable behavior, caller/session-owned assembly, or
+  upstream host implementation;
+- the architecture rule supporting that classification;
+- whether an existing `ProviderRequest` can exercise any provider-visible
+  consequence; and
+- any cross-repository gate needed for a capability outside the current seam.
+
+Do not edit Swift or assign A/B/C/D until this ownership inventory is complete.
+
+### 4. Build a provider semantic change inventory
+
+For every provider-owned relevant hunk, record:
 
 - provider ID and Swift area;
 - Class A, B, C, or D;
@@ -321,9 +411,9 @@ For every relevant hunk, record:
 - proposed verification gate;
 - whether explicit approval is required.
 
-Do not edit Swift until every relevant hunk is classified.
+Do not edit Swift until every provider-owned relevant hunk is classified.
 
-### 4. Freeze fixtures before implementation
+### 5. Freeze fixtures before implementation
 
 - Capture sanitized request bodies, response bodies, SSE frames, and state
   transitions from the proposed exact revision.
@@ -335,7 +425,7 @@ Do not edit Swift until every relevant hunk is classified.
   transformation used for sanitization.
 - Review fixture changes independently from Swift implementation changes.
 
-### 5. Port behind internal seams
+### 6. Port behind internal seams
 
 - Change the smallest internal adapter that owns the behavior.
 - Preserve the three-operation public seam unless a Class C decision approves a
@@ -346,8 +436,10 @@ Do not edit Swift until every relevant hunk is classified.
   replay; otherwise reject unknown semantic events.
 - Never add a compatibility branch without a fixture proving why both shapes
   are canonical.
+- Do not add transcript normalization, prompt-section merging, tool lifecycle,
+  or conversation persistence to satisfy an upstream package-structure change.
 
-### 6. Run the verification matrix
+### 7. Run the verification matrix
 
 All applicable rows must pass:
 
@@ -369,7 +461,7 @@ success does not prove Simulator OAuth. The 2026-08-30 Codex validation required
 an iOS 26.5 XCTest to prove device polling, token exchange, and account-claim
 decoding in the Simulator process.
 
-### 7. Decide and record
+### 8. Decide and record
 
 - Move the lock only after all required gates pass.
 - Update mappings, fixtures, docs, and provenance in the same change.
@@ -449,9 +541,12 @@ compatibility.
 
 ## Research baseline
 
-As of 2026-08-30, the accepted pi-ai revision
-`853a80d26c90a14c1886f0ebb8ffaae133ca2185` is also upstream `main` and carries
-package version `0.84.4`. This is a point-in-time fact and must be refreshed on
+As of 2026-09-20, the accepted pi-ai revision
+`19451accdeec671c1f4da9eafac8fc270f510ef4` is upstream `main` and carries
+package version `0.86.1`. The 0.86 maintenance run absorbed provider-visible
+catalog, request, header, reasoning, usage, and replay changes while recording
+transcript-owned mid-conversation system/tool history in
+`Docs/UPSTREAM_GATES.md`. This is a point-in-time fact and must be refreshed on
 every sync run.
 
 Recent pi-ai changes demonstrate why classification is required: cancellation

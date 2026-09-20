@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, failureCasePath, requestCasePath] = process.argv.slice(2);
 if (!upstreamRoot || !failureCasePath || !requestCasePath) {
@@ -49,12 +50,15 @@ async function captureFailure(protocol) {
     return captureImageFailure(protocol, decoderInput);
   }
 
-  const implementation = await import(
-    pathToFileURL(path.join(
-      upstreamRoot,
-      "packages/ai/src/api",
-      `${protocol.protocolID}.ts`,
-    )).href
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(
+      pathToFileURL(path.join(
+        upstreamRoot,
+        "packages/ai/src/api",
+        `${protocol.protocolID}.ts`,
+      )).href
+    ),
   );
   const fetch = failureFetch(protocol.protocolID, decoderInput);
   const priorFetch = globalThis.fetch;
@@ -114,8 +118,11 @@ async function captureCancellation(protocol) {
     };
   }
 
-  const implementation = await import(
-    pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${protocol.protocolID}.ts`)).href
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(
+      pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${protocol.protocolID}.ts`)).href
+    ),
   );
   const options = streamOptions(protocol, fetch);
   options.signal = controller.signal;
@@ -197,11 +204,14 @@ async function captureBedrockFailure(protocol, decoderInput) {
   try {
     const address = server.address();
     if (!address || typeof address === "string") throw new Error("invalid loopback address");
-    const implementation = await import(
-      pathToFileURL(path.join(
-        upstreamRoot,
-        "packages/ai/src/api/bedrock-converse-stream.ts",
-      )).href
+    const implementation = await providerStreams(
+      upstreamRoot,
+      await import(
+        pathToFileURL(path.join(
+          upstreamRoot,
+          "packages/ai/src/api/bedrock-converse-stream.ts",
+        )).href
+      ),
     );
     const model = { ...textModel(protocol), baseUrl: `http://127.0.0.1:${address.port}` };
     const stream = implementation.streamSimple(

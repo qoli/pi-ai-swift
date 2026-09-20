@@ -43,6 +43,29 @@ struct AnthropicMessagesAdapterTests {
   }
 
   @Test
+  func preservesManagedEffortInTerminalReplayMetadata() async throws {
+    let transport = AnthropicFixtureTransport(chunks: anthropicFixtureChunks(), statusCode: 200)
+    let context = fixtureAnthropicContext(
+      model: fixtureAnthropicModel(),
+      metadata: [
+        "compat": .object([
+          "forceAdaptiveThinking": .bool(true), "supportsMidConvoEffort": .bool(true),
+        ]),
+        "thinkingLevelMap": .object(["minimal": .string("low")]),
+      ])
+    var snapshot: ProviderResponseSnapshot?
+    for try await event in AnthropicMessagesAdapter().stream(
+      fixtureAnthropicRequest(effort: .minimal), context: context, transport: transport)
+    {
+      if case .responseSnapshot(let value) = event { snapshot = value }
+    }
+    #expect(snapshot?.providerMetadata["providerThinkingLevel"] == .string("low"))
+    #expect(
+      try snapshot?.replayAssistantMessage().providerMetadata["providerThinkingLevel"]
+        == .string("low"))
+  }
+
+  @Test
   func encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents() async throws {
     let transport = AnthropicFixtureTransport(
       chunks: anthropicFixtureChunks(),

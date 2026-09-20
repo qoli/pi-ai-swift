@@ -4,6 +4,7 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) {
@@ -23,10 +24,13 @@ if (revision !== lock.revision) {
   throw new Error(`Azure configuration oracle revision mismatch: expected ${lock.revision}, found ${revision}`);
 }
 
-const implementation = await import(pathToFileURL(path.join(
+const implementation = await providerStreams(
   upstreamRoot,
-  "packages/ai/src/api/azure-openai-responses.ts",
-)).href);
+  await import(pathToFileURL(path.join(
+    upstreamRoot,
+    "packages/ai/src/api/azure-openai-responses.ts",
+  )).href),
+);
 for (const name of [
   "AZURE_OPENAI_BASE_URL",
   "AZURE_OPENAI_RESOURCE_NAME",

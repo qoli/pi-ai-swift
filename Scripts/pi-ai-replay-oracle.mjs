@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath, protocolPath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath || !protocolPath) {
@@ -36,8 +37,11 @@ process.stdout.write(`${JSON.stringify({
 }, null, 2)}\n`);
 
 async function capture(protocol, scenario) {
-  const implementation = await import(
-    pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${protocol.protocolID}.ts`)).href
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(
+      pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${protocol.protocolID}.ts`)).href
+    ),
   );
   let payload;
   const model = textModel(protocol, scenario);
@@ -165,7 +169,6 @@ function replayMessages(protocol, scenario) {
         { type: "text", text: "sunny" },
         ...(scenario.toolResultImage ? [{ type: "image", data: "AQI=", mimeType: "image/png" }] : []),
       ],
-      ...(scenario.addedToolNames ? { addedToolNames: scenario.addedToolNames } : {}),
       isError: scenario.toolResultError === true,
       timestamp: 2,
     });

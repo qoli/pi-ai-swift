@@ -5,6 +5,7 @@ import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const GOOGLE_MOCK_URL = "oracle:google-genai-response-branches";
 registerHooks({
@@ -65,8 +66,11 @@ if (outputPath) await writeFile(outputPath, rendered);
 else process.stdout.write(rendered);
 
 async function execute(protocolID, scenario) {
-  const implementation = await import(
-    pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${protocolID}.ts`)).href
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(
+      pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${protocolID}.ts`)).href
+    ),
   );
   if (protocolID === "openrouter-images") {
     const output = await implementation.generateImages(

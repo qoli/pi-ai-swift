@@ -1,4 +1,56 @@
 #!/usr/bin/env bash
+
+# This script is a signal, not a maintenance orchestrator. Its default public
+# contract is exactly one stdout line (YES or NO) plus a meaningful exit code.
+# Use --explain only when a maintainer needs the underlying engineering output.
+signal_mode=1
+internal_run=0
+candidate_revision=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --candidate)
+      if [[ $# -lt 2 ]]; then
+        echo "NO"
+        exit 2
+      fi
+      candidate_revision="$2"
+      shift 2
+      ;;
+    --explain)
+      signal_mode=0
+      shift
+      ;;
+    --internal-run)
+      internal_run=1
+      shift
+      ;;
+    *)
+      echo "NO"
+      exit 2
+      ;;
+  esac
+done
+
+if [[ "$internal_run" -eq 0 && "$signal_mode" -eq 1 ]]; then
+  internal_arguments=(--internal-run)
+  if [[ -n "$candidate_revision" ]]; then
+    internal_arguments+=(--candidate "$candidate_revision")
+  fi
+
+  set +e
+  "$0" "${internal_arguments[@]}" >/dev/null 2>&1
+  signal_status=$?
+  set -e
+
+  if [[ "$signal_status" -eq 0 ]]; then
+    echo "YES"
+  else
+    echo "NO"
+  fi
+  exit "$signal_status"
+fi
+
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -6,6 +58,11 @@ lock_file="$repo_root/Upstream.lock.json"
 mapping_file="$repo_root/UpstreamMappings/pi-ai.json"
 catalog_file="$repo_root/Sources/PiAIProviderRuntime/Resources/BuiltinCatalog.json"
 cache_root="${PI_AI_SWIFT_UPSTREAM_CACHE:-$repo_root/.build/upstreams/pi}"
+
+if [[ -n "$candidate_revision" && ! "$candidate_revision" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "candidate revision must be a full lowercase 40-character commit" >&2
+  exit 2
+fi
 
 if [[ ! -f "$lock_file" ]]; then
   echo "missing upstream lock: $lock_file" >&2
@@ -15,6 +72,25 @@ fi
 if [[ ! -f "$mapping_file" ]]; then
   echo "missing upstream mapping: $mapping_file" >&2
   exit 2
+fi
+
+if [[ -n "$candidate_revision" ]]; then
+  accepted_revision="$(python3 - "$lock_file" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as handle:
+    lock = json.load(handle)
+revision = lock.get("revision")
+if not isinstance(revision, str) or len(revision) != 40:
+    raise SystemExit("malformed upstream lock revision")
+print(revision)
+PY
+)"
+  if [[ "$candidate_revision" != "$accepted_revision" ]]; then
+    echo "candidate upstream drift: accepted=$accepted_revision candidate=$candidate_revision" >&2
+    exit 1
+  fi
 fi
 
 python3 - "$repo_root" "$lock_file" "$mapping_file" <<'PY'

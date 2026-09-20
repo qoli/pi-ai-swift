@@ -7,6 +7,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import http from "node:http";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const GOOGLE_MOCK_URL = "oracle:google-genai";
 registerHooks({
@@ -81,7 +82,10 @@ else process.stdout.write(rendered);
 async function runProtocol(protocol, modelCost) {
   if (protocol.protocolID === "openrouter-images") return runImages(protocol, modelCost);
   if (protocol.protocolID === "bedrock-converse-stream") return runBedrock(protocol, modelCost);
-  const implementation = await import(pathToFileURL(path.join(apiRoot, `${protocol.protocolID}.ts`)).href);
+  const implementation = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(path.join(apiRoot, `${protocol.protocolID}.ts`)).href),
+  );
   if (typeof implementation.stream !== "function") throw new Error(`${protocol.protocolID} has no public stream entrypoint`);
 
   const decoderInput = decoderInputFor(protocol.protocolID);
@@ -128,7 +132,10 @@ async function runBedrock(protocol, modelCost) {
   try {
     const address = server.address();
     if (!address || typeof address === "string") throw new Error("invalid Bedrock loopback address");
-    const implementation = await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href);
+    const implementation = await providerStreams(
+      upstreamRoot,
+      await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href),
+    );
     const sourceStream = implementation.stream(
       { ...textModel(protocol, modelCost), baseUrl: `http://127.0.0.1:${address.port}` },
       baseContext(),

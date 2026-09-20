@@ -146,7 +146,7 @@ extension ProviderRequest {
       throw ProviderRuntimeFailure(
         code: .invalidRequest,
         message:
-          "The pinned pi request contract accepts one system prompt; multiple system messages are not representable.",
+          "ProviderRequest accepts one caller-assembled current system prompt; multiple system messages are not representable at this seam.",
         providerID: providerID,
         operation: operation,
         causeDescription: nil

@@ -83,10 +83,16 @@ struct SourceDerivedSecondaryRequestDifferentialTests {
         capabilities: secondaryCapabilities(reasoning: true, image: true),
         contextWindow: 128_000, maximumOutputTokens: 4_096)
     case "mistral-conversations":
-      let effort = caseID == "mistral-reasoning-effort"
+      let effort = caseID.contains("reasoning-effort")
       let reasoning = effort || caseID == "mistral-prompt-mode"
+      let modelID =
+        caseID == "mistral-medium-reasoning-effort"
+        ? "mistral-medium-2606"
+        : caseID == "mistral-zai-reasoning-effort"
+          ? "zai-glm-5-2"
+          : effort ? "mistral-small-2603" : "mistral-fixture"
       return ProviderModel(
-        id: effort ? "mistral-small-2603" : "mistral-fixture",
+        id: modelID,
         providerID: "mistral", name: effort ? "Mistral Small" : "Mistral Fixture",
         protocolID: protocolID,
         capabilities: secondaryCapabilities(
@@ -207,7 +213,7 @@ struct SourceDerivedSecondaryRequestDifferentialTests {
             isError: true, timestampMilliseconds: 3)))
     }
     let reasoning: ProviderReasoningEffort? =
-      ["mistral-reasoning-effort", "mistral-prompt-mode"].contains(caseID) ? .high : nil
+      (caseID.contains("reasoning-effort") || caseID == "mistral-prompt-mode") ? .high : nil
     let cache: ProviderCacheRetention = caseID == "mistral-cache-long" ? .long : .none
     let sessionID = caseID == "mistral-cache-long" ? "mistral-session" : nil
     let toolChoice: JSONValue?

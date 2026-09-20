@@ -4,6 +4,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath, outputPath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) throw new Error("usage: oracle UPSTREAM_ROOT CASE_JSON");
@@ -14,8 +15,14 @@ if (revision !== fixture.upstreamRevision) {
   throw new Error(`Anthropic/Bedrock oracle revision mismatch: expected ${fixture.upstreamRevision}, found ${revision}`);
 }
 const apiRoot = path.join(upstreamRoot, "packages/ai/src/api");
-const anthropic = await import(pathToFileURL(path.join(apiRoot, "anthropic-messages.ts")).href);
-const bedrock = await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href);
+const anthropic = await providerStreams(
+  upstreamRoot,
+  await import(pathToFileURL(path.join(apiRoot, "anthropic-messages.ts")).href),
+);
+const bedrock = await providerStreams(
+  upstreamRoot,
+  await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href),
+);
 
 const tool = { name: "read", description: "Read data", parameters: objectSchema() };
 const user = { role: "user", content: "hello", timestamp: 0 };
@@ -98,6 +105,17 @@ function anthropicSpec(caseID) {
       return { entrypoint: "streamSimple", model: { ...baseModel, maxTokens: 2048 }, context, options: { apiKey: "fixture-key", reasoning: "high", cacheRetention: "none" } };
     case "anthropic-adaptive-xhigh":
       return { entrypoint: "stream", model: { ...baseModel, id: "claude-opus-4-7", name: "Claude Opus 4.7", compat: { forceAdaptiveThinking: true } }, context, options: { apiKey: "fixture-key", maxTokens: 4096, thinkingEnabled: true, effort: "xhigh", thinkingDisplay: "omitted", cacheRetention: "none" } };
+    case "anthropic-mid-convo-effort-history": {
+      const model = { ...baseModel, id: "claude-fable-5-1", name: "Claude Fable 5.1", compat: { forceAdaptiveThinking: true, supportsMidConvoEffort: true } };
+      const assistant = {
+        role: "assistant", api: "anthropic-messages", provider: "anthropic", model: model.id,
+        content: [{ type: "thinking", thinking: "inspect", thinkingSignature: "opaque-signature" }, { type: "text", text: "answer" }],
+        providerThinkingLevel: "low", usage: zeroUsage(), stopReason: "stop", timestamp: 1,
+      };
+      return { entrypoint: "stream", model, context: { ...context, messages: [user, assistant, { role: "user", content: "again", timestamp: 2 }] }, options: { apiKey: "fixture-key", maxTokens: 4096, thinkingEnabled: true, effort: "high", cacheRetention: "none" } };
+    }
+    case "anthropic-mid-convo-effort-default":
+      return { entrypoint: "stream", model: { ...baseModel, id: "claude-fable-5-1", name: "Claude Fable 5.1", compat: { forceAdaptiveThinking: true, supportsMidConvoEffort: true } }, context, options: { apiKey: "fixture-key", maxTokens: 4096, thinkingEnabled: true, cacheRetention: "none" } };
     case "anthropic-tool-any":
       return { entrypoint: "stream", model: baseModel, context, options: { apiKey: "fixture-key", maxTokens: 4096, cacheRetention: "none", toolChoice: "any" } };
     case "anthropic-disabled":

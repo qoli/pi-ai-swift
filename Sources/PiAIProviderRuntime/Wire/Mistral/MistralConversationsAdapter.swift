@@ -162,7 +162,7 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
       effort != .off,
       context.model.capabilities.reasoning
     {
-      if Self.reasoningEffortModels.contains(context.model.id) {
+      if Self.usesReasoningEffort(modelID: context.model.id) {
         body["reasoning_effort"] = .string(
           mappedReasoningEffort(effort, context: context)
         )
@@ -464,9 +464,12 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     )
   }
 
-  private static let reasoningEffortModels: Set<String> = [
-    "mistral-small-2603", "mistral-small-latest", "mistral-medium-3.5",
-  ]
+  private static func usesReasoningEffort(modelID: String) -> Bool {
+    modelID == "mistral-small-2603"
+      || modelID == "mistral-small-latest"
+      || modelID.hasPrefix("mistral-medium-")
+      || modelID == "zai-glm-5-2"
+  }
 }
 
 private struct MistralEventReducer {

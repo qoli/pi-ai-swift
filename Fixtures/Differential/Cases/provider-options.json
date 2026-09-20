@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+  "caseIDs": [
+    "openrouter-completions-session",
+    "baseten-completions-session",
+    "openrouter-responses-session",
+    "openrouter-anthropic-session",
+    "opencode-session-wrapper",
+    "vllm-priority",
+    "responses-max-output-disabled"
+  ]
+}

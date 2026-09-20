@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) {
@@ -30,7 +31,10 @@ async function capture(item) {
 }
 
 async function capturePi(caseID) {
-  const api = await import(pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api/pi-messages.ts")).href);
+  const api = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api/pi-messages.ts")).href),
+  );
   let payload;
   let requestUrl;
   const context = piContext(caseID);
@@ -73,7 +77,7 @@ function piContext(caseID) {
       },
       {
         role: "toolResult", toolCallId: "call-1", toolName: "weather",
-        content: [{ type: "text", text: "sunny" }], addedToolNames: ["lookup"],
+        content: [{ type: "text", text: "sunny" }],
         isError: false, timestamp: 13,
       },
     ] : [{ role: "user", content: "First", timestamp: 11 }],
@@ -93,7 +97,10 @@ function piModel() {
 }
 
 async function captureMistral(caseID) {
-  const api = await import(pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api/mistral-conversations.ts")).href);
+  const api = await providerStreams(
+    upstreamRoot,
+    await import(pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api/mistral-conversations.ts")).href),
+  );
   const model = mistralModel(caseID);
   const context = mistralContext(caseID);
   const options = mistralOptions(caseID);
@@ -119,10 +126,19 @@ async function captureMistral(caseID) {
 }
 
 function mistralModel(caseID) {
-  const effort = caseID === "mistral-reasoning-effort";
+  const effort = [
+    "mistral-reasoning-effort",
+    "mistral-medium-reasoning-effort",
+    "mistral-zai-reasoning-effort",
+  ].includes(caseID);
   const supportsImages = !caseID.includes("unsupported");
+  const modelID = caseID === "mistral-medium-reasoning-effort"
+    ? "mistral-medium-2606"
+    : caseID === "mistral-zai-reasoning-effort"
+      ? "zai-glm-5-2"
+      : effort ? "mistral-small-2603" : "mistral-fixture";
   return {
-    id: effort ? "mistral-small-2603" : "mistral-fixture",
+    id: modelID,
     name: effort ? "Mistral Small" : "Mistral Fixture",
     api: "mistral-conversations", provider: "mistral", baseUrl: "https://api.mistral.ai/v1",
     reasoning: effort || caseID === "mistral-prompt-mode",
@@ -154,7 +170,7 @@ function mistralContext(caseID) {
 
 function mistralOptions(caseID) {
   const options = { apiKey: "fixture-key", maxTokens: 64, maxRetries: 0 };
-  if (caseID === "mistral-reasoning-effort" || caseID === "mistral-prompt-mode") options.reasoning = "high";
+  if (caseID.includes("reasoning-effort") || caseID === "mistral-prompt-mode") options.reasoning = "high";
   if (caseID === "mistral-cache-none") options.cacheRetention = "none";
   if (caseID === "mistral-cache-long") { options.cacheRetention = "long"; options.sessionId = "mistral-session"; }
   if (caseID === "mistral-tool-choice-any") options.toolChoice = "any";

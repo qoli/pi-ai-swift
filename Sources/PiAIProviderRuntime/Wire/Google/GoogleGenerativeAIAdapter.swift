@@ -176,6 +176,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
+    ProviderSessionHeaders.applyOpenCode(request: request, to: &urlRequest)
     try applyCredential(
       context.credential,
       to: &urlRequest,
@@ -536,9 +537,14 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
   ) throws -> [String: JSONValue] {
     let lower = modelID.lowercased()
     if requested == .off {
-      if isGemini3Pro(lower) { return ["thinkingLevel": .string("LOW")] }
-      if isGemini3Flash(lower) || (flavor == .generativeAI && isGemma4(lower)) {
-        return ["thinkingLevel": .string("MINIMAL")]
+      let map = metadata.object("thinkingLevelMap") ?? [:]
+      guard map["off"] == .null else { return ["thinkingBudget": .integer(0)] }
+      for fallback in ProviderReasoningEffort.allCases.dropFirst() {
+        guard map[fallback.rawValue] != .null else { continue }
+        let level = map.string(fallback.rawValue) ?? fallback.rawValue
+        if ["minimal", "low", "medium", "high"].contains(level.lowercased()) {
+          return ["thinkingLevel": .string(level.uppercased())]
+        }
       }
       return ["thinkingBudget": .integer(0)]
     }
