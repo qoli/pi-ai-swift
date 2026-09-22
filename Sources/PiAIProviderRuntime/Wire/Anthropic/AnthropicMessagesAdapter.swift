@@ -758,7 +758,7 @@ private struct AnthropicEventReducer {
           ProviderResponseMetadata(
             responseID: nil,
             providerID: providerID,
-            modelID: model,
+            modelID: requestedModelID,
             providerMetadata: [:]
           )
         )

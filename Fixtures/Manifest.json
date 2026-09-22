@@ -22,11 +22,17 @@
         "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
         "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesDisabledAndMappedAdaptiveReasoning",
         "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#preservesManagedEffortInTerminalReplayMetadata",
-        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockRequestBranchDifferentialTests.swift#sourceDerivedBranchMatrixMatchesPinnedAnthropicAndBedrockRequests"
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockRequestBranchDifferentialTests.swift#sourceDerivedBranchMatrixMatchesPinnedAnthropicAndBedrockRequests",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#responseIdentityMatchesSourceForAliasesAndLateModelMetadata",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Scripts/check-differential-coverage.py",
+        "Scripts/tests/test_identity_coverage.py"
       ],
       "upstreamSourceSHA256": "86dd72be52dcd5e94e1c6515269aa413310737d04bc00c61f658c4b198aa98b0",
       "upstreamTestSHA256": "4f634e080849cc0733e62ec9294fa759fe804540dc604b1139489da46e992af5",
-      "swiftEvidenceSHA256": "427a2844ad4a716aa787efcdc3c64ee72349bff0dcdb15a276f77817dd27bfb1"
+      "swiftEvidenceSHA256": "cb3c3b045c54429cb6c0426cd30ef042ad92e5e2991a19f404539304c8385d8e"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -169,6 +175,7 @@
       "upstreamTests": [
         "packages/ai/test/openai-completions-empty-tools.test.ts",
         "packages/ai/test/openai-completions-reasoning-details.test.ts",
+        "packages/ai/test/openai-completions-response-model.test.ts",
         "packages/ai/test/openai-completions-retry.test.ts",
         "packages/ai/test/openai-completions-tool-choice.test.ts",
         "packages/ai/test/openai-completions-tool-result-images.test.ts",
@@ -176,11 +183,17 @@
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream",
-        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#reasoningFormatsEncodeOffAndMappedEffort"
+        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#reasoningFormatsEncodeOffAndMappedEffort",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#responseIdentityMatchesSourceForAliasesAndLateModelMetadata",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Scripts/check-differential-coverage.py",
+        "Scripts/tests/test_identity_coverage.py"
       ],
       "upstreamSourceSHA256": "af0331c2d9fc88013a17a408e691eb7c68b659451489e6d1885be9f67bbd7805",
-      "upstreamTestSHA256": "c9619da09ecf2f648fbee6b827889c8800f7bbee6d6b1fee5bd647fd73ece786",
-      "swiftEvidenceSHA256": "e35ce3e769b69acad4f2139efaaa2618c82836be26537542c95c2bb7d6215f0b"
+      "upstreamTestSHA256": "63e9641de3eb0eef02f4cc5e30cf93022d452664b9de96d74e3ac9c1ba573295",
+      "swiftEvidenceSHA256": "b96a490a5ba8bf5271fd08ad55e2cdd4fd5fee7c36ed9024b40d2a12f47bfdf2"
     },
     {
       "protocolID": "openai-responses",
@@ -216,11 +229,17 @@
         "packages/ai/test/image-model-data.test.ts"
       ],
       "swiftEvidence": [
-        "Tests/PiAIProviderRuntimeTests/OpenRouterImagesAdapterTests.swift#encodesImageRequestAndNormalizesTextAssetsUsageAndTerminal"
+        "Tests/PiAIProviderRuntimeTests/OpenRouterImagesAdapterTests.swift#encodesImageRequestAndNormalizesTextAssetsUsageAndTerminal",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#responseIdentityMatchesSourceForAliasesAndLateModelMetadata",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Scripts/check-differential-coverage.py",
+        "Scripts/tests/test_identity_coverage.py"
       ],
       "upstreamSourceSHA256": "89cda47714d207ff9ddf1365070e073b9a2093d1a93c754f81cc8013cf514748",
       "upstreamTestSHA256": "ac7f9b1974fba865ca5dd1935ff7bb560f4448c69214e1d68c022974535a09b0",
-      "swiftEvidenceSHA256": "892441a42a673c56cb3e7c748bd07e8366bd83aaf565783b2f3fb275da2b0c78"
+      "swiftEvidenceSHA256": "33f3307264ff3d4b0e8155b4c659fd114dbbfcb1a2d14cccf2135df68298e96e"
     },
     {
       "protocolID": "pi-messages",

@@ -64,20 +64,26 @@ cannot be represented safely on Apple platforms.
 
 ## Sources of truth
 
-Use these sources in this order:
+Authority is scoped by the question being answered:
 
-1. `Docs/ARCHITECTURE.md` and `AGENTS.md` for the module ownership boundary.
-2. `Upstream.lock.json` for the accepted revision and tracked built-in provider
-   inventory.
-3. `UpstreamMappings/pi-ai.json` for review provenance between Swift areas and
-   upstream source paths; it cannot expand the architecture boundary.
-4. Canonical sanitized fixtures and differential test results.
-5. Current Swift code and tests.
-6. The pinned upstream implementation and its tests.
-7. Upstream changelog, release notes, and current provider documentation.
+- `Docs/ARCHITECTURE.md` and `AGENTS.md` determine module ownership and the
+  public seam. Upstream package structure cannot expand that boundary.
+- `Upstream.lock.json` identifies the accepted revision and inventory. A sync
+  candidate remains unaccepted until its applicable gates close.
+- The exact target upstream implementation and its tests determine observable
+  provider behavior within that boundary. Defect repair uses the accepted
+  source; revision sync uses the exact candidate source.
+- `UpstreamMappings/pi-ai.json` records review provenance and coverage claims.
+  Canonical fixtures, local code, and tests are fallible evidence of the port,
+  not authorities that can override a demonstrated upstream invariant. Correct
+  them together when they preserve the same mistaken interpretation.
+- Changelogs and provider documentation guide investigation; documentation or
+  model names alone never establish wire behavior.
 
-Documentation or model names alone never establish wire behavior. A passing
-upstream JavaScript/TypeScript test never establishes native Swift equivalence.
+A passing upstream JavaScript/TypeScript test does not establish native Swift
+equivalence. A green local fixture does not settle a contradictory source
+observation. Explain any intentional divergence as an explicit gate rather
+than silently changing the oracle to match Swift.
 
 ## Ownership filter
 
@@ -141,8 +147,10 @@ OpenRouter, Qwen Token Plan, Together, and Z.AI. The same gate parses
 
 ## Maintenance trigger and IR lifecycle
 
-Maintenance begins when a human names a candidate revision or when an agent or
-automation resolves a candidate and the pure signal returns `NO`:
+Revision synchronization begins when a human names a candidate revision or
+when an agent or automation resolves a candidate and the pure signal returns
+`NO`. A reported semantic defect also starts maintenance, even when this signal
+returns `YES`:
 
 ```sh
 ./Scripts/check-upstream.sh --candidate <full-upstream-commit>
@@ -177,8 +185,14 @@ as a working Swift provider. The accepted pin may move after the complete
 provenance and all applicable existing-support gates pass; moving the pin does
 not promote a newly recorded provider.
 
-Maintenance tasks have two explicit modes:
+Maintenance tasks have three explicit modes:
 
+- **Accepted-pin defect repair:** reproduce a reported mismatch against the
+  exact accepted source, correct the owning implementation and evidence, and
+  retain the accepted revision. `YES` never closes a known defect by itself.
+  Neither resolving latest HEAD nor completing unrelated newer changes is a
+  prerequisite. Refresh affected provenance without relabeling newer artifacts
+  as accepted-source evidence.
 - **Inventory sync:** compare a proposed upstream revision, update the IR and
   provenance, register new areas as `missing`, and verify the already supported
   surface. It does not implement or advertise the new provider.
@@ -215,7 +229,10 @@ reimplement those rules, the module is earning its depth and locality.
 
 ## Sync terminal states
 
-Every sync or reconstruction run must end in exactly one state:
+Every sync, defect-repair, or reconstruction run must end in exactly one state.
+For defect repair, `compatible` means the scoped repair passed its applicable
+gates at the unchanged accepted revision. Report any separate newer-candidate
+sync result independently; it must not obscure the repair result:
 
 | State | Meaning | Pin may move? |
 | --- | --- | --- |
@@ -224,6 +241,8 @@ Every sync or reconstruction run must end in exactly one state:
 | `needs_review` | A policy, security, public-seam, or live-account decision is required | No |
 | `upstream_incompatible` | Required behavior cannot be represented by the supported Swift/Apple contract | No |
 | `verification_failed` | Evidence is missing, malformed, flaky, or contradictory | No |
+
+The pin-movement column applies only to revision sync, never defect repair.
 
 Never partially advance the lock. Never combine implementation files from one
 revision with tests, model data, or provenance from another revision.
@@ -360,11 +379,13 @@ provider transport semantics.
 
 ## Existing-checkout synchronization workflow
 
-After a candidate signal returns `NO`, an AI maintainer must execute the
+After a candidate signal returns `NO`, or a semantic defect is reported even
+on `YES`, an AI maintainer must execute the
 applicable stages in order using `prompts/pi-ai-upstream-maintenance.md`. An
 inventory sync normally stops after recording and verifying the decision; an
-implementation sync continues through fixtures, porting, and the full
-verification matrix.
+implementation sync or defect repair continues through fixtures, porting, and
+the applicable verification matrix. For repair, references to the proposed
+revision below mean the exact accepted revision and the pin must stay fixed.
 
 ### 1. Establish a clean baseline
 
@@ -373,7 +394,12 @@ verification matrix.
 - Confirm the working tree and preserve unrelated user changes.
 - Run `swift test`, `swift format lint`, the pinned-upstream check, and the
   generic iOS Simulator build before changing the pin.
-- Stop if baseline verification fails.
+- Separate the expected failing defect reproduction from unrelated baseline
+  failures. Preserve the failure output and proceed with the scoped repair; a
+  known failing regression is evidence, not a reason to abandon the repair.
+- An unrelated baseline failure blocks a clean acceptance result and pin
+  movement. Diagnose or isolate it without weakening gates; report any remaining
+  failure explicitly and do not silently expand the authorized repair scope.
 
 ### 2. Fetch without accepting
 
@@ -381,14 +407,15 @@ verification matrix.
   worktree.
 - Verify repository identity, commit reachability, package path, package name,
   version, license, and required source paths.
-- Read the pi-ai changelog between revisions.
+- For revision sync, read the pi-ai changelog between revisions. For defect
+  repair, compare the reported behavior with accepted-source semantics.
 - Diff all mapped source paths and their relevant upstream tests.
 - Expand the mapping before proceeding if behavior moved outside the current
   paths. Missing mapping coverage is `verification_failed`, not “no change.”
 
 ### 3. Build an ownership inventory
 
-For every changed upstream hunk, record:
+For every changed upstream hunk, or affected behavior in defect repair, record:
 
 - provider-owned observable behavior, caller/session-owned assembly, or
   upstream host implementation;
@@ -401,7 +428,7 @@ Do not edit Swift or assign A/B/C/D until this ownership inventory is complete.
 
 ### 4. Build a provider semantic change inventory
 
-For every provider-owned relevant hunk, record:
+For every provider-owned relevant hunk or defect, record:
 
 - provider ID and Swift area;
 - Class A, B, C, or D;
@@ -413,7 +440,78 @@ For every provider-owned relevant hunk, record:
 
 Do not edit Swift until every provider-owned relevant hunk is classified.
 
+### Semantic evidence contract
+
+For each affected invariant, record a reviewable link between exact upstream
+source/test, canonical input, oracle observation, Swift assertion, and the
+command that executes that case. A suite name or protocol row alone is not
+case-specific evidence. Shared helpers count only when the named case actually
+executes their relevant assertions.
+
+- Identify each affected field's source, when it becomes available, permitted
+  updates, and relationships across start, incremental, terminal, and replay
+  stages. For example, request identity stays stable while reported-model
+  metadata follows a distinct provider-defined update rule.
+- Capture oracle values at the actual event boundary. Snapshot mutable event
+  values immediately; do not synthesize earlier events from terminal messages.
+  Review normalization/projection code as part of the evidence because it can
+  erase the very difference being tested.
+- Choose inputs that distinguish correct and plausible incorrect behavior:
+  unequal requested/reported identities, missing versus empty metadata, delayed
+  arrival, and later changes where relevant. Equal happy-path values alone do
+  not test which source supplies a field.
+- Show that the regression fails before the repair and passes afterward, or
+  temporarily reintroduce the precise faulty behavior and show the targeted
+  test fails. Restore production code afterward. Do not add broad mutation
+  machinery when one focused demonstration is sufficient.
+- When the defect crosses a consumer seam, exercise the actual provider runtime
+  through that consumer with deterministic transport input, proving both valid
+  provider behavior and continued rejection of genuinely invalid normalized
+  events. Keep provider fixes here and consumer assertions in the owning repo.
+  An isolated local dependency override may establish local integration; remove
+  it afterward. It does not establish remote-main or shipped-product acceptance.
+  Follow the consumer repository's remote-resolution gates after separately
+  authorized publication; report that integration as pending in the meantime.
+
+Inventories and digest checks validate the listed evidence, not every possible
+semantic branch. `landed` means the declared scope has executable coverage at
+that revision. New contradictory evidence reopens the affected claim even if
+all existing matrices remain green. Reports must name the checked invariants
+and gaps rather than claiming universal provider parity.
+
 ### 5. Freeze fixtures before implementation
+
+The response-identity repair is a concrete example of the evidence contract:
+
+| Invariant | Exact accepted source | Source / lifecycle rule | Executable identity cases |
+| --- | --- | --- | --- |
+| Start identity | `api/openai-completions.ts`, `api/anthropic-messages.ts`, `api/openrouter-images.ts` under `packages/ai/src` | Requested model at start; a server alias cannot replace it | `completions.identity-alias`, `anthropic.identity-alias`, `images.identity-alias` |
+| Terminal and replay identity | The same source assistant model and terminal event | Must equal request and start identity | All eight `identityCases`; text cases additionally validate replay source |
+| Completion reported model | `api/openai-completions.ts` chunk loop and `test/openai-completions-response-model.test.ts` | First nonempty differing model from any chunk; retain it across later changes | `completions.identity-alias`, `-same`, `-missing`, `-empty`, `-late` |
+| Anthropic reported model | `api/anthropic-messages.ts` message-start handler and `test/anthropic-sse-parsing.test.ts` | Report differing message-start model separately | `anthropic.identity-alias`, `anthropic.identity-same` |
+
+Paths above are evaluated at the accepted revision in `Upstream.lock.json`.
+Canonical inputs and observations are the `identityCases` collections in
+`Fixtures/Differential/{Cases,Oracle}/response-rich.json`; the response inventory
+binds each branch to these exact case IDs. `named-scenarios` evidence checks the
+input/observation case sets and revisions, so the unrelated rich protocol case
+cannot substitute for a deleted alias case. Actual behavior is still established
+by running the Swift assertions, not by the static inventory alone.
+
+Reproduce the evidence from the pi-ai-swift checkout:
+
+```sh
+swift test --filter responseIdentityMatchesSourceForAliasesAndLateModelMetadata
+python3 -B -m unittest discover -s Scripts/tests
+python3 Scripts/check-differential-coverage.py .
+```
+
+For the consumer boundary, run the consumer-owned
+`AIReasoningCore/Scripts/check-provider-identity.py --pi <pi-ai-swift-checkout>`.
+It exercises the real provider adapter through Core in an isolated harness with
+checked-in frames. It must accept the alias in both response modes and reject a
+test-mutated normalized identity. This optional integration probe adds no
+AIReasoningCore dependency to the provider package.
 
 - Capture sanitized request bodies, response bodies, SSE frames, and state
   transitions from the proposed exact revision.
@@ -448,7 +546,8 @@ All applicable rows must pass:
 | Provenance | Exact commit, package identity/version, license, source paths |
 | Static | `swift format lint`, strict compilation, JSON/schema checks |
 | Swift contract | DTO round trips, explicit errors, cancellation, ordering |
-| Differential | Same canonical input produces equivalent request/events/error |
+| Differential | Case-specific assertions prove equivalent request/events/error and cross-event invariants, with event-time oracle capture and regression sensitivity evidence |
+| Consumer boundary | When affected: actual provider runtime through the consumer using deterministic input; local and remote acceptance reported separately |
 | macOS | `swift test` |
 | iOS compile | arm64 and x86_64 Simulator build |
 | iOS runtime | Deterministic XCTest in an actual Simulator process |
@@ -463,10 +562,11 @@ decoding in the Simulator process.
 
 ### 8. Decide and record
 
-- Move the lock only after all required gates pass.
+- Move the lock only for revision sync after all required gates pass; retain
+  the accepted revision for defect repair.
 - Update mappings, fixtures, docs, and provenance in the same change.
 - Emit the terminal state and a concise evidence summary.
-- Commit only the scoped files; never include `.build`, `.swiftpm`, `.xcresult`,
+- If separately authorized to commit, include only scoped files; never include `.build`, `.swiftpm`, `.xcresult`,
   simulator containers, safe live-result files, or credentials.
 
 ## Reconstruction from an empty Swift package
@@ -540,6 +640,103 @@ Class C policy; it cannot turn an unrepresentable Class D behavior into proven
 compatibility.
 
 ## Research baseline
+
+### 2026-09-22 response identity correction and candidate assessment
+
+The accepted revision remains `19451accdeec671c1f4da9eafac8fc270f510ef4`
+(0.86.1). The default-branch candidate resolved for this run was
+`1a584a7a56eb5e7b4ff8ccbd46430f1533282eed`. Full candidate synchronization ends
+as **verification_failed**; this does not prevent correcting a demonstrated
+semantic-port error against the accepted source.
+
+The accepted and candidate sources both preserve the requested `model.id` in
+assistant identity. Anthropic records a different server model separately;
+Chat Completions records the first nonempty differing model from any chunk.
+Swift incorrectly used the server name for response-start identity in Chat
+Completions, Anthropic, and OpenRouter Images. A valid server alias therefore
+failed a caller's exact request-identity check. Chat Completions also captured
+response model metadata only from the first chunk.
+
+The scoped Class B repair changes those three start events to the requested
+identity and aligns Chat Completions metadata capture with upstream. It does
+not change requests, resolve aliases locally, retry, or select another model.
+Existing image-specific terminal metadata remains unchanged; image parity here
+is the requested identity, not a claim about an upstream responseModel field.
+
+The previous response-rich fixtures used equal names for these adapters, and
+the response oracle projected start identity from the terminal message. The
+oracle now snapshots actual start identity. Eight additional source-executed
+cases cover completion alias/same/missing/empty/late model metadata, Anthropic
+alias/same models, and image aliases. The new test failed with six semantic
+assertions before the implementation repair and passed afterward. The upstream
+`openai-completions-response-model.test.ts` regression is now explicitly locked
+and mapped. Mapping evidence, the response branch inventory, and fixture
+digests include this coverage; the signal checker itself is unchanged.
+
+Candidate analysis found these additional changes, not applied by this repair:
+
+| Area | Ownership / classification | Required subsequent work |
+| --- | --- | --- |
+| Chat Completions strict schemas | Provider wire, B | Default unknown endpoints to non-strict; preserve explicit built-in capabilities |
+| Empty user text parts | Provider wire, B | Filter empty array-form parts and omit empty messages, with source fixtures |
+| Image input limits and resize metadata | Provider catalog, B; resize application is caller-owned | Preserve catalog data; record caller-facing exposure as a separate seam gate |
+| Grok 4.7 and xAI pricing tiers | Catalog data, A | Obtain exact-candidate catalog data and verify tier projection |
+| Package version / faux test provider | Provenance / upstream host | Update relevant provenance without importing host behavior |
+
+The published `@earendil/pi-ai@0.87.0` artifact identifies
+`16787ad5b2dc748047f314ca1bfe7708f30f54f3` as its gitHead. Its SHA1 is
+`e81ec36ab4e9f44bafa2c980c7ec3cf8cda32f8d`, and its model-data structure hash is
+`8dd0aefb2a6806069b8eebd57911eb25fe3eca6d216eab0ebd92e9eebc0f2d75`.
+It contains image limits and Grok 4.6, but lacks the candidate's unreleased
+Grok 4.7 data. Generated provider JSON is not tracked in the source repository.
+The current published-artifact catalog pipeline therefore cannot establish
+exact-candidate catalog provenance. Relabeling that release with the candidate
+hash is not acceptance. Resume full synchronization once exact-candidate model
+data can be reproducibly obtained; this is an evidence gap, not a Class C
+approval requirement or an intrinsic platform incompatibility.
+
+Verification for the accepted-source repair:
+
+- 161 macOS tests passed; formatting and whitespace checks passed.
+- Source-executed oracle and coverage checks passed for all 11 protocols.
+- Generic arm64 and explicit x86_64 iOS Simulator builds passed.
+- Both response differential tests passed inside an iOS 26.5 Simulator process,
+  using a temporary package harness against this checkout. The harness copied
+  the same test source and fixtures, changing only fixture lookup to its bundled
+  resources; it did not run host Node oracle generation inside iOS.
+- The accepted signal and exact accepted-revision signal return `YES`; the
+  latest-candidate signal remains `NO`. No accepted pin or provider support
+  claim moved. No credentials, billable calls, commits, or publication were used.
+- AIReasoningCore and product dependency integration are unchanged. This local
+  patch is not evidence that a distributed SwiftChat build has received it.
+
+### 2026-09-22 maintenance-method follow-up
+
+The accepted-pin response-identity repair is **compatible within its tested
+scope** at `19451accdeec671c1f4da9eafac8fc270f510ef4`; its pin did not move.
+This result is separate from the newer-candidate assessment above.
+
+The repo contract, workflow prompt, architecture claims, and installed skill
+now route known defects independently of the revision signal. The eight identity
+cases have individual inventory bindings and direct request/start/terminal/replay
+assertions. Five checker tests reject missing observations, deleted alias evidence,
+duplicate cases, and stale input revisions while accepting the valid inventory.
+The signal script itself remains unchanged.
+
+The consumer-owned probe passed two XCTest methods covering both ordinary and
+streaming replies with the real provider adapter. Reintroducing the faulty
+Chat Completions start-model assignment in an isolated source copy made its
+valid-alias test fail; rerunning against the repaired checkout passed. The
+consumer probe leaves real dependency manifests and pins untouched.
+
+Final verification: 161 macOS tests, five checker tests, source/coverage gates,
+both accepted-revision signals, Swift formatting, and whitespace checks passed.
+The updated response suite also passed in iOS 26.5 Simulator; production arm64
+and x86_64 Simulator builds passed. The installed skill passed validation and an
+independent read-only scenario review of routine YES, defect-with-YES, and a
+defect with an unrelated newer-candidate blocker. No live provider calls or
+publication were performed. Remote-main and distributed-product integration
+remain pending separately authorized publication.
 
 As of 2026-09-20, the accepted pi-ai revision
 `19451accdeec671c1f4da9eafac8fc270f510ef4` is upstream `main` and carries

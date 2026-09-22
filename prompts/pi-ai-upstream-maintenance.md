@@ -8,28 +8,33 @@ in `earendil-works/pi/packages/ai`.
 - Repository: use the current `pi-ai-swift` checkout, normally
   `/Volumes/Data/Github/pi-ai-swift`.
 - Accepted revision: read `Upstream.lock.json`.
-- Candidate revision: use the revision supplied by the caller. If none is
-  supplied, resolve the upstream repository's current default-branch `HEAD`
-  without modifying the checkout.
+- Mode: ordinary revision sync, or defect repair for a reported mismatch in an
+  already accepted behavior. Do not silently expand a defect repair into sync.
+- Target revision: for defect repair, use the accepted revision. For revision
+  sync, use the caller's candidate; if none is supplied, resolve the upstream
+  repository's current default-branch `HEAD` read-only.
+- If both repair and newer sync are requested, track their evidence and terminal
+  results separately. A newer-candidate blocker does not block accepted-pin repair.
 
 ## Signal contract
 
 Run:
 
 ```sh
-./Scripts/check-upstream.sh --candidate <candidate-revision>
+./Scripts/check-upstream.sh --candidate <target-revision>
 ```
 
 - `YES` means the checked-in maintenance state already covers that exact
-  candidate. Report the accepted and candidate revisions, make no changes, and
-  stop.
+  target. Stop without edits only for ordinary revision checking. For a
+  reported defect, continue the repair workflow even on `YES`: the signal does
+  not establish semantic correctness.
 - `NO` is only a maintenance trigger. It is not a diagnosis and does not
   authorize weakening or editing the checker.
 
 Use `./Scripts/check-upstream.sh --explain` only to diagnose the accepted state.
 The signal script must not perform semantic analysis or modify repository state.
 
-## Required workflow after NO
+## Required workflow after NO or a reported defect
 
 1. Read `AGENTS.md`, `Docs/AI_MAINTENANCE.md`, `Docs/ARCHITECTURE.md`,
    `Upstream.lock.json`, `UpstreamMappings/pi-ai.json`, and the differential
@@ -41,10 +46,15 @@ The signal script must not perform semantic analysis or modify repository state.
    - `swift format lint --recursive Sources Tests Package.swift`
    - `xcodebuild -scheme PiAIProviderRuntime -destination 'generic/platform=iOS Simulator' build`
    - `git diff --check`
-4. Fetch the exact candidate without treating it as accepted. Compare the
+
+   Record any expected failing defect reproduction and continue its scoped
+   repair. An unrelated baseline failure blocks acceptance and pin movement;
+   isolate it and report it without weakening gates or silently expanding scope.
+4. For sync, fetch the exact candidate without treating it as accepted. Compare
    accepted and candidate revisions across mapped source paths, reachable
    imports, upstream tests, provider and protocol inventories, package metadata,
-   and changelog.
+   and changelog. For defect repair, inspect the exact accepted source and its
+   tests against the failing Swift behavior; no newer revision is required.
 5. Apply the ownership filter before A/B/C/D classification. Separate:
    - provider-owned capability, authentication, wire, event, usage, replay, and
      provider-failure semantics;
@@ -63,9 +73,12 @@ The signal script must not perform semantic analysis or modify repository state.
    security, public-interface, credential, entitlement, billing, or authorized
    live-test decision is genuinely required. End as `upstream_incompatible` for
    Class D rather than substituting another behavior.
-9. Freeze sanitized source-derived fixtures from the exact candidate before or
-   together with implementation changes. Do not hand-write an expected success
-   result when the candidate source can execute as the oracle.
+9. Follow the semantic evidence contract in `Docs/AI_MAINTENANCE.md`: record
+   field sources, lifecycle, and cross-event invariants; observe oracle events
+   at emission time; use discriminating inputs; and demonstrate a failing
+   regression or targeted mutation. Freeze fixtures from the exact target
+   before implementation changes. Do not hand-write an expected
+   success result when the target source can execute as the oracle.
 10. Modify the smallest owning Swift adapter. Never introduce a provider, model,
    protocol, endpoint, authentication, retry, execution-mode, or data fallback.
     Do not copy upstream `Context`, `TranscriptContext`, prompt-section merging,
@@ -76,18 +89,24 @@ The signal script must not perform semantic analysis or modify repository state.
 11. Update every affected maintenance artifact in the same scoped change:
     `Upstream.lock.json`, `UpstreamMappings/pi-ai.json`, `Fixtures/Manifest.json`,
     branch inventories, generated catalog/provenance, tests, fixtures, and
-    affected documentation.
-12. Keep working until all deterministic evidence is closed. Do not stop at a
+    affected documentation. In defect repair, preserve the accepted revision
+    while refreshing affected fixture/source provenance.
+12. When a defect crosses the consumer seam, add deterministic actual-runtime
+    consumer integration evidence as described in `Docs/AI_MAINTENANCE.md`.
+    Keep working until all deterministic evidence is closed. Do not stop at a
     truthful `partial` state when the remaining Class A/B work is implementable.
 13. Run final acceptance:
     - `./Scripts/check-upstream.sh`
-    - `./Scripts/check-upstream.sh --candidate <candidate-revision>`
+    - `./Scripts/check-upstream.sh --candidate <target-revision>`
     - `swift format lint --recursive Sources Tests Package.swift`
     - `swift test`
+    - `python3 -B -m unittest discover -s Scripts/tests` when maintenance checker code changes
     - `xcodebuild -scheme PiAIProviderRuntime -destination 'generic/platform=iOS Simulator' build`
     - `git diff --check`
 
-Both signal invocations must return `YES` before reporting `compatible`.
+Both signal invocations must return `YES` before reporting `compatible`. In
+defect repair, the exact target is the accepted pin; a separate latest-candidate
+`NO` is not a failure of that repair. Required behavioral gates must still pass.
 
 ## Terminal states
 
@@ -104,8 +123,11 @@ pin and supported-provider claims unchanged.
 
 ## Completion report
 
-Report the previous and candidate revisions, upstream intent changes, affected
+Report the mode, previous and target revisions, upstream intent changes, affected
 mapping areas, implementation and fixture changes, final YES/NO signals, test
 and build results, whether the accepted pin moved, and any remaining decision or
-incompatibility. Confirm that no fallback was added. Do not commit, push, tag,
-release, use credentials, or make paid calls unless separately authorized.
+incompatibility. Bound coverage claims to the named executable cases and
+invariants. Distinguish local unpublished consumer checks from remote-main
+integration and distributed-product acceptance. Confirm that no fallback was
+added. Do not commit, push, tag, release, use credentials, or make paid calls
+unless separately authorized.

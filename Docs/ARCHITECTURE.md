@@ -2,12 +2,14 @@
 
 ## Current status
 
-**Wire compatibility is landed for the pinned provider scope.** Source-executed
-oracles and Swift replay tests close every required request, response-event, and
-typed-failure branch for all eleven wire protocols. The coverage gate requires
+**The declared wire fixture scope is landed at the accepted revision.**
+Source-executed oracles and Swift replay tests cover the listed request,
+response-event, and typed-failure cases across all eleven wire protocols. This
+is bounded evidence, not proof of every possible provider behavior; a newly
+discovered invariant reopens the affected claim even when existing tests pass. The coverage gate requires
 the protocol-by-variant matrices, checked-in source oracle, and Swift replay to
-agree before a wire area can remain `landed`; a fully closed area may no longer
-remain `partial`. Monetary usage, including pricing tiers, cache read/write,
+agree before a wire area can remain `landed`; coverage status refers to the
+declared cases and their asserted invariants. Monetary usage, including pricing tiers, cache read/write,
 Anthropic one-hour cache writes, OpenAI service-tier multipliers, Pi direct
 cost, and OpenRouter image cost, is part of that deterministic response gate.
 
@@ -125,6 +127,14 @@ Observable equivalence is defined by:
 4. normalized event sequence;
 5. credential state transition;
 6. typed final result or error.
+
+Response identity is the requested catalog identity throughout the stream:
+`responseStarted.modelID`, `responseSnapshot.modelID`, and the replay message's
+source model must agree with `ProviderRequest.modelID`. A server-reported alias
+or resolved model name does not replace that identity. Adapters retain reported
+names separately in terminal `responseModelID` metadata. Chat Completions uses
+the first nonempty differing model from any chunk, matching upstream; absent,
+empty, or echoed names do not establish a different response model.
 
 Catalog-only changes may be automated after tests pass. Authentication,
 endpoint, request, credential-schema, or provider-policy changes require an

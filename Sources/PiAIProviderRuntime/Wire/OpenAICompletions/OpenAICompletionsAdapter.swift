@@ -765,17 +765,21 @@ private struct OpenAICompletionsReducer {
       }
       started = true
       self.responseID = responseID
-      responseModelID = object.string("model")
       events.append(
         .responseStarted(
           ProviderResponseMetadata(
             responseID: nil,
             providerID: providerID,
-            modelID: object.string("model") ?? requestedModelID,
+            modelID: requestedModelID,
             providerMetadata: [:]
           )
         )
       )
+    }
+    if responseModelID == nil, let model = object.string("model"),
+      !model.isEmpty, model != requestedModelID
+    {
+      responseModelID = model
     }
     if let usage = object.object("usage") {
       try updateUsage(usage)

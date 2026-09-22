@@ -217,7 +217,7 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
         ProviderResponseMetadata(
           responseID: responseID,
           providerID: request.providerID,
-          modelID: object.string("model") ?? request.modelID,
+          modelID: request.modelID,
           providerMetadata: [:]
         )
       )

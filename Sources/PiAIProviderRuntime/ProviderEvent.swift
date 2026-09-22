@@ -18,7 +18,9 @@ public struct ProviderResponseSnapshot: Sendable, Equatable, Codable {
   public let responseID: String?
   public let providerID: String
   public let protocolID: String
+  /// The requested catalog model identity, preserved for caller validation and replay.
   public let modelID: String
+  /// The server-reported model when it differs from the requested identity.
   public let responseModelID: String?
   public let content: [ProviderResponseContent]
   public let usage: ProviderUsage?
@@ -133,6 +135,7 @@ public struct ProviderTextContent: Sendable, Equatable, Codable {
 public struct ProviderResponseMetadata: Sendable, Equatable, Codable {
   public let responseID: String?
   public let providerID: String
+  /// The requested model identity, not a server-reported alias or resolved version.
   public let modelID: String
   public let providerMetadata: [String: JSONValue]
 

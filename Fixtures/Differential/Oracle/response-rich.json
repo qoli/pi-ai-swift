@@ -1,6 +1,667 @@
 {
   "caseID": "response-rich-v1",
   "excludedProtocols": [],
+  "identityCases": {
+    "anthropic.identity-alias": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJpZGVudGl0eS1tZXNzYWdlIiwibW9kZWwiOiJjbGF1ZGUtcmVzb2x2ZWQtdmVyc2lvbiIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MSwib3V0cHV0X3Rva2VucyI6MH19fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdGFydCIsImluZGV4IjowLCJjb250ZW50X2Jsb2NrIjp7InR5cGUiOiJ0ZXh0IiwidGV4dCI6IiJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfZGVsdGEKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19kZWx0YSIsImluZGV4IjowLCJkZWx0YSI6eyJ0eXBlIjoidGV4dF9kZWx0YSIsInRleHQiOiJPSyJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RvcApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0b3AiLCJpbmRleCI6MH0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjF9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "claude-requested-alias",
+          "providerID": "anthropic",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "OK",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "inputTokens": 1,
+          "outputTokens": 1,
+          "reasoningTokens": null,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/anthropic-messages.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "OK",
+            "type": "text"
+          }
+        ],
+        "modelID": "claude-requested-alias",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "identity-message",
+        "responseModel": "claude-resolved-version",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "input": 1,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 2
+        }
+      }
+    },
+    "anthropic.identity-same": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJpZGVudGl0eS1tZXNzYWdlIiwibW9kZWwiOiJjbGF1ZGUtcmVxdWVzdGVkLWFsaWFzIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfX19CgpldmVudDogY29udGVudF9ibG9ja19zdGFydApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0YXJ0IiwiaW5kZXgiOjAsImNvbnRlbnRfYmxvY2siOnsidHlwZSI6InRleHQiLCJ0ZXh0IjoiIn19CgpldmVudDogY29udGVudF9ibG9ja19kZWx0YQpkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX2RlbHRhIiwiaW5kZXgiOjAsImRlbHRhIjp7InR5cGUiOiJ0ZXh0X2RlbHRhIiwidGV4dCI6Ik9LIn19CgpldmVudDogY29udGVudF9ibG9ja19zdG9wCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RvcCIsImluZGV4IjowfQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9kZWx0YSIsImRlbHRhIjp7InN0b3BfcmVhc29uIjoiZW5kX3R1cm4ifSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6MX19CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "claude-requested-alias",
+          "providerID": "anthropic",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "OK",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "inputTokens": 1,
+          "outputTokens": 1,
+          "reasoningTokens": null,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/anthropic-messages.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "OK",
+            "type": "text"
+          }
+        ],
+        "modelID": "claude-requested-alias",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "identity-message",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "input": 1,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 2
+        }
+      }
+    },
+    "completions.identity-alias": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJtb2RlbCI6ImRlZXBzZWVrLWZsYXNoIiwidXNhZ2UiOnsicHJvbXB0X3Rva2VucyI6MSwiY29tcGxldGlvbl90b2tlbnMiOjEsInRvdGFsX3Rva2VucyI6Mn19CgpkYXRhOiBbRE9ORV0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "deepseek-v4-flash",
+          "providerID": "deepseek",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "OK",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "inputTokens": 1,
+          "outputTokens": 1,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "OK",
+            "type": "text"
+          }
+        ],
+        "modelID": "deepseek-v4-flash",
+        "providerID": "deepseek",
+        "rawStopReason": "stop",
+        "responseID": "identity-response",
+        "responseModel": "deepseek-flash",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "input": 1,
+          "output": 1,
+          "reasoning": 0,
+          "totalTokens": 2
+        }
+      }
+    },
+    "completions.identity-empty": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJtb2RlbCI6IiIsInVzYWdlIjp7InByb21wdF90b2tlbnMiOjEsImNvbXBsZXRpb25fdG9rZW5zIjoxLCJ0b3RhbF90b2tlbnMiOjJ9fQoKZGF0YTogW0RPTkVdCgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "deepseek-v4-flash",
+          "providerID": "deepseek",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "OK",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "inputTokens": 1,
+          "outputTokens": 1,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "OK",
+            "type": "text"
+          }
+        ],
+        "modelID": "deepseek-v4-flash",
+        "providerID": "deepseek",
+        "rawStopReason": "stop",
+        "responseID": "identity-response",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "input": 1,
+          "output": 1,
+          "reasoning": 0,
+          "totalTokens": 2
+        }
+      }
+    },
+    "completions.identity-late": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOm51bGx9XX0KCmRhdGE6IHsiaWQiOiJpZGVudGl0eS1yZXNwb25zZSIsImNob2ljZXMiOlt7ImRlbHRhIjp7ImNvbnRlbnQiOiIifSwiZmluaXNoX3JlYXNvbiI6bnVsbH1dLCJtb2RlbCI6IiJ9CgpkYXRhOiB7ImlkIjoiaWRlbnRpdHktcmVzcG9uc2UiLCJjaG9pY2VzIjpbeyJkZWx0YSI6eyJjb250ZW50IjoiIn0sImZpbmlzaF9yZWFzb24iOm51bGx9XSwibW9kZWwiOiJkZWVwc2Vlay12NC1mbGFzaCJ9CgpkYXRhOiB7ImlkIjoiaWRlbnRpdHktcmVzcG9uc2UiLCJjaG9pY2VzIjpbeyJkZWx0YSI6eyJjb250ZW50IjoiIn0sImZpbmlzaF9yZWFzb24iOm51bGx9XSwibW9kZWwiOiJkZWVwc2Vlay1mbGFzaCJ9CgpkYXRhOiB7ImlkIjoiaWRlbnRpdHktcmVzcG9uc2UiLCJjaG9pY2VzIjpbeyJkZWx0YSI6eyJjb250ZW50IjoiIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJtb2RlbCI6Im90aGVyLXJlcG9ydGVkLW1vZGVsIiwidXNhZ2UiOnsicHJvbXB0X3Rva2VucyI6MSwiY29tcGxldGlvbl90b2tlbnMiOjEsInRvdGFsX3Rva2VucyI6Mn19CgpkYXRhOiBbRE9ORV0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "deepseek-v4-flash",
+          "providerID": "deepseek",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "OK",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "inputTokens": 1,
+          "outputTokens": 1,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "OK",
+            "type": "text"
+          }
+        ],
+        "modelID": "deepseek-v4-flash",
+        "providerID": "deepseek",
+        "rawStopReason": "stop",
+        "responseID": "identity-response",
+        "responseModel": "deepseek-flash",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "input": 1,
+          "output": 1,
+          "reasoning": 0,
+          "totalTokens": 2
+        }
+      }
+    },
+    "completions.identity-missing": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJ1c2FnZSI6eyJwcm9tcHRfdG9rZW5zIjoxLCJjb21wbGV0aW9uX3Rva2VucyI6MSwidG90YWxfdG9rZW5zIjoyfX0KCmRhdGE6IFtET05FXQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "deepseek-v4-flash",
+          "providerID": "deepseek",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "OK",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "inputTokens": 1,
+          "outputTokens": 1,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "OK",
+            "type": "text"
+          }
+        ],
+        "modelID": "deepseek-v4-flash",
+        "providerID": "deepseek",
+        "rawStopReason": "stop",
+        "responseID": "identity-response",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "input": 1,
+          "output": 1,
+          "reasoning": 0,
+          "totalTokens": 2
+        }
+      }
+    },
+    "completions.identity-same": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJtb2RlbCI6ImRlZXBzZWVrLXY0LWZsYXNoIiwidXNhZ2UiOnsicHJvbXB0X3Rva2VucyI6MSwiY29tcGxldGlvbl90b2tlbnMiOjEsInRvdGFsX3Rva2VucyI6Mn19CgpkYXRhOiBbRE9ORV0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "deepseek-v4-flash",
+          "providerID": "deepseek",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "OK",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "inputTokens": 1,
+          "outputTokens": 1,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "OK",
+            "type": "text"
+          }
+        ],
+        "modelID": "deepseek-v4-flash",
+        "providerID": "deepseek",
+        "rawStopReason": "stop",
+        "responseID": "identity-response",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 1,
+            "output": 2,
+            "total": 3
+          },
+          "input": 1,
+          "output": 1,
+          "reasoning": 0,
+          "totalTokens": 2
+        }
+      }
+    },
+    "images.identity-alias": {
+      "decoderInput": {
+        "body": {
+          "choices": [
+            {
+              "message": {
+                "content": "created",
+                "images": [
+                  {
+                    "image_url": "data:image/png;base64,iVA="
+                  },
+                  {
+                    "image_url": {
+                      "url": "data:image/jpeg;base64,/9g="
+                    }
+                  },
+                  {
+                    "image_url": "https://example.invalid/ignored"
+                  }
+                ],
+                "role": "assistant"
+              }
+            }
+          ],
+          "id": "image-response-1",
+          "model": "resolved-image-model",
+          "usage": {
+            "completion_tokens": 4,
+            "prompt_tokens": 10,
+            "prompt_tokens_details": {
+              "cache_write_tokens": 1,
+              "cached_tokens": 3
+            }
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 200
+      },
+      "driver": "http-json",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-image",
+          "providerID": "openrouter",
+          "responseID": "image-response-1",
+          "type": "responseStarted"
+        },
+        {
+          "delta": "created",
+          "type": "textDelta"
+        },
+        {
+          "dataBase64": "iVA=",
+          "id": "image-response-1-image-0",
+          "kind": "image",
+          "mimeType": "image/png",
+          "type": "asset"
+        },
+        {
+          "dataBase64": "/9g=",
+          "id": "image-response-1-image-1",
+          "kind": "image",
+          "mimeType": "image/jpeg",
+          "type": "asset"
+        },
+        {
+          "cachedInputTokens": 2,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 4,
+            "input": 7,
+            "output": 8,
+            "total": 25
+          },
+          "inputTokens": 7,
+          "outputTokens": 4,
+          "reasoningTokens": null,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "generateImages",
+        "module": "packages/ai/src/api/openrouter-images.ts"
+      },
+      "terminalReplay": {
+        "modelID": "fixture-image",
+        "output": [
+          {
+            "text": "created",
+            "type": "text"
+          },
+          {
+            "data": "iVA=",
+            "mimeType": "image/png",
+            "type": "image"
+          },
+          {
+            "data": "/9g=",
+            "mimeType": "image/jpeg",
+            "type": "image"
+          }
+        ],
+        "providerID": "openrouter",
+        "responseID": "image-response-1",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 1,
+          "cost": {
+            "cacheRead": 6,
+            "cacheWrite": 4,
+            "input": 7,
+            "output": 8,
+            "total": 25
+          },
+          "input": 7,
+          "output": 4,
+          "totalTokens": 14
+        }
+      }
+    }
+  },
   "protocolSet": [
     "anthropic-messages",
     "azure-openai-responses",

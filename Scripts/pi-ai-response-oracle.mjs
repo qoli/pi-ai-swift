@@ -68,6 +68,11 @@ for (const protocol of fixture.protocols) {
   protocols[protocol.protocolID] = observation;
 }
 
+const identityCases = {};
+for (const protocol of fixture.identityCases) {
+  identityCases[protocol.caseID] = await runProtocol(protocol, fixtureCost());
+}
+
 const rendered = `${JSON.stringify({
   schemaVersion: 1,
   caseID: fixture.caseID,
@@ -75,6 +80,7 @@ const rendered = `${JSON.stringify({
   protocolSet: fixture.protocols.map((item) => item.protocolID).sort(),
   excludedProtocols: fixture.excludedProtocols,
   protocols,
+  identityCases,
 }, null, 2)}\n`;
 if (outputPath) await writeFile(outputPath, rendered, "utf8");
 else process.stdout.write(rendered);
@@ -88,7 +94,7 @@ async function runProtocol(protocol, modelCost) {
   );
   if (typeof implementation.stream !== "function") throw new Error(`${protocol.protocolID} has no public stream entrypoint`);
 
-  const decoderInput = decoderInputFor(protocol.protocolID);
+  const decoderInput = protocol.decoderInput ?? decoderInputFor(protocol.protocolID);
   if (protocol.driver === "decoded-sdk-events") {
     globalThis.__PI_RESPONSE_ORACLE_GOOGLE_EVENTS__ = decoderInput.events;
   }
@@ -163,7 +169,7 @@ async function runBedrock(protocol, modelCost) {
 
 async function runImages(protocol, modelCost) {
   const implementation = await import(pathToFileURL(path.join(apiRoot, "openrouter-images.ts")).href);
-  const decoderInput = decoderInputFor(protocol.protocolID);
+  const decoderInput = protocol.decoderInput ?? decoderInputFor(protocol.protocolID);
   const output = await implementation.generateImages(
     imageModel(protocol, modelCost),
     { input: [{ type: "text", text: "create an image" }] },
@@ -195,11 +201,13 @@ async function projectAssistantStream(sourceStream, protocol) {
   let terminal;
   let startSeen = false;
   let startResponseID = null;
+  let startIdentity;
   for await (const event of sourceStream) {
     const snapshot = structuredClone(event);
     const partial = snapshot.partial ?? snapshot.message ?? snapshot.error;
     if (snapshot.type === "start") {
       startSeen = true;
+      startIdentity = { providerID: partial.provider, modelID: partial.model };
       startResponseID = partial?.responseId ?? null;
     }
     if (snapshot.type === "text_delta") events.push({ type: "textDelta", delta: snapshot.delta });
@@ -238,8 +246,7 @@ async function projectAssistantStream(sourceStream, protocol) {
     responseID: protocol.protocolID === "bedrock-converse-stream"
         ? "bedrock-response"
         : startResponseID,
-    providerID: terminal.provider,
-    modelID: terminal.model,
+    ...startIdentity,
   });
   return { events: canonicalize(events), terminalReplay: canonicalTerminalMessage(terminal) };
 }

@@ -5,6 +5,13 @@
   "evidenceSources": [
     {
       "oracle": "Fixtures/Differential/Oracle/response-rich.json",
+      "cases": "Fixtures/Differential/Cases/response-rich.json",
+      "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+      "shape": "named-scenarios",
+      "collection": "identityCases"
+    },
+    {
+      "oracle": "Fixtures/Differential/Oracle/response-rich.json",
       "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
       "shape": "protocols"
     },
@@ -278,6 +285,120 @@
         {"caseID": "responses.incomplete-raw-total", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["incomplete-max-output"]},
         {"caseID": "responses.reasoning-signature-backfill-phase", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["reasoning-summary", "reasoning-text", "signature-backfill", "message-phase"]},
         {"caseID": "responses.service-tier-cost-matrix", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["service-tier-usage"]}
+      ]
+    },
+    {
+      "id": "common.requested-model-identity",
+      "required": true,
+      "protocols": [
+        "anthropic-messages",
+        "openai-completions",
+        "openrouter-images"
+      ],
+      "variants": [
+        "server-alias-preserves-requested-start-and-terminal"
+      ],
+      "sourceSymbols": [
+        "model.id",
+        "responseModel"
+      ],
+      "expected": "Source-executed identityCases in response-rich-v1 preserve requested identity; reported model metadata follows source semantics.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "completions.identity-alias",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "server-alias-preserves-requested-start-and-terminal"
+          ]
+        },
+        {
+          "caseID": "anthropic.identity-alias",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "server-alias-preserves-requested-start-and-terminal"
+          ]
+        },
+        {
+          "caseID": "images.identity-alias",
+          "protocols": [
+            "openrouter-images"
+          ],
+          "coversVariants": [
+            "server-alias-preserves-requested-start-and-terminal"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "common.completion-response-model",
+      "required": true,
+      "protocols": [
+        "openai-completions"
+      ],
+      "variants": [
+        "alias",
+        "same",
+        "missing",
+        "empty",
+        "first-late-nonempty-different-model"
+      ],
+      "sourceSymbols": [
+        "model.id",
+        "responseModel"
+      ],
+      "expected": "Source-executed identityCases in response-rich-v1 preserve requested identity; reported model metadata follows source semantics.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "completions.identity-alias",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "alias"
+          ]
+        },
+        {
+          "caseID": "completions.identity-same",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "same"
+          ]
+        },
+        {
+          "caseID": "completions.identity-missing",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "missing"
+          ]
+        },
+        {
+          "caseID": "completions.identity-empty",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "empty"
+          ]
+        },
+        {
+          "caseID": "completions.identity-late",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "first-late-nonempty-different-model"
+          ]
+        }
       ]
     }
   ]

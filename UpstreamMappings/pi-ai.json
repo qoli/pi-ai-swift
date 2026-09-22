@@ -1858,11 +1858,17 @@
         "http-transport",
         "wire-common"
       ],
-    "evidence": [
-      "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
-      "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesDisabledAndMappedAdaptiveReasoning",
-      "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#preservesManagedEffortInTerminalReplayMetadata",
-      "Tests/PiAIProviderRuntimeTests/AnthropicBedrockRequestBranchDifferentialTests.swift#sourceDerivedBranchMatrixMatchesPinnedAnthropicAndBedrockRequests"
+      "evidence": [
+        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
+        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesDisabledAndMappedAdaptiveReasoning",
+        "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#preservesManagedEffortInTerminalReplayMetadata",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockRequestBranchDifferentialTests.swift#sourceDerivedBranchMatrixMatchesPinnedAnthropicAndBedrockRequests",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#responseIdentityMatchesSourceForAliasesAndLateModelMetadata",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Scripts/check-differential-coverage.py",
+        "Scripts/tests/test_identity_coverage.py"
       ],
       "requiredGates": [
         "swift-test"
@@ -2150,6 +2156,7 @@
       "upstreamTestPaths": [
         "packages/ai/test/openai-completions-empty-tools.test.ts",
         "packages/ai/test/openai-completions-reasoning-details.test.ts",
+        "packages/ai/test/openai-completions-response-model.test.ts",
         "packages/ai/test/openai-completions-retry.test.ts",
         "packages/ai/test/openai-completions-tool-choice.test.ts",
         "packages/ai/test/openai-completions-tool-result-images.test.ts",
@@ -2162,7 +2169,13 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream",
-        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#reasoningFormatsEncodeOffAndMappedEffort"
+        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#reasoningFormatsEncodeOffAndMappedEffort",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#responseIdentityMatchesSourceForAliasesAndLateModelMetadata",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Scripts/check-differential-coverage.py",
+        "Scripts/tests/test_identity_coverage.py"
       ],
       "requiredGates": [
         "swift-test"
@@ -2229,7 +2242,13 @@
         "wire-common"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/OpenRouterImagesAdapterTests.swift#encodesImageRequestAndNormalizesTextAssetsUsageAndTerminal"
+        "Tests/PiAIProviderRuntimeTests/OpenRouterImagesAdapterTests.swift#encodesImageRequestAndNormalizesTextAssetsUsageAndTerminal",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#responseIdentityMatchesSourceForAliasesAndLateModelMetadata",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Scripts/check-differential-coverage.py",
+        "Scripts/tests/test_identity_coverage.py"
       ],
       "requiredGates": [
         "swift-test"

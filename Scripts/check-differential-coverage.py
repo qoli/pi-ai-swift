@@ -442,6 +442,37 @@ def executable_cases_from_evidence(
                 raise SystemExit(f"malformed {case_class} protocols oracle: {oracle_rel}")
             for protocol_id in protocols:
                 executable.setdefault(protocol_id, set()).add(case_id)
+        elif shape == "named-scenarios":
+            cases_rel = evidence.get("cases")
+            collection = evidence.get("collection")
+            if not isinstance(cases_rel, str) or not isinstance(collection, str) or not collection:
+                raise SystemExit(f"{case_class} named scenarios lack cases/collection")
+            fixture = load_json(repo / cases_rel)
+            scenarios = fixture.get(collection)
+            observed = oracle.get(collection)
+            if (
+                fixture.get("upstreamRevision") != inventory.get("upstreamRevision")
+                or not isinstance(scenarios, list)
+                or not scenarios
+                or not isinstance(observed, dict)
+                or collection not in test_text
+            ):
+                raise SystemExit(f"malformed {case_class} named scenarios: {cases_rel}/{collection}")
+            identifiers = set()
+            for scenario in scenarios:
+                case_id = scenario.get("caseID") if isinstance(scenario, dict) else None
+                protocol_id = scenario.get("protocolID") if isinstance(scenario, dict) else None
+                if (
+                    not isinstance(case_id, str) or not case_id
+                    or not isinstance(protocol_id, str) or not protocol_id
+                    or case_id in identifiers
+                    or not isinstance(observed.get(case_id), dict)
+                ):
+                    raise SystemExit(f"invalid {case_class} named scenario: {case_id}")
+                identifiers.add(case_id)
+                executable.setdefault(protocol_id, set()).add(case_id)
+            if identifiers != set(observed):
+                raise SystemExit(f"{case_class} named scenario set drift: {cases_rel}/{collection}")
         elif shape == "scenarios-from-case-file":
             cases_rel = evidence.get("cases")
             if not isinstance(cases_rel, str):

@@ -15,5 +15,181 @@
     { "protocolID": "pi-messages", "providerID": "fixture-pi", "modelID": "pi-fixture", "baseURL": "https://fixture.invalid", "driver": "http-sse" },
     { "protocolID": "bedrock-converse-stream", "providerID": "amazon-bedrock", "modelID": "anthropic.fixture-v1:0", "baseURL": "http://127.0.0.1", "driver": "aws-eventstream" },
     { "protocolID": "openrouter-images", "providerID": "openrouter", "modelID": "fixture-image", "baseURL": "https://openrouter.ai/api/v1", "driver": "http-json" }
+  ],
+  "identityCases": [
+    {
+      "caseID": "completions.identity-alias",
+      "protocolID": "openai-completions",
+      "providerID": "deepseek",
+      "modelID": "deepseek-v4-flash",
+      "baseURL": "https://fixture.invalid/v1",
+      "driver": "http-sse",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJtb2RlbCI6ImRlZXBzZWVrLWZsYXNoIiwidXNhZ2UiOnsicHJvbXB0X3Rva2VucyI6MSwiY29tcGxldGlvbl90b2tlbnMiOjEsInRvdGFsX3Rva2VucyI6Mn19CgpkYXRhOiBbRE9ORV0KCg=="
+        ]
+      }
+    },
+    {
+      "caseID": "completions.identity-same",
+      "protocolID": "openai-completions",
+      "providerID": "deepseek",
+      "modelID": "deepseek-v4-flash",
+      "baseURL": "https://fixture.invalid/v1",
+      "driver": "http-sse",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJtb2RlbCI6ImRlZXBzZWVrLXY0LWZsYXNoIiwidXNhZ2UiOnsicHJvbXB0X3Rva2VucyI6MSwiY29tcGxldGlvbl90b2tlbnMiOjEsInRvdGFsX3Rva2VucyI6Mn19CgpkYXRhOiBbRE9ORV0KCg=="
+        ]
+      }
+    },
+    {
+      "caseID": "completions.identity-missing",
+      "protocolID": "openai-completions",
+      "providerID": "deepseek",
+      "modelID": "deepseek-v4-flash",
+      "baseURL": "https://fixture.invalid/v1",
+      "driver": "http-sse",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJ1c2FnZSI6eyJwcm9tcHRfdG9rZW5zIjoxLCJjb21wbGV0aW9uX3Rva2VucyI6MSwidG90YWxfdG9rZW5zIjoyfX0KCmRhdGE6IFtET05FXQoK"
+        ]
+      }
+    },
+    {
+      "caseID": "completions.identity-empty",
+      "protocolID": "openai-completions",
+      "providerID": "deepseek",
+      "modelID": "deepseek-v4-flash",
+      "baseURL": "https://fixture.invalid/v1",
+      "driver": "http-sse",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJtb2RlbCI6IiIsInVzYWdlIjp7InByb21wdF90b2tlbnMiOjEsImNvbXBsZXRpb25fdG9rZW5zIjoxLCJ0b3RhbF90b2tlbnMiOjJ9fQoKZGF0YTogW0RPTkVdCgo="
+        ]
+      }
+    },
+    {
+      "caseID": "completions.identity-late",
+      "protocolID": "openai-completions",
+      "providerID": "deepseek",
+      "modelID": "deepseek-v4-flash",
+      "baseURL": "https://fixture.invalid/v1",
+      "driver": "http-sse",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6ImlkZW50aXR5LXJlc3BvbnNlIiwiY2hvaWNlcyI6W3siZGVsdGEiOnsiY29udGVudCI6Ik9LIn0sImZpbmlzaF9yZWFzb24iOm51bGx9XX0KCmRhdGE6IHsiaWQiOiJpZGVudGl0eS1yZXNwb25zZSIsImNob2ljZXMiOlt7ImRlbHRhIjp7ImNvbnRlbnQiOiIifSwiZmluaXNoX3JlYXNvbiI6bnVsbH1dLCJtb2RlbCI6IiJ9CgpkYXRhOiB7ImlkIjoiaWRlbnRpdHktcmVzcG9uc2UiLCJjaG9pY2VzIjpbeyJkZWx0YSI6eyJjb250ZW50IjoiIn0sImZpbmlzaF9yZWFzb24iOm51bGx9XSwibW9kZWwiOiJkZWVwc2Vlay12NC1mbGFzaCJ9CgpkYXRhOiB7ImlkIjoiaWRlbnRpdHktcmVzcG9uc2UiLCJjaG9pY2VzIjpbeyJkZWx0YSI6eyJjb250ZW50IjoiIn0sImZpbmlzaF9yZWFzb24iOm51bGx9XSwibW9kZWwiOiJkZWVwc2Vlay1mbGFzaCJ9CgpkYXRhOiB7ImlkIjoiaWRlbnRpdHktcmVzcG9uc2UiLCJjaG9pY2VzIjpbeyJkZWx0YSI6eyJjb250ZW50IjoiIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIn1dLCJtb2RlbCI6Im90aGVyLXJlcG9ydGVkLW1vZGVsIiwidXNhZ2UiOnsicHJvbXB0X3Rva2VucyI6MSwiY29tcGxldGlvbl90b2tlbnMiOjEsInRvdGFsX3Rva2VucyI6Mn19CgpkYXRhOiBbRE9ORV0KCg=="
+        ]
+      }
+    },
+    {
+      "caseID": "anthropic.identity-alias",
+      "protocolID": "anthropic-messages",
+      "providerID": "anthropic",
+      "modelID": "claude-requested-alias",
+      "baseURL": "https://fixture.invalid",
+      "driver": "http-sse",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJpZGVudGl0eS1tZXNzYWdlIiwibW9kZWwiOiJjbGF1ZGUtcmVzb2x2ZWQtdmVyc2lvbiIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MSwib3V0cHV0X3Rva2VucyI6MH19fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdGFydCIsImluZGV4IjowLCJjb250ZW50X2Jsb2NrIjp7InR5cGUiOiJ0ZXh0IiwidGV4dCI6IiJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfZGVsdGEKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19kZWx0YSIsImluZGV4IjowLCJkZWx0YSI6eyJ0eXBlIjoidGV4dF9kZWx0YSIsInRleHQiOiJPSyJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RvcApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0b3AiLCJpbmRleCI6MH0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjF9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoK"
+        ]
+      }
+    },
+    {
+      "caseID": "anthropic.identity-same",
+      "protocolID": "anthropic-messages",
+      "providerID": "anthropic",
+      "modelID": "claude-requested-alias",
+      "baseURL": "https://fixture.invalid",
+      "driver": "http-sse",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJpZGVudGl0eS1tZXNzYWdlIiwibW9kZWwiOiJjbGF1ZGUtcmVxdWVzdGVkLWFsaWFzIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfX19CgpldmVudDogY29udGVudF9ibG9ja19zdGFydApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0YXJ0IiwiaW5kZXgiOjAsImNvbnRlbnRfYmxvY2siOnsidHlwZSI6InRleHQiLCJ0ZXh0IjoiIn19CgpldmVudDogY29udGVudF9ibG9ja19kZWx0YQpkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX2RlbHRhIiwiaW5kZXgiOjAsImRlbHRhIjp7InR5cGUiOiJ0ZXh0X2RlbHRhIiwidGV4dCI6Ik9LIn19CgpldmVudDogY29udGVudF9ibG9ja19zdG9wCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RvcCIsImluZGV4IjowfQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9kZWx0YSIsImRlbHRhIjp7InN0b3BfcmVhc29uIjoiZW5kX3R1cm4ifSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6MX19CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9Cgo="
+        ]
+      }
+    },
+    {
+      "protocolID": "openrouter-images",
+      "providerID": "openrouter",
+      "modelID": "fixture-image",
+      "baseURL": "https://openrouter.ai/api/v1",
+      "driver": "http-json",
+      "caseID": "images.identity-alias",
+      "decoderInput": {
+        "body": {
+          "choices": [
+            {
+              "message": {
+                "content": "created",
+                "images": [
+                  {
+                    "image_url": "data:image/png;base64,iVA="
+                  },
+                  {
+                    "image_url": {
+                      "url": "data:image/jpeg;base64,/9g="
+                    }
+                  },
+                  {
+                    "image_url": "https://example.invalid/ignored"
+                  }
+                ],
+                "role": "assistant"
+              }
+            }
+          ],
+          "id": "image-response-1",
+          "model": "resolved-image-model",
+          "usage": {
+            "completion_tokens": 4,
+            "prompt_tokens": 10,
+            "prompt_tokens_details": {
+              "cache_write_tokens": 1,
+              "cached_tokens": 3
+            }
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "http-json",
+        "status": 200
+      }
+    }
   ]
 }

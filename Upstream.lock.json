@@ -244,6 +244,7 @@
     "packages/ai/test/openai-codex-stream.test.ts",
     "packages/ai/test/openai-completions-empty-tools.test.ts",
     "packages/ai/test/openai-completions-reasoning-details.test.ts",
+    "packages/ai/test/openai-completions-response-model.test.ts",
     "packages/ai/test/openai-completions-retry.test.ts",
     "packages/ai/test/openai-completions-tool-choice.test.ts",
     "packages/ai/test/openai-completions-tool-result-images.test.ts",

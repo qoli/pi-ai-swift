@@ -30,8 +30,11 @@ terminal states and change classes are mandatory.
 `Scripts/check-upstream.sh` is a pure engineering signal. Its normal output is
 exactly `YES` or `NO`; it must not analyze upstream intent, edit files, move the
 pin, or perform maintenance. A human or automation may supply a candidate
-revision. `YES` ends the check without changes. `NO` must trigger the AI workflow
-in `prompts/pi-ai-upstream-maintenance.md`; never modify or weaken the signal to
+revision. For an ordinary revision check, `YES` ends the check without changes.
+A reported semantic defect instead enters accepted-pin defect repair even when
+the signal is `YES`; hash coverage cannot disprove a behavioral defect. `NO`
+must trigger the workflow in `prompts/pi-ai-upstream-maintenance.md`; never
+modify or weaken the signal to
 obtain `YES`.
 
 Maintenance may be initiated directly by a human or proactively by an agent or
@@ -42,11 +45,14 @@ wire-protocol, authentication, test, and planned Swift ownership. A later,
 separately initiated implementation task promotes that area only with executable
 evidence. The IR is not runtime configuration and does not advertise support.
 
-1. Run the candidate signal. Stop without edits when it returns `YES`; execute
-   `prompts/pi-ai-upstream-maintenance.md` when it returns `NO`.
+1. Select revision sync or accepted-pin defect repair using
+   `prompts/pi-ai-upstream-maintenance.md`. Run the exact target signal; stop on
+   `YES` only for an ordinary revision check without a reported defect.
 2. Read `Upstream.lock.json` and every affected area in
    `UpstreamMappings/pi-ai.json`.
-3. Compare the pinned revision with the proposed upstream revision.
+3. For sync, compare the pinned and proposed revisions. For defect repair,
+   compare the demonstrated Swift behavior with the exact accepted source;
+   keep the accepted revision and do not require unrelated latest-HEAD sync.
 4. Inspect the tracked built-in provider inventory, mapped source paths,
    relevant upstream tests, and the changelog.
 5. Apply the ownership filter in `Docs/AI_MAINTENANCE.md`. Separate
@@ -54,14 +60,19 @@ evidence. The IR is not runtime configuration and does not advertise support.
    upstream host implementation before using the A/B/C/D change classes.
 6. Classify every provider-owned relevant hunk before editing Swift.
 7. Update sanitized fixtures before changing Swift implementation.
-8. Prove TypeScript-to-Swift behavioral equivalence through differential tests.
+8. Prove the affected invariants through case-specific differential tests,
+   event-time oracle observations, and a failing regression or targeted mutation
+   before reporting success. Follow the semantic evidence contract in
+   `Docs/AI_MAINTENANCE.md`; passing inventories do not prove universal parity.
 9. Run macOS tests, iOS compile/runtime gates, and any explicitly authorized
    live test required by the affected behavior.
 10. Update each affected area's Swift paths, planned paths, upstream paths,
    tests, and truthful status in the same change.
-11. Update provenance and the exact upstream revision in the same change.
-12. Rerun both accepted and candidate signals; both must return `YES` before a
-    compatible result may be reported.
+11. Update affected provenance in the same change. Move the exact revision only
+    for an accepted sync; defect repair refreshes evidence at the existing pin.
+12. Rerun both accepted and exact-target signals; both must return `YES` before
+    a compatible result may be reported. In defect repair the target is the
+    accepted revision. Report any separate latest-candidate assessment separately.
 
 Do not mirror an upstream `Context`, `TranscriptContext`, message-history,
 prompt-section, or tool-lifecycle type merely because provider implementations

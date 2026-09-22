@@ -6,6 +6,58 @@ import Testing
 @Suite
 struct SourceDerivedResponseDifferentialTests {
   @Test
+  func responseIdentityMatchesSourceForAliasesAndLateModelMetadata() async throws {
+    let repository = responseRepositoryRoot()
+    let fixture = try responseDecode(
+      ResponseCase.self,
+      at: repository.appending(path: "Fixtures/Differential/Cases/response-rich.json"))
+    let oracle = try responseDecode(
+      ResponseOracle.self,
+      at: repository.appending(path: "Fixtures/Differential/Oracle/response-rich.json"))
+    #expect(Set(fixture.identityCases.map(\.caseID)) == Set(oracle.identityCases.keys))
+    for identityCase in fixture.identityCases {
+      let expected = try #require(oracle.identityCases[identityCase.caseID])
+      let protocolCase = identityCase.protocolCase
+      let adapter = try #require(
+        StandardWireProtocols.make().first { $0.protocolID == protocolCase.protocolID })
+      let input = responseInput(protocolCase)
+      var events: [ProviderEvent] = []
+      for try await event in adapter.stream(
+        input.request, context: input.context,
+        transport: try ResponseReplayTransport(input: expected.decoderInput))
+      {
+        events.append(event)
+      }
+      #expect(
+        events.compactMap(canonicalResponseEvent) == expected.normalizedEvents,
+        Comment(rawValue: identityCase.caseID))
+      let starts = events.compactMap { event -> ProviderResponseMetadata? in
+        guard case .responseStarted(let metadata) = event else { return nil }
+        return metadata
+      }
+      let start = try #require(starts.count == 1 ? starts.first : nil)
+      #expect(start.providerID == input.request.providerID)
+      #expect(start.modelID == input.request.modelID)
+      let snapshots = events.compactMap { event -> ProviderResponseSnapshot? in
+        guard case .responseSnapshot(let snapshot) = event else { return nil }
+        return snapshot
+      }
+      let snapshot = try #require(snapshots.count == 1 ? snapshots.first : nil)
+      #expect(snapshot.providerID == start.providerID)
+      #expect(snapshot.modelID == start.modelID)
+      #expect(
+        canonicalResponseSnapshot(snapshot, images: protocolCase.protocolID == "openrouter-images")
+          == expected.terminalReplay,
+        Comment(rawValue: identityCase.caseID))
+      if protocolCase.protocolID != "openrouter-images" {
+        let replay = try snapshot.replayAssistantMessage()
+        #expect(replay.source.modelID == input.request.modelID)
+        #expect(replay.responseModelID == snapshot.responseModelID)
+      }
+    }
+  }
+
+  @Test
   func supportedResponseProtocolsMatchPinnedSourceNormalizedEvents() async throws {
     let repository = responseRepositoryRoot()
     let fixture = try responseDecode(
@@ -398,6 +450,20 @@ private struct ResponseCase: Decodable {
   let caseID: String
   let upstreamRevision: String
   let protocols: [ResponseProtocolCase]
+  let identityCases: [ResponseIdentityCase]
+}
+
+private struct ResponseIdentityCase: Decodable {
+  let caseID: String
+  let protocolID: String
+  let providerID: String
+  let modelID: String
+  let baseURL: String
+
+  var protocolCase: ResponseProtocolCase {
+    ResponseProtocolCase(
+      protocolID: protocolID, providerID: providerID, modelID: modelID, baseURL: baseURL)
+  }
 }
 
 private struct ResponseProtocolCase: Decodable {
@@ -412,6 +478,7 @@ private struct ResponseOracle: Decodable {
   let upstreamRevision: String
   let protocolSet: [String]
   let protocols: [String: ResponseOracleProtocol]
+  let identityCases: [String: ResponseOracleProtocol]
 }
 
 private struct ResponseOracleProtocol: Decodable {
