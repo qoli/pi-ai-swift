@@ -29,7 +29,7 @@ Intentionally agent-owned rather than implemented in the signal script:
 - semantic interpretation and Class A/B/C/D classification of upstream drift;
 - planning and porting newly added semantics not represented by existing
   protocol fixture suites;
-- policy and platform decisions;
+- identification of policy and platform gates, without inventing local policy;
 - live generation evidence requiring authorized credentials;
 - promotion of provider implementation status.
 
@@ -60,7 +60,40 @@ persistence, and agent control flow.
 
 Automation is successful when it reaches a truthful terminal result. A blocked
 sync is a successful maintenance outcome when the proposed upstream behavior
-cannot be represented safely on Apple platforms.
+cannot be represented equivalently on Apple platforms.
+
+## Mechanical semantic translation only
+
+Intent translation is mechanical preservation of the exact upstream observable
+contract within the ownership boundary. It is not permission to reinterpret,
+improve, harden, or extend upstream intent. This applies to every change class,
+including Class B; "mechanical" does not mean that only Class A data may be ported.
+Swift implementation techniques may differ, but supported inputs, defaults,
+outputs, failures, and state transitions must preserve upstream behavior.
+
+Do not proactively add capabilities absent from upstream. Do not add validation,
+rejection conditions, limits, security policies, normalization, retries, or
+fallbacks absent from the exact target source. Neither "safer" nor "more robust"
+is evidence of upstream intent. In particular, an explicit upstream HTTP endpoint
+must not become HTTPS-only or loopback-only as a side effect of porting.
+
+For every changed observable behavior, identify its exact upstream source and
+discriminating evidence before implementation. A local proposal, existing Swift
+code, matching local tests, or a green checker cannot authorize an upstream
+deviation. Inspect both directions: inputs upstream accepts but Swift rejects,
+and inputs or behaviors Swift accepts or adds beyond upstream. Derive expected
+results from upstream rather than encoding a locally preferred policy.
+
+If equivalent behavior cannot be represented, record the concrete gate and stop
+the affected implementation; do not substitute a supposedly safer behavior.
+New local capabilities or intentional deviations require a separate explicit
+user request and must be documented as deviations, never as upstream parity.
+Class C is a decision boundary for an actual policy change, not a license to
+invent one. An agent-added restriction does not become an approved policy merely
+because it was committed, documented, or tested. Repairing such a demonstrated
+port defect does not require renewed policy approval solely because the faulty
+code was described as a security measure. Preserve genuinely user-authorized
+deviations unless the user authorizes changing them.
 
 ## Sources of truth
 
@@ -433,6 +466,8 @@ For every provider-owned relevant hunk or defect, record:
 - provider ID and Swift area;
 - Class A, B, C, or D;
 - request/state/event/error invariant affected;
+- exact upstream source for each added or changed observable behavior, including
+  acceptance and rejection conditions; identify unsupported local additions;
 - upstream test or fixture that demonstrates it;
 - Apple platform applicability;
 - proposed verification gate;

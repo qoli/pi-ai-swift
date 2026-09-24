@@ -23,6 +23,17 @@ must not leak merely to make tests easier.
 
 ## Upstream work
 
+Intent translation is mechanical preservation of upstream observable behavior,
+not redesign. Do not proactively add capabilities, restrictions, validation,
+defaults, or safety policies absent from the exact target upstream source.
+Different native implementation techniques must preserve the same semantics.
+Follow "Mechanical semantic translation only" in `Docs/AI_MAINTENANCE.md`:
+require source-derived evidence for each behavioral change, check both extra
+Swift rejections and extra Swift behavior, and record real incompatibilities
+instead of substituting behavior. Local extensions or intentional deviations
+require a separate explicit user request; Class C does not authorize inventing
+policy, and existing code or tests do not establish user authorization.
+
 Read `Docs/AI_MAINTENANCE.md` before changing the upstream pin, a provider
 adapter, authentication, normalized events, or reconstruction logic. Its sync
 terminal states and change classes are mandatory.

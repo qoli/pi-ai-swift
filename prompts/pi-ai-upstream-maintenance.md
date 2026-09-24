@@ -3,6 +3,13 @@
 Maintain `pi-ai-swift` as a native Swift semantic port of the provider runtime
 in `earendil-works/pi/packages/ai`.
 
+Intent translation is mechanical work: preserve the exact upstream observable
+contract within the ownership boundary. Do not proactively add capabilities,
+restrictions, validation, defaults, or safety policies that upstream does not
+have. Follow "Mechanical semantic translation only" in `Docs/AI_MAINTENANCE.md`;
+Class B permits equivalent native implementation, not behavioral redesign, and
+Class C does not authorize inventing local policy.
+
 ## Inputs
 
 - Repository: use the current `pi-ai-swift` checkout, normally
@@ -64,6 +71,9 @@ The signal script must not perform semantic analysis or modify repository state.
 6. Classify only provider-owned observable changes using the mandatory Class
    A/B/C/D definitions in `Docs/AI_MAINTENANCE.md`. An upstream public type or
    adapter import does not establish Swift ownership.
+   Identify exact source evidence for each changed behavior, including accepted
+   and rejected inputs. Remove agent-invented additions from the plan; local
+   extensions or intentional deviations require a separate explicit user request.
 7. Present a concrete modification plan mapping each provider-owned upstream change to its
    owning mapping area, Swift implementation, source-derived fixture, regression
    tests, and acceptance gates. The plan is a working artifact, not an approval
@@ -79,6 +89,10 @@ The signal script must not perform semantic analysis or modify repository state.
    regression or targeted mutation. Freeze fixtures from the exact target
    before implementation changes. Do not hand-write an expected
    success result when the target source can execute as the oracle.
+   Check both inputs accepted upstream but rejected by Swift and behavior Swift
+   adds beyond upstream. Existing Swift tests and a green signal cannot justify
+   either deviation. An unapproved agent-added restriction is a port defect,
+   not an established policy requiring renewed approval merely to restore parity.
 10. Modify the smallest owning Swift adapter. Never introduce a provider, model,
    protocol, endpoint, authentication, retry, execution-mode, or data fallback.
     Do not copy upstream `Context`, `TranscriptContext`, prompt-section merging,
