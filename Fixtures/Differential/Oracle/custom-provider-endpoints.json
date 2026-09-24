@@ -1,0 +1,29 @@
+{
+  "revision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+  "cases": [
+    {
+      "baseURL": "http://ronnie-mac-studio.local:8001/v1",
+      "requestURL": "http://ronnie-mac-studio.local:8001/v1/chat/completions"
+    },
+    {
+      "baseURL": "http://192.168.1.20:8001/v1",
+      "requestURL": "http://192.168.1.20:8001/v1/chat/completions"
+    },
+    {
+      "baseURL": "http://api.example.com:8001/custom/v1",
+      "requestURL": "http://api.example.com:8001/custom/v1/chat/completions"
+    },
+    {
+      "baseURL": "http://127.0.0.1:8001/v1",
+      "requestURL": "http://127.0.0.1:8001/v1/chat/completions"
+    },
+    {
+      "baseURL": "http://[::1]:8001/v1",
+      "requestURL": "http://[::1]:8001/v1/chat/completions"
+    },
+    {
+      "baseURL": "https://api.example.com/custom/v1",
+      "requestURL": "https://api.example.com/custom/v1/chat/completions"
+    }
+  ]
+}

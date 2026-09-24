@@ -127,13 +127,52 @@ struct CustomProviderRuntimeTests {
         providers: [
           CustomProvider(
             id: "my-provider",
-            baseURL: URL(string: "http://api.example.com/v1")!,
+            baseURL: URL(string: "ftp://api.example.com/v1")!,
             api: "openai-completions",
             models: [customModel(id: "my-model")]
           )
         ],
         credentialStore: store
       )
+    }
+  }
+
+  @Test
+  func preservesExplicitHTTPAndHTTPSEndpointsThroughProductionAdapter() async throws {
+    struct Fixture: Decodable {
+      struct Case: Decodable {
+        let baseURL: String
+        let requestURL: String
+      }
+      let cases: [Case]
+    }
+    let root = URL(fileURLWithPath: #filePath)
+      .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+    let fixture = try JSONDecoder().decode(
+      Fixture.self,
+      from: Data(
+        contentsOf: root.appendingPathComponent(
+          "Fixtures/Differential/Oracle/custom-provider-endpoints.json")))
+    for item in fixture.cases {
+      for modelOverride in [false, true] {
+        let transport = CustomProviderFixtureTransport()
+        let model = customModel(
+          id: "my-model", baseURL: modelOverride ? URL(string: item.baseURL) : nil)
+        let runtime = try CustomProviderRuntime(
+          providers: [
+            CustomProvider(
+              id: "my-provider",
+              baseURL: URL(string: modelOverride ? "https://unused.example/v1" : item.baseURL),
+              api: "openai-completions", models: [model])
+          ],
+          credentialStore: InMemoryProviderCredentialStore(credentials: [
+            "my-provider": .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:]))
+          ]), streamingTransport: transport)
+        var events: [ProviderEvent] = []
+        for try await event in runtime.stream(customRequest()) { events.append(event) }
+        #expect(events.last == .completed(.stop))
+        #expect(await transport.request?.url?.absoluteString == item.requestURL)
+      }
     }
   }
 
@@ -207,12 +246,14 @@ private actor CustomProviderFixtureTransport: ProviderHTTPStreamingTransport {
 private func customModel(
   id: String,
   api: String? = nil,
+  baseURL: URL? = nil,
   headers: [String: String] = [:],
   metadata: [String: JSONValue] = [:]
 ) -> CustomProviderModel {
   CustomProviderModel(
     id: id,
     api: api,
+    baseURL: baseURL,
     headers: headers,
     capabilities: ProviderCapabilities(
       textInput: true,

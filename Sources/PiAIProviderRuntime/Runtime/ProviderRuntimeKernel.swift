@@ -7,7 +7,7 @@ enum ProviderCredentialRequirement: Sendable {
 
 enum ProviderEndpointPolicy: Sendable {
   case httpsOnly
-  case httpsOrLoopbackHTTP
+  case httpOrHTTPS
 }
 
 protocol ProviderAuthorizationAdapter: Sendable {
@@ -353,13 +353,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
   ) -> Bool {
     guard url.host != nil else { return false }
     if url.scheme?.lowercased() == "https" { return true }
-    guard policy == .httpsOrLoopbackHTTP,
-      url.scheme?.lowercased() == "http",
-      let rawHost = url.host?.lowercased()
-    else { return false }
-    let host = rawHost.trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
-    return host == "localhost" || host.hasSuffix(".localhost") || host == "::1"
-      || host.split(separator: ".").first == "127"
+    return policy == .httpOrHTTPS && url.scheme?.lowercased() == "http"
   }
 
   private static func uniqueProviders(

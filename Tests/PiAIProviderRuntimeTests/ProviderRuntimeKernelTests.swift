@@ -6,6 +6,25 @@ import Testing
 @Suite
 struct ProviderRuntimeKernelTests {
   @Test
+  func defaultBuiltinEndpointPolicyStillRejectsHTTP() async throws {
+    let store = KernelCredentialStore()
+    let recorder = WireRecorder()
+    let runtime = try ProviderRuntimeKernel(
+      catalogRevision: "fixture",
+      providers: [fixtureProvider(baseURL: "http://fixture.invalid/v1")],
+      wireProtocols: [FixtureWireProtocol(recorder: recorder)], credentialStore: store,
+      transport: UnusedStreamingTransport())
+    _ = try await runtime.authorize(.login(providerID: "fixture-provider", methodID: "api-key")) {
+      _ in
+      .value("fixture-key")
+    }
+    await expectFailure(
+      runtime, request: fixtureRequest(), code: .invalidRequest,
+      operation: "stream.resolve-base-url")
+    #expect(await recorder.context == nil)
+  }
+
+  @Test
   func catalogAuthorizationAndStreamUseTheRegisteredProviderAndWireProtocol()
     async throws
   {
@@ -284,7 +303,7 @@ private func makeRuntime(
   )
 }
 
-private func fixtureProvider() -> ProviderDefinition {
+private func fixtureProvider(baseURL: String = "https://fixture.invalid/v1") -> ProviderDefinition {
   ProviderDefinition(
     descriptor: ProviderDescriptor(
       id: "fixture-provider",
@@ -298,7 +317,7 @@ private func fixtureProvider() -> ProviderDefinition {
       ],
       models: [fixtureModel()]
     ),
-    baseURL: "https://fixture.invalid/v1",
+    baseURL: baseURL,
     headers: ["X-Fixture": "true"],
     modelConfigurations: [
       ProviderModelRoute(

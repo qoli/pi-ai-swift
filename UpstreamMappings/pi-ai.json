@@ -1824,7 +1824,13 @@
         "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#reusesOpenAIAdapterWithExactAPIRootHeadersCredentialAndCompatibility",
         "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#invalidDeclarationsFailAtConstructionWithoutProtocolFallback",
         "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#permitsExplicitLoopbackHTTPForLocalCustomProviders",
-        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#missingBaseURLFailsAtRequestTimeWithoutEndpointFallback"
+        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#missingBaseURLFailsAtRequestTimeWithoutEndpointFallback",
+        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#preservesExplicitHTTPAndHTTPSEndpointsThroughProductionAdapter",
+        "Tests/PiAIProviderRuntimeTests/ProviderRuntimeKernelTests.swift#defaultBuiltinEndpointPolicyStillRejectsHTTP",
+        "Fixtures/Differential/Cases/custom-provider-endpoints.json",
+        "Fixtures/Differential/Oracle/custom-provider-endpoints.json",
+        "Scripts/pi-ai-custom-endpoint-oracle.mjs",
+        "Docs/CUSTOM_PROVIDER_HTTP_REPAIR.md"
       ],
       "requiredGates": [
         "swift-test",

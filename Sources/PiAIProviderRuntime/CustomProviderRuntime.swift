@@ -180,7 +180,7 @@ public struct CustomProviderRuntime: ProviderRuntime {
       headers: provider.headers,
       modelConfigurations: configurations,
       credentialRequirement: .required,
-      endpointPolicy: .httpsOrLoopbackHTTP,
+      endpointPolicy: .httpOrHTTPS,
       authorization: APIKeyAuthorizationAdapter(
         providerID: provider.id,
         methodID: authorizationMethod.id,
@@ -211,18 +211,14 @@ public struct CustomProviderRuntime: ProviderRuntime {
       throw configurationFailure(
         providerID: providerID,
         message:
-          "custom provider base URL must use HTTPS or loopback HTTP: \(url.absoluteString)"
+          "custom provider base URL must use HTTP or HTTPS: \(url.absoluteString)"
       )
     }
   }
 
   private static func isAllowedCustomBaseURL(_ url: URL) -> Bool {
-    guard let rawHost = url.host?.lowercased() else { return false }
-    if url.scheme?.lowercased() == "https" { return true }
-    guard url.scheme?.lowercased() == "http" else { return false }
-    let host = rawHost.trimmingCharacters(in: CharacterSet(charactersIn: "[]"))
-    return host == "localhost" || host.hasSuffix(".localhost") || host == "::1"
-      || host.split(separator: ".").first == "127"
+    guard let host = url.host, !host.isEmpty else { return false }
+    return ["http", "https"].contains(url.scheme?.lowercased() ?? "")
   }
 
   private static func configurationFailure(

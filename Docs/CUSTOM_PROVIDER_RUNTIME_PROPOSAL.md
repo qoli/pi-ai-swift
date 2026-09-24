@@ -69,8 +69,9 @@ The declaration keeps both base URLs optional to match upstream and permit a
 host-supplied credential metadata URL. If no source supplies an API root, the
 request fails explicitly instead of selecting a default endpoint.
 
-Custom endpoints must use HTTPS. Loopback HTTP is explicitly allowed for local
-servers such as Ollama, vLLM, or LM Studio; remote plaintext HTTP is rejected.
+Custom endpoints accept explicit HTTP or HTTPS URLs with a host. The runtime does
+not classify hosts as loopback, LAN, or public, resolve DNS for permission, or
+rewrite the requested endpoint. Built-in provider endpoint policy is unchanged.
 
 ## Authentication and storage boundary
 
@@ -108,5 +109,7 @@ protocol, endpoint, model, or authentication fallbacks.
 `CustomProviderRuntimeTests` verifies provider API inheritance, model API
 override, exact provider/model catalog projection, API-root path composition,
 provider/model headers, injected credentials, compatibility metadata, duplicate
-and unknown declarations, loopback HTTP, and rejection of remote HTTP.
+and unknown declarations, HTTP/HTTPS endpoints, and rejection of unsupported URL schemes.
+Source-derived cases cover .local, private IP, public host, IPv4/IPv6 loopback,
+ports, custom paths, and provider/model-level overrides.
 It also verifies that a missing API root fails without endpoint fallback.

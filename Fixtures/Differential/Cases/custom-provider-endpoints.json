@@ -1,0 +1,11 @@
+{
+  "revision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+  "baseURLs": [
+    "http://ronnie-mac-studio.local:8001/v1",
+    "http://192.168.1.20:8001/v1",
+    "http://api.example.com:8001/custom/v1",
+    "http://127.0.0.1:8001/v1",
+    "http://[::1]:8001/v1",
+    "https://api.example.com/custom/v1"
+  ]
+}
