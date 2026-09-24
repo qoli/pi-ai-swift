@@ -227,7 +227,7 @@ actor ProviderModelStore {
           message: "bundled model snapshot contains an invalid or duplicate provider"
         )
       }
-      let records = try provider.models.map {
+      let records = try provider.models.compactMap {
         try decodeBundledRecord(
           $0,
           providerID: provider.id,
@@ -249,7 +249,7 @@ actor ProviderModelStore {
     _ value: JSONValue,
     providerID: String,
     providerBaseURL: String?
-  ) throws -> ProviderModelStoreRecord {
+  ) throws -> ProviderModelStoreRecord? {
     guard case .object(let object) = value,
       let modelID = object.string("id"),
       !modelID.isEmpty,
@@ -264,6 +264,20 @@ actor ProviderModelStore {
         operation: "catalog.store.bundle.model",
         message: "bundled model snapshot contains an invalid model"
       )
+    }
+    let imageGeneration: Bool
+    switch object.string("type") {
+    case "chat":
+      imageGeneration = false
+    case "image":
+      imageGeneration = true
+    case nil:
+      // Accepted catalogs predate typed image records.
+      imageGeneration = protocolID == "openrouter-images"
+    default:
+      // Keep classifier evidence in the source catalog, outside the supported
+      // chat/image seam. Unknown operation types are not chat models.
+      return nil
     }
     let inputs = object.modelStoreStringArray("input")
     guard !inputs.isEmpty, Set(inputs).isSubset(of: ["text", "image"]) else {
@@ -285,7 +299,6 @@ actor ProviderModelStore {
       providerID: providerID,
       modelID: modelID
     )
-    let imageGeneration = protocolID == "openrouter-images"
     return ProviderModelStoreRecord(
       model: ProviderModel(
         id: modelID,
@@ -297,7 +310,7 @@ actor ProviderModelStore {
           imageInput: inputs.contains("image"),
           toolCalling: !imageGeneration,
           reasoning: object.bool("reasoning") ?? false,
-          structuredOutput: supportsStructuredOutput(protocolID),
+          structuredOutput: !imageGeneration && supportsStructuredOutput(protocolID),
           imageGeneration: imageGeneration
         ),
         contextWindow: contextWindow,
@@ -513,7 +526,7 @@ actor ProviderModelStore {
   ) throws {
     var routes = Set<String>()
     for record in records {
-      let route = "\(record.model.id)\u{0}\(record.model.protocolID)"
+      let route = "\(record.model.id)\u{0}\(record.model.capabilities.imageGeneration)"
       guard routes.insert(route).inserted else {
         throw failure(
           .upstreamDrift,
@@ -582,7 +595,11 @@ actor ProviderModelStore {
     _ lhs: ProviderModelStoreRecord,
     _ rhs: ProviderModelStoreRecord
   ) -> Bool {
-    (lhs.model.id, lhs.model.protocolID) < (rhs.model.id, rhs.model.protocolID)
+    (lhs.model.id, lhs.model.capabilities.imageGeneration ? "image" : "chat", lhs.model.protocolID)
+      < (
+        rhs.model.id, rhs.model.capabilities.imageGeneration ? "image" : "chat",
+        rhs.model.protocolID
+      )
   }
 
   private static func isFullRevision(_ value: String) -> Bool {

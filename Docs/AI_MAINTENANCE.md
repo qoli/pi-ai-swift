@@ -676,6 +676,24 @@ compatibility.
 
 ## Research baseline
 
+### 2026-09-25 source-derived schema 6 acceptance
+
+The accepted revision is now `d5629e20489ccf770ed90b5a33941cb3b7ef24d0`
+(package 0.87.1 plus that commit's unreleased changes). See
+[UPSTREAM_SYNC_2026-09-25.md](UPSTREAM_SYNC_2026-09-25.md) for ownership,
+source-derived regressions and acceptance. Earlier entries below are historical.
+
+Lock schema 4 records exact-source/frozen-input catalog provenance; schema 3
+records published npm artifact provenance. These are explicit alternatives,
+not failure fallbacks. Source-derived acceptance must rebuild from the exact
+commit and preserved public response bodies, compare complete catalog values,
+and validate provider/type inventories. Npm publication is not a prerequisite
+for that source path; an old npm artifact cannot be relabeled as a new commit.
+
+Run the checker before Swift oracle tests, not concurrently: dependency setup
+may reinstall their shared upstream cache. New helper oracles observe mutable
+events synchronously at emission, not at later asynchronous consumption.
+
 ### 2026-09-22 response identity correction and candidate assessment
 
 The accepted revision remains `19451accdeec671c1f4da9eafac8fc270f510ef4`

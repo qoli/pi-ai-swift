@@ -581,7 +581,7 @@
       },
       "events": [
         {
-          "id": "different",
+          "id": "call-1",
           "name": "lookup",
           "type": "toolCallStarted"
         },
@@ -844,5 +844,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
+  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
 }

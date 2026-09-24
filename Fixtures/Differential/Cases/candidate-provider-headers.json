@@ -1,0 +1,9 @@
+{
+  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "cases": [
+    {"id":"cross-scope", "sources":[{"X-Scope":"provider","X-Keep":"keep"},{"x-scope":"model"}]},
+    {"id":"delete", "sources":[{"X-Scope":"provider","X-Keep":"keep"},{"x-scope":null}]},
+    {"id":"same-source-forward", "sources":[{"X-Scope":"first","x-scope":"second"}]},
+    {"id":"same-source-reverse", "sources":[{"x-scope":"second","X-Scope":"first"}]}
+  ]
+}

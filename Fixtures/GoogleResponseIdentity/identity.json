@@ -1,0 +1,321 @@
+{
+  "cases": [
+    {
+      "chunks": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ],
+          "responseId": "first"
+        }
+      ],
+      "protocolID": "google-generative-ai",
+      "start": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      },
+      "terminal": {
+        "modelID": "gemini-fixture",
+        "responseID": "first"
+      }
+    },
+    {
+      "chunks": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ]
+        },
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ],
+          "responseId": "late"
+        }
+      ],
+      "protocolID": "google-generative-ai",
+      "start": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      },
+      "terminal": {
+        "modelID": "gemini-fixture",
+        "responseID": "late"
+      }
+    },
+    {
+      "chunks": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ]
+        },
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ]
+        }
+      ],
+      "protocolID": "google-generative-ai",
+      "start": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      },
+      "terminal": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      }
+    },
+    {
+      "chunks": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "responseId": "first"
+        },
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ],
+          "responseId": "replacement"
+        }
+      ],
+      "protocolID": "google-generative-ai",
+      "start": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      },
+      "terminal": {
+        "modelID": "gemini-fixture",
+        "responseID": "first"
+      }
+    },
+    {
+      "chunks": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ],
+          "responseId": "first"
+        }
+      ],
+      "protocolID": "google-vertex",
+      "start": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      },
+      "terminal": {
+        "modelID": "gemini-fixture",
+        "responseID": "first"
+      }
+    },
+    {
+      "chunks": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ]
+        },
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ],
+          "responseId": "late"
+        }
+      ],
+      "protocolID": "google-vertex",
+      "start": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      },
+      "terminal": {
+        "modelID": "gemini-fixture",
+        "responseID": "late"
+      }
+    },
+    {
+      "chunks": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ]
+        },
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ]
+        }
+      ],
+      "protocolID": "google-vertex",
+      "start": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      },
+      "terminal": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      }
+    },
+    {
+      "chunks": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              }
+            }
+          ],
+          "responseId": "first"
+        },
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "answer"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP"
+            }
+          ],
+          "responseId": "replacement"
+        }
+      ],
+      "protocolID": "google-vertex",
+      "start": {
+        "modelID": "gemini-fixture",
+        "responseID": null
+      },
+      "terminal": {
+        "modelID": "gemini-fixture",
+        "responseID": "first"
+      }
+    }
+  ],
+  "revision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
+}

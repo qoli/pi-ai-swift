@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
   "failureCoverageStatus": "complete",
   "evidenceSources": [
     {"oracle": "Fixtures/Differential/Oracle/failure-http.json", "test": "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift", "shape": "protocols"},

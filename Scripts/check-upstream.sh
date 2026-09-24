@@ -227,16 +227,31 @@ for key in required:
     if key not in lock:
         raise SystemExit(f"malformed upstream lock: missing {key}")
 
-if lock.get("schemaVersion") != 3:
-    raise SystemExit("malformed upstream lock: schemaVersion must be 3")
+if lock.get("schemaVersion") not in {3, 4}:
+    raise SystemExit("malformed upstream lock: schemaVersion must be 3 or 4")
 if not isinstance(lock.get("trackedBuiltinProviders"), list):
     raise SystemExit("malformed upstream lock: trackedBuiltinProviders must be an array")
-artifact = lock.get("publishedArtifact")
-if not isinstance(artifact, dict):
-    raise SystemExit("malformed upstream lock: publishedArtifact must be an object")
-for key in ["registry", "shasum", "integrity", "modelDataManifestStructureHash"]:
-    if not isinstance(artifact.get(key), str) or not artifact[key]:
-        raise SystemExit(f"malformed upstream lock: publishedArtifact.{key} is required")
+if lock["schemaVersion"] == 3:
+    if "sourceArtifact" in lock or "sourceArtifactManifest" in lock:
+        raise SystemExit("published-artifact lock cannot also claim source-derived provenance")
+    artifact = lock.get("publishedArtifact")
+    if not isinstance(artifact, dict):
+        raise SystemExit("malformed upstream lock: publishedArtifact must be an object")
+    for key in ["registry", "shasum", "integrity", "modelDataManifestStructureHash"]:
+        if not isinstance(artifact.get(key), str) or not artifact[key]:
+            raise SystemExit(f"malformed upstream lock: publishedArtifact.{key} is required")
+else:
+    artifact = lock.get("sourceArtifact")
+    if not isinstance(artifact, dict) or artifact.get("kind") != "frozen-public-catalog-inputs":
+        raise SystemExit("malformed source-derived upstream lock")
+    if not isinstance(lock.get("sourceArtifactManifest"), str) or not lock["sourceArtifactManifest"]:
+        raise SystemExit("source-derived lock requires sourceArtifactManifest")
+    for key in ["evidenceSHA256", "responseArchiveSHA256"]:
+        value = artifact.get(key)
+        if not isinstance(value, str) or len(value) != 64 or any(c not in "0123456789abcdef" for c in value):
+            raise SystemExit(f"malformed source artifact digest: {key}")
+    if "publishedArtifact" in lock:
+        raise SystemExit("source-derived lock cannot claim a published artifact")
 catalog_hash = lock.get("generatedCatalogSHA256")
 if not isinstance(catalog_hash, str) or len(catalog_hash) != 64:
     raise SystemExit("malformed upstream lock: generatedCatalogSHA256 is required")
@@ -347,6 +362,11 @@ for required_path in "${required_paths[@]}"; do
   fi
 done
 
+lock_schema="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["schemaVersion"])' "$lock_file")"
+if [[ "$lock_schema" == 4 ]]; then
+  python3 "$repo_root/Scripts/check-source-catalog.py" --repo "$repo_root" --upstream "$cache_root"
+fi
+
 python3 "$repo_root/Scripts/differential-manifest.py" \
   --repo "$repo_root" \
   --upstream "$cache_root" \
@@ -383,8 +403,13 @@ if catalog_digest != lock["generatedCatalogSHA256"]:
 catalog = json.loads(catalog_bytes)
 if catalog.get("upstreamRevision") != lock["revision"]:
     raise SystemExit("bundled provider catalog revision does not match upstream lock")
-if catalog.get("publishedArtifact") != lock["publishedArtifact"]:
-    raise SystemExit("bundled provider catalog artifact provenance does not match upstream lock")
+if lock["schemaVersion"] == 3:
+    if "sourceArtifact" in catalog:
+        raise SystemExit("published catalog cannot also claim source-derived provenance")
+    if catalog.get("publishedArtifact") != lock["publishedArtifact"]:
+        raise SystemExit("bundled provider catalog artifact provenance does not match upstream lock")
+elif catalog.get("sourceArtifact") != lock["sourceArtifact"]:
+    raise SystemExit("bundled provider catalog source provenance does not match upstream lock")
 
 all_source = (cache_root / "packages/ai/src/providers/all.ts").read_text(encoding="utf-8")
 imports = dict(
@@ -425,16 +450,32 @@ if catalog_providers != upstream_providers:
         f"extra={sorted(catalog_providers - upstream_providers)}"
     )
 
-try:
-    images_body = all_source.split("export function builtinImagesProviders()", 1)[1].split("];", 1)[0]
-except IndexError as error:
-    raise SystemExit("could not parse upstream builtinImagesProviders()") from error
-image_factories = re.findall(r"\b(\w+Provider)\(\)", images_body)
-upstream_image_providers = {
-    imports[factory].removesuffix("-images")
-    for factory in image_factories
-    if factory in imports
-}
+if lock["schemaVersion"] == 3:
+    try:
+        images_body = all_source.split("export function builtinImagesProviders()", 1)[1].split("];", 1)[0]
+    except IndexError as error:
+        raise SystemExit("could not parse upstream builtinImagesProviders()") from error
+    image_factories = re.findall(r"\b(\w+Provider)\(\)", images_body)
+    upstream_image_providers = {
+        imports[factory].removesuffix("-images")
+        for factory in image_factories
+        if factory in imports
+    }
+else:
+    # The complete catalog was compared with exact-source replay above. Schema 6
+    # replaces the separate image factory with per-model operation types.
+    upstream_image_providers = {
+        provider["id"] for provider in catalog["providers"]
+        if any(model.get("type") == "image" for model in provider["models"])
+    }
+    classifier_protocols = set(re.findall(
+        r'"([^"]+)"', re.search(r'export type KnownClassifierApi =(.*?);',
+        (cache_root / "packages/ai/src/types.ts").read_text(), flags=re.DOTALL).group(1)))
+    tracked_classifier_protocols = {
+        protocol for area in mapping["areas"] for protocol in area.get("classifierProtocolIDs", [])
+    }
+    if classifier_protocols != tracked_classifier_protocols:
+        raise SystemExit("classifier protocol inventory drift")
 mapped_image_providers = {
     area["imageProviderID"]
     for area in mapping["areas"]

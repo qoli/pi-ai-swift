@@ -1,0 +1,60 @@
+{
+  "cases": [
+    {
+      "id": "cross-scope",
+      "result": {
+        "X-Keep": "keep",
+        "x-scope": "model"
+      },
+      "sources": [
+        {
+          "X-Keep": "keep",
+          "X-Scope": "provider"
+        },
+        {
+          "x-scope": "model"
+        }
+      ]
+    },
+    {
+      "id": "delete",
+      "result": {
+        "X-Keep": "keep"
+      },
+      "sources": [
+        {
+          "X-Keep": "keep",
+          "X-Scope": "provider"
+        },
+        {
+          "x-scope": null
+        }
+      ]
+    },
+    {
+      "id": "same-source-forward",
+      "result": {
+        "x-scope": "second"
+      },
+      "sources": [
+        {
+          "X-Scope": "first",
+          "x-scope": "second"
+        }
+      ]
+    },
+    {
+      "id": "same-source-reverse",
+      "result": {
+        "X-Scope": "first"
+      },
+      "sources": [
+        {
+          "X-Scope": "first",
+          "x-scope": "second"
+        }
+      ]
+    }
+  ],
+  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
+}

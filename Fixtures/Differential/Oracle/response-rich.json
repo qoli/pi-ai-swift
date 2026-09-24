@@ -1167,7 +1167,7 @@
         {
           "modelID": "gemini-3-flash-preview",
           "providerID": "fixture-google",
-          "responseID": "google-response-1",
+          "responseID": null,
           "type": "responseStarted"
         },
         {
@@ -1338,7 +1338,7 @@
         {
           "modelID": "gemini-3-flash-preview",
           "providerID": "fixture-vertex",
-          "responseID": "google-response-1",
+          "responseID": null,
           "type": "responseStarted"
         },
         {
@@ -2258,5 +2258,5 @@
   },
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/earendil-works/pi.git",
-  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
+  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
 }

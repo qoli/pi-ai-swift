@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { installEmissionSnapshots, emissionSnapshot } from "./pi-ai-emission-snapshots.mjs";
 import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, failureCasePath, requestCasePath] = process.argv.slice(2);
@@ -14,6 +15,7 @@ if (!upstreamRoot || !failureCasePath || !requestCasePath) {
   );
 }
 
+await installEmissionSnapshots(upstreamRoot);
 const failureCase = JSON.parse(await readFile(failureCasePath, "utf8"));
 const requestCase = JSON.parse(await readFile(requestCasePath, "utf8"));
 if (failureCase.schemaVersion !== 1 || requestCase.schemaVersion !== 1) {
@@ -73,7 +75,7 @@ async function captureFailure(protocol) {
     );
     const events = [];
     for await (const event of stream) {
-      events.push(structuredClone(event));
+      events.push(emissionSnapshot(event));
     }
     const terminal = events.at(-1);
     if (terminal?.type !== "error" || terminal.reason !== "error") {
@@ -143,7 +145,7 @@ async function captureCancellation(protocol) {
       options,
     );
     const events = [];
-    for await (const event of stream) events.push(structuredClone(event));
+    for await (const event of stream) events.push(emissionSnapshot(event));
     const terminal = events.at(-1);
     if (terminal?.type !== "error" || terminal.reason !== "aborted") {
       throw new Error(`${protocol.protocolID} did not surface aborted cancellation`);
@@ -227,7 +229,7 @@ async function captureBedrockFailure(protocol, decoderInput) {
       },
     );
     const events = [];
-    for await (const event of stream) events.push(structuredClone(event));
+    for await (const event of stream) events.push(emissionSnapshot(event));
     const terminal = events.at(-1);
     if (terminal?.type !== "error" || terminal.reason !== "error") {
       throw new Error("bedrock-converse-stream did not surface an error terminal");

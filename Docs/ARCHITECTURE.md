@@ -160,6 +160,24 @@ remain in scope. A provider marked `missing` is tracked but not advertised as a
 working Swift provider until its authorization, catalog, selected wire
 protocols, and deterministic verification are landed.
 
+## Source-derived catalog provenance
+
+The accepted schema 6 catalog is generated from an exact upstream commit and
+frozen public catalog responses, recorded by lock schema 4. It is not labeled
+as an npm release artifact. Rebuilding must reproduce the complete values and
+typed provider inventory. Published-artifact lock schema 3 remains a separate
+explicit provenance form in the maintenance tooling.
+
+Chat/image records with equal IDs keep separate output-modality routes and
+their complete metadata. Classifier entries remain in source evidence but are
+not advertised through the current runtime; TypeSafe is inventoried as missing.
+The store and registry both select the supported operation types. Input-limit
+metadata does not authorize new rejection rules or caller-side preprocessing.
+
+Google response-start events carry no response ID, matching the source emission
+boundary. The first nonempty ID from later chunks is retained in terminal
+metadata. Requested model identity remains stable throughout.
+
 ## Reasoning effort selections
 
 `ProviderGenerationOptions.reasoningEffort` uses `ProviderReasoningEffort`, not

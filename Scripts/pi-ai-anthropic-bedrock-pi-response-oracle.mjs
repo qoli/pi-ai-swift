@@ -6,10 +6,12 @@ import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import http from "node:http";
 import path from "node:path";
+import { installEmissionSnapshots, emissionSnapshot } from "./pi-ai-emission-snapshots.mjs";
 import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const [upstreamRoot, casePath, outputPath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) throw new Error("usage: oracle UPSTREAM_ROOT CASE_JSON [OUTPUT]");
+await installEmissionSnapshots(upstreamRoot);
 const fixture = JSON.parse(await readFile(casePath, "utf8"));
 if (fixture.schemaVersion !== 1) throw new Error("unsupported response fixture schema");
 const revision = execFileSync("git", ["-C", upstreamRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
@@ -77,7 +79,8 @@ async function project(stream) {
   let terminal;
   const streamedText = new Map();
   const streamedReasoning = new Map();
-  for await (const event of stream) {
+  for await (const sourceEvent of stream) {
+    const event = emissionSnapshot(sourceEvent);
     if (event.type === "text_delta") {
       streamedText.set(event.contentIndex, `${streamedText.get(event.contentIndex) ?? ""}${event.delta}`);
       events.push(canonicalEvent(event));

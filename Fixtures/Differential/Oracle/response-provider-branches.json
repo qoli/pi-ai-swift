@@ -28,7 +28,7 @@
             {
               "modelID": "gemini-3-flash-preview",
               "providerID": "fixture-google",
-              "responseID": "google-length",
+              "responseID": null,
               "type": "responseStarted"
             },
             {
@@ -99,7 +99,7 @@
             {
               "modelID": "gemini-3-flash-preview",
               "providerID": "fixture-vertex",
-              "responseID": "google-length",
+              "responseID": null,
               "type": "responseStarted"
             },
             {
@@ -233,7 +233,7 @@
             {
               "modelID": "gemini-3-flash-preview",
               "providerID": "fixture-google",
-              "responseID": "google-mixed",
+              "responseID": null,
               "type": "responseStarted"
             },
             {
@@ -378,7 +378,7 @@
             {
               "modelID": "gemini-3-flash-preview",
               "providerID": "fixture-vertex",
-              "responseID": "google-mixed",
+              "responseID": null,
               "type": "responseStarted"
             },
             {
@@ -582,7 +582,7 @@
             {
               "modelID": "gemini-3-flash-preview",
               "providerID": "fixture-google",
-              "responseID": "google-stop",
+              "responseID": null,
               "type": "responseStarted"
             },
             {
@@ -659,7 +659,7 @@
             {
               "modelID": "gemini-3-flash-preview",
               "providerID": "fixture-vertex",
-              "responseID": "google-stop",
+              "responseID": null,
               "type": "responseStarted"
             },
             {
@@ -738,7 +738,7 @@
             {
               "modelID": "gemini-3-flash-preview",
               "providerID": "fixture-google",
-              "responseID": "google-opaque",
+              "responseID": null,
               "type": "responseStarted"
             },
             {
@@ -820,7 +820,7 @@
             {
               "modelID": "gemini-3-flash-preview",
               "providerID": "fixture-vertex",
-              "responseID": "google-opaque",
+              "responseID": null,
               "type": "responseStarted"
             },
             {
@@ -1898,5 +1898,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4"
+  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
 }

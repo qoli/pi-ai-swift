@@ -188,6 +188,25 @@ def main() -> int:
             generate=arguments.generate,
             description=description,
         )
+    if lock['schemaVersion'] == 4:
+        for script, cases, output, description in [
+            ('google-response-identity-oracle.mjs', None,
+             'Fixtures/GoogleResponseIdentity/identity.json', 'Google emission identity lifecycle'),
+            ('candidate-completions-oracle.mjs', None,
+             'Fixtures/CandidateCompletions/request.json', 'completion strict and empty-text cases'),
+            ('pi-ai-anthropic-candidate-usage-oracle.mjs',
+             'Fixtures/Differential/Cases/anthropic-candidate-cache-ttl.json',
+             'Fixtures/Differential/Oracle/anthropic-candidate-cache-ttl.json', 'Anthropic delta cache TTL'),
+            ('pi-ai-candidate-headers-oracle.mjs',
+             'Fixtures/Differential/Cases/candidate-provider-headers.json',
+             'Fixtures/Differential/Oracle/candidate-provider-headers.json', 'case-insensitive headers'),
+        ]:
+            verify_or_generate_exact(
+                repo=repo, script=script,
+                arguments=[str(upstream)] + ([str(repo / cases)] if cases else []),
+                output_path=repo / output, generate=arguments.generate,
+                description=description,
+            )
     return 0
 
 

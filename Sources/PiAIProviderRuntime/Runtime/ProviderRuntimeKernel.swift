@@ -286,9 +286,16 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       providerID: request.providerID,
       endpointPolicy: provider.endpointPolicy
     )
-    let headers = provider.headers.merging(modelConfiguration.headers) {
-      _, modelValue in modelValue
+    var headers = provider.headers
+    if ["google-generative-ai", "google-vertex", "openrouter-images"].contains(
+      modelConfiguration.protocolID)
+    {
+      // These adapters project provider headers case-insensitively upstream.
+      // Preserve model-scope precedence before dictionary ordering is lost.
+      let modelNames = Set(modelConfiguration.headers.keys.map { $0.lowercased() })
+      headers = headers.filter { !modelNames.contains($0.key.lowercased()) }
     }
+    headers.merge(modelConfiguration.headers) { _, modelValue in modelValue }
 
     return wireProtocol.stream(
       request,

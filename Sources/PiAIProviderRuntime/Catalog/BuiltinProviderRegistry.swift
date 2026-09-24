@@ -13,7 +13,10 @@ struct BuiltinProviderRegistry: Sendable {
     else {
       throw failure("bundled provider catalog is missing")
     }
-    let data = try Data(contentsOf: url)
+    return try load(data: Data(contentsOf: url))
+  }
+
+  static func load(data: Data) throws -> BuiltinProviderRegistry {
     let document = try JSONDecoder().decode(BuiltinCatalogDocument.self, from: data)
     guard document.schemaVersion == 1 else {
       throw failure(
@@ -121,10 +124,22 @@ struct BuiltinProviderRecord: Sendable {
         "api",
         providerID: document.id
       )
+      let outputModality: ProviderOutputModality
+      switch object.string("type") {
+      case "chat":
+        outputModality = .text
+      case "image":
+        outputModality = .image
+      case nil:
+        // The accepted legacy catalog predates typed image records.
+        outputModality = protocolID == "openrouter-images" ? .image : .text
+      default:
+        // Upstream selects chat/image entries by type. Classifier entries stay
+        // in source catalog evidence but cannot be exposed through this seam.
+        continue
+      }
       let inputs = object.stringArray("input")
       let reasoning = object.bool("reasoning") ?? false
-      let outputModality: ProviderOutputModality =
-        protocolID == "openrouter-images" ? .image : .text
       let incoming = ProviderModel(
         id: modelID,
         providerID: providerID,
@@ -133,10 +148,10 @@ struct BuiltinProviderRecord: Sendable {
         capabilities: ProviderCapabilities(
           textInput: inputs.contains("text"),
           imageInput: inputs.contains("image"),
-          toolCalling: protocolID != "openrouter-images",
+          toolCalling: outputModality == .text,
           reasoning: reasoning,
-          structuredOutput: Self.supportsStructuredOutput(protocolID),
-          imageGeneration: protocolID == "openrouter-images"
+          structuredOutput: outputModality == .text && Self.supportsStructuredOutput(protocolID),
+          imageGeneration: outputModality == .image
         ),
         contextWindow: object.int("contextWindow"),
         maximumOutputTokens: object.int("maxTokens"),

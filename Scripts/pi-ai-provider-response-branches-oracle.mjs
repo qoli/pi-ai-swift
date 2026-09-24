@@ -5,6 +5,7 @@ import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { installEmissionSnapshots, emissionSnapshot } from "./pi-ai-emission-snapshots.mjs";
 import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const GOOGLE_MOCK_URL = "oracle:google-genai-response-branches";
@@ -47,6 +48,7 @@ const [upstreamRoot, casePath, outputPath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) {
   throw new Error("usage: pi-ai-provider-response-branches-oracle.mjs UPSTREAM_ROOT CASE_JSON [OUTPUT_JSON]");
 }
+await installEmissionSnapshots(upstreamRoot);
 const fixture = JSON.parse(await readFile(casePath, "utf8"));
 if (fixture.schemaVersion !== 1) throw new Error(`unsupported fixture schema: ${fixture.schemaVersion}`);
 const upstreamRevision = execFileSync("git", ["-C", upstreamRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
@@ -109,7 +111,7 @@ async function projectAssistantStream(sourceStream, protocolID) {
   const signatures = new Map();
   let terminal;
   for await (const sourceEvent of sourceStream) {
-    const event = structuredClone(sourceEvent);
+    const event = emissionSnapshot(sourceEvent);
     const partial = event.partial ?? event.message ?? event.error;
     if (event.type === "start") {
       events.push({

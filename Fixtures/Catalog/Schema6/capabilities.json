@@ -1,0 +1,39 @@
+{
+  "revision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "scope": "candidate-only; no accepted provider support promotion",
+  "areas": [
+    {
+      "id": "typesafe-classifier",
+      "providerID": "typesafe",
+      "status": "missing",
+      "modelIDs": ["jev-latest"],
+      "protocolID": "typesafe-system-one",
+      "authentication": "apiKey (TYPESAFE_API_KEY)",
+      "source": "packages/ai/src/providers/typesafe.ts",
+      "upstreamTest": "packages/ai/test/typesafe-system-one.test.ts",
+      "plannedSwiftOwnership": "provider catalog, authorization and classifier wire adapter; separate request/result seam design"
+    },
+    {
+      "id": "openrouter-classifier",
+      "providerID": "openrouter",
+      "status": "missing",
+      "modelIDs": ["typesafe/jev-1.13", "~typesafe/jev-latest"],
+      "protocolID": "typesafe-system-one",
+      "authentication": "existing OpenRouter apiKey/oauth provider auth",
+      "source": "packages/ai/src/providers/openrouter.ts",
+      "upstreamTest": "packages/ai/test/typesafe-system-one.test.ts",
+      "plannedSwiftOwnership": "classifier wire adapter; existing provider authentication; separate request/result seam design"
+    },
+    {
+      "id": "cloudflare-classifier",
+      "providerID": "cloudflare-workers-ai",
+      "status": "missing",
+      "modelIDs": ["typesafe/jev"],
+      "protocolID": "cloudflare-workers-ai-system-one",
+      "authentication": "existing Cloudflare Workers AI apiKey/account configuration",
+      "source": "packages/ai/src/providers/cloudflare-workers-ai.ts",
+      "upstreamTest": "packages/ai/test/cloudflare-workers-ai-system-one.test.ts",
+      "plannedSwiftOwnership": "classifier wire adapter; existing provider authentication; separate request/result seam design"
+    }
+  ]
+}

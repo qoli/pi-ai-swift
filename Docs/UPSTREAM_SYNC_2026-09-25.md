@@ -1,0 +1,93 @@
+# Provider runtime sync to d5629e20
+
+## Current status
+
+**Compatible within the declared supported chat/image fixture scope.** The
+accepted pin has moved after isolated acceptance. The target is the fixed commit
+`d5629e20489ccf770ed90b5a33941cb3b7ef24d0`, not a claim about a later main HEAD.
+Previous accepted revision: `19451accdeec671c1f4da9eafac8fc270f510ef4`.
+Target package version: 0.87.1, including unreleased changes at that commit.
+
+## Ownership and implementation
+
+| Source change | Classification / disposition | Evidence |
+| --- | --- | --- |
+| Schema 6 generated data, unified typed catalogs, new models and pricing | Provider catalog, A/B; frozen inputs and exact-source generation; no npm artifact impersonation | `Fixtures/Catalog/Schema6`, complete value digest, clean offline replay, loader/store route comparisons |
+| Chat/image types and dynamic collection organization | Provider projection, B; preserve supported `(provider,type,id)` routes and metadata; do not copy collection APIs | Three real ID collisions; legacy no-type and unknown-type cases; full 1,575 chat/image records |
+| TypeSafe, OpenRouter and Cloudflare classifiers | Missing new capability; request/result seam gate | Missing provider/protocol inventory, all four classifier records retained in evidence; no chat substitution or support advertisement |
+| OpenAI Completions strict default and empty text arrays | Provider wire, B | 15 exact-source cases, 20 red assertions before repair; explicit capability controls strict; whitespace/image content preserved |
+| Anthropic OAuth version and delta one-hour cache writes | Provider wire/usage, B | Source-emission TTL sequence 2 → 7 → absent → empty nested object → null → 0 → 4; header and eight failing assertions before repair |
+| Case-insensitive header helper | Provider wire, B for expressible cross-scope replacement; null/order seam gate | Exact helper cases and actual Google dispatch regression; no invented winner for unordered same-scope variants |
+| Optional raw provider-event observer | New optional public capability, separate seam gate | Existing normalized stream remains the supported surface; no fake raw-event reconstruction |
+| Image collection/factory removal, auth error-class relocation | Source organization, A plus typed projection B | Updated provenance paths and reachable imports; surviving image adapter oracle replay |
+| Input-limit/resize metadata | Provider metadata, A/B; preprocessing remains caller-owned | Full metadata retained; no automatic resize or new rejection rules |
+| Faux provider/test utilities | Upstream test infrastructure, out of runtime ownership | No new Swift provider inferred from test-only source |
+
+Radius is an existing custom upstream provider and does not acquire the generic
+`createProvider` classifier overlay. Its dynamic chat refresh/persistence tests
+remain applicable and pass without adding another operation.
+
+## Emission-time evidence correction
+
+Full oracle regeneration exposed a pre-existing observation bug. Google pushes
+its start event before it assigns a chunk response ID. Pi pushes a tool start
+whose mutable partial block may later be overwritten by a tool-end event.
+Cloning only during asynchronous consumption observed those later mutations;
+the new upstream optional `await` made the timing difference visible.
+
+`Scripts/pi-ai-emission-snapshots.mjs` captures synchronously at the upstream
+`EventStream.push` boundary and forwards the original event untouched. Four
+response/failure oracles use these observations. Source-derived Google cases
+prove identical behavior at the old and target revisions: start ID absent,
+first nonempty ID retained at terminal, later IDs do not replace it. Swift no
+longer rejects an absent first-chunk ID. Requested model identity stays stable.
+Eight lifecycle cases cover both Google APIs. Pi already emitted the correct
+tool-start identity; only its oracle observation required correction.
+
+The rich strict-schema fixtures now explicitly declare completion strict
+support so they continue exercising the capability their branch inventory
+names. The separate 15-case fixture verifies absent/false/true capability.
+No expected response was manually edited to accommodate Swift behavior.
+
+## Provenance and verification design
+
+Lock schema 4 identifies frozen-source provenance. Schema 3 still identifies
+published-package provenance; the two forms are explicit and mutually exclusive.
+The source checker verifies exact commit/package identity, frozen response-body
+and archive digests, generator source hashes, all 42 generated file hashes,
+complete catalog replay, provider factories and typed image/classifier inventory.
+It also executes all existing protocol oracles and the new focused oracles.
+Neither checker mode diagnoses intent or weakens the behavioral gates.
+
+`generate-builtin-catalog.sh` dispatches by the lock's provenance format and
+requires regenerated bytes to match the accepted digest before replacing the
+resource. No network or provider fallback is introduced. Source replay uses
+public inputs captured on 2026-09-24, not a reconstructed historical npm release.
+
+Known gaps remain explicit in `UPSTREAM_GATES.md`: classifier operation,
+nullable/ordered header declarations, optional raw-event observation, and
+caller-owned transcript history. These are not new supported-provider claims.
+
+## Acceptance results
+
+- Both the accepted signal and the exact `d5629e20489ccf770ed90b5a33941cb3b7ef24d0`
+  candidate signal returned `YES` after integration into the working checkout.
+- 171 macOS tests passed, including the complete candidate model-store case.
+- 15 Python tests passed, including clean offline replay and provenance mutation
+  rejection; accepted regeneration reproduced the catalog bytes exactly.
+- Generic arm64 and explicit x86_64 Simulator production builds passed.
+- 18 tests passed inside an iPad Pro 13-inch (M5), iOS 26.5 Simulator process,
+  through a temporary package harness using the same production sources and
+  test sources with bundled fixture lookup. The complete catalog and store,
+  new wire/usage/header cases, Google lifecycle and cancellation were exercised.
+- Swift formatting and whitespace validation passed.
+
+The cancellation regression now waits for the actual transport cancellation
+notification rather than assuming 100 scheduler yields are sufficient. This
+changed test synchronization, not production cancellation policy. An interrupted
+overlapping Xcode run was discarded; the recorded green run used a fresh derived
+data directory and completed successfully.
+
+No credentials, billable calls, commits, pushes, tags or releases are part of
+this sync. AIReasoningCore remote-main resolution and distributed-product
+acceptance require separately authorized publication and remain unverified.

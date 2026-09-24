@@ -44,7 +44,10 @@
       "modelID": "fixture-chat",
       "baseURL": "https://fixture.invalid/v1",
       "reasoning": false,
-      "maximumOutputTokens": 4096
+      "maximumOutputTokens": 4096,
+      "compat": {
+        "supportsStrictMode": true
+      }
     },
     {
       "protocolID": "openai-responses",

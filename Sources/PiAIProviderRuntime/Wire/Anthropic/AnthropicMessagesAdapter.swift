@@ -81,7 +81,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     let betaFeatures = betaFeatures(
       request: request, compat: compat, isOAuth: isOAuth, headers: context.headers)
     if isOAuth {
-      urlRequest.setValue("claude-cli/2.1.251", forHTTPHeaderField: "User-Agent")
+      urlRequest.setValue("claude-cli/2.1.280", forHTTPHeaderField: "User-Agent")
       urlRequest.setValue("cli", forHTTPHeaderField: "x-app")
     }
     if !betaFeatures.isEmpty {
@@ -873,6 +873,9 @@ private struct AnthropicEventReducer {
         if let cacheRead = usage.int("cache_read_input_tokens") { cachedInputTokens = cacheRead }
         if let cacheWrite = usage.int("cache_creation_input_tokens") {
           cacheWriteTokens = cacheWrite
+        }
+        if let cacheWrite1h = usage.object("cache_creation")?.int("ephemeral_1h_input_tokens") {
+          cacheWrite1hTokens = cacheWrite1h
         }
         if let reasoning = usage.object("output_tokens_details")?.int("thinking_tokens") {
           reasoningTokens = reasoning

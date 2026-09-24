@@ -166,7 +166,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
   ) throws -> ProviderRuntimeKernel {
     // Keep newly inventoried providers out of the runtime until their complete
     // authorization and vertical-slice evidence is landed.
-    let unsupportedProviderIDs: Set<String> = ["meta"]
+    let unsupportedProviderIDs: Set<String> = ["meta", "typesafe"]
     let definitions = try registry.providers.filter {
       !unsupportedProviderIDs.contains($0.id)
     }.map {

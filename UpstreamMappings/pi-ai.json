@@ -18,9 +18,8 @@
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
-        "packages/ai/src/image-models.generated.ts",
-        "packages/ai/src/images-models.ts",
         "packages/ai/src/models.generated.ts",
+        "packages/ai/src/image-models.ts",
         "packages/ai/src/providers/all.ts"
       ],
       "upstreamTestPaths": [
@@ -32,7 +31,9 @@
         "catalog-model-store"
       ],
       "evidence": [
-        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory"
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#schema6PreservesTypedRoutesWithoutAdvertisingClassifiers",
+        "Docs/SCHEMA6_FEASIBILITY.md"
       ],
       "requiredGates": [
         "swift-test"
@@ -63,7 +64,11 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/ContractTests.swift#structuredRequestRoundTripsWithoutFlatteningRolesOrTools",
         "Tests/PiAIProviderRuntimeTests/ContractTests.swift#normalizedEventsRoundTripWithPartialToolInput",
-        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#unknownEventFailsDecodingInsteadOfProducingSubstituteOutput"
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#unknownEventFailsDecodingInsteadOfProducingSubstituteOutput",
+        "Scripts/pi-ai-candidate-headers-oracle.mjs",
+        "Fixtures/Differential/Cases/candidate-provider-headers.json",
+        "Fixtures/Differential/Oracle/candidate-provider-headers.json",
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -83,7 +88,9 @@
       "upstreamPaths": [
         "packages/ai/src/models.ts",
         "packages/ai/src/models-store.ts",
-        "packages/ai/src/model-catalog.ts"
+        "packages/ai/src/model-catalog.ts",
+        "packages/ai/src/utils/model-operations.ts",
+        "packages/ai/src/utils/models-error.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/model-catalog-types.test.ts",
@@ -94,7 +101,8 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#loadsValidatedBundledSnapshotAtPinnedRevision",
         "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#radiusRefreshPersistsAtomicallyAndReloadsValidators",
-        "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#newerRadiusRefreshOwnsPublicationWhileReadersSeeImmutableSnapshot"
+        "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#newerRadiusRefreshOwnsPublicationWhileReadersSeeImmutableSnapshot",
+        "Tests/PiAIProviderRuntimeTests/CandidateModelStoreTests.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -1857,7 +1865,8 @@
         "packages/ai/test/anthropic-force-adaptive-thinking.test.ts",
         "packages/ai/test/anthropic-mid-conversation-effort.test.ts",
         "packages/ai/test/anthropic-sse-parsing.test.ts",
-        "packages/ai/test/anthropic-tool-name-normalization.test.ts"
+        "packages/ai/test/anthropic-tool-name-normalization.test.ts",
+        "packages/ai/test/anthropic-cache-write-1h-cost.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -1874,7 +1883,12 @@
         "Fixtures/Differential/Oracle/response-rich.json",
         "Scripts/pi-ai-response-oracle.mjs",
         "Scripts/check-differential-coverage.py",
-        "Scripts/tests/test_identity_coverage.py"
+        "Scripts/tests/test_identity_coverage.py",
+        "Tests/PiAIProviderRuntimeTests/AnthropicCandidateUsageDifferentialTests.swift",
+        "Scripts/pi-ai-anthropic-candidate-usage-oracle.mjs",
+        "Fixtures/Differential/Cases/anthropic-candidate-cache-ttl.json",
+        "Fixtures/Differential/Oracle/anthropic-candidate-cache-ttl.json",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -1906,7 +1920,8 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -1943,7 +1958,8 @@
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#adaptiveClaudeReasoningRequestAndSignatureRoundTrip",
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport",
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningContext",
-        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningFrames"
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningFrames",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2029,7 +2045,11 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream",
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#rejectsOffWhenGoogleCanOnlyHideThoughts",
-        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning"
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Scripts/google-response-identity-oracle.mjs",
+        "Fixtures/GoogleResponseIdentity/identity.json",
+        "Tests/PiAIProviderRuntimeTests/GoogleResponseIdentityTests.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -2063,7 +2083,11 @@
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#vertexBuildsScopedOAuthRequestAndNormalizesLengthFinish",
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#rejectsOffWhenGoogleCanOnlyHideThoughts",
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning",
-        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream"
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream",
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Scripts/google-response-identity-oracle.mjs",
+        "Fixtures/GoogleResponseIdentity/identity.json",
+        "Tests/PiAIProviderRuntimeTests/GoogleResponseIdentityTests.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -2096,7 +2120,8 @@
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#encodesConversationAndNormalizesTextReasoningToolUsageAndTerminal",
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#nativeEffortModelsEncodeMappedValuesAndExplicitOff",
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitlyUnsupportedMapFailsBeforeTransport",
-        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport"
+        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2136,7 +2161,8 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#codexSSEPreservesCacheAffinityAndNormalizesDoneAlias",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2181,7 +2207,11 @@
         "Fixtures/Differential/Oracle/response-rich.json",
         "Scripts/pi-ai-response-oracle.mjs",
         "Scripts/check-differential-coverage.py",
-        "Scripts/tests/test_identity_coverage.py"
+        "Scripts/tests/test_identity_coverage.py",
+        "Tests/PiAIProviderRuntimeTests/CandidateCompletionsTests.swift",
+        "Scripts/candidate-completions-oracle.mjs",
+        "Fixtures/CandidateCompletions/request.json",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2216,7 +2246,8 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2236,7 +2267,7 @@
       "upstreamPaths": [
         "packages/ai/src/api/openrouter-images.ts",
         "packages/ai/src/api/openrouter-images.lazy.ts",
-        "packages/ai/src/providers/openrouter-images.ts"
+        "packages/ai/src/providers/openrouter.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/image-model-data.test.ts"
@@ -2254,7 +2285,8 @@
         "Fixtures/Differential/Oracle/response-rich.json",
         "Scripts/pi-ai-response-oracle.mjs",
         "Scripts/check-differential-coverage.py",
-        "Scripts/tests/test_identity_coverage.py"
+        "Scripts/tests/test_identity_coverage.py",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2285,13 +2317,50 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#encodesContextAndNormalizesTextReasoningToolUsageAndTerminal",
-        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#explicitOffIsForwardedAndNilOmitsReasoning"
+        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#explicitOffIsForwardedAndNilOmitsReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
+    },
+    {
+      "id": "provider-typesafe-classifiers",
+      "providerID": "typesafe",
+      "responsibility": "Missing classifier runtime; exact catalog/source inventory only. Public request/result seam gate recorded separately.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [],
+      "upstreamPaths": [
+        "packages/ai/src/providers/typesafe.ts",
+        "packages/ai/src/providers/typesafe.models.ts",
+        "packages/ai/src/api/typesafe-system-one.ts",
+        "packages/ai/src/api/typesafe-system-one.lazy.ts",
+        "packages/ai/src/api/system-one-shared.ts",
+        "packages/ai/src/api/cloudflare-workers-ai-system-one.ts",
+        "packages/ai/src/api/cloudflare-workers-ai-system-one.lazy.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/typesafe-system-one.test.ts",
+        "packages/ai/test/cloudflare-workers-ai-system-one.test.ts",
+        "packages/ai/test/classifier-models.test.ts"
+      ],
+      "classifierProtocolIDs": [
+        "typesafe-system-one",
+        "cloudflare-workers-ai-system-one"
+      ],
+      "dependsOn": [],
+      "evidence": [
+        "Fixtures/Catalog/Schema6/capabilities.json",
+        "Docs/UPSTREAM_GATES.md"
+      ],
+      "requiredGates": [
+        "classifier-seam-design"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
     }
   ]
 }

@@ -1,0 +1,133 @@
+{
+  "observations": [
+    {
+      "type": "text_delta",
+      "usage": {
+        "cacheRead": 3,
+        "cacheWrite": 13,
+        "cacheWrite1h": 7,
+        "cost": {
+          "cacheRead": 9,
+          "cacheWrite": 38,
+          "input": 11,
+          "output": 10,
+          "total": 68
+        },
+        "input": 11,
+        "output": 5,
+        "totalTokens": 32
+      }
+    },
+    {
+      "type": "text_delta",
+      "usage": {
+        "cacheRead": 3,
+        "cacheWrite": 13,
+        "cacheWrite1h": 7,
+        "cost": {
+          "cacheRead": 9,
+          "cacheWrite": 38,
+          "input": 17,
+          "output": 12,
+          "total": 76
+        },
+        "input": 17,
+        "output": 6,
+        "totalTokens": 39
+      }
+    },
+    {
+      "type": "text_delta",
+      "usage": {
+        "cacheRead": 3,
+        "cacheWrite": 13,
+        "cacheWrite1h": 7,
+        "cost": {
+          "cacheRead": 9,
+          "cacheWrite": 38,
+          "input": 17,
+          "output": 16,
+          "total": 80
+        },
+        "input": 17,
+        "output": 8,
+        "totalTokens": 41
+      }
+    },
+    {
+      "type": "text_delta",
+      "usage": {
+        "cacheRead": 3,
+        "cacheWrite": 13,
+        "cacheWrite1h": 7,
+        "cost": {
+          "cacheRead": 9,
+          "cacheWrite": 38,
+          "input": 17,
+          "output": 18,
+          "total": 82
+        },
+        "input": 17,
+        "output": 9,
+        "totalTokens": 42
+      }
+    },
+    {
+      "type": "text_delta",
+      "usage": {
+        "cacheRead": 3,
+        "cacheWrite": 13,
+        "cacheWrite1h": 0,
+        "cost": {
+          "cacheRead": 9,
+          "cacheWrite": 52,
+          "input": 17,
+          "output": 20,
+          "total": 98
+        },
+        "input": 17,
+        "output": 10,
+        "totalTokens": 43
+      }
+    },
+    {
+      "type": "text_delta",
+      "usage": {
+        "cacheRead": 3,
+        "cacheWrite": 19,
+        "cacheWrite1h": 4,
+        "cost": {
+          "cacheRead": 9,
+          "cacheWrite": 68,
+          "input": 17,
+          "output": 24,
+          "total": 118
+        },
+        "input": 17,
+        "output": 12,
+        "totalTokens": 51
+      }
+    },
+    {
+      "type": "done",
+      "usage": {
+        "cacheRead": 3,
+        "cacheWrite": 19,
+        "cacheWrite1h": 4,
+        "cost": {
+          "cacheRead": 9,
+          "cacheWrite": 68,
+          "input": 17,
+          "output": 24,
+          "total": 118
+        },
+        "input": 17,
+        "output": 12,
+        "totalTokens": 51
+      }
+    }
+  ],
+  "schemaVersion": 1,
+  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "userAgent": "claude-cli/2.1.280"
+}

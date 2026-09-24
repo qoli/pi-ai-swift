@@ -114,7 +114,7 @@ struct GoogleGenerativeAIAdapterTests {
       events.first
         == .responseStarted(
           ProviderResponseMetadata(
-            responseID: "google-response-1",
+            responseID: nil,
             providerID: "google",
             modelID: model.id,
             providerMetadata: [:]
@@ -374,9 +374,7 @@ struct GoogleGenerativeAIAdapterTests {
     } catch {
       Issue.record("unexpected cancellation error: \(error)")
     }
-    for _ in 0..<100 where await !transport.didCancelBody() {
-      await Task.yield()
-    }
+    await transport.waitForBodyCancellation()
     #expect(await transport.didCancelBody())
   }
 }
@@ -410,6 +408,7 @@ private actor GoogleFixtureTransport: ProviderHTTPStreamingTransport {
 private actor GoogleCancellationTransport: ProviderHTTPStreamingTransport {
   private var started = false
   private var bodyCancelled = false
+  private var cancellationWaiter: CheckedContinuation<Void, Never>?
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     started = true
@@ -426,7 +425,15 @@ private actor GoogleCancellationTransport: ProviderHTTPStreamingTransport {
 
   func didStart() -> Bool { started }
   func didCancelBody() -> Bool { bodyCancelled }
-  private func recordCancellation() { bodyCancelled = true }
+  func waitForBodyCancellation() async {
+    if bodyCancelled { return }
+    await withCheckedContinuation { cancellationWaiter = $0 }
+  }
+  private func recordCancellation() {
+    bodyCancelled = true
+    cancellationWaiter?.resume()
+    cancellationWaiter = nil
+  }
 }
 
 private func googleFixtureChunks() -> [Data] {

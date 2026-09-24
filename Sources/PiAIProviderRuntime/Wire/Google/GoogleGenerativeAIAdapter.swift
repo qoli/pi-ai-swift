@@ -62,6 +62,16 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
               providerID: request.providerID,
               operation: "google.usage.pricing")
           )
+          continuation.yield(
+            .responseStarted(
+              ProviderResponseMetadata(
+                responseID: nil,
+                providerID: request.providerID,
+                modelID: request.modelID,
+                providerMetadata: [:]
+              )
+            )
+          )
           for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
@@ -724,7 +734,6 @@ private struct GoogleEventReducer {
   let protocolID: String
   let requestedModelID: String
   let pricing: ProviderUsagePricing?
-  private var started = false
   private var responseID: String?
   private var finishReason: String?
   private var usage: ProviderUsage?
@@ -763,22 +772,8 @@ private struct GoogleEventReducer {
     }
 
     var normalized: [ProviderEvent] = []
-    if !started {
-      guard let responseID = object.string("responseId"), !responseID.isEmpty else {
-        throw invalid("first Google event is missing responseId")
-      }
-      started = true
-      self.responseID = responseID
-      normalized.append(
-        .responseStarted(
-          ProviderResponseMetadata(
-            responseID: responseID,
-            providerID: providerID,
-            modelID: requestedModelID,
-            providerMetadata: [:]
-          )
-        )
-      )
+    if responseID == nil || responseID?.isEmpty == true {
+      responseID = object.string("responseId")
     }
 
     if let candidate = object.array("candidates")?.first?.objectValue {
@@ -875,7 +870,6 @@ private struct GoogleEventReducer {
   }
 
   mutating func finish() throws -> [ProviderEvent] {
-    guard started else { throw invalid("Google stream emitted no response") }
     guard let finishReason else {
       throw invalid("Google stream ended without a finish reason")
     }

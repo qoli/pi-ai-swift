@@ -404,11 +404,11 @@ struct ContractTests {
       from: Data(contentsOf: lockURL)
     )
 
-    #expect(lock.schemaVersion == 3)
+    #expect(lock.schemaVersion == 4)
     #expect(lock.revision.count == 40)
     #expect(lock.package.name == "@earendil-works/pi-ai")
-    #expect(lock.package.version == "0.86.1")
-    #expect(lock.trackedBuiltinProviders.count == 41)
+    #expect(lock.package.version == "0.87.1")
+    #expect(lock.trackedBuiltinProviders.count == 42)
     #expect(lock.trackedBuiltinProviders.contains("github-copilot"))
     #expect(lock.trackedBuiltinProviders.contains("xai"))
     #expect(lock.trackedBuiltinProviders.contains("deepseek"))
@@ -420,7 +420,7 @@ struct ContractTests {
       from: Data(contentsOf: mappingURL)
     )
     #expect(mapping.schemaVersion == 3)
-    #expect(mapping.areas.count == 64)
+    #expect(mapping.areas.count == 65)
     #expect(mapping.areas.allSatisfy { !$0.dependsOn.contains($0.id) })
   }
 }

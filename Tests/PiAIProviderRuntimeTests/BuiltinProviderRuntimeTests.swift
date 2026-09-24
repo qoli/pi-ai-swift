@@ -15,7 +15,7 @@ struct BuiltinProviderRuntimeTests {
     )
     let catalog = try await runtime.catalog()
     #expect(catalog.providers.count == 40)
-    #expect(catalog.providers.flatMap(\.models).count == 1_489)
+    #expect(catalog.providers.flatMap(\.models).count == 1_567)
     #expect(!catalog.providers.contains { $0.id == "meta" })
 
     let state = try await runtime.authorize(

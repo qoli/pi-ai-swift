@@ -7,6 +7,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import http from "node:http";
 import path from "node:path";
+import { installEmissionSnapshots, emissionSnapshot } from "./pi-ai-emission-snapshots.mjs";
 import { providerStreams } from "./pi-ai-provider-context.mjs";
 
 const GOOGLE_MOCK_URL = "oracle:google-genai";
@@ -42,6 +43,7 @@ if (!upstreamRoot || !casePath) {
   throw new Error("usage: pi-ai-response-oracle.mjs UPSTREAM_ROOT CASE_JSON");
 }
 
+await installEmissionSnapshots(upstreamRoot);
 const fixture = JSON.parse(await readFile(casePath, "utf8"));
 if (fixture.schemaVersion !== 1) throw new Error(`unsupported response case schema: ${fixture.schemaVersion}`);
 const upstreamRevision = execFileSync("git", ["-C", upstreamRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
@@ -203,7 +205,7 @@ async function projectAssistantStream(sourceStream, protocol) {
   let startResponseID = null;
   let startIdentity;
   for await (const event of sourceStream) {
-    const snapshot = structuredClone(event);
+    const snapshot = emissionSnapshot(event);
     const partial = snapshot.partial ?? snapshot.message ?? snapshot.error;
     if (snapshot.type === "start") {
       startSeen = true;

@@ -4,6 +4,57 @@ This registry records upstream capabilities that are known but intentionally
 not claimed by pi-ai-swift's current provider-runtime seam. A gate is not a
 provider fallback and does not make the existing supported surface incomplete.
 
+## Candidate schema 6 classifier operations
+
+**Status:** Missing implementation; separate request/result seam design required.
+Source candidate: `d5629e20489ccf770ed90b5a33941cb3b7ef24d0`. This does not
+change the accepted revision or imply support for the new providers/protocols.
+
+The candidate introduces classifier `state` and `questions` (choice, score,
+bool), returning typed answers with probabilities/confidence. Current
+`ProviderRequest` messages/tools and text/image output selection cannot represent
+this contract directly; `ProviderEvent` has no classifier result. Do not disguise
+the operation as chat, tools or a JSON string. Track TypeSafe, OpenRouter and
+Cloudflare classifier models and authentication separately in
+`Fixtures/Catalog/Schema6/capabilities.json` until their seam and adapters have
+source-derived request/result/error fixtures and acceptance evidence.
+
+The generated catalog keeps these records. The Swift loader selects chat/image
+entries for its existing supported runtime surface. Schema 6 catalog generation
+and typed identity preservation do not themselves require a public seam change.
+See [SCHEMA6_FEASIBILITY.md](SCHEMA6_FEASIBILITY.md) for executed evidence.
+
+## Nullable and ordered header overrides
+
+**Status:** Not representable by the existing string-dictionary declaration.
+
+At candidate `d5629e20489ccf770ed90b5a33941cb3b7ef24d0`,
+`utils/headers.ts` deletes a case-insensitive header match when its value is
+null, and resolves conflicting case variants within one object by insertion
+order. Swift `CustomProvider.headers` and model headers are `[String: String]`:
+they cannot encode null deletion or caller insertion order. The source cases in
+`Fixtures/Differential/Oracle/candidate-provider-headers.json` demonstrate both
+orders and null deletion. Do not invent a sorted winner, add rejection, or
+claim those inputs are supported. Exposing them requires an explicit header
+representation design, not an implicit maintenance seam expansion.
+
+Cross-scope provider/model replacement is already representable. The kernel
+preserves the model scope's case-insensitive precedence for Google and
+OpenRouter Images, whose adapters apply that helper to model headers. Bedrock
+and Pi Messages use the helper for upstream request-options headers; this does
+not authorize changing unrelated Swift adapter header policy.
+
+## Raw provider-event observation
+
+**Status:** Separate public-seam design required; not advertised.
+
+The same candidate adds `onProviderStreamEvent` before normalization. The
+current public Swift event enum describes normalized provider results, not raw
+events or an executable caller callback. Do not fabricate raw events from a
+terminal snapshot or add callback execution implicitly. Existing normalized
+event behavior must still be verified at actual emission time, independently
+of whether this optional observation capability is exposed.
+
 ## Transcript-owned mid-conversation changes
 
 **Status:** Cross-repository design required.

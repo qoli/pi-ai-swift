@@ -1,0 +1,477 @@
+{
+  "cases": [
+    {
+      "content": [],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": null
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": null
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "text": "",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": null
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "text": " ",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": " ",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": null
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "data": "AA==",
+          "mimeType": "image/png",
+          "type": "image"
+        }
+      ],
+      "expected": {
+        "messages": [
+          {
+            "content": [
+              {
+                "image_url": {
+                  "url": "data:image/png;base64,AA=="
+                },
+                "type": "image_url"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": null
+    },
+    {
+      "content": [],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": false
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": false
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "text": "",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": false
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "text": " ",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": " ",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": false
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "data": "AA==",
+          "mimeType": "image/png",
+          "type": "image"
+        }
+      ],
+      "expected": {
+        "messages": [
+          {
+            "content": [
+              {
+                "image_url": {
+                  "url": "data:image/png;base64,AA=="
+                },
+                "type": "image_url"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": false
+    },
+    {
+      "content": [],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": true
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": true
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "text": "",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": true
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "text": " ",
+          "type": "text"
+        }
+      ],
+      "expected": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": " ",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": true
+    },
+    {
+      "content": [
+        {
+          "text": "",
+          "type": "text"
+        },
+        {
+          "data": "AA==",
+          "mimeType": "image/png",
+          "type": "image"
+        }
+      ],
+      "expected": {
+        "messages": [
+          {
+            "content": [
+              {
+                "image_url": {
+                  "url": "data:image/png;base64,AA=="
+                },
+                "type": "image_url"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "tools": [
+          {
+            "function": {
+              "description": "Lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {},
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "strict": true
+    }
+  ],
+  "revision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "sourcePath": "packages/ai/src/api/openai-completions.ts",
+  "sourceSHA256": "d778b641ddd8006e5ec57c314f7b2d2b6d5c0c04723ef3f257659e99f7804d55"
+}

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "repository": "https://github.com/earendil-works/pi.git",
-  "revision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
-  "packageVersion": "0.86.1",
+  "revision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "packageVersion": "0.87.1",
   "entries": [
     {
       "protocolID": "anthropic-messages",
@@ -16,7 +16,8 @@
         "packages/ai/test/anthropic-force-adaptive-thinking.test.ts",
         "packages/ai/test/anthropic-mid-conversation-effort.test.ts",
         "packages/ai/test/anthropic-sse-parsing.test.ts",
-        "packages/ai/test/anthropic-tool-name-normalization.test.ts"
+        "packages/ai/test/anthropic-tool-name-normalization.test.ts",
+        "packages/ai/test/anthropic-cache-write-1h-cost.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
@@ -28,11 +29,16 @@
         "Fixtures/Differential/Oracle/response-rich.json",
         "Scripts/pi-ai-response-oracle.mjs",
         "Scripts/check-differential-coverage.py",
-        "Scripts/tests/test_identity_coverage.py"
+        "Scripts/tests/test_identity_coverage.py",
+        "Tests/PiAIProviderRuntimeTests/AnthropicCandidateUsageDifferentialTests.swift",
+        "Scripts/pi-ai-anthropic-candidate-usage-oracle.mjs",
+        "Fixtures/Differential/Cases/anthropic-candidate-cache-ttl.json",
+        "Fixtures/Differential/Oracle/anthropic-candidate-cache-ttl.json",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "86dd72be52dcd5e94e1c6515269aa413310737d04bc00c61f658c4b198aa98b0",
-      "upstreamTestSHA256": "4f634e080849cc0733e62ec9294fa759fe804540dc604b1139489da46e992af5",
-      "swiftEvidenceSHA256": "cb3c3b045c54429cb6c0426cd30ef042ad92e5e2991a19f404539304c8385d8e"
+      "upstreamSourceSHA256": "5558c3f8219e5319759b42b000d915e856b53b6b0c599690ba9f20d150b95fdf",
+      "upstreamTestSHA256": "2a6343638127f05492dd7aa227f750e40e3fe843ded1df97b89c9d10cede0bab",
+      "swiftEvidenceSHA256": "4b605451da52d515e59e393c49503306ac7a8aeaa87063ff3ce39adc0c983463"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -47,11 +53,12 @@
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "fe6041b2ab6070d0220e20a9a573ba0cb299a791129a03949d83188626876197",
-      "upstreamTestSHA256": "41fe28f63e482f0e52dc8507bb9b5a3329adb5c18ccdeab8511613270ad0eeed",
-      "swiftEvidenceSHA256": "3c23b22b8828db242c06817ff59754bff89ff7a14a23889388796fe90b4f69d3"
+      "upstreamSourceSHA256": "92aaa04679bf29d692d6cc8f881fcc4006964fbed2e68fc9b2edd2a908a897ab",
+      "upstreamTestSHA256": "6d39b9a625c354398ea493012243c794639379723e7edd0fd52c4265820f34a3",
+      "swiftEvidenceSHA256": "85a3daca7b4fb9973c9f86d501f9aff645a4ee0092d5ef8137b7bd688989ed1e"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -69,11 +76,12 @@
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#adaptiveClaudeReasoningRequestAndSignatureRoundTrip",
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport",
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningContext",
-        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningFrames"
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningFrames",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "d718dd6d65ec97a2b98111b68a7fc189da0d2f0cc102bcc83090f8735e534a3b",
-      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
-      "swiftEvidenceSHA256": "8b0f68100e2a4d7c85849161a2ab7cb45fd1a192cbdad54a6f0f58b041543c68"
+      "upstreamSourceSHA256": "812e5cc2730a425cfdd8b2dfd6cb9a69d9317bfcf5285b57a78b9d10416b5796",
+      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
+      "swiftEvidenceSHA256": "3e59961ecc48a9a02adf8bf1393615aa2f7967224e86e5ce970cff5812e0267f"
     },
     {
       "protocolID": "google-generative-ai",
@@ -89,11 +97,15 @@
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream",
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#rejectsOffWhenGoogleCanOnlyHideThoughts",
-        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning"
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Scripts/google-response-identity-oracle.mjs",
+        "Fixtures/GoogleResponseIdentity/identity.json",
+        "Tests/PiAIProviderRuntimeTests/GoogleResponseIdentityTests.swift"
       ],
-      "upstreamSourceSHA256": "2ac2f394868ddf2ed244b6e02275bda3b195dad358c118451ba067d5650b9345",
-      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
-      "swiftEvidenceSHA256": "a178c47eb9e106a7047ffb286b7cec5f8064f54c01488987478ccc40d6293211"
+      "upstreamSourceSHA256": "558e3fe7f12c348a12a88b090a1a322984463409874505de6dc4f3a7ab36ddeb",
+      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
+      "swiftEvidenceSHA256": "27ede9998217655af7f73efbb4a7e327dd5af8404af2a9e882dd15f927a44927"
     },
     {
       "protocolID": "google-vertex",
@@ -110,11 +122,15 @@
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#vertexBuildsScopedOAuthRequestAndNormalizesLengthFinish",
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#rejectsOffWhenGoogleCanOnlyHideThoughts",
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesDisabledAndMappedBudgetReasoning",
-        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream"
+        "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream",
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Scripts/google-response-identity-oracle.mjs",
+        "Fixtures/GoogleResponseIdentity/identity.json",
+        "Tests/PiAIProviderRuntimeTests/GoogleResponseIdentityTests.swift"
       ],
-      "upstreamSourceSHA256": "ecfb44bbc7f4b69df3aa985039f18e56668efa243b38edd40841b11a138c07d2",
-      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
-      "swiftEvidenceSHA256": "a178c47eb9e106a7047ffb286b7cec5f8064f54c01488987478ccc40d6293211"
+      "upstreamSourceSHA256": "1c1319c8585c18c5b8426ec261570b5f1694ed99dd97355a83a040dbfc6db902",
+      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
+      "swiftEvidenceSHA256": "27ede9998217655af7f73efbb4a7e327dd5af8404af2a9e882dd15f927a44927"
     },
     {
       "protocolID": "mistral-conversations",
@@ -130,11 +146,12 @@
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#encodesConversationAndNormalizesTextReasoningToolUsageAndTerminal",
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#nativeEffortModelsEncodeMappedValuesAndExplicitOff",
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitlyUnsupportedMapFailsBeforeTransport",
-        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport"
+        "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "5d943fde660c965b8b872387dbe688087e3550cf48960d029e79ccf784f2233f",
-      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
-      "swiftEvidenceSHA256": "fade89c50d5d827227d2d2ec4939698d18e4a65d52454fee60298a02ce6378eb"
+      "upstreamSourceSHA256": "32b5abdb6bf6fe0804dc3b734cf3df23785475d42de20a126ed669acc48ae483",
+      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
+      "swiftEvidenceSHA256": "2db39058e0ba37b17259702591dd0c7c24d3fd08281ec93ea3acf04f5add0104"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -157,11 +174,12 @@
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#codexSSEPreservesCacheAffinityAndNormalizesDoneAlias",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "53f2709609a604c744cd41044d8febcff7e9e56901715a1fa1ee3824ca2860fc",
-      "upstreamTestSHA256": "038bf994aac6dac957b22b8b70a84fcd5ffd9ba710baa89ddb8769a093090ab0",
-      "swiftEvidenceSHA256": "3c23b22b8828db242c06817ff59754bff89ff7a14a23889388796fe90b4f69d3"
+      "upstreamSourceSHA256": "5feb68c84d30af3987cc08ef31bd1b47e49d1df7b2cfd41aa2bff58ff1eb0424",
+      "upstreamTestSHA256": "2afbbc148511589e741bec84a23160b6987aeaf333ce7bffbd2c64eaf82b981e",
+      "swiftEvidenceSHA256": "85a3daca7b4fb9973c9f86d501f9aff645a4ee0092d5ef8137b7bd688989ed1e"
     },
     {
       "protocolID": "openai-completions",
@@ -189,11 +207,15 @@
         "Fixtures/Differential/Oracle/response-rich.json",
         "Scripts/pi-ai-response-oracle.mjs",
         "Scripts/check-differential-coverage.py",
-        "Scripts/tests/test_identity_coverage.py"
+        "Scripts/tests/test_identity_coverage.py",
+        "Tests/PiAIProviderRuntimeTests/CandidateCompletionsTests.swift",
+        "Scripts/candidate-completions-oracle.mjs",
+        "Fixtures/CandidateCompletions/request.json",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "af0331c2d9fc88013a17a408e691eb7c68b659451489e6d1885be9f67bbd7805",
-      "upstreamTestSHA256": "63e9641de3eb0eef02f4cc5e30cf93022d452664b9de96d74e3ac9c1ba573295",
-      "swiftEvidenceSHA256": "b96a490a5ba8bf5271fd08ad55e2cdd4fd5fee7c36ed9024b40d2a12f47bfdf2"
+      "upstreamSourceSHA256": "5fb118d5a1ca6f723d4a9a96d1e2489f387fddffdb086225f1a3c24d06a8a533",
+      "upstreamTestSHA256": "c651cb265032af007b91da2d6a773460ce801cbeed522a25e4efd52d7de093df",
+      "swiftEvidenceSHA256": "f525ed85e256c2021cd7cff697274804e7c9a9d109928fdf54b8c795f64d632e"
     },
     {
       "protocolID": "openai-responses",
@@ -211,11 +233,12 @@
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "d3ad7ab540823177ca936bc9f87cca2bbe463cb8893ff498c986e1206d5d7b9c",
-      "upstreamTestSHA256": "50638b9b9ad589a3289fcbcef4ea0b6ecd053f497b337d79aacc6a22ef0a1592",
-      "swiftEvidenceSHA256": "3c23b22b8828db242c06817ff59754bff89ff7a14a23889388796fe90b4f69d3"
+      "upstreamSourceSHA256": "e66c9381aaa7b86105392ef4f69cf6be75dda0aa0ed536e1301a59e33d5c5a42",
+      "upstreamTestSHA256": "815a81690b15919ab13cf8bf3ea825f895c73881a4a4ce2fb4bcde53bf0c200f",
+      "swiftEvidenceSHA256": "85a3daca7b4fb9973c9f86d501f9aff645a4ee0092d5ef8137b7bd688989ed1e"
     },
     {
       "protocolID": "openrouter-images",
@@ -223,7 +246,7 @@
       "upstreamSources": [
         "packages/ai/src/api/openrouter-images.ts",
         "packages/ai/src/api/openrouter-images.lazy.ts",
-        "packages/ai/src/providers/openrouter-images.ts"
+        "packages/ai/src/providers/openrouter.ts"
       ],
       "upstreamTests": [
         "packages/ai/test/image-model-data.test.ts"
@@ -235,11 +258,12 @@
         "Fixtures/Differential/Oracle/response-rich.json",
         "Scripts/pi-ai-response-oracle.mjs",
         "Scripts/check-differential-coverage.py",
-        "Scripts/tests/test_identity_coverage.py"
+        "Scripts/tests/test_identity_coverage.py",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "89cda47714d207ff9ddf1365070e073b9a2093d1a93c754f81cc8013cf514748",
-      "upstreamTestSHA256": "ac7f9b1974fba865ca5dd1935ff7bb560f4448c69214e1d68c022974535a09b0",
-      "swiftEvidenceSHA256": "33f3307264ff3d4b0e8155b4c659fd114dbbfcb1a2d14cccf2135df68298e96e"
+      "upstreamSourceSHA256": "08955ff39d7d96b15a94f0536c446bd43462de0e0a83423d1f7c258c06c0e395",
+      "upstreamTestSHA256": "de7cfc56c6dc0d8dffb707babe5fcb254541abb87b6dc0fb718e9c557585bbc5",
+      "swiftEvidenceSHA256": "15ead53742c4ad5042dddf90a93b7691829382dd50a1fa5f1b6041033b34a86c"
     },
     {
       "protocolID": "pi-messages",
@@ -253,11 +277,12 @@
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#encodesContextAndNormalizesTextReasoningToolUsageAndTerminal",
-        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#explicitOffIsForwardedAndNilOmitsReasoning"
+        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#explicitOffIsForwardedAndNilOmitsReasoning",
+        "Scripts/pi-ai-emission-snapshots.mjs"
       ],
-      "upstreamSourceSHA256": "3c9786761e2e055546558d7a0e83ee8b36192cc288b38f5b20147fc96c1acbc6",
-      "upstreamTestSHA256": "6357bf5e0fb84098969ecaa0ed9eb379cb208f07823eef8953ad924169d492cf",
-      "swiftEvidenceSHA256": "8b5449888f6cba236360df9daa1e5abce1be04140021d882fd25c912eee4a4ce"
+      "upstreamSourceSHA256": "c91df1f82a791e13600dcac041db8c018cfc2ad6fdf1b3834e9d5a96069a447a",
+      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
+      "swiftEvidenceSHA256": "80ef1fe775551601c0e02b71e4c3dcce793a4927d5f1dd693d8d9abb0e7405cc"
     }
   ]
 }

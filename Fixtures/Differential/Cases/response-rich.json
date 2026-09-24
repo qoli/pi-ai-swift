@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "caseID": "response-rich-v1",
-  "upstreamRevision": "19451accdeec671c1f4da9eafac8fc270f510ef4",
+  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
   "excludedProtocols": [],
   "protocols": [
     { "protocolID": "anthropic-messages", "providerID": "kimi-coding", "modelID": "k3-256k", "baseURL": "https://fixture.invalid", "driver": "http-sse" },

@@ -406,16 +406,22 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
             ]))
         }
         if content.count == 1, case .text(let text) = content[0] {
+          guard !text.isEmpty else { continue }
           result.append(
             .object([
               "role": .string("user"),
               "content": .string(text),
             ]))
         } else {
+          let filtered = content.filter { item in
+            if case .text(let text) = item { return !text.isEmpty }
+            return true
+          }
+          guard !filtered.isEmpty else { continue }
           result.append(
             .object([
               "role": .string("user"),
-              "content": .array(try content.map(makeUserContent(_:))),
+              "content": .array(try filtered.map(makeUserContent(_:))),
             ]))
         }
       case .userMessage(let user):
@@ -588,7 +594,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     }
     let constrained = try ProviderConstrainedSamplingResolver.jsonSchema(
       for: tool,
-      supportsStrictMode: compat.bool("supportsStrictMode") != false,
+      supportsStrictMode: compat.bool("supportsStrictMode") == true,
       providerID: providerID,
       operation: "openai-completions.request.tool-schema"
     )
@@ -597,7 +603,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
       "description": .string(tool.description),
       "parameters": constrained.schema,
     ]
-    if compat.bool("supportsStrictMode") != false {
+    if compat.bool("supportsStrictMode") == true {
       function["strict"] = .bool(constrained.strict ?? false)
     }
     return .object(["type": .string("function"), "function": .object(function)])
