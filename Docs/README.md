@@ -13,6 +13,7 @@ behavior. Document completion claims must stay within that evidence.
 | [UPSTREAM_GATES.md](UPSTREAM_GATES.md) | Landed | Known upstream capabilities that require a separate cross-repository seam decision |
 | [CUSTOM_PROVIDER_RUNTIME_PROPOSAL.md](CUSTOM_PROVIDER_RUNTIME_PROPOSAL.md) | Landed | Public construction seam for static non-bundled API-key providers using existing wire adapters |
 | [CUSTOM_PROVIDER_HTTP_REPAIR.md](CUSTOM_PROVIDER_HTTP_REPAIR.md) | Landed | Accepted-pin custom endpoint repair and bounded executable evidence |
+| [COMPLETIONS_CONTENT_ORDER_REPAIR.md](COMPLETIONS_CONTENT_ORDER_REPAIR.md) | Landed | Accepted-pin first-seen content ordering repair and source-derived consumer evidence |
 | [UPSTREAM_CHECK_2026-09-24.md](UPSTREAM_CHECK_2026-09-24.md) | Retired | Initial failed assessment; superseded by schema 6 reconstruction and the completed sync |
 | [SCHEMA6_FEASIBILITY.md](SCHEMA6_FEASIBILITY.md) | Landed | Catalog probe and tooling-stage history; full acceptance recorded in the sync report |
 | [UPSTREAM_SYNC_2026-09-25.md](UPSTREAM_SYNC_2026-09-25.md) | Landed | Exact-source schema 6 acceptance, wire/usage corrections, emission-time evidence and explicit unsupported capabilities |

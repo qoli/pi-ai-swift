@@ -739,6 +739,15 @@ private struct OpenAICompletionsReducer {
   private var usage: ProviderUsage?
   private var reasoningSignature: String?
   private var reasoningDetails: [[String: JSONValue]] = []
+  private enum ContentBlock: Equatable {
+    case text, reasoning
+    case tool(Int)
+  }
+  private var contentOrder: [ContentBlock] = []
+
+  private mutating func retainBlock(_ block: ContentBlock) {
+    if !contentOrder.contains(block) { contentOrder.append(block) }
+  }
 
   init(
     providerID: String,
@@ -803,25 +812,24 @@ private struct OpenAICompletionsReducer {
       }
       guard let delta = choice.object("delta") else { continue }
       if let text = delta.string("content"), !text.isEmpty {
+        retainBlock(.text)
         self.text += text
         events.append(.textDelta(text))
       }
       for key in ["reasoning_content", "reasoning", "reasoning_text"] {
         if let text = delta.string(key), !text.isEmpty {
+          retainBlock(.reasoning)
           reasoningSignature = key
           reasoning += text
           events.append(.reasoningDelta(text))
           break
         }
       }
-      for detail in delta.array("reasoning_details") ?? [] {
-        guard let object = validReasoningDetail(detail) else { continue }
-        appendReasoningDetail(object)
-      }
       for toolValue in delta.array("tool_calls") ?? [] {
         guard let tool = toolValue.objectValue, let index = tool.int("index") else {
           throw invalid("tool call delta is malformed")
         }
+        retainBlock(.tool(index))
         var state = toolCalls[index] ?? ToolCallState()
         if let id = tool.string("id") { state.id = id }
         if let function = tool.object("function") {
@@ -852,6 +860,11 @@ private struct OpenAICompletionsReducer {
         }
         toolCalls[index] = state
       }
+      for detail in delta.array("reasoning_details") ?? [] {
+        guard let object = validReasoningDetail(detail) else { continue }
+        retainBlock(.reasoning)
+        appendReasoningDetail(object)
+      }
     }
     return events
   }
@@ -873,7 +886,8 @@ private struct OpenAICompletionsReducer {
     if let reasoningSignature {
       events.append(.reasoningSignatureDelta(reasoningSignature))
     }
-    for index in toolCalls.keys.sorted() {
+    for block in contentOrder {
+      guard case .tool(let index) = block else { continue }
       guard let state = toolCalls[index], let id = state.id, let name = state.name else {
         throw invalid("tool call ended without id or name")
       }
@@ -940,21 +954,22 @@ private struct OpenAICompletionsReducer {
     _ reason: ProviderFinishReason,
     completedTools: [ProviderEvent]
   ) -> ProviderEvent {
-    var content: [ProviderResponseContent] = []
-    if !text.isEmpty {
-      content.append(.text(ProviderTextContent(text: text, signature: nil)))
+    let calls = completedTools.compactMap { event -> ProviderToolCall? in
+      if case .toolCallCompleted(let call) = event { return call }
+      return nil
     }
-    if !reasoning.isEmpty || !reasoningDetails.isEmpty {
-      content.append(
-        .reasoning(
+    var toolIndex = 0
+    let content: [ProviderResponseContent] = contentOrder.map { block in
+      switch block {
+      case .text: return .text(ProviderTextContent(text: text, signature: nil))
+      case .reasoning:
+        return .reasoning(
           ProviderReasoningContent(
-            text: reasoning,
-            signature: reasoningSignature,
-            providerMetadata: [:]
-          )))
-    }
-    for event in completedTools {
-      if case .toolCallCompleted(let call) = event { content.append(.toolCall(call)) }
+            text: reasoning, signature: reasoningSignature, providerMetadata: [:]))
+      case .tool:
+        defer { toolIndex += 1 }
+        return .toolCall(calls[toolIndex])
+      }
     }
     return .responseSnapshot(
       ProviderResponseSnapshot(

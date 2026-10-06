@@ -38,7 +38,7 @@
       ],
       "upstreamSourceSHA256": "5558c3f8219e5319759b42b000d915e856b53b6b0c599690ba9f20d150b95fdf",
       "upstreamTestSHA256": "2a6343638127f05492dd7aa227f750e40e3fe843ded1df97b89c9d10cede0bab",
-      "swiftEvidenceSHA256": "4b605451da52d515e59e393c49503306ac7a8aeaa87063ff3ce39adc0c983463"
+      "swiftEvidenceSHA256": "19ea0e55521fee9ac6eaf6d7b4fea4c88101e911e2e6415607735fd1265a30e8"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -215,7 +215,7 @@
       ],
       "upstreamSourceSHA256": "5fb118d5a1ca6f723d4a9a96d1e2489f387fddffdb086225f1a3c24d06a8a533",
       "upstreamTestSHA256": "c651cb265032af007b91da2d6a773460ce801cbeed522a25e4efd52d7de093df",
-      "swiftEvidenceSHA256": "f525ed85e256c2021cd7cff697274804e7c9a9d109928fdf54b8c795f64d632e"
+      "swiftEvidenceSHA256": "a05060ec8293f8c22810d76e755a307f018d47f3c370454dcd0eb466c7e0ccb9"
     },
     {
       "protocolID": "openai-responses",
@@ -263,7 +263,7 @@
       ],
       "upstreamSourceSHA256": "08955ff39d7d96b15a94f0536c446bd43462de0e0a83423d1f7c258c06c0e395",
       "upstreamTestSHA256": "de7cfc56c6dc0d8dffb707babe5fcb254541abb87b6dc0fb718e9c557585bbc5",
-      "swiftEvidenceSHA256": "15ead53742c4ad5042dddf90a93b7691829382dd50a1fa5f1b6041033b34a86c"
+      "swiftEvidenceSHA256": "f97ad4401ca1e48eb5718ebb7064658dd789f1c5f370aa451d72874c4ce695a1"
     },
     {
       "protocolID": "pi-messages",

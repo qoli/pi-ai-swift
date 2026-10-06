@@ -2217,7 +2217,10 @@
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRequired"
+      "liveVerificationStatus": "notRequired",
+      "maintenanceNotes": [
+        "2026-10-07 accepted-pin Class B repair: preserve first-seen content block and tool completion order; source-executed response-rich identityCases completions.order-* prove reasoning/text/tool ordering, metadata-only reasoning, and interleaved deltas."
+      ]
     },
     {
       "id": "wire-openai-responses",
