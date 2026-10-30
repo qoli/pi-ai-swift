@@ -242,13 +242,21 @@ struct SwiftConformanceProbe {
       ? nil
       : .init(
         onPayload: onPayload, onResponse: onResponse, onProviderStreamEvent: onEvent)
+    let baseURL: String?
+    if input.requestSource == "api", let literal = model.string("baseUrl"),
+      let url = URL(string: literal), url.host != nil
+    {
+      baseURL = url.absoluteString
+    } else {
+      baseURL = model.string("baseUrl")
+    }
     let runtime = try ProviderRuntimeKernel(
       catalogRevision: "upstream-conformance",
       providers: [
         .init(
           descriptor: .init(
             id: provider, name: provider, authorizationMethods: [], models: [providerModel]),
-          baseURL: model.string("baseUrl"),
+          baseURL: baseURL,
           headers: (model.object("headers") ?? [:]).compactMapValues(\.stringValue),
           modelConfigurations: [
             .init(modelID: modelID, outputModality: .text): .init(
