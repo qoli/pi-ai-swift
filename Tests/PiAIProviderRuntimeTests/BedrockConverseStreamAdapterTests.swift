@@ -5,6 +5,30 @@ import Testing
 
 @Suite
 struct BedrockConverseStreamAdapterTests {
+  @Test(arguments: [[:], ["x-amzn-requestid": ""], ["X-Amzn-RequestId": "transport-1"]])
+  func transportRequestIDIsOptionalAndNeverBecomesResponseIdentity(headers: [String: String])
+    async throws
+  {
+    let transport = BedrockFixtureTransport(chunks: [try bedrockFrames()], headers: headers)
+    var start: ProviderResponseMetadata?
+    var snapshot: ProviderResponseSnapshot?
+    for try await event in BedrockConverseStreamAdapter().stream(
+      bedrockRequest(), context: bedrockContext(), transport: transport)
+    {
+      if case .responseStarted(let value) = event { start = value }
+      if case .responseSnapshot(let value) = event { snapshot = value }
+    }
+    let started = try #require(start)
+    let terminal = try #require(snapshot)
+    #expect(started.responseID == nil)
+    #expect(terminal.responseID == nil)
+    #expect(started.modelID == bedrockRequest().modelID)
+    #expect(terminal.modelID == started.modelID)
+    let expected = headers["X-Amzn-RequestId"].map(JSONValue.string)
+    #expect(started.providerMetadata["transportRequestID"] == expected)
+    #expect(terminal.providerMetadata["transportRequestID"] == expected)
+  }
+
   @Test
   func bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop() async throws {
     let stream = try bedrockFrames()
@@ -33,10 +57,10 @@ struct BedrockConverseStreamAdapterTests {
       events[0]
         == .responseStarted(
           ProviderResponseMetadata(
-            responseID: "aws-request-1",
+            responseID: nil,
             providerID: "amazon-bedrock",
             modelID: "amazon.nova-lite-v1:0",
-            providerMetadata: [:]
+            providerMetadata: ["transportRequestID": .string("aws-request-1")]
           )
         )
     )

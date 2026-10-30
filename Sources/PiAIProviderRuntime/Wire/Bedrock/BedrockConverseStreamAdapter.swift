@@ -19,12 +19,12 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           let response = try await PreferredStrictToolFallback.response(
             request: request, api: .bedrock, transport: transport,
             makeRequest: { try makeURLRequest($0, context: context) })
-          let responseID = try requireResponseID(response.headers, request: request)
+          let requestID = transportRequestID(response.headers)
           var decoder = AWSEventStreamDecoder()
           var reducer = BedrockEventReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
-            responseID: responseID,
+            transportRequestID: requestID,
             pricing: try ProviderUsagePricing.parse(
               metadata: context.modelConfiguration.metadata,
               providerID: request.providerID,
@@ -813,22 +813,11 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     return endpoint
   }
 
-  private func requireResponseID(
-    _ headers: [String: String],
-    request: ProviderRequest
-  ) throws -> String {
-    guard
-      let value = headers.first(where: { $0.key.lowercased() == "x-amzn-requestid" })?.value,
-      !value.isEmpty
-    else {
-      throw failure(
-        .invalidResponse,
-        request,
-        "bedrock.response.identity",
-        "Bedrock response is missing x-amzn-requestid"
-      )
-    }
-    return value
+  private func transportRequestID(_ headers: [String: String]) -> String? {
+    guard let value = headers.first(where: { $0.key.lowercased() == "x-amzn-requestid" })?.value
+    else { return nil }
+    let normalized = value.trimmingCharacters(in: .whitespacesAndNewlines)
+    return normalized.isEmpty ? nil : normalized
   }
 
   private func failure(
@@ -851,7 +840,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
 private struct BedrockEventReducer {
   let providerID: String
   let requestedModelID: String
-  let responseID: String
+  let transportRequestID: String?
   let pricing: ProviderUsagePricing?
   private var started = false
   private var stopReason: ProviderFinishReason?
@@ -874,12 +863,12 @@ private struct BedrockEventReducer {
   init(
     providerID: String,
     requestedModelID: String,
-    responseID: String,
+    transportRequestID: String?,
     pricing: ProviderUsagePricing?
   ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
-    self.responseID = responseID
+    self.transportRequestID = transportRequestID
     self.pricing = pricing
   }
 
@@ -913,10 +902,10 @@ private struct BedrockEventReducer {
       return [
         .responseStarted(
           ProviderResponseMetadata(
-            responseID: responseID,
+            responseID: nil,
             providerID: providerID,
             modelID: requestedModelID,
-            providerMetadata: [:]
+            providerMetadata: transportRequestID.map { ["transportRequestID": .string($0)] } ?? [:]
           )
         )
       ]
@@ -1086,7 +1075,7 @@ private struct BedrockEventReducer {
         finishReason: reason,
         rawFinishReason: rawStopReason,
         timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000),
-        providerMetadata: ["transportRequestID": .string(responseID)]
+        providerMetadata: transportRequestID.map { ["transportRequestID": .string($0)] } ?? [:]
       ))
   }
 

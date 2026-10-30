@@ -1383,6 +1383,89 @@
           "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjogIm1lc3NhZ2Vfc3RhcnQiLCAibWVzc2FnZSI6IHsiaWQiOiAiZmFsbGJhY2siLCAibW9kZWwiOiAicmVwb3J0ZWQiLCAidXNhZ2UiOiB7ImlucHV0X3Rva2VucyI6IDMsICJvdXRwdXRfdG9rZW5zIjogMH19fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjogImNvbnRlbnRfYmxvY2tfc3RhcnQiLCAiaW5kZXgiOiAwLCAiY29udGVudF9ibG9jayI6IHsidHlwZSI6ICJmYWxsYmFjayJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RvcApkYXRhOiB7InR5cGUiOiAiY29udGVudF9ibG9ja19zdG9wIiwgImluZGV4IjogMH0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6ICJtZXNzYWdlX2RlbHRhIiwgImRlbHRhIjogeyJzdG9wX3JlYXNvbiI6ICJlbmRfdHVybiJ9LCAidXNhZ2UiOiB7Im91dHB1dF90b2tlbnMiOiAyfX0KCmV2ZW50OiBtZXNzYWdlX3N0b3AKZGF0YTogeyJ0eXBlIjogIm1lc3NhZ2Vfc3RvcCJ9Cgo="
         ]
       }
+    },
+    {
+      "protocolID": "anthropic-messages",
+      "providerID": "kimi-coding",
+      "modelID": "k3-256k",
+      "baseURL": "https://fixture.invalid",
+      "driver": "http-sse",
+      "caseID": "anthropic.identity-missing-model",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjogIm1lc3NhZ2Vfc3RhcnQiLCAibWVzc2FnZSI6IHsiaWQiOiAibWVzc2FnZS1vcHRpb25hbCIsICJ1c2FnZSI6IHsiaW5wdXRfdG9rZW5zIjogMiwgIm91dHB1dF90b2tlbnMiOiAwfX19CgpldmVudDogbWVzc2FnZV9kZWx0YQpkYXRhOiB7InR5cGUiOiAibWVzc2FnZV9kZWx0YSIsICJkZWx0YSI6IHsic3RvcF9yZWFzb24iOiAiZW5kX3R1cm4ifSwgInVzYWdlIjogeyJvdXRwdXRfdG9rZW5zIjogMX19CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6ICJtZXNzYWdlX3N0b3AifQoK"
+        ]
+      }
+    },
+    {
+      "protocolID": "anthropic-messages",
+      "providerID": "kimi-coding",
+      "modelID": "k3-256k",
+      "baseURL": "https://fixture.invalid",
+      "driver": "http-sse",
+      "caseID": "anthropic.identity-missing-id",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjogIm1lc3NhZ2Vfc3RhcnQiLCAibWVzc2FnZSI6IHsibW9kZWwiOiAicmVwb3J0ZWQtYWxpYXMiLCAidXNhZ2UiOiB7ImlucHV0X3Rva2VucyI6IDIsICJvdXRwdXRfdG9rZW5zIjogMH19fQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjogIm1lc3NhZ2VfZGVsdGEiLCAiZGVsdGEiOiB7InN0b3BfcmVhc29uIjogImVuZF90dXJuIn0sICJ1c2FnZSI6IHsib3V0cHV0X3Rva2VucyI6IDF9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiAibWVzc2FnZV9zdG9wIn0KCg=="
+        ]
+      }
+    },
+    {
+      "protocolID": "anthropic-messages",
+      "providerID": "kimi-coding",
+      "modelID": "k3-256k",
+      "baseURL": "https://fixture.invalid",
+      "driver": "http-sse",
+      "caseID": "anthropic.identity-missing-both",
+      "decoderInput": {
+        "kind": "http-sse",
+        "status": 200,
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjogIm1lc3NhZ2Vfc3RhcnQiLCAibWVzc2FnZSI6IHsidXNhZ2UiOiB7ImlucHV0X3Rva2VucyI6IDIsICJvdXRwdXRfdG9rZW5zIjogMH19fQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjogIm1lc3NhZ2VfZGVsdGEiLCAiZGVsdGEiOiB7InN0b3BfcmVhc29uIjogImVuZF90dXJuIn0sICJ1c2FnZSI6IHsib3V0cHV0X3Rva2VucyI6IDF9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiAibWVzc2FnZV9zdG9wIn0KCg=="
+        ]
+      }
+    },
+    {
+      "protocolID": "bedrock-converse-stream",
+      "providerID": "amazon-bedrock",
+      "modelID": "anthropic.fixture-v1:0",
+      "baseURL": "http://127.0.0.1",
+      "driver": "aws-eventstream",
+      "caseID": "bedrock.identity-missing-request-id",
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAArgAAAFdfOjrJDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsicmVhc29uaW5nQ29udGVudCI6eyJ0ZXh0IjoiaW5zcGVjdCJ9fX0CT0/+",
+          "AAAAugAAAFfKWguLDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MCwiZGVsdGEiOnsicmVhc29uaW5nQ29udGVudCI6eyJzaWduYXR1cmUiOiJvcGFxdWUtYmVkcm9jayJ9fX0ZgVac",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjowfVh+qsI=",
+          "AAAAmgAAAFcLmySPDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MSwiZGVsdGEiOnsidGV4dCI6IkNoZWNraW5nIn19rN2BMQ==",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjoxfUFlm4M=",
+          "AAAAugAAAFfKWguLDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja1N0YXJ0DTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6Miwic3RhcnQiOnsidG9vbFVzZSI6eyJ0b29sVXNlSWQiOiJ0b29sLTEiLCJuYW1lIjoid2VhdGhlciJ9fX1ITjxb",
+          "AAAArgAAAFdfOjrJDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MiwiZGVsdGEiOnsidG9vbFVzZSI6eyJpbnB1dCI6IntcImNpdHlcIjpcIlRhaSJ9fX21v5hK",
+          "AAAApQAAAFco6gvYDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEWNvbnRlbnRCbG9ja0RlbHRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJjb250ZW50QmxvY2tJbmRleCI6MiwiZGVsdGEiOnsidG9vbFVzZSI6eyJpbnB1dCI6InBlaVwifSJ9fX2dYByw",
+          "AAAAfQAAAFbmaA/WDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAEGNvbnRlbnRCbG9ja1N0b3ANOmNvbnRlbnQtdHlwZQcAEGFwcGxpY2F0aW9uL2pzb257ImNvbnRlbnRCbG9ja0luZGV4IjoyfWpIyEA=",
+          "AAAAegAAAFHKLEZlDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoidG9vbF91c2Uiff+3G4c=",
+          "AAAAtQAAAE4sYTSaDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6MTIsIm91dHB1dFRva2VucyI6OCwiY2FjaGVSZWFkSW5wdXRUb2tlbnMiOjIsInRvdGFsVG9rZW5zIjoyMH196uqtqQ=="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      }
     }
   ]
 }

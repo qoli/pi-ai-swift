@@ -1923,6 +1923,90 @@
           ]
         }
       ]
+    },
+    {
+      "id": "anthropic.optional-response-identity",
+      "required": true,
+      "protocols": [
+        "anthropic-messages"
+      ],
+      "variants": [
+        "missing-model",
+        "missing-id",
+        "missing-both"
+      ],
+      "sourceSymbols": [
+        "output.responseId",
+        "responseModel"
+      ],
+      "expected": "Missing reported response identifiers do not replace the requested model identity or reject an otherwise valid Anthropic stream.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "anthropic.identity-missing-model",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "missing-model"
+          ]
+        },
+        {
+          "caseID": "anthropic.identity-missing-id",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "missing-id"
+          ]
+        },
+        {
+          "caseID": "anthropic.identity-missing-both",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "missing-both"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bedrock.optional-transport-request-identity",
+      "required": true,
+      "protocols": [
+        "bedrock-converse-stream"
+      ],
+      "variants": [
+        "missing-request-id",
+        "transport-id-is-not-response-identity"
+      ],
+      "sourceSymbols": [
+        "response.$metadata.requestId",
+        "output.responseId"
+      ],
+      "expected": "The optional Bedrock HTTP request identifier remains diagnostic metadata and does not become an assistant response identifier.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "bedrock.identity-missing-request-id",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "missing-request-id"
+          ]
+        },
+        {
+          "caseID": "args.bedrock-converse-stream.valid",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "transport-id-is-not-response-identity"
+          ]
+        }
+      ]
     }
   ]
 }

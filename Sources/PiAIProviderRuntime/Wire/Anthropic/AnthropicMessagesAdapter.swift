@@ -737,6 +737,7 @@ private struct AnthropicEventReducer {
   private var completedTools: [Int: ProviderToolCall] = [:]
   private var toolBlocks: [Int: ToolBlock] = [:]
   private var finishReason: ProviderFinishReason?
+  private var started = false
   private var terminal = false
 
   init(
@@ -767,13 +768,14 @@ private struct AnthropicEventReducer {
     case "ping":
       return []
     case "message_start":
-      guard let message = object.object("message"),
-        let id = message.string("id"),
-        let model = message.string("model")
-      else { throw invalid("message_start is missing identity") }
-      responseID = id
+      guard let message = object.object("message") else {
+        throw invalid("message_start is missing message")
+      }
+      started = true
+      responseID = message.string("id")
+      let model = message.string("model")
       responseModelID = model
-      if model != requestedModelID,
+      if let model, model != requestedModelID,
         let fallback = fallbackModels.compactMap(\.objectValue).first(where: {
           $0.string("provider") == providerID && $0.string("model") == model
         }), let cost = fallback["cost"]
@@ -946,7 +948,7 @@ private struct AnthropicEventReducer {
         )
       ]
     case "message_stop":
-      guard responseID != nil else { throw invalid("message_stop arrived before message_start") }
+      guard started else { throw invalid("message_stop arrived before message_start") }
       guard toolBlocks.isEmpty else {
         throw invalid("message_stop arrived with incomplete tool calls")
       }

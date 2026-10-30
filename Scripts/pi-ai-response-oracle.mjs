@@ -246,9 +246,7 @@ async function projectAssistantStream(sourceStream, protocol) {
   events.push({ type: "completed", reason: mapReason(terminal.stopReason) });
   if (startSeen) events.unshift({
     type: "responseStarted",
-    responseID: protocol.protocolID === "bedrock-converse-stream"
-        ? (protocol.decoderInput ?? decoderInputFor(protocol.protocolID)).headers["x-amzn-requestid"] ?? null
-        : startResponseID,
+    responseID: startResponseID,
     ...startIdentity,
   });
   return { events: canonicalize(events), terminalReplay: canonicalTerminalMessage(terminal) };
