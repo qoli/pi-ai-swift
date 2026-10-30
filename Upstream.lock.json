@@ -380,6 +380,7 @@
     "packages/ai/test/cloudflare-workers-ai-system-one.test.ts",
     "packages/ai/test/cross-provider-handoff.test.ts",
     "packages/ai/test/event-stream.test.ts",
+    "packages/ai/test/google-thinking-level-map.test.ts",
     "packages/ai/test/image-model-data.test.ts",
     "packages/ai/test/kimi-coding-oauth.test.ts",
     "packages/ai/test/llama-cpp-classify.test.ts",

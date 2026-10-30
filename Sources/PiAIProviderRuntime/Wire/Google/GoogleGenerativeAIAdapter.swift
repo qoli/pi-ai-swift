@@ -300,7 +300,28 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       generationConfig["responseMimeType"] = .string("application/json")
       generationConfig["responseJsonSchema"] = schema
     }
-    if let effort = request.options.reasoningEffort {
+    if let thinking = request.options.providerOptions.object("thinking"),
+      context.model.capabilities.reasoning
+    {
+      var config: [String: JSONValue] = [:]
+      if thinking.bool("enabled") == true {
+        config["includeThoughts"] = .bool(true)
+        if let level = thinking["level"] {
+          if let level = level.stringValue,
+            ["MINIMAL", "LOW", "MEDIUM", "HIGH"].contains(level)
+          {
+            config["thinkingLevel"] = .string(level)
+          }
+        } else if let budget = thinking["budgetTokens"] {
+          config["thinkingBudget"] = budget
+        }
+      } else {
+        config = try disabledThinkingConfiguration(
+          modelID: request.modelID, providerID: request.providerID,
+          metadata: context.modelConfiguration.metadata)
+      }
+      generationConfig["thinkingConfig"] = .object(config)
+    } else if let effort = request.options.reasoningEffort {
       guard context.model.capabilities.reasoning else {
         throw failure(
           .unsupportedCapability,
@@ -313,6 +334,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         try thinkingConfiguration(
           effort: effort,
           modelID: request.modelID,
+          providerID: request.providerID,
           metadata: context.modelConfiguration.metadata,
           customBudgets: request.options.thinkingBudgets
         ))
@@ -571,51 +593,67 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     }
   }
 
+  static func resolveThinkingLevel(
+    effort requested: ProviderReasoningEffort,
+    providerID: String,
+    modelID: String,
+    metadata: [String: JSONValue]
+  ) throws -> String {
+    let mapped = metadata.object("thinkingLevelMap")?[requested.rawValue]
+    let effort = (mapped?.stringValue ?? requested.rawValue).lowercased()
+    guard ["minimal", "low", "medium", "high"].contains(effort) else {
+      let mapping = mapped?.stringValue ?? (mapped == .null ? "null" : "undefined")
+      throw ProviderRuntimeFailure(
+        code: .invalidRequest,
+        message:
+          "Unsupported Google thinking level mapping for \(providerID)/\(modelID): \(requested.rawValue) -> \(mapping)",
+        providerID: providerID, operation: "google.request.reasoning", causeDescription: nil)
+    }
+    return effort
+  }
+
+  private func usesThinkingLevel(_ modelID: String) -> Bool {
+    let lower = modelID.lowercased()
+    return isGemini3Pro(lower) || isGemini3Flash(lower) || isGemma4(lower)
+      || lower.range(of: "gemini-(?:[4-9]|[1-9][0-9])", options: .regularExpression) != nil
+  }
+
+  private func disabledThinkingConfiguration(
+    modelID: String,
+    providerID: String,
+    metadata: [String: JSONValue]
+  ) throws -> [String: JSONValue] {
+    guard usesThinkingLevel(modelID) else { return ["thinkingBudget": .integer(0)] }
+    let map = metadata.object("thinkingLevelMap") ?? [:]
+    guard map["off"] == .null else { return ["thinkingBudget": .integer(0)] }
+    let fallback = ProviderReasoningEffort.allCases.dropFirst().first { level in
+      guard map[level.rawValue] != .null else { return false }
+      return ![.xhigh, .max].contains(level) || map[level.rawValue] != nil
+    }
+    guard let fallback else { return ["thinkingBudget": .integer(0)] }
+    let level = try Self.resolveThinkingLevel(
+      effort: fallback, providerID: providerID, modelID: modelID, metadata: metadata)
+    return ["thinkingLevel": .string(level.uppercased())]
+  }
+
   private func thinkingConfiguration(
     effort requested: ProviderReasoningEffort,
     modelID: String,
+    providerID: String,
     metadata: [String: JSONValue],
     customBudgets: [ProviderReasoningEffort: Int]?
   ) throws -> [String: JSONValue] {
     let lower = modelID.lowercased()
     if requested == .off {
-      let map = metadata.object("thinkingLevelMap") ?? [:]
-      guard map["off"] == .null else { return ["thinkingBudget": .integer(0)] }
-      for fallback in ProviderReasoningEffort.allCases.dropFirst() {
-        guard map[fallback.rawValue] != .null else { continue }
-        let level = map.string(fallback.rawValue) ?? fallback.rawValue
-        if ["minimal", "low", "medium", "high"].contains(level.lowercased()) {
-          return ["thinkingLevel": .string(level.uppercased())]
-        }
-      }
-      return ["thinkingBudget": .integer(0)]
+      return try disabledThinkingConfiguration(
+        modelID: modelID, providerID: providerID, metadata: metadata)
     }
-    let effort =
-      (metadata.object("thinkingLevelMap")?.string(requested.rawValue) ?? requested.rawValue)
-      .lowercased()
-    guard ["minimal", "low", "medium", "high"].contains(effort) else {
-      throw failure(
-        .invalidRequest,
-        providerID: nil,
-        operation: "google.request.reasoning",
-        message: "unsupported Google reasoning effort: \(effort)"
-      )
-    }
-    if isGemini3Pro(lower) || isGemini3Flash(lower)
-      || lower.range(of: "gemini-(?:[4-9]|[1-9][0-9])", options: .regularExpression) != nil
-      || (flavor == .generativeAI && isGemma4(lower))
-    {
-      let level: String
-      if isGemini3Pro(lower) {
-        level = ["minimal", "low"].contains(effort) ? "LOW" : "HIGH"
-      } else if isGemma4(lower) {
-        level = ["minimal", "low"].contains(effort) ? "MINIMAL" : "HIGH"
-      } else {
-        level = effort.uppercased()
-      }
+    let effort = try Self.resolveThinkingLevel(
+      effort: requested, providerID: providerID, modelID: modelID, metadata: metadata)
+    if usesThinkingLevel(modelID) {
       return [
         "includeThoughts": .bool(true),
-        "thinkingLevel": .string(level),
+        "thinkingLevel": .string(effort.uppercased()),
       ]
     }
 

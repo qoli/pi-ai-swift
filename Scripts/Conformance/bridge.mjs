@@ -112,11 +112,13 @@ export function convertMessages(model, context, compat, options = {}) {
 }
 
 export function resolveGoogleThinkingLevel(model, level) {
-  const result = probe(model, { messages: [{ role: "user", content: "Hello", timestamp: 0 }] }, {
-    apiKey: "test", reasoningEffort: level,
+  const result = invoke({
+    ...fixtureInput(model, { messages: [] }, { reasoningEffort: level }, [], fixtureCredential(model, { apiKey: "test" })),
+    operation: "google-thinking-level",
   });
-  if (!result.request) throw new Error(result.failure?.message ?? "Swift did not resolve a thinking level");
-  return result.request.body.generationConfig?.thinkingConfig?.thinkingLevel?.toLowerCase();
+  record("encode", model.api, result.failure);
+  if (typeof result !== "string") throw new Error(result.failure?.message ?? "Swift did not resolve a thinking level");
+  return result;
 }
 
 export function convertResponsesMessages(model, context, _allowedToolCallProviders, options = {}) {
@@ -240,10 +242,13 @@ export function streamSimple(model, context, options = {}) {
     // unsupported-level failure remains observable in the original test.
     reasoningEffort = candidates.find(level => available.includes(level)) ?? reasoning;
   }
+  const disableGoogleThinking = ["google-generative-ai", "google-vertex"].includes(model.api)
+    && (!reasoning || reasoningEffort === "off");
   return stream(model, context, {
     ...base,
     maxTokens: clampMaxTokensToContext(model, context, options.maxTokens ?? model.maxTokens),
-    reasoningEffort,
+    reasoningEffort: disableGoogleThinking ? undefined : reasoningEffort,
+    ...(disableGoogleThinking ? { thinking: { enabled: false } } : {}),
   });
 }
 

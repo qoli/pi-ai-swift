@@ -2185,7 +2185,8 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts",
-        "packages/ai/test/opencode-provider-headers.test.ts"
+        "packages/ai/test/opencode-provider-headers.test.ts",
+        "packages/ai/test/google-thinking-level-map.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2211,7 +2212,11 @@
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift#candidateProviderRequestsMatchExactSourceIntent",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2234,7 +2239,8 @@
         "packages/ai/src/api/google-vertex.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/google-thinking-level-map.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2257,7 +2263,11 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift#candidateProviderRequestsMatchExactSourceIntent",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json"
       ],
       "requiredGates": [
         "swift-test"

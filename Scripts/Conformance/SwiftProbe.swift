@@ -63,6 +63,16 @@ struct SwiftConformanceProbe {
     let provider = try model.required("provider")
     let modelID = try model.required("id")
     let options = input.options
+    if envelope.string("operation") == "google-thinking-level" {
+      let rawEffort = try options.required("reasoningEffort")
+      guard let effort = ProviderReasoningEffort(rawValue: rawEffort) else {
+        throw ProbeError.unrepresentable("unknown-reasoning-level")
+      }
+      let resolved = try GoogleGenerativeAIAdapter.resolveThinkingLevel(
+        effort: effort, providerID: provider, modelID: modelID, metadata: model)
+      FileHandle.standardOutput.write(try JSONEncoder().encode(resolved))
+      return
+    }
     let providerModel = ProviderModel(
       id: modelID, providerID: provider, name: model.string("name") ?? modelID,
       protocolID: api,

@@ -11,6 +11,15 @@ const revision = execFileSync("git", ["-C", root, "rev-parse", "HEAD"], { encodi
 if (revision !== fixture.upstreamRevision) throw new Error("provider intent revision mismatch");
 const cases = {};
 for (const spec of fixture.cases) {
+  if (spec.operation === "googleThinkingLevel") {
+    const shared = await import(pathToFileURL(path.join(root, "packages/ai/src/api/google-shared.ts")));
+    let resolvedLevel, error;
+    try { resolvedLevel = shared.resolveGoogleThinkingLevel(spec.model, spec.options.reasoningEffort); }
+    catch (failure) { error = failure.message; }
+    if (!!error !== !!spec.expectError) throw new Error(`${spec.id}: unexpected resolver outcome`);
+    cases[spec.id] = error ? { error } : { resolvedLevel };
+    continue;
+  }
   const source = spec.azureProvider
     ? (await import(pathToFileURL(path.join(root, "packages/ai/src/providers/azure.ts")))).azureProvider()
     : await import(pathToFileURL(path.join(root, "packages/ai/src/api", `${spec.model.api}.ts`)));
@@ -21,7 +30,9 @@ for (const spec of fixture.cases) {
     ...(spec.options ?? {}),
     env: { AWS_REGION: "us-east-1", AWS_BEDROCK_SKIP_AUTH: "1", ...(spec.options?.env ?? {}) },
     onPayload(value) { body = value; if (spec.model.api !== "mistral-conversations") throw new Error("fixture capture complete"); },
-    fetch(_url, init) { body = JSON.parse(init.body); throw new Error("fixture wire capture complete"); },
+    ...(spec.model.api.startsWith("google-") ? {} : {
+      fetch(_url, init) { body = JSON.parse(init.body); throw new Error("fixture wire capture complete"); },
+    }),
   }).result();
   if (body === undefined) {
     if (!spec.expectError) throw new Error(`${spec.id}: ${result.errorMessage}`);
@@ -33,7 +44,8 @@ for (const spec of fixture.cases) {
     if (body.modelId !== spec.model.id) throw new Error("Bedrock model identity changed");
     delete body.modelId;
   }
-  cases[spec.id] = { requestBody: body };
+  cases[spec.id] = { requestBody: spec.model.api.startsWith("google-")
+    ? { thinkingConfig: body.config?.thinkingConfig ?? null } : body };
 }
 process.stdout.write(JSON.stringify({ schemaVersion: 1, upstreamRevision: revision, cases }, null, 2) + "\n");
 

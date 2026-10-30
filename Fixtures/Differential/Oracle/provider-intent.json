@@ -1357,6 +1357,227 @@
         ]
       }
     },
+    "google-generative-ai.thinking-disabled-budget": {
+      "requestBody": {
+        "thinkingConfig": {
+          "thinkingBudget": 0
+        }
+      }
+    },
+    "google-generative-ai.thinking-disabled-level": {
+      "requestBody": {
+        "thinkingConfig": {
+          "thinkingLevel": "LOW"
+        }
+      }
+    },
+    "google-generative-ai.thinking-explicit-off-budget": {
+      "requestBody": {
+        "thinkingConfig": {
+          "thinkingBudget": 0
+        }
+      }
+    },
+    "google-generative-ai.thinking-gemini-4-medium": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MEDIUM"
+        }
+      }
+    },
+    "google-generative-ai.thinking-gemma-medium": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MEDIUM"
+        }
+      }
+    },
+    "google-generative-ai.thinking-invalid-disabled-mapping": {
+      "error": "Unsupported Google thinking level mapping for fixture-google-generative-ai/gemini-3.8-flash: minimal -> extreme"
+    },
+    "google-generative-ai.thinking-latest-medium": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MEDIUM"
+        }
+      }
+    },
+    "google-generative-ai.thinking-medium": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MEDIUM"
+        }
+      }
+    },
+    "google-generative-ai.thinking-non-reasoning": {
+      "requestBody": {
+        "thinkingConfig": null
+      }
+    },
+    "google-generative-ai.thinking-pro-minimal": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MINIMAL"
+        }
+      }
+    },
+    "google-generative-ai.thinking-raw-level": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "HIGH"
+        }
+      }
+    },
+    "google-generative-ai.thinking-raw-zero-budget": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingBudget": 0
+        }
+      }
+    },
+    "google-vertex.thinking-disabled-budget": {
+      "requestBody": {
+        "thinkingConfig": {
+          "thinkingBudget": 0
+        }
+      }
+    },
+    "google-vertex.thinking-disabled-level": {
+      "requestBody": {
+        "thinkingConfig": {
+          "thinkingLevel": "LOW"
+        }
+      }
+    },
+    "google-vertex.thinking-explicit-off-budget": {
+      "requestBody": {
+        "thinkingConfig": {
+          "thinkingBudget": 0
+        }
+      }
+    },
+    "google-vertex.thinking-gemini-4-medium": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MEDIUM"
+        }
+      }
+    },
+    "google-vertex.thinking-gemma-medium": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MEDIUM"
+        }
+      }
+    },
+    "google-vertex.thinking-invalid-disabled-mapping": {
+      "error": "Unsupported Google thinking level mapping for fixture-google-vertex/gemini-3.8-flash: minimal -> extreme"
+    },
+    "google-vertex.thinking-latest-medium": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MEDIUM"
+        }
+      }
+    },
+    "google-vertex.thinking-medium": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MEDIUM"
+        }
+      }
+    },
+    "google-vertex.thinking-non-reasoning": {
+      "requestBody": {
+        "thinkingConfig": null
+      }
+    },
+    "google-vertex.thinking-pro-minimal": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "MINIMAL"
+        }
+      }
+    },
+    "google-vertex.thinking-raw-level": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingLevel": "HIGH"
+        }
+      }
+    },
+    "google-vertex.thinking-raw-zero-budget": {
+      "requestBody": {
+        "thinkingConfig": {
+          "includeThoughts": true,
+          "thinkingBudget": 0
+        }
+      }
+    },
+    "google.resolve-default-high": {
+      "resolvedLevel": "high"
+    },
+    "google.resolve-default-low": {
+      "resolvedLevel": "low"
+    },
+    "google.resolve-default-medium": {
+      "resolvedLevel": "medium"
+    },
+    "google.resolve-default-minimal": {
+      "resolvedLevel": "minimal"
+    },
+    "google.resolve-map-HIGH": {
+      "resolvedLevel": "high"
+    },
+    "google.resolve-map-LOW": {
+      "resolvedLevel": "low"
+    },
+    "google.resolve-map-MEDIUM": {
+      "resolvedLevel": "medium"
+    },
+    "google.resolve-map-MINIMAL": {
+      "resolvedLevel": "minimal"
+    },
+    "google.resolve-map-high": {
+      "resolvedLevel": "high"
+    },
+    "google.resolve-map-low": {
+      "resolvedLevel": "low"
+    },
+    "google.resolve-map-medium": {
+      "resolvedLevel": "medium"
+    },
+    "google.resolve-map-minimal": {
+      "resolvedLevel": "minimal"
+    },
+    "google.resolve-max-HIGH": {
+      "resolvedLevel": "high"
+    },
+    "google.resolve-max-undefined": {
+      "error": "Unsupported Google thinking level mapping for fixture-google-generative-ai/gemini-3.7-flash: max -> undefined"
+    },
+    "google.resolve-xhigh-HIGH": {
+      "resolvedLevel": "high"
+    },
+    "google.resolve-xhigh-extreme": {
+      "error": "Unsupported Google thinking level mapping for fixture-google-generative-ai/gemini-3.7-flash: xhigh -> extreme"
+    },
+    "google.resolve-xhigh-null": {
+      "error": "Unsupported Google thinking level mapping for fixture-google-generative-ai/gemini-3.7-flash: xhigh -> null"
+    },
     "mistral.map": {
       "requestBody": {
         "max_tokens": 4096,

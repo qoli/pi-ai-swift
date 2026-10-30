@@ -63,7 +63,7 @@
       ],
       "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "e0e4233397461e5005dd267e3aa47fd14f82ab78dcdf3d83a9cec990a4934bb2"
+      "swiftEvidenceSHA256": "2c8910e26ad363531177f6d9c6acf8d5aabad9dbf420fcb28bdcf0ef6dde8635"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -105,7 +105,7 @@
       ],
       "upstreamSourceSHA256": "44f1ffc77bf9899c2e7067280720c0fc5a0b458c0fccd650d3f5739182c2c33f",
       "upstreamTestSHA256": "32bd02c09ad074cb1b498bc752d2e91160d998c39cb5a4e0e07c598ef32a8f4c",
-      "swiftEvidenceSHA256": "ccbabe556b874cbf01bbfb8cec1ac9e67e0220505a045368f35ba1e2c009bb0a"
+      "swiftEvidenceSHA256": "197b47b0590f5a4b9d9e3475b74f82348f78e11b34c84b2698a4e6de37d7474f"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -151,7 +151,7 @@
       ],
       "upstreamSourceSHA256": "fcd722758fa9205f6f2633c0445fa6ef36e82c3c5eca2ea959c8af6b2dd6d9f7",
       "upstreamTestSHA256": "616f7bbfd6f524666540459ccfe6bd608fd9adb8e30828afeeaa111fa07d1669",
-      "swiftEvidenceSHA256": "6a13f3888e09f3c3de91ce8968ca4d60cd553e93b0f3f11670e6f785d24319d4"
+      "swiftEvidenceSHA256": "8339551e3418ae07c37bdca7289081561d139ecd5936b5c7aecc8af804b34dd4"
     },
     {
       "protocolID": "google-generative-ai",
@@ -163,7 +163,8 @@
       ],
       "upstreamTests": [
         "packages/ai/test/stream.test.ts",
-        "packages/ai/test/opencode-provider-headers.test.ts"
+        "packages/ai/test/opencode-provider-headers.test.ts",
+        "packages/ai/test/google-thinking-level-map.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#encodesMultimodalToolReasoningRequestAndNormalizesStream",
@@ -184,11 +185,15 @@
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift#candidateProviderRequestsMatchExactSourceIntent",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json"
       ],
       "upstreamSourceSHA256": "20f47dd4749034075eb61695802c2a9587eaa5307442802243b6834d893b3ff0",
-      "upstreamTestSHA256": "b0a8ebc1a5df74883b897c12537b2969e75a3da524556e06152036217824adde",
-      "swiftEvidenceSHA256": "40e367e6e05b482c699d742b9c03c51340b7eee36656451075c656ce2c087f44"
+      "upstreamTestSHA256": "323b5a2dcd50a23c6879041e9b584a80e467e457d1e538b10c43f34b18dea041",
+      "swiftEvidenceSHA256": "6c9256f00b6a27ad582bab1065162e8f796e293eecc67bcb63a7877b25ff87c9"
     },
     {
       "protocolID": "google-vertex",
@@ -199,7 +204,8 @@
         "packages/ai/src/api/google-vertex.ts"
       ],
       "upstreamTests": [
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/google-thinking-level-map.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/GoogleGenerativeAIAdapterTests.swift#vertexBuildsScopedOAuthRequestAndNormalizesLengthFinish",
@@ -217,11 +223,15 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift#candidateProviderRequestsMatchExactSourceIntent",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json"
       ],
       "upstreamSourceSHA256": "ab23a583792c46d1da02c82fa55f2a794f92074ca5afcea8839b129ce58818f0",
-      "upstreamTestSHA256": "f8eabb92338a98392533e98f98e409cc94f6ea685405d048e6d3016906c23f5c",
-      "swiftEvidenceSHA256": "7e848ed590ebfbe63800f14f85c51315563bbb221742bb1cfcfe0dc8cd059ca5"
+      "upstreamTestSHA256": "965cd952c4c474f74c9b0a6f4f82e88a04c840ab492e43090f7e8f4dbcaaaf54",
+      "swiftEvidenceSHA256": "6afaa4ffdb646bee126144528f23c6bdeb8fd5663a822ed78279ed00aa4f0aa4"
     },
     {
       "protocolID": "mistral-conversations",
@@ -254,7 +264,7 @@
       ],
       "upstreamSourceSHA256": "b97550a0d4905aeecaafe60e6e13bb6cc69cf4dc0bc1c5999ae63dea64cf2a75",
       "upstreamTestSHA256": "f8eabb92338a98392533e98f98e409cc94f6ea685405d048e6d3016906c23f5c",
-      "swiftEvidenceSHA256": "25d545b937ce2a4db8a665fc4dccdfcb80d524d65a840f5cf50d1947bf0c5fe5"
+      "swiftEvidenceSHA256": "6ed64bb90a583c00c7331a4cc62cf9673f459d091f8d826ad7cb755020a488e8"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -352,7 +362,7 @@
       ],
       "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "51dbbc3bf018bafb3e5a52d68ba252ba4dbf36041c356bc9ba85c2c0d2c26a6b"
+      "swiftEvidenceSHA256": "04d7027de0bf8be1d3b990fe5ac44c25df1051da4156e8139dcb1ebe7ffef15f"
     },
     {
       "protocolID": "openai-responses",
@@ -401,7 +411,7 @@
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "8aba864416653ed0a9bb73126137c8ff812a8175c460872c6b425fe1278226e7"
+      "swiftEvidenceSHA256": "26fb284872f58fcb19da1a61d42e1d5ad29167dda40127d4d86ac7db94ca759a"
     },
     {
       "protocolID": "openrouter-images",

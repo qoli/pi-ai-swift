@@ -3133,6 +3133,1282 @@
           }
         }
       ]
+    },
+    {
+      "id": "google-generative-ai.thinking-medium",
+      "model": {
+        "id": "gemini-3.1-pro-preview",
+        "name": "gemini-3.1-pro-preview",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-disabled-level",
+      "model": {
+        "id": "gemini-3.8-flash",
+        "name": "gemini-3.8-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-disabled-budget",
+      "model": {
+        "id": "gemini-2.5-flash",
+        "name": "gemini-2.5-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-gemma-medium",
+      "model": {
+        "id": "gemma-4-27b-it",
+        "name": "gemma-4-27b-it",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-gemini-4-medium",
+      "model": {
+        "id": "gemini-4-argon",
+        "name": "gemini-4-argon",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-latest-medium",
+      "model": {
+        "id": "gemini-flash-latest",
+        "name": "gemini-flash-latest",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-pro-minimal",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "gemini-3-pro-preview",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "minimal": "minimal"
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-explicit-off-budget",
+      "model": {
+        "id": "gemini-2.5-flash",
+        "name": "gemini-2.5-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": true
+    },
+    {
+      "id": "google-generative-ai.thinking-raw-level",
+      "model": {
+        "id": "gemini-3.8-flash",
+        "name": "gemini-3.8-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "thinking": {
+          "enabled": true,
+          "level": "HIGH"
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-raw-zero-budget",
+      "model": {
+        "id": "gemini-2.5-flash",
+        "name": "gemini-2.5-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "thinking": {
+          "enabled": true,
+          "budgetTokens": 0
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-generative-ai.thinking-non-reasoning",
+      "model": {
+        "id": "fixture-chat",
+        "name": "fixture-chat",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-medium",
+      "model": {
+        "id": "gemini-3.1-pro-preview",
+        "name": "gemini-3.1-pro-preview",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-disabled-level",
+      "model": {
+        "id": "gemini-3.8-flash",
+        "name": "gemini-3.8-flash",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-disabled-budget",
+      "model": {
+        "id": "gemini-2.5-flash",
+        "name": "gemini-2.5-flash",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-gemma-medium",
+      "model": {
+        "id": "gemma-4-27b-it",
+        "name": "gemma-4-27b-it",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-gemini-4-medium",
+      "model": {
+        "id": "gemini-4-argon",
+        "name": "gemini-4-argon",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-latest-medium",
+      "model": {
+        "id": "gemini-flash-latest",
+        "name": "gemini-flash-latest",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-pro-minimal",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "gemini-3-pro-preview",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "minimal": "minimal"
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      },
+      "entrypoint": "streamSimple",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-explicit-off-budget",
+      "model": {
+        "id": "gemini-2.5-flash",
+        "name": "gemini-2.5-flash",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": true
+    },
+    {
+      "id": "google-vertex.thinking-raw-level",
+      "model": {
+        "id": "gemini-3.8-flash",
+        "name": "gemini-3.8-flash",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "thinking": {
+          "enabled": true,
+          "level": "HIGH"
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-raw-zero-budget",
+      "model": {
+        "id": "gemini-2.5-flash",
+        "name": "gemini-2.5-flash",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "thinking": {
+          "enabled": true,
+          "budgetTokens": 0
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google-vertex.thinking-non-reasoning",
+      "model": {
+        "id": "fixture-chat",
+        "name": "fixture-chat",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false
+    },
+    {
+      "id": "google.resolve-default-minimal",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoningEffort": "minimal"
+      }
+    },
+    {
+      "id": "google.resolve-default-low",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoningEffort": "low"
+      }
+    },
+    {
+      "id": "google.resolve-default-medium",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoningEffort": "medium"
+      }
+    },
+    {
+      "id": "google.resolve-default-high",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-map-minimal",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "high": "minimal"
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-map-low",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "high": "low"
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-map-medium",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "high": "medium"
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-map-high",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "high": "high"
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-map-MINIMAL",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "high": "MINIMAL"
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-map-LOW",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "high": "LOW"
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-map-MEDIUM",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "high": "MEDIUM"
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-map-HIGH",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "high": "HIGH"
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      }
+    },
+    {
+      "id": "google.resolve-xhigh-HIGH",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "xhigh": "HIGH"
+        }
+      },
+      "options": {
+        "reasoningEffort": "xhigh"
+      }
+    },
+    {
+      "id": "google.resolve-max-HIGH",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "max": "HIGH"
+        }
+      },
+      "options": {
+        "reasoningEffort": "max"
+      }
+    },
+    {
+      "id": "google.resolve-xhigh-extreme",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "xhigh": "extreme"
+        }
+      },
+      "options": {
+        "reasoningEffort": "xhigh"
+      },
+      "expectError": true
+    },
+    {
+      "id": "google.resolve-max-undefined",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {}
+      },
+      "options": {
+        "reasoningEffort": "max"
+      },
+      "expectError": true
+    },
+    {
+      "id": "google.resolve-xhigh-null",
+      "operation": "googleThinkingLevel",
+      "model": {
+        "id": "gemini-3.7-flash",
+        "name": "gemini-3.7-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "xhigh": null
+        }
+      },
+      "options": {
+        "reasoningEffort": "xhigh"
+      },
+      "expectError": true
+    },
+    {
+      "id": "google-generative-ai.thinking-invalid-disabled-mapping",
+      "model": {
+        "id": "gemini-3.8-flash",
+        "name": "gemini-3.8-flash",
+        "api": "google-generative-ai",
+        "provider": "fixture-google-generative-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "extreme",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false,
+      "expectError": true
+    },
+    {
+      "id": "google-vertex.thinking-invalid-disabled-mapping",
+      "model": {
+        "id": "gemini-3.8-flash",
+        "name": "gemini-3.8-flash",
+        "api": "google-vertex",
+        "provider": "fixture-google-vertex",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "extreme",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "xhigh": null,
+          "max": null
+        }
+      },
+      "options": {
+        "thinking": {
+          "enabled": false
+        }
+      },
+      "entrypoint": "stream",
+      "explicitOff": false,
+      "expectError": true
     }
   ]
 }

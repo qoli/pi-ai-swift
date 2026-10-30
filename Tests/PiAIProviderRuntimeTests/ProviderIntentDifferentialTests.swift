@@ -26,6 +26,21 @@ struct ProviderIntentDifferentialTests {
       let api = try #require(raw.string("api"))
       let provider = try #require(raw.string("provider"))
       let id = try #require(raw.string("id"))
+      let options = spec.options ?? [:]
+      if spec.operation == "googleThinkingLevel" {
+        let expected = try #require(oracle.cases[spec.id])
+        let effort = try #require(
+          options.string("reasoningEffort").flatMap(ProviderReasoningEffort.init(rawValue:)))
+        do {
+          let actual = try GoogleGenerativeAIAdapter.resolveThinkingLevel(
+            effort: effort, providerID: provider, modelID: id, metadata: raw)
+          #expect(expected.error == nil, Comment(rawValue: spec.id))
+          #expect(actual == expected.resolvedLevel, Comment(rawValue: spec.id))
+        } catch let failure as ProviderRuntimeFailure {
+          #expect(failure.message == expected.error, Comment(rawValue: spec.id))
+        }
+        continue
+      }
       let model = ProviderModel(
         id: id, providerID: provider, name: raw.string("name") ?? id, protocolID: api,
         capabilities: .init(
@@ -51,7 +66,6 @@ struct ProviderIntentDifferentialTests {
               providerMetadata: ["providerThinkingLevel": .string("low")])))
         messages.append(.user([.text("again")]))
       }
-      let options = spec.options ?? [:]
       let effort =
         options.string("reasoningEffort") ?? options.string("reasoning")
         ?? (options.bool("thinkingEnabled") == false || spec.explicitOff == true ? "off" : nil)
@@ -76,7 +90,7 @@ struct ProviderIntentDifferentialTests {
           },
           reasoningEffort: effort.flatMap(ProviderReasoningEffort.init(rawValue:)),
           responseSchema: nil,
-          providerOptions: options["samplingParams"].map { ["samplingParams": $0] } ?? [:],
+          providerOptions: options.filter { ["samplingParams", "thinking"].contains($0.key) },
           sessionID: options.string("sessionId"),
           cacheRetention: options.string("cacheRetention").flatMap(
             ProviderCacheRetention.init(rawValue:)) ?? .none),
@@ -101,7 +115,13 @@ struct ProviderIntentDifferentialTests {
         continue
       }
       if let failure { throw failure }
-      let actual = try #require(await transport.body, Comment(rawValue: spec.id))
+      var actual = try #require(await transport.body, Comment(rawValue: spec.id))
+      if api.hasPrefix("google-") {
+        actual = .object([
+          "thinkingConfig": actual.objectValue?.object("generationConfig")?["thinkingConfig"]
+            ?? .null
+        ])
+      }
       let expected = try #require(observation.requestBody)
       if actual != expected {
         Issue.record("\(spec.id): \(firstRequestDifference(actual, expected))")
@@ -115,6 +135,7 @@ struct ProviderIntentDifferentialTests {
   }
   private struct Spec: Decodable {
     let id: String
+    let operation: String?
     let model: [String: JSONValue]
     let options: [String: JSONValue]?
     let history: Bool?
@@ -128,6 +149,7 @@ struct ProviderIntentDifferentialTests {
   }
   private struct Observation: Decodable {
     let requestBody: JSONValue?
+    let resolvedLevel: String?
     let error: String?
   }
 }
