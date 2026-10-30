@@ -221,7 +221,7 @@ struct MistralConversationsAdapterTests {
         )
       )
     }
-    await expectMistralFailure(code: .transportFailed) {
+    await expectMistralFailure(code: .invalidResponse) {
       adapter.stream(
         request,
         context: context,

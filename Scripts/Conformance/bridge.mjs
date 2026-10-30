@@ -76,7 +76,7 @@ function fixtureInput(model, context, options, responses, credential, requestSou
 }
 
 function hasNativeWireObserver(model) {
-  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses"].includes(model.api);
+  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses", "mistral-conversations"].includes(model.api);
 }
 
 function capabilities(options, model) {
@@ -241,8 +241,11 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
           expect(observedContext.model.providerID).toBe(model.provider);
           expect(observedContext.model.protocolID).toBe(model.api);
           if (stage === "payload") {
-            const replacement = await options.onPayload(value, model);
-            send({ kind: "observerReply", payload: replacement === undefined ? value : replacement, replaced: replacement !== undefined });
+            const mistral = model.api === "mistral-conversations";
+            const payload = mistral ? mistralSDKPayload(value) : value;
+            const replacement = await options.onPayload(payload, model);
+            const modified = replacement === undefined ? payload : replacement;
+            send({ kind: "observerReply", payload: mistral ? mistralWirePayload(modified) : modified, replaced: replacement !== undefined });
           } else if (stage === "response") {
             await options.onResponse(value, model);
             send({ kind: "observerReply" });

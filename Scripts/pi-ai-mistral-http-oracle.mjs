@@ -31,4 +31,42 @@ for (const spec of fixture.cases) {
   if (!headers || output.stopReason !== "error") throw new Error("Mistral HTTP fixture did not execute");
   cases[spec.id] = { headers, errorMessage: output.errorMessage };
 }
-process.stdout.write(JSON.stringify({ upstreamRevision: revision, cases }, null, 2) + "\n");
+const observers = {};
+for (const spec of fixture.observerCases) {
+  const model = {
+    id: "fixture-model", name: "Fixture", api: "mistral-conversations", provider: "mistral",
+    baseUrl: "https://fixture.invalid", reasoning: false, input: ["text"],
+    contextWindow: 32768, maxTokens: 4096, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+  };
+  const body = spec.body ?? spec.events.map(event => `data: ${JSON.stringify(event)}\n\n`).join("") + "data: [DONE]\n\n" + (spec.trailingSSE ?? "");
+  const headers = { "content-type": spec.status >= 400 ? "application/json" : "text/event-stream", "x-fixture-response": spec.id };
+  const observed = { stages: [], responses: [], events: [], models: [] };
+  const output = await implementation.stream(model, { messages: [{ role: "user", content: "hello", timestamp: 0 }] }, {
+    apiKey: "synthetic-fixture-key", maxTokens: 64,
+    onPayload: async payload => {
+      await Promise.resolve();
+      observed.stages.push("payload");
+      payload.temperature = 0.25;
+    },
+    onResponse: async response => {
+      await Promise.resolve();
+      observed.stages.push("response");
+      observed.responses.push(response);
+    },
+    onProviderStreamEvent: async (event, model) => {
+      await Promise.resolve();
+      observed.stages.push("event");
+      observed.events.push(structuredClone(event));
+      observed.models.push({ id: model.id, provider: model.provider, api: model.api });
+    },
+    fetch: async (_url, init) => {
+      const sent = JSON.parse(init.body);
+      observed.wireTemperature = sent.temperature;
+      observed.wireMaxTokens = sent.max_tokens;
+      return new Response(body, { status: spec.status, headers });
+    },
+  }).result();
+  observers[spec.id] = { ...observed, outcome: output.stopReason, errorMessage: output.errorMessage ?? null,
+    decoderInput: { status: spec.status, headers, chunksBase64: [Buffer.from(body).toString("base64")] } };
+}
+process.stdout.write(JSON.stringify({ upstreamRevision: revision, cases, observers }, null, 2) + "\n");

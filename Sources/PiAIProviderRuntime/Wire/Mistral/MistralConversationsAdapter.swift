@@ -11,9 +11,12 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
+          let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await responseHeaders(
-            for: makeURLRequest(request, context: context), request: request, transport: transport
+            for: observation.payload(makeURLRequest(request, context: context)), request: request,
+            transport: transport
           )
+          try await observation.response(response)
           guard (200..<300).contains(response.statusCode) else {
             var data = Data()
             for try await chunk in response.body { data.append(chunk) }
@@ -48,17 +51,21 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
               providerID: request.providerID,
               operation: "mistral.usage.pricing")
           )
-          for try await chunk in response.body {
+          readStream: for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
-              for normalized in try reducer.reduce(event) {
+              for normalized in try await reducer.reduce(event, observation: observation) {
                 continuation.yield(normalized)
               }
+              if reducer.sawDone { break readStream }
             }
           }
-          for event in try decoder.finish() {
-            for normalized in try reducer.reduce(event) {
-              continuation.yield(normalized)
+          if !reducer.sawDone {
+            for event in try decoder.finish() {
+              for normalized in try await reducer.reduce(event, observation: observation) {
+                continuation.yield(normalized)
+              }
+              if reducer.sawDone { break }
             }
           }
           for normalized in try reducer.finalize() {
@@ -541,6 +548,7 @@ private struct MistralEventReducer {
   let requestedModelID: String
   let requestID: String
   let pricing: ProviderUsagePricing?
+  private(set) var sawDone = false
   private var started = false
   private var responseID: String?
   private var responseModelID: String?
@@ -564,8 +572,11 @@ private struct MistralEventReducer {
     self.pricing = pricing
   }
 
-  mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
+  mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
+    -> [ProviderEvent]
+  {
     if event.data == "[DONE]" {
+      sawDone = true
       return []
     }
     let object = try decodeJSONObject(
@@ -573,15 +584,10 @@ private struct MistralEventReducer {
       providerID: providerID,
       operation: "mistral.event.decode"
     )
-    if let error = object.object("error") {
-      throw ProviderRuntimeFailure(
-        code: .transportFailed,
-        message: error.string("message") ?? "Mistral stream returned an error",
-        providerID: providerID,
-        operation: "mistral.event.error",
-        causeDescription: error.string("code")
-      )
+    guard let choices = object.array("choices") else {
+      throw invalid("Invalid Mistral streaming event")
     }
+    try await observation.streamEvent(.object(object))
 
     var normalized: [ProviderEvent] = []
     if !started {
@@ -623,10 +629,6 @@ private struct MistralEventReducer {
       )
     }
 
-    guard let choices = object.array("choices") else {
-      if object["usage"] != nil { return normalized }
-      throw invalid("Mistral event is missing choices")
-    }
     for choiceValue in choices {
       guard let choice = choiceValue.objectValue else {
         throw invalid("Mistral choice is not an object")

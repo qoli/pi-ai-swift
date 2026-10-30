@@ -129,7 +129,9 @@
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#anthropicWireObservationsMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors",
+        "Tests/PiAIProviderRuntimeTests/MistralHTTPTests.swift#nativeWireObserversMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralNativeWireObserverMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2504,7 +2506,9 @@
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
         "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleMistralAndOpenRouterResponsesMatchPinnedSource",
-        "Fixtures/Differential/Oracle/response-provider-branches.json"
+        "Fixtures/Differential/Oracle/response-provider-branches.json",
+        "Tests/PiAIProviderRuntimeTests/MistralHTTPTests.swift#nativeWireObserversMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralNativeWireObserverMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test",

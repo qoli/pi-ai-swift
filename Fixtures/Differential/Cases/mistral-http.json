@@ -102,5 +102,99 @@
         "User-Agent": "synthetic-fixture-client"
       }
     }
+  ],
+  "observerCases": [
+    {
+      "id": "parsed-events",
+      "status": 200,
+      "events": [
+        {
+          "id": "mistral-response-id",
+          "model": "fixture-model",
+          "provider_extra": {
+            "route": "fixture"
+          },
+          "choices": [
+            {
+              "index": 0,
+              "finish_reason": null,
+              "delta": {
+                "content": "Hello 👋"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mistral-response-id",
+          "model": "fixture-model",
+          "choices": [
+            {
+              "index": 0,
+              "finish_reason": "stop",
+              "delta": {}
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1,
+            "completion_tokens": 1,
+            "total_tokens": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "http-error",
+      "status": 429,
+      "body": "fixture rejected"
+    },
+    {
+      "id": "invalid-event",
+      "status": 200,
+      "body": "data: {\"unexpected\":true}\n\n"
+    },
+    {
+      "id": "after-done",
+      "status": 200,
+      "events": [
+        {
+          "id": "mistral-response-id",
+          "model": "fixture-model",
+          "provider_extra": {
+            "route": "fixture"
+          },
+          "choices": [
+            {
+              "index": 0,
+              "finish_reason": null,
+              "delta": {
+                "content": "Hello 👋"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mistral-response-id",
+          "model": "fixture-model",
+          "choices": [
+            {
+              "index": 0,
+              "finish_reason": "stop",
+              "delta": {}
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1,
+            "completion_tokens": 1,
+            "total_tokens": 2
+          }
+        }
+      ],
+      "trailingSSE": "data: not-json\n\n"
+    },
+    {
+      "id": "error-envelope",
+      "status": 200,
+      "body": "data: {\"error\":{\"message\":\"quota\",\"code\":\"limit\"}}\n\n"
+    }
   ]
 }

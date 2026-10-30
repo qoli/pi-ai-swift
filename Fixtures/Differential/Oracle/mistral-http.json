@@ -93,5 +93,254 @@
       }
     }
   },
+  "observers": {
+    "after-done": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6Im1pc3RyYWwtcmVzcG9uc2UtaWQiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJwcm92aWRlcl9leHRyYSI6eyJyb3V0ZSI6ImZpeHR1cmUifSwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImZpbmlzaF9yZWFzb24iOm51bGwsImRlbHRhIjp7ImNvbnRlbnQiOiJIZWxsbyDwn5GLIn19XX0KCmRhdGE6IHsiaWQiOiJtaXN0cmFsLXJlc3BvbnNlLWlkIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImZpbmlzaF9yZWFzb24iOiJzdG9wIiwiZGVsdGEiOnt9fV0sInVzYWdlIjp7InByb21wdF90b2tlbnMiOjEsImNvbXBsZXRpb25fdG9rZW5zIjoxLCJ0b3RhbF90b2tlbnMiOjJ9fQoKZGF0YTogW0RPTkVdCgpkYXRhOiBub3QtanNvbgoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream",
+          "x-fixture-response": "after-done"
+        },
+        "status": 200
+      },
+      "errorMessage": null,
+      "events": [
+        {
+          "choices": [
+            {
+              "delta": {
+                "content": "Hello 👋"
+              },
+              "finish_reason": null,
+              "index": 0
+            }
+          ],
+          "id": "mistral-response-id",
+          "model": "fixture-model",
+          "provider_extra": {
+            "route": "fixture"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {},
+              "finish_reason": "stop",
+              "index": 0
+            }
+          ],
+          "id": "mistral-response-id",
+          "model": "fixture-model",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 1,
+            "total_tokens": 2
+          }
+        }
+      ],
+      "models": [
+        {
+          "api": "mistral-conversations",
+          "id": "fixture-model",
+          "provider": "mistral"
+        },
+        {
+          "api": "mistral-conversations",
+          "id": "fixture-model",
+          "provider": "mistral"
+        }
+      ],
+      "outcome": "stop",
+      "responses": [
+        {
+          "headers": {
+            "content-type": "text/event-stream",
+            "x-fixture-response": "after-done"
+          },
+          "status": 200
+        }
+      ],
+      "stages": [
+        "payload",
+        "response",
+        "event",
+        "event"
+      ],
+      "wireMaxTokens": 64,
+      "wireTemperature": 0.25
+    },
+    "error-envelope": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJlcnJvciI6eyJtZXNzYWdlIjoicXVvdGEiLCJjb2RlIjoibGltaXQifX0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream",
+          "x-fixture-response": "error-envelope"
+        },
+        "status": 200
+      },
+      "errorMessage": "Invalid Mistral streaming event",
+      "events": [],
+      "models": [],
+      "outcome": "error",
+      "responses": [
+        {
+          "headers": {
+            "content-type": "text/event-stream",
+            "x-fixture-response": "error-envelope"
+          },
+          "status": 200
+        }
+      ],
+      "stages": [
+        "payload",
+        "response"
+      ],
+      "wireMaxTokens": 64,
+      "wireTemperature": 0.25
+    },
+    "http-error": {
+      "decoderInput": {
+        "chunksBase64": [
+          "Zml4dHVyZSByZWplY3RlZA=="
+        ],
+        "headers": {
+          "content-type": "application/json",
+          "x-fixture-response": "http-error"
+        },
+        "status": 429
+      },
+      "errorMessage": "Mistral API error (429): fixture rejected",
+      "events": [],
+      "models": [],
+      "outcome": "error",
+      "responses": [
+        {
+          "headers": {
+            "content-type": "application/json",
+            "x-fixture-response": "http-error"
+          },
+          "status": 429
+        }
+      ],
+      "stages": [
+        "payload",
+        "response"
+      ],
+      "wireMaxTokens": 64,
+      "wireTemperature": 0.25
+    },
+    "invalid-event": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ1bmV4cGVjdGVkIjp0cnVlfQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream",
+          "x-fixture-response": "invalid-event"
+        },
+        "status": 200
+      },
+      "errorMessage": "Invalid Mistral streaming event",
+      "events": [],
+      "models": [],
+      "outcome": "error",
+      "responses": [
+        {
+          "headers": {
+            "content-type": "text/event-stream",
+            "x-fixture-response": "invalid-event"
+          },
+          "status": 200
+        }
+      ],
+      "stages": [
+        "payload",
+        "response"
+      ],
+      "wireMaxTokens": 64,
+      "wireTemperature": 0.25
+    },
+    "parsed-events": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6Im1pc3RyYWwtcmVzcG9uc2UtaWQiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJwcm92aWRlcl9leHRyYSI6eyJyb3V0ZSI6ImZpeHR1cmUifSwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImZpbmlzaF9yZWFzb24iOm51bGwsImRlbHRhIjp7ImNvbnRlbnQiOiJIZWxsbyDwn5GLIn19XX0KCmRhdGE6IHsiaWQiOiJtaXN0cmFsLXJlc3BvbnNlLWlkIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImZpbmlzaF9yZWFzb24iOiJzdG9wIiwiZGVsdGEiOnt9fV0sInVzYWdlIjp7InByb21wdF90b2tlbnMiOjEsImNvbXBsZXRpb25fdG9rZW5zIjoxLCJ0b3RhbF90b2tlbnMiOjJ9fQoKZGF0YTogW0RPTkVdCgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream",
+          "x-fixture-response": "parsed-events"
+        },
+        "status": 200
+      },
+      "errorMessage": null,
+      "events": [
+        {
+          "choices": [
+            {
+              "delta": {
+                "content": "Hello 👋"
+              },
+              "finish_reason": null,
+              "index": 0
+            }
+          ],
+          "id": "mistral-response-id",
+          "model": "fixture-model",
+          "provider_extra": {
+            "route": "fixture"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {},
+              "finish_reason": "stop",
+              "index": 0
+            }
+          ],
+          "id": "mistral-response-id",
+          "model": "fixture-model",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 1,
+            "total_tokens": 2
+          }
+        }
+      ],
+      "models": [
+        {
+          "api": "mistral-conversations",
+          "id": "fixture-model",
+          "provider": "mistral"
+        },
+        {
+          "api": "mistral-conversations",
+          "id": "fixture-model",
+          "provider": "mistral"
+        }
+      ],
+      "outcome": "stop",
+      "responses": [
+        {
+          "headers": {
+            "content-type": "text/event-stream",
+            "x-fixture-response": "parsed-events"
+          },
+          "status": 200
+        }
+      ],
+      "stages": [
+        "payload",
+        "response",
+        "event",
+        "event"
+      ],
+      "wireMaxTokens": 64,
+      "wireTemperature": 0.25
+    }
+  },
   "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
 }
