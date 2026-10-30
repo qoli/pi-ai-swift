@@ -15,6 +15,7 @@ import { bedrockSDKPayload, bedrockWirePayload } from "./bedrock-payload.mjs";
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
 const { getCurrentSystemPrompt, getCurrentTools } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
+const { getSystemMessageText, renderSystemMessageUpdate } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/text.ts")));
 const { getEnvApiKey } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/env-api-keys.ts")));
 const { getProviderEnvValue } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/provider-env.ts")));
 const { clampMaxTokensToContext } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/api/simple-options.ts")));
@@ -52,12 +53,17 @@ function fixtureCredential(model, options) {
 }
 
 function fixtureInput(model, context, options, responses, credential, requestSource = "api", generationMode = "raw") {
+  const preservesSystemMessages = model.api === "openai-completions" && model.compat?.supportsMidConvoSystemMessages === true;
+  const messages = preservesSystemMessages ? context.messages.map((message, index) => message.role === "system"
+    ? { ...message, content: index === 0 ? getSystemMessageText(message) : renderSystemMessageUpdate(message) }
+    : message).filter(message => message.role !== "system" || message.content.length > 0)
+    : context.messages.filter(message => message.role !== "system");
   return {
     model, requestSource, generationMode,
     context: {
-      systemPrompt: getCurrentSystemPrompt(context.messages),
+      systemPrompt: preservesSystemMessages ? undefined : getCurrentSystemPrompt(context.messages),
       tools: getCurrentTools(context.messages),
-      messages: context.messages.filter(message => message.role !== "system"),
+      messages,
     },
     options: { ...options,
       ...(options.grammarToolInputProperties instanceof Map ? {

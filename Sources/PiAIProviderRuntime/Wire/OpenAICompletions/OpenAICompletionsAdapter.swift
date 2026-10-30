@@ -174,7 +174,11 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> URLRequest {
-    try request.validateSingleSystemMessage(operation: "openai-completions.request.system")
+    if context.modelConfiguration.metadata.object("compat")?.bool("supportsMidConvoSystemMessages")
+      != true
+    {
+      try request.validateSingleSystemMessage(operation: "openai-completions.request.system")
+    }
     let azure =
       request.providerID == "azure"
       ? try ResolvedAzureOpenAIResponsesConfiguration.resolve(

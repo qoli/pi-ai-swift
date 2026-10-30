@@ -327,6 +327,7 @@ struct SwiftConformanceProbe {
 
   private static func message(_ raw: [String: JSONValue]) throws -> ProviderMessage {
     switch try raw.required("role") {
+    case "system": return .system(try raw.required("content"))
     case "user":
       let content = try userContent(raw["content"])
       if let timestamp = raw.int("timestamp") {

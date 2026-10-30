@@ -558,7 +558,9 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#azureCompletionsRetainsMidConversationSystemMessages",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAzureCompletionsKeepsMidConversationSystemMessages"
       ],
       "requiredGates": [
         "swift-test"
@@ -2706,7 +2708,9 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsWireCallbacksAreNativeAndMatchSourceRawEvents",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsAwaitObserverFailuresBeforeNormalizingContent",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#azureCompletionsRetainsMidConversationSystemMessages",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAzureCompletionsKeepsMidConversationSystemMessages"
       ],
       "requiredGates": [
         "swift-test",

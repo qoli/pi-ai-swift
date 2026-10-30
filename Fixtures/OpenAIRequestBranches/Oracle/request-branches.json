@@ -1,5 +1,27 @@
 {
   "cases": {
+    "azure-completions.mid-system": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "first",
+            "role": "system"
+          },
+          {
+            "content": "hi",
+            "role": "user"
+          },
+          {
+            "content": "second",
+            "role": "system"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
     "azure-openai-responses.grammar-failure-empty-values": {
       "errorMessage": "Tool \"sample_tool\" cannot use grammar constrained sampling: no supported grammar variant was provided."
     },

@@ -2052,6 +2052,36 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAzureCompletionsKeepsMidConversationSystemMessages() async throws {
+    let expected = try XCTUnwrap(
+      load("OpenAIRequestBranches/Oracle/request-branches.json").object("cases")?.object(
+        "azure-completions.mid-system")?.object("requestBody"))
+    let (base, context) = inputs(
+      api: "openai-completions", providerID: "azure", modelID: "deepseek-v4-pro",
+      baseURL: "https://fixture.openai.azure.com/openai/v1", reasoning: true,
+      metadata: [
+        "compat": .object([
+          "supportsMidConvoSystemMessages": .bool(true), "supportsDeveloperRole": .bool(false),
+        ])
+      ])
+    let request = ProviderRequest(
+      id: base.id, providerID: base.providerID, modelID: base.modelID,
+      messages: [
+        .system("first"), .user([.text("hi")]), .system("second"), .user([.text("again")]),
+      ], tools: [], options: base.options)
+    let transport = IOSMistralHTTPFixture(status: 418, body: Data("fixture".utf8))
+    do {
+      for try await _ in OpenAICompletionsAdapter().stream(
+        request, context: context, transport: transport)
+      {}
+      XCTFail("expected fixture HTTP failure")
+    } catch let failure as ProviderRuntimeFailure { XCTAssertEqual(failure.code, .transportFailed) }
+    let sent = await transport.sent
+    let body = try decodeJSONObject(
+      try XCTUnwrap(sent?.httpBody), providerID: "azure", operation: "ios.mid-system")
+    XCTAssertEqual(body["messages"], expected["messages"])
+  }
+
   func testPreferredStrictFallbackDiagnosticsMatchPinnedSource() async throws {
     let fixture = try load("Differential/Cases/strict-fallback.json")
     let expectedCases = try XCTUnwrap(

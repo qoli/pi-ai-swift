@@ -178,7 +178,7 @@ async function capture(testCase) {
     input: 1, output: 1, cacheRead: 0, cacheWrite: 0, totalTokens: 2,
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
   };
-  const context = testCase.transcriptVariant
+  const context = testCase.systemTranscript ? { messages: testCase.systemTranscript, tools: [] } : testCase.transcriptVariant
     ? compatTranscript(testCase, tool, replayUsage)
     : testCase.replayVariant === "text-id-hash"
     ? {

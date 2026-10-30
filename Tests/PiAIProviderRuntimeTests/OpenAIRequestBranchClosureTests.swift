@@ -6,6 +6,34 @@ import Testing
 @Suite
 struct OpenAIRequestBranchClosureTests {
   @Test
+  func azureCompletionsRetainsMidConversationSystemMessages() async throws {
+    let fixture = makeFixture(
+      protocolID: "openai-completions", providerID: "azure", modelID: "deepseek-v4-pro",
+      reasoning: true,
+      baseURL: "https://fixture.openai.azure.com/openai/v1",
+      metadata: [
+        "compat": .object([
+          "supportsMidConvoSystemMessages": .bool(true), "supportsDeveloperRole": .bool(false),
+        ])
+      ],
+      options: options(), tool: .init(name: "unused", description: "", inputSchema: .object([:])),
+      messages: [
+        .system("first"), .user([.text("hi")]), .system("second"), .user([.text("again")]),
+      ], tools: [])
+    let transport = BranchCaptureTransport()
+    do {
+      for try await _ in fixture.adapter.stream(
+        fixture.request, context: fixture.context, transport: transport)
+      {}
+    } catch is ProviderRuntimeFailure {}
+    let sent = try #require(await transport.request())
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody), providerID: "azure", operation: "test.mid-system")
+    #expect(
+      body["messages"] == (try expectedRequestBody("azure-completions.mid-system"))["messages"])
+  }
+
+  @Test
   func pinnedSourceOracleIsReproducible() throws {
     let root = repositoryRoot()
     for stem in ["request-branches", "completions-compat"] {
