@@ -236,7 +236,7 @@ extension ProviderAssistantMessage {
     guard source != target else { return content }
     return content.compactMap { item in
       switch item {
-      case .text:
+      case .text, .textUTF16, .unrecognized:
         return item
       case .signedText(let text):
         return .text(text.text)
@@ -317,11 +317,16 @@ extension Array where Element == ProviderMessage {
 
 public enum ProviderUserContent: Sendable, Equatable, Codable {
   case text(String)
+  /// Preserves text imported from runtimes that can retain unpaired UTF-16 surrogates.
+  case textUTF16([UInt16])
+  case unrecognized([String: JSONValue])
   case image(ProviderImage)
 }
 
 public enum ProviderAssistantContent: Sendable, Equatable, Codable {
   case text(String)
+  case textUTF16([UInt16])
+  case unrecognized([String: JSONValue])
   case signedText(ProviderTextContent)
   case reasoning(ProviderReasoningContent)
   case toolCall(ProviderToolCall)

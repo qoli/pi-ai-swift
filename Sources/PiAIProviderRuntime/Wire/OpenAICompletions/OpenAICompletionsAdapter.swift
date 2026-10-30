@@ -453,6 +453,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         let texts = content.compactMap { item -> String? in
           switch item {
           case .text(let text): return text
+          case .textUTF16(let units): return ProviderInputText.sanitizeUTF16(units)
           case .signedText(let text): return text.text
           default: return nil
           }
@@ -716,6 +717,10 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
 
   private func makeUserContent(_ content: ProviderUserContent) throws -> JSONValue {
     switch content {
+    case .textUTF16(let units):
+      try makeUserContent(.text(ProviderInputText.sanitizeUTF16(units)))
+    case .unrecognized:
+      throw ProviderInputText.unsupportedContent("openai-completions")
     case .text(let text):
       .object(["type": .string("text"), "text": .string(text)])
     case .image(.data(let data, let mimeType)):

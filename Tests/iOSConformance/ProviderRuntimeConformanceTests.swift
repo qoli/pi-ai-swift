@@ -1294,6 +1294,58 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testBedrockImportedContentMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/bedrock-input-interop.json")
+    let oracle = try load("Differential/Oracle/bedrock-input-interop.json")
+    for value in try XCTUnwrap(fixture.array("cases")) {
+      let spec = try XCTUnwrap(value.objectValue)
+      let name = try XCTUnwrap(spec.string("id"))
+      let blocks = try XCTUnwrap(spec.array("content")).map { try XCTUnwrap($0.objectValue) }
+      let message: ProviderMessage
+      if spec.string("role") == "user" {
+        message = .user(
+          try blocks.map { block in
+            if let units = block["utf16"] {
+              return .textUTF16(
+                try JSONDecoder().decode([UInt16].self, from: JSONEncoder().encode(units)))
+            }
+            if block.string("type") == "text" { return .text(block.string("text") ?? "") }
+            return .unrecognized(block)
+          })
+      } else {
+        message = .assistant(
+          try blocks.map { block in
+            if let units = block["utf16"] {
+              return .textUTF16(
+                try JSONDecoder().decode([UInt16].self, from: JSONEncoder().encode(units)))
+            }
+            if block.string("type") == "text" { return .text(block.string("text") ?? "") }
+            return .unrecognized(block)
+          })
+      }
+      let (_, context) = inputs(
+        api: "bedrock-converse-stream", providerID: "amazon-bedrock", modelID: "fixture-model",
+        baseURL: "https://bedrock-runtime.us-east-1.amazonaws.com", reasoning: false)
+      let request = ProviderRequest(
+        id: name, providerID: "amazon-bedrock", modelID: "fixture-model", messages: [message],
+        tools: [],
+        options: .init(
+          maximumOutputTokens: 64, temperature: nil, reasoningEffort: nil, responseSchema: nil,
+          providerOptions: [:], cacheRetention: .none))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in BedrockConverseStreamAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: "amazon-bedrock",
+        operation: "ios.bedrock.input-interop")
+      XCTAssertEqual(body["messages"], oracle.object("cases")?[name], name)
+    }
+  }
+
   func testBedrockBlankContentMatchesPinnedSource() async throws {
     let fixture = try load("Differential/Cases/provider-intent.json")
     let oracle = try load("Differential/Oracle/provider-intent.json")

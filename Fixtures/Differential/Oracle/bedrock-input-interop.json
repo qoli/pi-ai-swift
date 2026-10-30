@@ -1,0 +1,67 @@
+{
+  "cases": {
+    "assistant-surrogate-only": [],
+    "assistant-unknown-mixed": [
+      {
+        "content": [
+          {
+            "text": "hello"
+          }
+        ],
+        "role": "assistant"
+      }
+    ],
+    "assistant-unknown-only": [],
+    "user-pairs-and-unpaired": [
+      {
+        "content": [
+          {
+            "text": "😀A"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "user-surrogate-and-text": [
+      {
+        "content": [
+          {
+            "text": "hello"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "user-surrogate-only": [
+      {
+        "content": [
+          {
+            "text": "<empty>"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "user-unknown-mixed": [
+      {
+        "content": [
+          {
+            "text": "hello"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "user-unknown-only": [
+      {
+        "content": [
+          {
+            "text": "<empty>"
+          }
+        ],
+        "role": "user"
+      }
+    ]
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

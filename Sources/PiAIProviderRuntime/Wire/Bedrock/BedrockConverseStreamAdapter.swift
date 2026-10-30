@@ -570,7 +570,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         ]
         if let split {
           blocks.append(.object(["text": .string(split.caption)]))
-          blocks.append(contentsOf: try split.images.map { try userContent(.image($0)) })
+          blocks.append(contentsOf: try split.images.compactMap { try userContent(.image($0)) })
         }
         return .object(["role": .string("user"), "content": .array(blocks)])
       }
@@ -614,21 +614,21 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
   }
 
   private func userContents(_ content: [ProviderUserContent]) throws -> [JSONValue] {
-    let values = try content.filter {
-      if case .text(let text) = $0 {
-        return !isBlankText(text)
-      }
-      return true
-    }.map(userContent)
+    let values = try content.compactMap(userContent)
     return values.isEmpty ? [.object(["text": .string("<empty>")])] : values
   }
 
-  private func userContent(_ content: ProviderUserContent) throws -> JSONValue {
+  private func userContent(_ content: ProviderUserContent) throws -> JSONValue? {
     switch content {
+    case .textUTF16(let units):
+      return try userContent(.text(ProviderInputText.sanitizeUTF16(units)))
+    case .unrecognized:
+      return nil
     case .text(let text):
-      .object(["text": .string(nonBlank(text))])
+      guard !isBlankText(text) else { return nil }
+      return .object(["text": .string(text)])
     case .image(.data(let data, let mimeType)):
-      try image(data: data, mimeType: mimeType)
+      return try image(data: data, mimeType: mimeType)
     case .image(.remoteURL):
       throw ProviderRuntimeFailure(
         code: .unsupportedCapability,
@@ -645,6 +645,11 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     supportsSignature: Bool
   ) -> JSONValue? {
     switch content {
+    case .textUTF16(let units):
+      return assistantContent(
+        .text(ProviderInputText.sanitizeUTF16(units)), supportsSignature: supportsSignature)
+    case .unrecognized:
+      return nil
     case .text(let text):
       guard !isBlankText(text) else { return nil }
       return .object(["text": .string(text)])

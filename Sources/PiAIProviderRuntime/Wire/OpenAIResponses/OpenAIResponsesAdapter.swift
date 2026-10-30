@@ -800,6 +800,15 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
                 message: "Responses reasoning signature is malformed",
                 cause: String(describing: error))
             }
+          case .unrecognized:
+            continue
+          case .textUTF16(let units):
+            result.append(
+              responseMessageInput(
+                text: ProviderInputText.sanitizeUTF16(units), signature: nil,
+                fallbackID: textIndex == 0
+                  ? "msg_pi_\(messageIndex)" : "msg_pi_\(messageIndex)_\(textIndex)"))
+            textIndex += 1
           case .text(let text):
             result.append(
               responseMessageInput(
@@ -1041,6 +1050,10 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
 
   private func makeUserContent(_ content: ProviderUserContent) throws -> JSONValue {
     switch content {
+    case .textUTF16(let units):
+      try makeUserContent(.text(ProviderInputText.sanitizeUTF16(units)))
+    case .unrecognized:
+      throw ProviderInputText.unsupportedContent("openai-responses")
     case .text(let text):
       .object(["type": .string("input_text"), "text": .string(text)])
     case .image(.data(let data, let mimeType)):

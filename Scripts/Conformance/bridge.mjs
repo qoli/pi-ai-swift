@@ -52,6 +52,15 @@ function fixtureCredential(model, options) {
   };
 }
 
+function preserveUTF16(content) {
+  const units = text => Array.from({ length: text.length }, (_, index) => text.charCodeAt(index));
+  if (typeof content === "string") {
+    return content.isWellFormed() ? content : [{ type: "text", textUTF16: units(content) }];
+  }
+  return content?.map(block => block.type === "text" && typeof block.text === "string" && !block.text.isWellFormed()
+    ? { ...block, text: undefined, textUTF16: units(block.text) } : block);
+}
+
 function fixtureInput(model, context, options, responses, credential, requestSource = "api", generationMode = "raw") {
   const preservesSystemMessages = model.api === "openai-completions" && model.compat?.supportsMidConvoSystemMessages === true;
   const messages = preservesSystemMessages ? context.messages.map((message, index) => message.role === "system"
@@ -64,7 +73,8 @@ function fixtureInput(model, context, options, responses, credential, requestSou
     context: {
       systemPrompt: preservesSystemMessages ? undefined : getCurrentSystemPrompt(context.messages),
       tools: getCurrentTools(context.messages),
-      messages,
+      messages: messages.map(message => ["user", "assistant"].includes(message.role)
+        ? { ...message, content: preserveUTF16(message.content) } : message),
     },
     options: { ...options,
       ...(options.grammarToolInputProperties instanceof Map ? {

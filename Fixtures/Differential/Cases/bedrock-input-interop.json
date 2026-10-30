@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "user-unknown-mixed",
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "hello"
+        },
+        {
+          "type": "unknown",
+          "data": "foo"
+        }
+      ]
+    },
+    {
+      "id": "assistant-unknown-mixed",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "hello"
+        },
+        {
+          "type": "unknown",
+          "data": "foo"
+        }
+      ]
+    },
+    {
+      "id": "user-unknown-only",
+      "role": "user",
+      "content": [
+        {
+          "type": "unknown",
+          "data": "foo"
+        }
+      ]
+    },
+    {
+      "id": "assistant-unknown-only",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "unknown",
+          "data": "foo"
+        }
+      ]
+    },
+    {
+      "id": "user-surrogate-only",
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "utf16": [
+            55296
+          ]
+        }
+      ]
+    },
+    {
+      "id": "assistant-surrogate-only",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "utf16": [
+            55296
+          ]
+        }
+      ]
+    },
+    {
+      "id": "user-pairs-and-unpaired",
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "utf16": [
+            55357,
+            56832,
+            55296,
+            65,
+            56320
+          ]
+        }
+      ]
+    },
+    {
+      "id": "user-surrogate-and-text",
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "utf16": [
+            55296
+          ]
+        },
+        {
+          "type": "text",
+          "text": "hello"
+        }
+      ]
+    }
+  ]
+}

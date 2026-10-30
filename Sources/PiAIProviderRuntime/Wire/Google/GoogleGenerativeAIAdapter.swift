@@ -471,6 +471,10 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
 
   private func makeUserPart(_ content: ProviderUserContent) throws -> JSONValue {
     switch content {
+    case .textUTF16(let units):
+      try makeUserPart(.text(ProviderInputText.sanitizeUTF16(units)))
+    case .unrecognized:
+      throw ProviderInputText.unsupportedContent("google")
     case .text(let text):
       .object(["text": .string(text)])
     case .image(let image):
@@ -483,6 +487,10 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     modelID: String
   ) throws -> JSONValue? {
     switch content {
+    case .textUTF16(let units):
+      return try makeAssistantPart(.text(ProviderInputText.sanitizeUTF16(units)), modelID: modelID)
+    case .unrecognized:
+      return nil
     case .text(let text):
       guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
       return .object(["text": .string(text)])

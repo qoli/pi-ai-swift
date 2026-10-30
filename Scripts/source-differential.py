@@ -94,6 +94,12 @@ def main() -> int:
     )
     for script, case_relative, oracle_relative, description in [
         (
+            "pi-ai-bedrock-input-interop-oracle.mjs",
+            "Fixtures/Differential/Cases/bedrock-input-interop.json",
+            "Fixtures/Differential/Oracle/bedrock-input-interop.json",
+            "Bedrock unknown content and raw UTF-16",
+        ),
+        (
             "pi-ai-client-identity-oracle.mjs",
             "Fixtures/Differential/Cases/client-identity.json",
             "Fixtures/Differential/Oracle/client-identity.json",

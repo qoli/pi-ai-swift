@@ -722,6 +722,10 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
 
   private func makeUserContent(_ content: ProviderUserContent) throws -> JSONValue {
     switch content {
+    case .textUTF16(let units):
+      try makeUserContent(.text(ProviderInputText.sanitizeUTF16(units)))
+    case .unrecognized:
+      throw ProviderInputText.unsupportedContent("anthropic")
     case .text(let text):
       .object(["type": .string("text"), "text": .string(text)])
     case .image(let image):
@@ -733,6 +737,11 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     _ content: ProviderAssistantContent, allowEmptySignature: Bool
   ) -> JSONValue? {
     switch content {
+    case .textUTF16(let units):
+      return makeAssistantContent(
+        .text(ProviderInputText.sanitizeUTF16(units)), allowEmptySignature: allowEmptySignature)
+    case .unrecognized:
+      return nil
     case .text(let text):
       guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
       return .object(["type": .string("text"), "text": .string(text)])

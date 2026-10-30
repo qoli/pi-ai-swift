@@ -312,6 +312,13 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
         var calls: [JSONValue] = []
         for item in content {
           switch item {
+          case .unrecognized:
+            continue
+          case .textUTF16(let units):
+            parts.append(
+              .object([
+                "type": .string("text"), "text": .string(ProviderInputText.sanitizeUTF16(units)),
+              ]))
           case .text(let text):
             parts.append(.object(["type": .string("text"), "text": .string(text)]))
           case .signedText(let text):
@@ -398,6 +405,10 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     context: WireProtocolContext
   ) throws -> JSONValue {
     switch content {
+    case .textUTF16(let units):
+      return try makeUserContent(.text(ProviderInputText.sanitizeUTF16(units)), context: context)
+    case .unrecognized:
+      throw ProviderInputText.unsupportedContent("mistral")
     case .text(let text):
       return .object(["type": .string("text"), "text": .string(text)])
     case .image(let image):

@@ -294,6 +294,10 @@ struct PiMessagesAdapter: WireProtocolAdapter {
 
   private func makeUserContent(_ content: ProviderUserContent) throws -> JSONValue {
     switch content {
+    case .textUTF16(let units):
+      return try makeUserContent(.text(ProviderInputText.sanitizeUTF16(units)))
+    case .unrecognized(let value):
+      return .object(value)
     case .text(let text):
       return .object(["type": .string("text"), "text": .string(text)])
     case .image(let image):
@@ -305,6 +309,10 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     -> JSONValue
   {
     switch content {
+    case .textUTF16(let units):
+      return makeAssistantContent(.text(ProviderInputText.sanitizeUTF16(units)))
+    case .unrecognized(let value):
+      return .object(value)
     case .text(let text):
       return .object(["type": .string("text"), "text": .string(text)])
     case .signedText(let text):

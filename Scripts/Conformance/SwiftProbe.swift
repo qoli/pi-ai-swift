@@ -351,6 +351,7 @@ struct SwiftConformanceProbe {
         guard let block = value.objectValue else { throw ProbeError.unsupported("assistant block") }
         switch try block.required("type") {
         case "text":
+          if let units = try textUTF16(block) { return .textUTF16(units) }
           return .signedText(
             .init(text: block.string("text") ?? "", signature: block.string("textSignature")))
         case "thinking":
@@ -365,7 +366,7 @@ struct SwiftConformanceProbe {
               arguments: block["arguments"] ?? .object([:]),
               thoughtSignature: block.string("thoughtSignature"),
               namespace: block.string("namespace"), argumentsError: block.string("argumentsError")))
-        default: throw ProbeError.unsupported("assistant content")
+        default: return .unrecognized(block)
         }
       }
       let usage = raw.object("usage") ?? [:]
@@ -401,6 +402,8 @@ struct SwiftConformanceProbe {
             switch $0 {
             case .text(let text): return .text(text)
             case .image(let image): return .image(image)
+            case .textUTF16, .unrecognized:
+              throw ProbeError.unrepresentable("tool-result-content")
             }
           }, isError: raw.bool("isError") ?? false,
           timestampMilliseconds: raw.int("timestamp").map(Int64.init)))
@@ -414,7 +417,9 @@ struct SwiftConformanceProbe {
     return try values.map { value in
       guard let block = value.objectValue else { throw ProbeError.unsupported("user block") }
       switch try block.required("type") {
-      case "text": return .text(block.string("text") ?? "")
+      case "text":
+        if let units = try textUTF16(block) { return .textUTF16(units) }
+        return .text(block.string("text") ?? "")
       case "image":
         let encoded = try block.required("data")
         let padding = (4 - encoded.utf8.count % 4) % 4
@@ -423,9 +428,14 @@ struct SwiftConformanceProbe {
           throw ProbeError.unrepresentable("opaque-base64-image")
         }
         return .image(.data(data, mimeType: try block.required("mimeType")))
-      default: throw ProbeError.unsupported("user content")
+      default: return .unrecognized(block)
       }
     }
+  }
+
+  private static func textUTF16(_ block: [String: JSONValue]) throws -> [UInt16]? {
+    guard let value = block["textUTF16"] else { return nil }
+    return try JSONDecoder().decode([UInt16].self, from: JSONEncoder().encode(value))
   }
 
   private static func sampling(_ raw: [String: JSONValue]?) throws -> ProviderConstrainedSampling? {

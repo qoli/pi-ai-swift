@@ -2175,7 +2175,8 @@
         "packages/ai/test/stream.test.ts",
         "packages/ai/test/bedrock-strict-tool-fallback.test.ts",
         "packages/ai/test/anthropic-error-tool-result-images.test.ts",
-        "packages/ai/test/bedrock-cache-write-1h-cost.test.ts"
+        "packages/ai/test/bedrock-cache-write-1h-cost.test.ts",
+        "packages/ai/test/bedrock-convert-messages.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2221,7 +2222,12 @@
         "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift#sourceDerivedPreferredStrictRetriesPreserveRequiredAndFailureBoundaries",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#bedrockWireObservationsMatchPinnedSourceBeforeNormalizationAndSigning",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockNativeWireObserverMatchesPinnedSource",
+        "Scripts/pi-ai-bedrock-input-interop-oracle.mjs",
+        "Fixtures/Differential/Cases/bedrock-input-interop.json",
+        "Fixtures/Differential/Oracle/bedrock-input-interop.json",
+        "Tests/PiAIProviderRuntimeTests/BedrockInputInteropDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockImportedContentMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2243,7 +2249,8 @@
         "Sources/PiAIProviderRuntime/Wire/Common/ErrorToolResultImages.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderSamplingParameters.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/GrammarToolInputJSONBuffer.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/ProviderOrderedJSON.swift"
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderOrderedJSON.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderInputText.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [

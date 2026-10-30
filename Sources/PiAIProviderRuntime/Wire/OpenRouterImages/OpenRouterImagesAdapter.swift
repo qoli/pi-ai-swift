@@ -152,6 +152,10 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
 
   private func content(_ input: ProviderUserContent) throws -> JSONValue {
     switch input {
+    case .textUTF16(let units):
+      return try content(.text(ProviderInputText.sanitizeUTF16(units)))
+    case .unrecognized:
+      throw ProviderInputText.unsupportedContent("openrouter-images")
     case .text(let text):
       return .object(["type": .string("text"), "text": .string(text)])
     case .image(.data(let data, let mimeType)):
