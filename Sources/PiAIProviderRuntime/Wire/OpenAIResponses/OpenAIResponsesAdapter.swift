@@ -1341,7 +1341,9 @@ private struct OpenAIResponsesReducer {
         message: message,
         providerID: providerID,
         operation: "openai-responses.event.error",
-        causeDescription: error?.string("code") ?? object.string("code") ?? details
+        causeDescription: error?.string("code") ?? object.string("code") ?? details,
+        providerMetadata: type == "response.failed" && flavor != .codex
+          ? object.object("response")?.string("status").map { ["rawStopReason": .string($0)] } : nil
       )
     case "response.output_text.done", "response.content_part.added",
       "response.content_part.done",

@@ -2077,7 +2077,11 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#grammarHistoryMapMatchesSourceWithoutCurrentToolDefinitions",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
         "Scripts/Conformance/bridge.mjs",
-        "Scripts/Conformance/SwiftProbe.swift"
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
+        "Scripts/pi-ai-failure-oracle.mjs",
+        "Fixtures/Differential/Oracle/failure-provider-declared.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2481,7 +2485,11 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#grammarHistoryMapMatchesSourceWithoutCurrentToolDefinitions",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
         "Scripts/Conformance/bridge.mjs",
-        "Scripts/Conformance/SwiftProbe.swift"
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
+        "Scripts/pi-ai-failure-oracle.mjs",
+        "Fixtures/Differential/Oracle/failure-provider-declared.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2657,7 +2665,11 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#grammarHistoryMapMatchesSourceWithoutCurrentToolDefinitions",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
         "Scripts/Conformance/bridge.mjs",
-        "Scripts/Conformance/SwiftProbe.swift"
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
+        "Scripts/pi-ai-failure-oracle.mjs",
+        "Fixtures/Differential/Oracle/failure-provider-declared.json"
       ],
       "requiredGates": [
         "swift-test"

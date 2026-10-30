@@ -107,14 +107,16 @@ struct SourceDerivedFailureDifferentialTests {
             )
           case "providerDeclaredError":
             #expect(operation.contains("error") || operation.contains("finish"))
-            if ["google-generative-ai", "google-vertex"].contains(protocolCase.protocolID) {
-              let rawReason = try #require(source.rawStopReason)
+            if [
+              "google-generative-ai", "google-vertex", "openai-responses",
+              "azure-openai-responses", "openai-codex-responses",
+            ].contains(protocolCase.protocolID) {
               #expect(
-                failure.providerMetadata?.string("rawStopReason") == rawReason,
+                failure.providerMetadata?.string("rawStopReason") == source.rawStopReason,
                 Comment(rawValue: protocolCase.protocolID))
-              #expect(
-                failure.message == source.sourceErrorMessage,
-                Comment(rawValue: protocolCase.protocolID))
+              if let message = source.sourceErrorMessage {
+                #expect(failure.message == message, Comment(rawValue: protocolCase.protocolID))
+              }
             }
           default:
             Issue.record("unknown failure category: \(failureCase.expectedCategory)")

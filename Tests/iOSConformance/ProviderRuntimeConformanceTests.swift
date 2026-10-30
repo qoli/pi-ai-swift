@@ -497,6 +497,30 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     XCTAssertNil(result.snapshot)
   }
 
+  func testResponsesFailureMetadataMatchesPinnedSource() async throws {
+    let oracle = try load("Differential/Oracle/failure-provider-declared.json")
+    for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
+      let source = try XCTUnwrap(oracle.object("protocols")?.object(api))
+      let decoder = try XCTUnwrap(source.object("decoderInput"))
+      let body = try XCTUnwrap(Data(base64Encoded: try XCTUnwrap(decoder.string("rawBodyBase64"))))
+      let (request, context) = inputs(api: api)
+      let result = try await replay(
+        OpenAIResponsesAdapter(
+          protocolID: api,
+          flavor: api == "azure-openai-responses"
+            ? .azure : api == "openai-codex-responses" ? .codex : .standard),
+        request: request, context: context, chunks: [body])
+      XCTAssertEqual(result.failure?.code, .transportFailed, api)
+      if let message = source.string("sourceErrorMessage") {
+        XCTAssertEqual(result.failure?.message, message, api)
+      }
+      XCTAssertEqual(
+        result.failure?.providerMetadata?.string("rawStopReason"), source.string("rawStopReason"),
+        api)
+      XCTAssertNil(result.snapshot, api)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
