@@ -456,6 +456,28 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testGoogleFailureMetadataMatchesPinnedSource() async throws {
+    let oracle = try load("Differential/Oracle/failure-provider-declared.json")
+    for api in ["google-generative-ai", "google-vertex"] {
+      let source = try XCTUnwrap(oracle.object("protocols")?.object(api))
+      let decoder = try XCTUnwrap(source.object("decoderInput"))
+      let body = try XCTUnwrap(Data(base64Encoded: try XCTUnwrap(decoder.string("rawBodyBase64"))))
+      let (request, context) = inputs(
+        api: api, providerID: api == "google-vertex" ? "google-vertex" : "google")
+      let result = try await replay(
+        GoogleGenerativeAIAdapter(
+          protocolID: api,
+          flavor: api == "google-vertex" ? .vertex : .generativeAI),
+        request: request, context: context, chunks: [body])
+      XCTAssertEqual(result.failure?.code, .transportFailed, api)
+      XCTAssertEqual(result.failure?.message, source.string("sourceErrorMessage"), api)
+      XCTAssertEqual(
+        result.failure?.providerMetadata?.string("rawStopReason"), source.string("rawStopReason"),
+        api)
+      XCTAssertNil(result.snapshot, api)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

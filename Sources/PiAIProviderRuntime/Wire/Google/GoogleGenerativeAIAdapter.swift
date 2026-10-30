@@ -954,10 +954,11 @@ private struct GoogleEventReducer {
       "UNEXPECTED_TOOL_CALL", "NO_IMAGE":
       throw ProviderRuntimeFailure(
         code: .transportFailed,
-        message: "Google provider stopped with: \(finishReason)",
+        message: "Provider stopped with: \(finishReason)",
         providerID: providerID,
         operation: "google.event.finish",
-        causeDescription: finishReason
+        causeDescription: finishReason,
+        providerMetadata: ["rawStopReason": .string(finishReason)]
       )
     default:
       throw invalid("unsupported Google finish reason: \(finishReason)")

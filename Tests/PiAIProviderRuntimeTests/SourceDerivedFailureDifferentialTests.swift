@@ -107,6 +107,15 @@ struct SourceDerivedFailureDifferentialTests {
             )
           case "providerDeclaredError":
             #expect(operation.contains("error") || operation.contains("finish"))
+            if ["google-generative-ai", "google-vertex"].contains(protocolCase.protocolID) {
+              let rawReason = try #require(source.rawStopReason)
+              #expect(
+                failure.providerMetadata?.string("rawStopReason") == rawReason,
+                Comment(rawValue: protocolCase.protocolID))
+              #expect(
+                failure.message == source.sourceErrorMessage,
+                Comment(rawValue: protocolCase.protocolID))
+            }
           default:
             Issue.record("unknown failure category: \(failureCase.expectedCategory)")
           }
@@ -263,6 +272,8 @@ private struct FailureOracleProtocol: Decodable {
   let decoderInput: FailureDecoderInput?
   let sourceTerminal: FailureSourceTerminal?
   let partialEventTypes: [String]?
+  let rawStopReason: String?
+  let sourceErrorMessage: String?
 }
 
 private struct FailureSourceTerminal: Decodable, Equatable {

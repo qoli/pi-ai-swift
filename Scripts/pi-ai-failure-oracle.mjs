@@ -88,6 +88,9 @@ async function captureFailure(protocol) {
       outcome: "failure",
       decoderInput,
       sourceTerminal: { type: terminal.type, reason: terminal.reason },
+      ...(terminal.error.rawStopReason !== undefined ? {
+        rawStopReason: terminal.error.rawStopReason, sourceErrorMessage: terminal.error.errorMessage,
+      } : {}),
       partialEventTypes: canonicalPartialEventTypes(events.slice(0, -1)),
     };
   } finally {

@@ -29,6 +29,8 @@
       },
       "outcome": "failure",
       "partialEventTypes": [],
+      "rawStopReason": "failed",
+      "sourceErrorMessage": "fixture_error: fixture provider error",
       "sourceTerminal": {
         "reason": "error",
         "type": "error"
@@ -64,6 +66,8 @@
       },
       "outcome": "failure",
       "partialEventTypes": [],
+      "rawStopReason": "SAFETY",
+      "sourceErrorMessage": "Provider stopped with: SAFETY",
       "sourceTerminal": {
         "reason": "error",
         "type": "error"
@@ -80,6 +84,8 @@
       },
       "outcome": "failure",
       "partialEventTypes": [],
+      "rawStopReason": "SAFETY",
+      "sourceErrorMessage": "Provider stopped with: SAFETY",
       "sourceTerminal": {
         "reason": "error",
         "type": "error"
@@ -96,6 +102,8 @@
       },
       "outcome": "failure",
       "partialEventTypes": [],
+      "rawStopReason": "error",
+      "sourceErrorMessage": "Provider stopped with: error (server error)",
       "sourceTerminal": {
         "reason": "error",
         "type": "error"
@@ -128,6 +136,8 @@
       },
       "outcome": "failure",
       "partialEventTypes": [],
+      "rawStopReason": "content_filter",
+      "sourceErrorMessage": "Provider finish_reason: content_filter",
       "sourceTerminal": {
         "reason": "error",
         "type": "error"
@@ -144,6 +154,8 @@
       },
       "outcome": "failure",
       "partialEventTypes": [],
+      "rawStopReason": "failed",
+      "sourceErrorMessage": "fixture_error: fixture provider error",
       "sourceTerminal": {
         "reason": "error",
         "type": "error"
