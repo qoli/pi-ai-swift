@@ -5,12 +5,13 @@ import Testing
 
 @Suite
 struct ProviderOptionsDifferentialTests {
-  @Test
-  func explicitCompletionsAuthorizationOverridesCredentialDefaults() async throws {
+  @Test(arguments: ["openai-completions", "openai-responses"])
+  func explicitOpenAIAuthorizationOverridesCredentialDefaults(_ protocolID: String) async throws {
     let oracle = try decodeOracle()
+    let prefix = protocolID == "openai-completions" ? "completions" : "responses"
     let cases = [
-      ("completions-authorization-override", "Bearer caller-fixture"),
-      ("completions-empty-authorization", ""),
+      (prefix + "-authorization-override", "Bearer caller-fixture"),
+      (prefix + "-empty-authorization", ""),
     ]
     let credentials: [ProviderCredential] = [
       .apiKey(.init(key: "fixture-key", metadata: [:])),
@@ -23,7 +24,7 @@ struct ProviderOptionsDifferentialTests {
       for (id, value) in cases {
         for name in ["Authorization", "authorization", "AUTHORIZATION"] {
           let captured = try await capture(
-            protocolID: "openai-completions", providerID: "fixture",
+            protocolID: protocolID, providerID: "fixture",
             baseURL: "https://fixture.invalid/v1", headers: [name: value], credential: credential)
           #expect(
             captured.value(forHTTPHeaderField: "Authorization")

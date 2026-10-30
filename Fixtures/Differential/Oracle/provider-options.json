@@ -80,6 +80,14 @@
         "x-session-id": "fixture-session"
       }
     },
+    "responses-authorization-override": {
+      "headers": {
+        "authorization": "Bearer caller-fixture"
+      }
+    },
+    "responses-empty-authorization": {
+      "headers": {}
+    },
     "responses-max-output-disabled": {
       "requestBody": {
         "maxOutputTokensPresent": false

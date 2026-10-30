@@ -54,13 +54,17 @@ for (const [id, api, provider, baseUrl, compat] of [
 }
 cases["opencode-session-override"] = await captureOpenCodeWrapper({ "X-OpenCode-Session": "caller-opencode" });
 
-for (const [id, value] of [
-  ["completions-authorization-override", "Bearer caller-fixture"],
-  ["completions-empty-authorization", ""],
+for (const [api, prefix] of [
+  ["openai-completions", "completions"], ["openai-responses", "responses"],
 ]) {
-  cases[id] = await captureHeaders("openai-completions", model({
-    api: "openai-completions", provider: "fixture", baseUrl: "https://fixture.invalid/v1",
-  }), { Authorization: value }, ["authorization"]);
+  for (const [suffix, value] of [
+    ["authorization-override", "Bearer caller-fixture"],
+    ["empty-authorization", ""],
+  ]) {
+    cases[`${prefix}-${suffix}`] = await captureHeaders(api, model({
+      api, provider: "fixture", baseUrl: "https://fixture.invalid/v1",
+    }), { Authorization: value }, ["authorization"]);
+  }
 }
 
 for (const api of ["openai-completions", "openai-responses", "anthropic-messages", "mistral-conversations"]) {

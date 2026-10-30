@@ -248,9 +248,13 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         urlRequest.setValue(sessionID, forHTTPHeaderField: "x-client-request-id")
       }
     case (_, .apiKey(let credential)):
-      urlRequest.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")
+      if flavor != .standard || urlRequest.value(forHTTPHeaderField: "Authorization") == nil {
+        urlRequest.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")
+      }
     case (_, .oauth(let credential)):
-      urlRequest.setValue("Bearer \(credential.accessToken)", forHTTPHeaderField: "Authorization")
+      if flavor != .standard || urlRequest.value(forHTTPHeaderField: "Authorization") == nil {
+        urlRequest.setValue("Bearer \(credential.accessToken)", forHTTPHeaderField: "Authorization")
+      }
     case (_, nil):
       throw failure(
         .missingCredential,
@@ -258,6 +262,11 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         operation: "openai-responses.request.auth",
         message: "OpenAI Responses credential is missing"
       )
+    }
+    if flavor == .standard,
+      urlRequest.value(forHTTPHeaderField: "Authorization")?.isEmpty == true
+    {
+      urlRequest.setValue(nil, forHTTPHeaderField: "Authorization")
     }
     urlRequest.httpBody = try encodeJSONObject(
       try makeBody(request, context: context),

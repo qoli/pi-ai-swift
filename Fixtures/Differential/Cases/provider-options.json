@@ -20,6 +20,8 @@
     "scope.openai-completions",
     "scope.openai-responses",
     "scope.anthropic-messages",
-    "scope.mistral-conversations"
+    "scope.mistral-conversations",
+    "responses-authorization-override",
+    "responses-empty-authorization"
   ]
 }

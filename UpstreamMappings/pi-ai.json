@@ -2446,7 +2446,7 @@
         "Fixtures/Differential/Cases/provider-options.json",
         "Fixtures/Differential/Oracle/provider-options.json",
         "Fixtures/Differential/ResponseBranchInventory.json",
-        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitCompletionsAuthorizationOverridesCredentialDefaults",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitOpenAIAuthorizationOverridesCredentialDefaults",
         "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
       ],
       "requiredGates": [
@@ -2513,7 +2513,8 @@
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
-        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitOpenAIAuthorizationOverridesCredentialDefaults"
       ],
       "requiredGates": [
         "swift-test"
