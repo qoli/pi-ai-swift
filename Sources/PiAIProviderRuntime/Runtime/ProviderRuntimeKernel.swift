@@ -288,9 +288,10 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       endpointPolicy: provider.endpointPolicy
     )
     var headers = provider.headers
-    if ["google-generative-ai", "google-vertex", "openrouter-images"].contains(
-      modelConfiguration.protocolID)
-    {
+    if [
+      "google-generative-ai", "google-vertex", "openrouter-images",
+      "openai-completions", "openai-responses", "anthropic-messages", "mistral-conversations",
+    ].contains(modelConfiguration.protocolID) {
       // These adapters project provider headers case-insensitively upstream.
       // Preserve model-scope precedence before dictionary ordering is lost.
       let modelNames = Set(modelConfiguration.headers.keys.map { $0.lowercased() })

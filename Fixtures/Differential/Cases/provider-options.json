@@ -16,6 +16,10 @@
     "fireworks-anthropic-override",
     "opencode-session-override",
     "completions-authorization-override",
-    "completions-empty-authorization"
+    "completions-empty-authorization",
+    "scope.openai-completions",
+    "scope.openai-responses",
+    "scope.anthropic-messages",
+    "scope.mistral-conversations"
   ]
 }

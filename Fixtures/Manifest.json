@@ -59,11 +59,12 @@
         "Fixtures/Differential/Oracle/provider-options.json",
         "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
         "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
-        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json"
+        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
       ],
       "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "2c8910e26ad363531177f6d9c6acf8d5aabad9dbf420fcb28bdcf0ef6dde8635"
+      "swiftEvidenceSHA256": "9143f34d246b880f1d4a37f1f2bb8f5af152930c9626c9b90061887f014e0c54"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -193,7 +194,7 @@
       ],
       "upstreamSourceSHA256": "20f47dd4749034075eb61695802c2a9587eaa5307442802243b6834d893b3ff0",
       "upstreamTestSHA256": "323b5a2dcd50a23c6879041e9b584a80e467e457d1e538b10c43f34b18dea041",
-      "swiftEvidenceSHA256": "6c9256f00b6a27ad582bab1065162e8f796e293eecc67bcb63a7877b25ff87c9"
+      "swiftEvidenceSHA256": "361f7cffc24757d6f944388bf7c9b56dfc8605f3e4a5181c67d94ed562ce7bf9"
     },
     {
       "protocolID": "google-vertex",
@@ -260,11 +261,15 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
+        "Scripts/pi-ai-provider-options-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-options.json",
+        "Fixtures/Differential/Oracle/provider-options.json"
       ],
       "upstreamSourceSHA256": "b97550a0d4905aeecaafe60e6e13bb6cc69cf4dc0bc1c5999ae63dea64cf2a75",
       "upstreamTestSHA256": "f8eabb92338a98392533e98f98e409cc94f6ea685405d048e6d3016906c23f5c",
-      "swiftEvidenceSHA256": "6ed64bb90a583c00c7331a4cc62cf9673f459d091f8d826ad7cb755020a488e8"
+      "swiftEvidenceSHA256": "5003ce93826ba8ecc24944cab117e3748f6d84dbe569fb1399e4689aa9421df1"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -358,11 +363,12 @@
         "Fixtures/Differential/Cases/provider-options.json",
         "Fixtures/Differential/Oracle/provider-options.json",
         "Fixtures/Differential/ResponseBranchInventory.json",
-        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitCompletionsAuthorizationOverridesCredentialDefaults"
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitCompletionsAuthorizationOverridesCredentialDefaults",
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
       ],
       "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "04d7027de0bf8be1d3b990fe5ac44c25df1051da4156e8139dcb1ebe7ffef15f"
+      "swiftEvidenceSHA256": "95bf7580e6c777c6b7ed4e9c2f349e2be77bd1fcaaf3a2bdc38f8810e8ab8c6b"
     },
     {
       "protocolID": "openai-responses",
@@ -407,11 +413,12 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "26fb284872f58fcb19da1a61d42e1d5ad29167dda40127d4d86ac7db94ca759a"
+      "swiftEvidenceSHA256": "d7e95c41084ce804328fd8bea866406029cf04b7a590fcd230b04c09634ed573"
     },
     {
       "protocolID": "openrouter-images",

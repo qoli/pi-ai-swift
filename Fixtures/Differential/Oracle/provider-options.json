@@ -85,6 +85,30 @@
         "maxOutputTokensPresent": false
       }
     },
+    "scope.anthropic-messages": {
+      "headers": {
+        "x-keep": "keep",
+        "x-scope": "model"
+      }
+    },
+    "scope.mistral-conversations": {
+      "headers": {
+        "x-keep": "keep",
+        "x-scope": "model"
+      }
+    },
+    "scope.openai-completions": {
+      "headers": {
+        "x-keep": "keep",
+        "x-scope": "model"
+      }
+    },
+    "scope.openai-responses": {
+      "headers": {
+        "x-keep": "keep",
+        "x-scope": "model"
+      }
+    },
     "vllm-priority": {
       "requestBody": {
         "priority": 7

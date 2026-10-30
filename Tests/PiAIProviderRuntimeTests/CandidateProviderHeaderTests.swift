@@ -5,6 +5,63 @@ import Testing
 
 @Suite
 struct CandidateProviderHeaderTests {
+  @Test(arguments: [
+    "openai-completions", "openai-responses", "anthropic-messages", "mistral-conversations",
+  ])
+  func sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence(_ protocolID: String) async throws {
+    let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+    let oracle = try JSONDecoder().decode(
+      JSONValue.self,
+      from: Data(
+        contentsOf: root.appending(
+          path: "Fixtures/Differential/Oracle/provider-options.json")))
+    let expected = try #require(
+      oracle.objectValue?.object("cases")?.object("scope." + protocolID)?.object("headers"))
+    let model = ProviderModel(
+      id: "fixture-chat", providerID: "fixture", name: "fixture", protocolID: protocolID,
+      capabilities: .init(
+        textInput: true, imageInput: false, toolCalling: false, reasoning: false,
+        structuredOutput: false, imageGeneration: false),
+      contextWindow: 1000, maximumOutputTokens: 100)
+    let config = ProviderModelConfiguration(
+      protocolID: protocolID, baseURL: nil, headers: ["x-scope": "model"],
+      metadata: fixtureMetadataWithCost())
+    let provider = ProviderDefinition(
+      descriptor: .init(id: "fixture", name: "fixture", authorizationMethods: [], models: [model]),
+      baseURL: "https://fixture.invalid/v1",
+      headers: ["X-Scope": "provider", "X-Keep": "keep"],
+      modelConfigurations: [.init(modelID: model.id, outputModality: .text): config],
+      credentialRequirement: .required,
+      authorization: APIKeyAuthorizationAdapter(
+        providerID: "fixture", methodID: "api-key", label: "key"))
+    let recorder = ScopedHeaderRecorder()
+    let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == protocolID })
+    let runtime = try ProviderRuntimeKernel(
+      catalogRevision: "fixture", providers: [provider],
+      wireProtocols: [ScopedHeaderAdapter(base: adapter, recorder: recorder)],
+      credentialStore: InMemoryProviderCredentialStore(credentials: [
+        "fixture": .apiKey(.init(key: "fixture-key", metadata: [:]))
+      ]), transport: recorder)
+    let request = ProviderRequest(
+      id: "headers", providerID: "fixture", modelID: model.id,
+      messages: [.user([.text("hello")])], tools: [],
+      options: .init(
+        maximumOutputTokens: 64, temperature: nil, reasoningEffort: nil,
+        responseSchema: nil, providerOptions: [:]))
+    do {
+      for try await _ in runtime.stream(request) {}
+    } catch {
+      // The transport stops after capturing the outbound request.
+    }
+    let dispatched = try #require(await recorder.dispatched)
+    #expect(dispatched.count == expected.count)
+    let sent = try #require(await recorder.sent)
+    for (name, value) in expected {
+      #expect(sent.value(forHTTPHeaderField: name) == value.stringValue)
+    }
+  }
+
   @Test
   func googleDispatchPreservesSourceCaseInsensitiveScopePrecedence() async throws {
     struct Oracle: Decodable {
@@ -110,5 +167,39 @@ private actor CandidateHeaderRecorder: ProviderHTTPStreamingTransport {
         continuation.yield(data + Data("\n\n".utf8))
         continuation.finish()
       })
+  }
+}
+
+private struct ScopedHeaderAdapter: WireProtocolAdapter {
+  let base: any WireProtocolAdapter
+  let recorder: ScopedHeaderRecorder
+  var protocolID: String { base.protocolID }
+  func stream(
+    _ request: ProviderRequest, context: WireProtocolContext,
+    transport: any ProviderHTTPStreamingTransport
+  ) -> AsyncThrowingStream<ProviderEvent, any Error> {
+    AsyncThrowingStream { continuation in
+      let task = Task {
+        await recorder.record(context.headers)
+        do {
+          for try await event in base.stream(request, context: context, transport: transport) {
+            continuation.yield(event)
+          }
+          continuation.finish()
+        } catch { continuation.finish(throwing: error) }
+      }
+      continuation.onTermination = { _ in task.cancel() }
+    }
+  }
+}
+
+private struct ScopedHeaderCaptureComplete: Error {}
+private actor ScopedHeaderRecorder: ProviderHTTPStreamingTransport {
+  var dispatched: [String: String]?
+  var sent: URLRequest?
+  func record(_ headers: [String: String]) { dispatched = headers }
+  func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    sent = request
+    throw ScopedHeaderCaptureComplete()
   }
 }

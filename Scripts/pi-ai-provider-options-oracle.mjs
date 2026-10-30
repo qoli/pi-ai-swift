@@ -63,6 +63,13 @@ for (const [id, value] of [
   }), { Authorization: value }, ["authorization"]);
 }
 
+for (const api of ["openai-completions", "openai-responses", "anthropic-messages", "mistral-conversations"]) {
+  cases[`scope.${api}`] = await captureHeaders(api, model({
+    api, provider: "fixture", baseUrl: "https://fixture.invalid/v1",
+    headers: { "X-Scope": "provider", "X-Keep": "keep" },
+  }), { "x-scope": "model" }, ["x-scope", "x-keep"]);
+}
+
 process.stdout.write(`${JSON.stringify({ schemaVersion: 1, upstreamRevision: revision, cases }, null, 2)}\n`);
 
 async function captureHeaders(protocolID, sourceModel, headers, names = [
