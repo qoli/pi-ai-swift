@@ -297,7 +297,11 @@
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
-        "Fixtures/Manifest.json"
+        "Fixtures/Manifest.json",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/run.py",
+        "Scripts/Conformance/suites.json"
       ],
       "requiredGates": [
         "swift-test",

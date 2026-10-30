@@ -238,9 +238,7 @@ export function streamSimple(model, context, options = {}, requestSource = "api"
     const candidates = requested < 0 ? available : [
       ...order.slice(requested), ...order.slice(0, requested).reverse(),
     ];
-    // Preserve the requested input when Swift offers no choice, so its own
-    // unsupported-level failure remains observable in the original test.
-    reasoningEffort = candidates.find(level => available.includes(level)) ?? reasoning;
+    reasoningEffort = candidates.find(level => available.includes(level));
   }
   const disableGoogleThinking = ["google-generative-ai", "google-vertex"].includes(model.api)
     && (!reasoning || reasoningEffort === "off");

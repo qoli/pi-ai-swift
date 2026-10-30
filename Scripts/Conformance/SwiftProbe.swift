@@ -336,7 +336,10 @@ struct SwiftConformanceProbe {
       switch try block.required("type") {
       case "text": return .text(block.string("text") ?? "")
       case "image":
-        guard let data = Data(base64Encoded: try block.required("data")) else {
+        let encoded = try block.required("data")
+        let padding = (4 - encoded.utf8.count % 4) % 4
+        guard let data = Data(base64Encoded: encoded + String(repeating: "=", count: padding))
+        else {
           throw ProbeError.unrepresentable("opaque-base64-image")
         }
         return .image(.data(data, mimeType: try block.required("mimeType")))
