@@ -2026,7 +2026,8 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInputTransformationsMatchPinnedSource",
         "Scripts/Conformance/SwiftProbe.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicRawOptionsMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicIgnoresGenericSamplingParamsLikePinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicIgnoresGenericSamplingParamsLikePinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicImageToolResultsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test",

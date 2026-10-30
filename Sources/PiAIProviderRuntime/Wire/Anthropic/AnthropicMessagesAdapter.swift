@@ -575,7 +575,15 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
             }.joined(separator: "\n")
           )
         } else {
-          resultContent = .array(try content.map(makeToolResultContent(_:)))
+          var resultBlocks = try content.map(makeToolResultContent(_:))
+          if !content.contains(where: {
+            if case .text = $0 { return true }
+            return false
+          }) {
+            resultBlocks.insert(
+              .object(["type": .string("text"), "text": .string("(see attached image)")]), at: 0)
+          }
+          resultContent = .array(resultBlocks)
         }
         var blocks: [JSONValue] = [
           .object([

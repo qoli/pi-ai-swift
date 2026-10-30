@@ -71,7 +71,9 @@ function context(spec) {
     usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { ...spec.model.cost, total: 0 } },
     stopReason: "stop", timestamp: 1,
     });
-    if (spec.toolResultText !== undefined) messages.push({ role: "toolResult", toolCallId: "call_1", toolName: "read",
+    if (spec.toolResultContent !== undefined) messages.push({ role: "toolResult", toolCallId: "call_1", toolName: "read",
+      content: spec.toolResultContent, isError: spec.toolResultIsError ?? false, timestamp: 2 });
+    else if (spec.toolResultText !== undefined) messages.push({ role: "toolResult", toolCallId: "call_1", toolName: "read",
       content: [{ type: "text", text: spec.toolResultText }], isError: false, timestamp: 2 });
     if (!spec.omitFollowup) messages.push({ role: "user", content: "again", timestamp: 3 });
   }

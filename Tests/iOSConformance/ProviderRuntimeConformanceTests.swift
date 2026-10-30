@@ -1087,6 +1087,65 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAnthropicImageToolResultsMatchPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("anthropic-tool-images.") == true }
+    XCTAssertEqual(cases.count, 5)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let model = try XCTUnwrap(spec.object("model"))
+      let modelID = try XCTUnwrap(model.string("id"))
+      let resultContent: [ProviderToolResultContent] = try XCTUnwrap(
+        spec.array("toolResultContent")
+      ).map { value in
+        let block = try XCTUnwrap(value.objectValue)
+        if block.string("type") == "text" { return .text(block.string("text") ?? "") }
+        return .image(
+          .data(
+            try XCTUnwrap(Data(base64Encoded: try XCTUnwrap(block.string("data")))),
+            mimeType: try XCTUnwrap(block.string("mimeType"))))
+      }
+      let (_, context) = inputs(
+        api: "anthropic-messages", providerID: "anthropic", modelID: modelID,
+        reasoning: false, metadata: model)
+      let request = ProviderRequest(
+        id: name, providerID: "anthropic", modelID: modelID,
+        messages: [
+          .user([.text("hello")]),
+          .assistantMessage(
+            .init(
+              content: [.toolCall(.init(id: "call_1", name: "read", arguments: .object([:])))],
+              source: .init(api: "anthropic-messages", providerID: "anthropic", modelID: modelID),
+              usage: .init(
+                inputTokens: 0, outputTokens: 0, reasoningTokens: nil, cachedInputTokens: 0,
+                providerMetadata: [:]),
+              stopReason: .stop, timestampMilliseconds: 1)),
+          .toolResult(
+            .init(
+              toolCallID: "call_1", toolName: "read", content: resultContent,
+              isError: spec.bool("toolResultIsError") ?? false, timestampMilliseconds: 2)),
+        ], tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: [:], cacheRetention: .none))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in AnthropicMessagesAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: "anthropic",
+        operation: "ios.anthropic.images.body")
+      XCTAssertEqual(
+        body["messages"], oracle.object("cases")?.object(name)?.object("requestBody")?["messages"],
+        name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

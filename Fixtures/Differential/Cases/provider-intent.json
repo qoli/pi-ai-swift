@@ -8883,6 +8883,253 @@
       "projectFields": [
         "messages"
       ]
+    },
+    {
+      "id": "anthropic-tool-images.images-only",
+      "model": {
+        "id": "image-tool-fixture",
+        "name": "Image Tool Fixture",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "image",
+          "data": "AAAA",
+          "mimeType": "image/png"
+        },
+        {
+          "type": "image",
+          "data": "BBBB",
+          "mimeType": "image/png"
+        }
+      ],
+      "toolResultIsError": false,
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "anthropic-tool-images.empty-text",
+      "model": {
+        "id": "image-tool-fixture",
+        "name": "Image Tool Fixture",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "text",
+          "text": ""
+        },
+        {
+          "type": "image",
+          "data": "AAAA",
+          "mimeType": "image/png"
+        }
+      ],
+      "toolResultIsError": false,
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "anthropic-tool-images.whitespace-text",
+      "model": {
+        "id": "image-tool-fixture",
+        "name": "Image Tool Fixture",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "text",
+          "text": " \n"
+        },
+        {
+          "type": "image",
+          "data": "AAAA",
+          "mimeType": "image/png"
+        }
+      ],
+      "toolResultIsError": false,
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "anthropic-tool-images.text",
+      "model": {
+        "id": "image-tool-fixture",
+        "name": "Image Tool Fixture",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "text",
+          "text": "image output"
+        },
+        {
+          "type": "image",
+          "data": "AAAA",
+          "mimeType": "image/png"
+        }
+      ],
+      "toolResultIsError": false,
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "anthropic-tool-images.error-images",
+      "model": {
+        "id": "image-tool-fixture",
+        "name": "Image Tool Fixture",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "image",
+          "data": "AAAA",
+          "mimeType": "image/png"
+        },
+        {
+          "type": "image",
+          "data": "BBBB",
+          "mimeType": "image/png"
+        }
+      ],
+      "toolResultIsError": true,
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ]
     }
   ]
 }

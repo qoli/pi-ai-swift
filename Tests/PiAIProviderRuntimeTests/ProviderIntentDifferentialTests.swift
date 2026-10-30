@@ -85,7 +85,19 @@ struct ProviderIntentDifferentialTests {
                 cachedInputTokens: 0, providerMetadata: [:]),
               stopReason: .stop, timestampMilliseconds: 1,
               providerMetadata: ["providerThinkingLevel": .string("low")])))
-        if let text = spec.toolResultText {
+        if let blocks = spec.toolResultContent {
+          let content: [ProviderToolResultContent] = try blocks.map { block in
+            if block.string("type") == "text" { return .text(block.string("text") ?? "") }
+            let encoded = try #require(block.string("data"))
+            let data = try #require(Data(base64Encoded: encoded))
+            return .image(.data(data, mimeType: try #require(block.string("mimeType"))))
+          }
+          messages.append(
+            .toolResult(
+              .init(
+                toolCallID: "call_1", toolName: "read", content: content,
+                isError: spec.toolResultIsError ?? false, timestampMilliseconds: 2)))
+        } else if let text = spec.toolResultText {
           messages.append(
             .toolResult(
               .init(
@@ -208,6 +220,8 @@ struct ProviderIntentDifferentialTests {
     let rawOptionKeys: [String]?
     let toolResultText: String?
     let omitFollowup: Bool?
+    let toolResultContent: [[String: JSONValue]]?
+    let toolResultIsError: Bool?
   }
   private struct Oracle: Decodable {
     let upstreamRevision: String

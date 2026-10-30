@@ -1857,6 +1857,246 @@
     "anthropic-strict-uniqueItems-require": {
       "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but uniqueItems: false is unsupported."
     },
+    "anthropic-tool-images.empty-text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "id": "call_1",
+                "input": {},
+                "name": "read",
+                "type": "tool_use"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "content": [
+                  {
+                    "text": "",
+                    "type": "text"
+                  },
+                  {
+                    "source": {
+                      "data": "AAAA",
+                      "media_type": "image/png",
+                      "type": "base64"
+                    },
+                    "type": "image"
+                  }
+                ],
+                "is_error": false,
+                "tool_use_id": "call_1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "anthropic-tool-images.error-images": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "id": "call_1",
+                "input": {},
+                "name": "read",
+                "type": "tool_use"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "content": "(image attached after the tool results)",
+                "is_error": true,
+                "tool_use_id": "call_1",
+                "type": "tool_result"
+              },
+              {
+                "text": "Images from the error result of tool call call_1 (read):",
+                "type": "text"
+              },
+              {
+                "source": {
+                  "data": "AAAA",
+                  "media_type": "image/png",
+                  "type": "base64"
+                },
+                "type": "image"
+              },
+              {
+                "source": {
+                  "data": "BBBB",
+                  "media_type": "image/png",
+                  "type": "base64"
+                },
+                "type": "image"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "anthropic-tool-images.images-only": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "id": "call_1",
+                "input": {},
+                "name": "read",
+                "type": "tool_use"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "content": [
+                  {
+                    "text": "(see attached image)",
+                    "type": "text"
+                  },
+                  {
+                    "source": {
+                      "data": "AAAA",
+                      "media_type": "image/png",
+                      "type": "base64"
+                    },
+                    "type": "image"
+                  },
+                  {
+                    "source": {
+                      "data": "BBBB",
+                      "media_type": "image/png",
+                      "type": "base64"
+                    },
+                    "type": "image"
+                  }
+                ],
+                "is_error": false,
+                "tool_use_id": "call_1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "anthropic-tool-images.text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "id": "call_1",
+                "input": {},
+                "name": "read",
+                "type": "tool_use"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "content": [
+                  {
+                    "text": "image output",
+                    "type": "text"
+                  },
+                  {
+                    "source": {
+                      "data": "AAAA",
+                      "media_type": "image/png",
+                      "type": "base64"
+                    },
+                    "type": "image"
+                  }
+                ],
+                "is_error": false,
+                "tool_use_id": "call_1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "anthropic-tool-images.whitespace-text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "id": "call_1",
+                "input": {},
+                "name": "read",
+                "type": "tool_use"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "content": [
+                  {
+                    "text": " \n",
+                    "type": "text"
+                  },
+                  {
+                    "source": {
+                      "data": "AAAA",
+                      "media_type": "image/png",
+                      "type": "base64"
+                    },
+                    "type": "image"
+                  }
+                ],
+                "is_error": false,
+                "tool_use_id": "call_1",
+                "type": "tool_result"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
     "anthropic.managed-off": {
       "requestBody": {
         "betas": [
