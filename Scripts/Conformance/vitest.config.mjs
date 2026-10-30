@@ -48,7 +48,9 @@ export default defineConfig({
           matched = true;
           return `${kind} __piOriginal_${name}`;
         });
-        if (matched) wrappers.push(`export function ${name}(...args) { __piConformanceTrace(${JSON.stringify(operation)}); return __piOriginal_${name}(...args); }`);
+        const protocol = ["stream", "streamSimple"].includes(name) && id.includes("/api/")
+          ? path.basename(id, ".ts") : undefined;
+        if (matched) wrappers.push(`export function ${name}(...args) { __piConformanceTrace(${JSON.stringify(operation)}, ${JSON.stringify(protocol)}); return __piOriginal_${name}(...args); }`);
       }
       if (!wrappers.length) return;
       return {

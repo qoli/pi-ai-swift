@@ -18,10 +18,10 @@ const { getEnvApiKey } = await import(pathToFileURL(path.join(upstream, "package
 const { getProviderEnvValue } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/provider-env.ts")));
 const { clampMaxTokensToContext } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/api/simple-options.ts")));
 
-function record(operation, protocol, failure, unrepresentedCapabilities = []) {
+function record(operation, protocol, failure, unrepresentedCapabilities = [], entrypoint = "helper") {
   const state = expect.getState();
   appendFileSync(path.join(process.env.PI_CONFORMANCE_OUTPUT, "swift-invocations.jsonl"), JSON.stringify({
-    file: state.testPath, test: state.currentTestName, operation, protocol,
+    file: state.testPath, test: state.currentTestName, operation, protocol, entrypoint,
     ...(failure ? { failure } : {}),
     ...(unrepresentedCapabilities.length ? { unrepresentedCapabilities } : {}),
   }) + "\n");
@@ -175,7 +175,7 @@ async function nativeStream(model, context, options, emitEvent) {
   child.stdin.on("error", () => {});
   const cancel = () => send({ kind: "cancel" });
   options.signal?.addEventListener("abort", cancel, { once: true });
-  record("encode", model.api, undefined, capabilities(options));
+  record("encode", model.api, undefined, capabilities(options), "stream");
   send(fixtureInput(model, context, options, [], credential));
   const serve = async request => {
     let body = request.body;
@@ -210,7 +210,7 @@ async function nativeStream(model, context, options, emitEvent) {
       } else if (frame.kind === "finished") {
         finished = true;
         failure = frame.payload;
-        record("decode", model.api, failure, failure?.unrepresentedCapability ? [failure.unrepresentedCapability] : []);
+        record("decode", model.api, failure, failure?.unrepresentedCapability ? [failure.unrepresentedCapability] : [], "stream");
         child.stdin.end();
       } else throw new Error(`Unknown Swift probe frame: ${frame.kind}`);
     }

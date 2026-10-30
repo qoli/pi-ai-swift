@@ -33,6 +33,12 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
             operations = {call["operation"] for call in original_calls}
             swift_operations = {"stream" if call.get("operation") in ["encode", "decode"]
                                 else call.get("operation") for call in calls}
+            upstream_protocols = {call["protocol"] for call in original_calls if call.get("protocol")}
+            swift_protocols = {call["protocol"] for call in calls
+                               if call.get("entrypoint") == "stream"
+                               and call.get("operation") in ["encode", "decode"]}
+            missing_protocols = upstream_protocols - swift_protocols
+            unexpected_protocols = swift_protocols - upstream_protocols if upstream_protocols else set()
             key = (file["name"], name)
             matching = upstream_cases.get(key, [])
             original = matching[occurrences[key]] if occurrences[key] < len(matching) else {}
@@ -45,6 +51,10 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 "status": case["status"],
                 "swiftInvocations": len(calls),
                 "upstreamOperations": sorted(operations),
+                "upstreamProtocols": sorted(upstream_protocols),
+                "swiftDispatchProtocols": sorted(swift_protocols),
+                "missingSwiftProtocols": sorted(missing_protocols),
+                "unexpectedSwiftProtocols": sorted(unexpected_protocols),
                 "missingSwiftOperations": sorted(operations - swift_operations),
                 "protocols": sorted({call["protocol"] for call in calls if call["protocol"] != "*"}),
                 "failures": sorted({call["failure"]["operation"] for call in calls
@@ -63,6 +73,8 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 item["conformanceStatus"] = "interface_gap"
             elif not item["swiftInvocations"] or not operations or item["missingSwiftOperations"]:
                 item["conformanceStatus"] = "bridge_gap"
+            elif missing_protocols or unexpected_protocols:
+                item["conformanceStatus"] = "dispatch_mismatch"
             elif item["status"] != "passed":
                 item["conformanceStatus"] = "mismatch"
             else:

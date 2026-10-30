@@ -31,6 +31,41 @@ class ConformanceReportingTests(unittest.TestCase):
         self.assertFalse(self.evaluate([{"file": self.file, "protocol": "anthropic-messages"}]))
         self.assertFalse(self.evaluate([{**self.call, "operation": "catalog"}]))
 
+    def evaluate_dispatch(self, calls):
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream",
+                     "protocol": "anthropic-messages"}]
+        return CONFORMANCE.evaluate(
+            self.upstream, self.reports, calls, {"upstream": 0, "swift": 0}, original)
+
+    def test_matching_wire_dispatch_can_pass(self):
+        conformant, _ = self.evaluate_dispatch([{**self.call, "entrypoint": "stream"}])
+        self.assertTrue(conformant)
+
+    def test_passing_assertions_cannot_hide_wrong_wire_dispatch(self):
+        call = {**self.call, "entrypoint": "stream", "protocol": "openai-responses"}
+        conformant, cases = self.evaluate_dispatch([call])
+        self.assertFalse(conformant)
+        self.assertEqual(cases[0]["conformanceStatus"], "dispatch_mismatch")
+        self.assertEqual(cases[0]["missingSwiftProtocols"], ["anthropic-messages"])
+
+    def test_helper_probe_cannot_stand_in_for_the_selected_wire_dispatch(self):
+        calls = [
+            {**self.call, "entrypoint": "helper"},
+            {**self.call, "entrypoint": "stream", "protocol": "openai-responses"},
+        ]
+        conformant, cases = self.evaluate_dispatch(calls)
+        self.assertFalse(conformant)
+        self.assertEqual(cases[0]["missingSwiftProtocols"], ["anthropic-messages"])
+
+    def test_unrequested_wire_dispatch_is_not_conformance(self):
+        calls = [
+            {**self.call, "entrypoint": "stream"},
+            {**self.call, "entrypoint": "stream", "protocol": "openai-responses"},
+        ]
+        conformant, cases = self.evaluate_dispatch(calls)
+        self.assertFalse(conformant)
+        self.assertEqual(cases[0]["unexpectedSwiftProtocols"], ["openai-responses"])
+
     def test_duplicate_original_case_cannot_disappear(self):
         self.reports["upstream"]["testResults"][0]["assertionResults"].append(copy.deepcopy(self.case))
         self.assertFalse(self.evaluate([self.call]))
