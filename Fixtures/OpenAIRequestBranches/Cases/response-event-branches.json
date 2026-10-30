@@ -528,5 +528,39 @@
         }
       }
     ]
+  },
+  "completionTransportCases": {
+    "finishedEOF": {
+      "supportsFinishReason": true,
+      "sse": "data: {\"id\":\"chat-eof\",\"choices\":[{\"delta\":{\"content\":\"OK\"},\"finish_reason\":\"stop\"}]}\n\n"
+    },
+    "emptyRequired": {
+      "supportsFinishReason": true,
+      "sse": ""
+    },
+    "emptyOptional": {
+      "supportsFinishReason": false,
+      "sse": ""
+    },
+    "nullOptional": {
+      "supportsFinishReason": false,
+      "sse": "data: null\n\n"
+    },
+    "markerOnlyOptional": {
+      "supportsFinishReason": false,
+      "sse": "data: [DONE]\n\n"
+    },
+    "ignoreAfterMarker": {
+      "supportsFinishReason": true,
+      "sse": "data: {\"id\":\"chat-eof\",\"choices\":[{\"delta\":{\"content\":\"OK\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\ndata: not-json\n\n"
+    },
+    "unfinishedWithMarker": {
+      "supportsFinishReason": true,
+      "sse": "data: {\"choices\":[{\"delta\":{\"content\":\"partial\"},\"finish_reason\":null}]}\n\ndata: [DONE]\n\n"
+    },
+    "unfinishedEOF": {
+      "supportsFinishReason": true,
+      "sse": "data: {\"choices\":[{\"delta\":{\"content\":\"partial\"},\"finish_reason\":null}]}\n\n"
+    }
   }
 }

@@ -225,6 +225,183 @@
         }
       }
     },
+    "completions.transport-termination": {
+      "emptyOptional": {
+        "eventTypes": [
+          "start",
+          "done"
+        ],
+        "output": {
+          "content": [],
+          "stopReason": "stop",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "emptyRequired": {
+        "eventTypes": [
+          "start",
+          "error"
+        ],
+        "output": {
+          "content": [],
+          "errorMessage": "Stream ended without finish_reason",
+          "stopReason": "error",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "finishedEOF": {
+        "eventTypes": [
+          "start",
+          "text_start",
+          "text_delta",
+          "text_end",
+          "done"
+        ],
+        "output": {
+          "content": [
+            {
+              "text": "OK",
+              "type": "text"
+            }
+          ],
+          "rawStopReason": "stop",
+          "responseId": "chat-eof",
+          "stopReason": "stop",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "ignoreAfterMarker": {
+        "eventTypes": [
+          "start",
+          "text_start",
+          "text_delta",
+          "text_end",
+          "done"
+        ],
+        "output": {
+          "content": [
+            {
+              "text": "OK",
+              "type": "text"
+            }
+          ],
+          "rawStopReason": "stop",
+          "responseId": "chat-eof",
+          "stopReason": "stop",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "markerOnlyOptional": {
+        "eventTypes": [
+          "start",
+          "done"
+        ],
+        "output": {
+          "content": [],
+          "stopReason": "stop",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "nullOptional": {
+        "eventTypes": [
+          "start",
+          "done"
+        ],
+        "output": {
+          "content": [],
+          "stopReason": "stop",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "unfinishedEOF": {
+        "eventTypes": [
+          "start",
+          "text_start",
+          "text_delta",
+          "text_end",
+          "error"
+        ],
+        "output": {
+          "content": [
+            {
+              "text": "partial",
+              "type": "text"
+            }
+          ],
+          "errorMessage": "Stream ended without finish_reason",
+          "stopReason": "error",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "unfinishedWithMarker": {
+        "eventTypes": [
+          "start",
+          "text_start",
+          "text_delta",
+          "text_end",
+          "error"
+        ],
+        "output": {
+          "content": [
+            {
+              "text": "partial",
+              "type": "text"
+            }
+          ],
+          "errorMessage": "Stream ended without finish_reason",
+          "stopReason": "error",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      }
+    },
     "responses.custom-namespace-usage": {
       "content": [
         {

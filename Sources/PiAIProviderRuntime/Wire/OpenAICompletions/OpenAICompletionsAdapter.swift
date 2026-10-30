@@ -38,17 +38,21 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
             isOpenRouter: request.providerID == "openrouter"
               || context.baseURL.absoluteString.contains("openrouter.ai")
           )
-          for try await chunk in response.body {
+          continuation.yield(reducer.startEvent())
+          readStream: for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
               for normalized in try reducer.reduce(event) {
                 continuation.yield(normalized)
               }
+              if reducer.terminal { break readStream }
             }
           }
-          for event in try decoder.finish() {
-            for normalized in try reducer.reduce(event) {
-              continuation.yield(normalized)
+          if !reducer.terminal {
+            for event in try decoder.finish() {
+              for normalized in try reducer.reduce(event) {
+                continuation.yield(normalized)
+              }
             }
           }
           for event in try reducer.finish() {
@@ -737,8 +741,7 @@ private struct OpenAICompletionsReducer {
   let supportsFinishReason: Bool
   let grammarInputProperties: [String: String]
   let pricing: ProviderUsagePricing?
-  private var started = false
-  private var terminal = false
+  private(set) var terminal = false
   private var responseID: String?
   private var responseModelID: String?
   private var text = ""
@@ -778,6 +781,12 @@ private struct OpenAICompletionsReducer {
     self.isOpenRouter = isOpenRouter
   }
 
+  func startEvent() -> ProviderEvent {
+    .responseStarted(
+      ProviderResponseMetadata(
+        responseID: nil, providerID: providerID, modelID: requestedModelID, providerMetadata: [:]))
+  }
+
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
     if event.data == "[DONE]" {
       terminal = true
@@ -790,19 +799,6 @@ private struct OpenAICompletionsReducer {
       operation: "openai-completions.event.decode"
     )
     var events: [ProviderEvent] = []
-    if !started {
-      started = true
-      events.append(
-        .responseStarted(
-          ProviderResponseMetadata(
-            responseID: nil,
-            providerID: providerID,
-            modelID: requestedModelID,
-            providerMetadata: [:]
-          )
-        )
-      )
-    }
     if responseID == nil, let id = object.string("id"), !id.isEmpty {
       responseID = id
     }
@@ -900,9 +896,6 @@ private struct OpenAICompletionsReducer {
   }
 
   mutating func finish() throws -> [ProviderEvent] {
-    guard started, terminal else {
-      throw invalid("OpenAI Completions stream ended without [DONE]")
-    }
     var events: [ProviderEvent] = []
     if !reasoningDetails.isEmpty {
       let encoder = JSONEncoder()
@@ -930,13 +923,19 @@ private struct OpenAICompletionsReducer {
       }
       events.append(.toolCallCompleted(call))
     }
+    if usage == nil {
+      usage = ProviderUsage(
+        inputTokens: 0, outputTokens: 0, reasoningTokens: nil,
+        cachedInputTokens: 0, cacheWriteTokens: 0, totalTokens: 0, providerMetadata: [:],
+        cost: .init(input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0))
+    }
     if let usage { events.append(.usage(usage)) }
     if finishReason == nil, !supportsFinishReason {
       finishReason = toolCalls.isEmpty ? .stop : .toolCalls
       rawFinishReason = nil
     }
     guard let finishReason else {
-      throw invalid("OpenAI Completions stream ended without a finish reason")
+      throw invalid("Stream ended without finish_reason")
     }
     events.append(responseSnapshot(finishReason, completedTools: events))
     events.append(.completed(finishReason))

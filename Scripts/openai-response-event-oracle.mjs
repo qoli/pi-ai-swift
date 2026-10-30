@@ -59,6 +59,12 @@ for (const [name, chunks] of Object.entries(fixture.completionBranchChunks)) {
     tools: name === "customTool" ? [grammarTool()] : [],
   }));
 }
+const completionTransport = {};
+for (const [name, spec] of Object.entries(fixture.completionTransportCases)) {
+  completionTransport[name] = await runCompletions([], {
+    supportsFinishReason: spec.supportsFinishReason, rawSSE: spec.sse, collectEvents: true,
+  });
+}
 
 process.stdout.write(`${JSON.stringify({
   schemaVersion: 1,
@@ -72,6 +78,7 @@ process.stdout.write(`${JSON.stringify({
     "responses.terminal-without-start": terminalWithoutStart,
     "completions.reasoning-details-response-model": projectCompletions(completions),
     "completions.stop-reason-response-branches": completionBranches,
+    "completions.transport-termination": completionTransport,
     "completions.http-raw-metadata": projectCompletions(completionHTTPRawMetadata),
     "completions.abort": projectCompletions(completionAbort),
   },
@@ -150,7 +157,7 @@ async function runCompletions(chunks, options = {}) {
     supportsFinishReason: options.supportsFinishReason ?? true,
     supportsOpenAIGrammarTools: options.supportsOpenAIGrammarTools ?? false,
   };
-  const sse = [...chunks.map((chunk) => `data: ${JSON.stringify(chunk)}\n\n`), "data: [DONE]\n\n"].join("");
+  const sse = options.rawSSE ?? [...chunks.map((chunk) => `data: ${JSON.stringify(chunk)}\n\n`), "data: [DONE]\n\n"].join("");
   const stream = implementation.stream(model, {
     systemPrompt: "system",
     messages: [{ role: "user", content: "hello", timestamp: 0 }],
@@ -163,6 +170,11 @@ async function runCompletions(chunks, options = {}) {
       headers: { "content-type": "text/event-stream" },
     }),
   });
+  if (options.collectEvents) {
+    const eventTypes = [];
+    for await (const event of stream) eventTypes.push(event.type);
+    return { eventTypes, output: projectCompletions(await stream.result()) };
+  }
   return stream.result();
 }
 

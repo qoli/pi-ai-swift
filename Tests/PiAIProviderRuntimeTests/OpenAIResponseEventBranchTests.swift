@@ -451,6 +451,69 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func completionsTransportTerminationMatchesPinnedSource() async throws {
+    let fixture = try responseEventFixture()
+    let cases = try #require(fixture.object("completionTransportCases"))
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "completions.termination.oracle")
+    let expectedCases = try #require(
+      oracle.object("cases")?.object("completions.transport-termination"))
+    for (name, value) in cases {
+      let spec = try #require(value.objectValue)
+      let expected = try #require(expectedCases[name]?.objectValue)
+      let output = try #require(expected.object("output"))
+      let (request, context) = eventRequestContext(
+        protocolID: "openai-completions", modelID: "requested-model", tools: [],
+        metadata: ["compat": .object(["supportsFinishReason": spec["supportsFinishReason"]!])])
+      let transport = EventBranchTransport(chunks: [Data(try #require(spec.string("sse")).utf8)])
+      var events: [ProviderEvent] = []
+      var failure: ProviderRuntimeFailure?
+      do {
+        for try await event in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: transport)
+        {
+          events.append(event)
+        }
+      } catch let error as ProviderRuntimeFailure {
+        failure = error
+      }
+      let expectedStarts = expected.array("eventTypes")?.filter { $0 == .string("start") }.count
+      #expect(
+        events.filter { if case .responseStarted = $0 { true } else { false } }.count
+          == expectedStarts)
+      if output.string("stopReason") == "error" {
+        #expect(failure?.message == output.string("errorMessage"), Comment(rawValue: name))
+        #expect(!events.contains { if case .completed = $0 { true } else { false } })
+        continue
+      }
+      #expect(failure == nil, Comment(rawValue: name))
+      let snapshot = try #require(
+        events.compactMap { event -> ProviderResponseSnapshot? in
+          guard case .responseSnapshot(let value) = event else { return nil }
+          return value
+        }.last)
+      #expect(snapshot.finishReason == .stop)
+      #expect(snapshot.rawFinishReason == output.string("rawStopReason"))
+      #expect(snapshot.responseID == output.string("responseId"))
+      let texts = snapshot.content.compactMap { content -> String? in
+        guard case .text(let text) = content else { return nil }
+        return text.text
+      }
+      #expect(texts == output.array("content")?.compactMap { $0.objectValue?.string("text") })
+      let usage = try #require(snapshot.usage)
+      let expectedUsage = try #require(output.object("usage"))
+      #expect(usage.inputTokens == expectedUsage.int("input"))
+      #expect(usage.outputTokens == expectedUsage.int("output"))
+      #expect(usage.cachedInputTokens == expectedUsage.int("cacheRead"))
+      #expect(usage.cacheWriteTokens == expectedUsage.int("cacheWrite"))
+      #expect(usage.totalTokens == expectedUsage.int("totalTokens"))
+    }
+  }
+
+  @Test
   func completionsErrorFinishReasonsAreTypedFailures() async throws {
     let branches = try #require(try responseEventFixture().object("completionBranchChunks"))
     for (name, cause, code) in [
