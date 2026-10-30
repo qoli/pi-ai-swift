@@ -141,7 +141,7 @@ struct SwiftConformanceProbe {
         },
         textVerbosity: options.string("textVerbosity")),
       connectionOptions: .init(
-        azureOpenAIResponses: api == "azure-openai-responses" || provider == "azure"
+        azureOpenAIResponses: api == "azure-openai-responses"
           ? .init(
             azureBaseURL: options.string("azureBaseUrl"),
             azureResourceName: options.string("azureResourceName"),

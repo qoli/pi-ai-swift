@@ -299,6 +299,11 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         result[tool.name] = grammar.inputProperty
       }
     }
+    for (name, property) in request.options.providerOptions.object("grammarToolInputProperties")
+      ?? [:]
+    {
+      if let property = property.stringValue { result[name] = property }
+    }
     return result
   }
 
@@ -430,7 +435,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           request.messages.insertingMissingToolResults(),
           includeSystem: flavor != .codex,
           context: context,
-          grammarTools: grammarTools,
+          grammarInputProperties: try grammarInputProperties(request, context: context),
           deferredTools: toolPlacement.deferred,
           deferredToolsMode: nil,
           supportsStrictMode: supportsStrictMode,
@@ -582,7 +587,8 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         body["prompt_cache_key"] = .string(sessionID)
       }
     }
-    for (key, value) in request.options.providerOptions where key != "samplingParams" {
+    for (key, value) in request.options.providerOptions
+    where key != "samplingParams" && key != "grammarToolInputProperties" {
       body[key] = value
     }
     for (key, value) in ProviderSamplingParameters.resolve(request: request, context: context) {
@@ -645,7 +651,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     _ messages: [ProviderMessage],
     includeSystem: Bool,
     context: WireProtocolContext,
-    grammarTools: [String: ProviderConstrainedSamplingResolver.Grammar],
+    grammarInputProperties: [String: String],
     deferredTools: [String: ProviderToolDefinition],
     deferredToolsMode: String?,
     supportsStrictMode: Bool,
@@ -748,21 +754,21 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               && assistant.source.api == target.api
             let differentModel = sameProviderAndAPI && assistant.source.modelID != target.modelID
             var itemID = ids.count == 2 ? ids[1] : nil
-            let expectedPrefix = grammarTools[call.name] == nil ? "fc_" : "ctc_"
+            let expectedPrefix = grammarInputProperties[call.name] == nil ? "fc_" : "ctc_"
             if differentModel || itemID?.hasPrefix(expectedPrefix) == false {
               itemID = nil
             }
             var object: [String: JSONValue]
-            if let grammar = grammarTools[call.name] {
+            if let inputProperty = grammarInputProperties[call.name] {
               guard case .object(let arguments) = call.arguments,
-                let input = arguments.string(grammar.inputProperty)
+                let input = arguments.string(inputProperty)
               else {
                 throw failure(
                   .invalidRequest,
                   providerID: context.provider.id,
                   operation: "openai-responses.request.grammar-tool-call",
                   message:
-                    "Grammar tool call \"\(call.name)\" requires argument \"\(grammar.inputProperty)\" to be a string."
+                    "Grammar tool call \"\(call.name)\" requires argument \"\(inputProperty)\" to be a string."
                 )
               }
               object = [
@@ -802,7 +808,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         result.append(
           .object([
             "type": .string(
-              grammarTools[toolResult.toolName] == nil
+              grammarInputProperties[toolResult.toolName] == nil
                 ? "function_call_output" : "custom_tool_call_output"),
             "call_id": .string(callID),
             "output": try makeToolResultOutput(toolResult, context: context),

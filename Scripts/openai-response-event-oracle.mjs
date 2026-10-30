@@ -20,6 +20,9 @@ const shared = await import(pathToFileURL(path.join(
 const eventStreamModule = await import(pathToFileURL(path.join(
   upstreamRoot, "packages/ai/src/utils/event-stream.ts",
 )).href);
+const { normalizeContext } = await import(pathToFileURL(path.join(
+  upstreamRoot, "packages/ai/src/utils/transcript.ts",
+)).href);
 
 const responsesCustom = await runResponses(fixture.responsesCustomEvents, {
   grammarToolInputProperties: new Map([["sample_tool", "payload"]]),
@@ -47,6 +50,25 @@ for (const [name, events] of Object.entries(fixture.responsesFailureEvents)) {
 const toolSlots = {};
 for (const [name, events] of Object.entries(fixture.responseToolSlotEvents)) {
   toolSlots[name] = await runToolSlots(events);
+}
+const grammarReplay = {};
+const replay = fixture.responsesGrammarReplay;
+for (const [name, spec] of Object.entries(replay.cases)) {
+  const model = modelFor(spec.target.api, spec.target.provider, spec.target.id);
+  const assistant = {
+    ...outputFor(modelFor(replay.source.api, replay.source.provider, replay.source.model)),
+    content: [{ type: "toolCall", ...replay.call, arguments: spec.arguments }], stopReason: "toolUse",
+  };
+  const messages = [assistant, {
+    role: "toolResult", toolCallId: replay.call.id, toolName: replay.call.name,
+    content: [{ type: "text", text: replay.result }], isError: false, timestamp: 0,
+  }];
+  try {
+    const input = shared.convertResponsesMessages(model, normalizeContext({ messages }),
+      new Set(["openai", "openai-codex", "opencode", ...(model.api === "azure-openai-responses" ? ["azure"] : [])]),
+      { grammarToolInputProperties: new Map(Object.entries(spec.grammarToolInputProperties)) });
+    grammarReplay[name] = { input, thrown: null };
+  } catch (error) { grammarReplay[name] = { thrown: error.message }; }
 }
 const terminalWithoutStart = {};
 for (const [name, events] of Object.entries(fixture.responsesTerminalWithoutStartEvents)) {
@@ -80,6 +102,7 @@ process.stdout.write(`${JSON.stringify({
     "responses.service-tier-cost-matrix": responseServiceTierCosts,
     "responses.failure-branches": responseFailures,
     "responses.tool-slot-lifecycle": toolSlots,
+    "responses.grammar-history-replay": grammarReplay,
     "responses.terminal-without-start": terminalWithoutStart,
     "completions.reasoning-details-response-model": projectCompletions(completions),
     "completions.stop-reason-response-branches": completionBranches,

@@ -184,6 +184,74 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testGrammarHistoryMapMatchesPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
+    let replay = try XCTUnwrap(fixture.object("responsesGrammarReplay"))
+    let source = try XCTUnwrap(replay.object("source"))
+    let call = try XCTUnwrap(replay.object("call"))
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    let expectedCases = try XCTUnwrap(
+      oracle.object("cases")?.object("responses.grammar-history-replay"))
+    for (name, value) in try XCTUnwrap(replay.object("cases")) {
+      let spec = try XCTUnwrap(value.objectValue)
+      let target = try XCTUnwrap(spec.object("target"))
+      let api = try XCTUnwrap(target.string("api"))
+      let (baseRequest, context) = inputs(
+        api: api,
+        providerID: target.string("provider"), modelID: try XCTUnwrap(target.string("id")))
+      let toolCall = ProviderToolCall(
+        id: try XCTUnwrap(call.string("id")), name: try XCTUnwrap(call.string("name")),
+        arguments: try XCTUnwrap(spec["arguments"]), namespace: call.string("namespace"))
+      let request = ProviderRequest(
+        id: name, providerID: baseRequest.providerID, modelID: baseRequest.modelID,
+        messages: [
+          .assistantMessage(
+            .init(
+              content: [.toolCall(toolCall)],
+              source: .init(
+                api: try XCTUnwrap(source.string("api")),
+                providerID: try XCTUnwrap(source.string("provider")),
+                modelID: try XCTUnwrap(source.string("model"))),
+              usage: .init(
+                inputTokens: 0, outputTokens: 0, reasoningTokens: 0,
+                cachedInputTokens: 0, providerMetadata: [:]),
+              stopReason: .toolUse, timestampMilliseconds: 0)),
+          .toolResult(
+            .init(
+              toolCallID: toolCall.id, toolName: toolCall.name,
+              content: [.text(try XCTUnwrap(replay.string("result")))], isError: false)),
+        ], tools: [],
+        options: .init(
+          maximumOutputTokens: 64, temperature: nil,
+          reasoningEffort: nil, responseSchema: nil,
+          providerOptions: [
+            "grammarToolInputProperties": try XCTUnwrap(spec["grammarToolInputProperties"])
+          ]))
+      let adapter = OpenAIResponsesAdapter(
+        protocolID: api,
+        flavor: api == "azure-openai-responses"
+          ? .azure : api == "openai-codex-responses" ? .codex : .standard)
+      let transport = IOSMistralHTTPFixture(status: 418, body: Data())
+      var failure: ProviderRuntimeFailure?
+      do {
+        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+      } catch let error as ProviderRuntimeFailure { failure = error }
+      let sent = await transport.sent
+      let expected = try XCTUnwrap(expectedCases.object(name))
+      if let thrown = expected.string("thrown") {
+        XCTAssertNil(sent, name)
+        XCTAssertEqual(failure?.message, thrown, name)
+      } else {
+        let body = try decodeJSONObject(
+          try XCTUnwrap(sent?.httpBody),
+          providerID: "fixture", operation: "ios.grammar-history.body")
+        XCTAssertEqual(body.array("input"), expected.array("input"), name)
+        XCTAssertNil(body["grammarToolInputProperties"], name)
+        XCTAssertNil(body["tools"], name)
+      }
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
@@ -208,7 +276,8 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
   }
 
   private func inputs(
-    api: String, metadata: [String: JSONValue] = [:], headers: [String: String] = [:],
+    api: String, providerID: String? = nil, modelID: String? = nil,
+    metadata: [String: JSONValue] = [:], headers: [String: String] = [:],
     options: ProviderGenerationOptions? = nil
   ) -> (
     ProviderRequest, WireProtocolContext
@@ -216,14 +285,15 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     let isCodex = api == "openai-codex-responses"
     let isAzure = api == "azure-openai-responses"
     let providerID =
-      isCodex
-      ? "openai-codex"
-      : isAzure
-        ? "azure-openai-responses"
-        : api == "anthropic-messages"
-          ? "anthropic"
-          : (api == "mistral-conversations" ? "mistral" : "openai")
-    let modelID = api == "openai-completions" ? "requested-model" : "fixture-model"
+      providerID
+      ?? (isCodex
+        ? "openai-codex"
+        : isAzure
+          ? "azure-openai-responses"
+          : api == "anthropic-messages"
+            ? "anthropic"
+            : (api == "mistral-conversations" ? "mistral" : "openai"))
+    let modelID = modelID ?? (api == "openai-completions" ? "requested-model" : "fixture-model")
     let model = ProviderModel(
       id: modelID, providerID: providerID, name: modelID, protocolID: api,
       capabilities: .init(

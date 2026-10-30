@@ -58,7 +58,11 @@ function fixtureInput(model, context, options, responses, credential, requestSou
       tools: getCurrentTools(context.messages),
       messages: context.messages.filter(message => message.role !== "system"),
     },
-    options: { ...options, cacheRetention: options.cacheRetention ||
+    options: { ...options,
+      ...(options.grammarToolInputProperties instanceof Map ? {
+        grammarToolInputProperties: Object.fromEntries(options.grammarToolInputProperties),
+      } : {}),
+      cacheRetention: options.cacheRetention ||
       (getProviderEnvValue("PI_CACHE_RETENTION", options.env) === "long" ? "long" : "short") },
     credential,
     environment: Object.fromEntries(Object.entries(process.env).filter(([key]) =>

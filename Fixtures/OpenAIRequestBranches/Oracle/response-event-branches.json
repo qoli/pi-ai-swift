@@ -459,6 +459,131 @@
         "thrown": "Unhandled stop reason: mystery"
       }
     },
+    "responses.grammar-history-replay": {
+      "azure-provider-standard-api": {
+        "input": [
+          {
+            "call_id": "call_test_ctc_test",
+            "input": "hello",
+            "name": "query",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_test_ctc_test",
+            "output": "fixture result",
+            "type": "custom_tool_call_output"
+          }
+        ],
+        "thrown": null
+      },
+      "azure-target": {
+        "input": [
+          {
+            "call_id": "call_test_ctc_test",
+            "input": "hello",
+            "name": "query",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_test_ctc_test",
+            "output": "fixture result",
+            "type": "custom_tool_call_output"
+          }
+        ],
+        "thrown": null
+      },
+      "codex-target": {
+        "input": [
+          {
+            "call_id": "call_test",
+            "input": "hello",
+            "name": "query",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_test",
+            "output": "fixture result",
+            "type": "custom_tool_call_output"
+          }
+        ],
+        "thrown": null
+      },
+      "different-model": {
+        "input": [
+          {
+            "call_id": "call_test",
+            "input": "hello",
+            "name": "query",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_test",
+            "output": "fixture result",
+            "type": "custom_tool_call_output"
+          }
+        ],
+        "thrown": null
+      },
+      "missing-property": {
+        "thrown": "Grammar tool call \"query\" requires argument \"input\" to be a string."
+      },
+      "non-string-property": {
+        "thrown": "Grammar tool call \"query\" requires argument \"input\" to be a string."
+      },
+      "renamed-input": {
+        "input": [
+          {
+            "call_id": "call_test",
+            "id": "ctc_test",
+            "input": "select *",
+            "name": "query",
+            "namespace": "dynamic_tools",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_test",
+            "output": "fixture result",
+            "type": "custom_tool_call_output"
+          }
+        ],
+        "thrown": null
+      },
+      "same-target": {
+        "input": [
+          {
+            "call_id": "call_test",
+            "id": "ctc_test",
+            "input": "hello",
+            "name": "query",
+            "namespace": "dynamic_tools",
+            "type": "custom_tool_call"
+          },
+          {
+            "call_id": "call_test",
+            "output": "fixture result",
+            "type": "custom_tool_call_output"
+          }
+        ],
+        "thrown": null
+      },
+      "without-map": {
+        "input": [
+          {
+            "arguments": "{\"input\":\"hello\"}",
+            "call_id": "call_test",
+            "name": "query",
+            "namespace": "dynamic_tools",
+            "type": "function_call"
+          },
+          {
+            "call_id": "call_test",
+            "output": "fixture result",
+            "type": "function_call_output"
+          }
+        ],
+        "thrown": null
+      }
+    },
     "responses.incomplete-raw-total": {
       "content": [],
       "rawStopReason": "incomplete.max_output_tokens",

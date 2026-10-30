@@ -434,6 +434,79 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func grammarHistoryMapMatchesSourceWithoutCurrentToolDefinitions() async throws {
+    let fixture = try responseEventFixture()
+    let replay = try #require(fixture.object("responsesGrammarReplay"))
+    let source = try #require(replay.object("source"))
+    let call = try #require(replay.object("call"))
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "grammar-history.oracle")
+    let expectedCases = try #require(
+      oracle.object("cases")?.object("responses.grammar-history-replay"))
+    for (name, value) in try #require(replay.object("cases")) {
+      let spec = try #require(value.objectValue)
+      let target = try #require(spec.object("target"))
+      let api = try #require(target.string("api"))
+      let (baseRequest, context) = eventRequestContext(
+        protocolID: api, providerID: target.string("provider"),
+        modelID: try #require(target.string("id")), tools: [], metadata: [:])
+      let toolCall = ProviderToolCall(
+        id: try #require(call.string("id")), name: try #require(call.string("name")),
+        arguments: try #require(spec["arguments"]), namespace: call.string("namespace"))
+      let request = ProviderRequest(
+        id: name, providerID: baseRequest.providerID, modelID: baseRequest.modelID,
+        messages: [
+          .assistantMessage(
+            .init(
+              content: [.toolCall(toolCall)],
+              source: .init(
+                api: try #require(source.string("api")),
+                providerID: try #require(source.string("provider")),
+                modelID: try #require(source.string("model"))),
+              usage: .init(
+                inputTokens: 0, outputTokens: 0, reasoningTokens: 0,
+                cachedInputTokens: 0, providerMetadata: [:]),
+              stopReason: .toolUse, timestampMilliseconds: 0)),
+          .toolResult(
+            .init(
+              toolCallID: toolCall.id, toolName: toolCall.name,
+              content: [.text(try #require(replay.string("result")))], isError: false)),
+        ], tools: [],
+        options: .init(
+          maximumOutputTokens: 64, temperature: nil,
+          reasoningEffort: nil, responseSchema: nil,
+          providerOptions: [
+            "grammarToolInputProperties": try #require(spec["grammarToolInputProperties"])
+          ]))
+      let adapter = OpenAIResponsesAdapter(
+        protocolID: api,
+        flavor: api == "azure-openai-responses"
+          ? .azure : api == "openai-codex-responses" ? .codex : .standard)
+      let transport = EventBranchTransport(chunks: [], statusCode: 418)
+      var failure: ProviderRuntimeFailure?
+      do {
+        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+      } catch let error as ProviderRuntimeFailure { failure = error }
+      let sent = await transport.sent
+      let expected = try #require(expectedCases.object(name))
+      if let thrown = expected.string("thrown") {
+        #expect(sent == nil, Comment(rawValue: name))
+        #expect(failure?.message == thrown, Comment(rawValue: name))
+      } else {
+        let body = try decodeJSONObject(
+          try #require(sent?.httpBody),
+          providerID: "fixture", operation: "grammar-history.body")
+        #expect(body.array("input") == expected.array("input"), Comment(rawValue: name))
+        #expect(body["grammarToolInputProperties"] == nil, Comment(rawValue: name))
+        #expect(body["tools"] == nil, Comment(rawValue: name))
+      }
+    }
+  }
+
+  @Test
   func completionsStructuredReasoningResponseModelAndUsageMatchSource() async throws {
     let fixture = try responseEventFixture()
     let chunks = try #require(fixture.array("completionChunks"))
@@ -647,12 +720,14 @@ struct OpenAIResponseEventBranchTests {
 private actor EventBranchTransport: ProviderHTTPStreamingTransport {
   let chunks: [Data]
   let statusCode: Int
+  private(set) var sent: URLRequest?
   init(chunks: [Data], statusCode: Int = 200) {
     self.chunks = chunks
     self.statusCode = statusCode
   }
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
-    ProviderHTTPStreamingResponse(
+    sent = request
+    return ProviderHTTPStreamingResponse(
       statusCode: statusCode, headers: [:],
       body: AsyncThrowingStream { continuation in
         for chunk in chunks { continuation.yield(chunk) }
@@ -725,6 +800,7 @@ private func responseEvents(
 
 private func eventRequestContext(
   protocolID: String,
+  providerID: String? = nil,
   modelID: String,
   tools: [ProviderToolDefinition],
   metadata: [String: JSONValue],
@@ -732,7 +808,8 @@ private func eventRequestContext(
 ) -> (ProviderRequest, WireProtocolContext) {
   let isCodex = protocolID == "openai-codex-responses"
   let isAzure = protocolID == "azure-openai-responses"
-  let providerID = isCodex ? "openai-codex" : (isAzure ? "azure-openai-responses" : "openai")
+  let providerID =
+    providerID ?? (isCodex ? "openai-codex" : (isAzure ? "azure-openai-responses" : "openai"))
   let model = ProviderModel(
     id: modelID,
     providerID: providerID,

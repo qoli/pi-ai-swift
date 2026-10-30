@@ -835,5 +835,133 @@
         }
       }
     ]
+  },
+  "responsesGrammarReplay": {
+    "source": {
+      "api": "openai-responses",
+      "provider": "openai",
+      "model": "gpt-model"
+    },
+    "call": {
+      "id": "call_test|ctc_test",
+      "name": "query",
+      "namespace": "dynamic_tools"
+    },
+    "result": "fixture result",
+    "cases": {
+      "same-target": {
+        "target": {
+          "api": "openai-responses",
+          "provider": "openai",
+          "id": "gpt-model"
+        },
+        "arguments": {
+          "input": "hello"
+        },
+        "grammarToolInputProperties": {
+          "query": "input"
+        }
+      },
+      "renamed-input": {
+        "target": {
+          "api": "openai-responses",
+          "provider": "openai",
+          "id": "gpt-model"
+        },
+        "arguments": {
+          "payload": "select *"
+        },
+        "grammarToolInputProperties": {
+          "query": "payload"
+        }
+      },
+      "without-map": {
+        "target": {
+          "api": "openai-responses",
+          "provider": "openai",
+          "id": "gpt-model"
+        },
+        "arguments": {
+          "input": "hello"
+        },
+        "grammarToolInputProperties": {}
+      },
+      "missing-property": {
+        "target": {
+          "api": "openai-responses",
+          "provider": "openai",
+          "id": "gpt-model"
+        },
+        "arguments": {},
+        "grammarToolInputProperties": {
+          "query": "input"
+        }
+      },
+      "non-string-property": {
+        "target": {
+          "api": "openai-responses",
+          "provider": "openai",
+          "id": "gpt-model"
+        },
+        "arguments": {
+          "input": 7
+        },
+        "grammarToolInputProperties": {
+          "query": "input"
+        }
+      },
+      "different-model": {
+        "target": {
+          "api": "openai-responses",
+          "provider": "openai",
+          "id": "gpt-other"
+        },
+        "arguments": {
+          "input": "hello"
+        },
+        "grammarToolInputProperties": {
+          "query": "input"
+        }
+      },
+      "azure-target": {
+        "target": {
+          "api": "azure-openai-responses",
+          "provider": "azure-openai-responses",
+          "id": "gpt-model"
+        },
+        "arguments": {
+          "input": "hello"
+        },
+        "grammarToolInputProperties": {
+          "query": "input"
+        }
+      },
+      "codex-target": {
+        "target": {
+          "api": "openai-codex-responses",
+          "provider": "openai-codex",
+          "id": "gpt-model"
+        },
+        "arguments": {
+          "input": "hello"
+        },
+        "grammarToolInputProperties": {
+          "query": "input"
+        }
+      },
+      "azure-provider-standard-api": {
+        "target": {
+          "api": "openai-responses",
+          "provider": "azure",
+          "id": "gpt-model"
+        },
+        "arguments": {
+          "input": "hello"
+        },
+        "grammarToolInputProperties": {
+          "query": "input"
+        }
+      }
+    }
   }
 }

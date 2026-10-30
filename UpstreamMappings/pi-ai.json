@@ -2059,7 +2059,11 @@
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#grammarHistoryMapMatchesSourceWithoutCurrentToolDefinitions",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/SwiftProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -2436,7 +2440,11 @@
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#grammarHistoryMapMatchesSourceWithoutCurrentToolDefinitions",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/SwiftProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -2586,7 +2594,11 @@
         "Fixtures/Differential/Cases/cloudflare-auth.json",
         "Fixtures/Differential/Oracle/cloudflare-auth.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#grammarHistoryMapMatchesSourceWithoutCurrentToolDefinitions",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/SwiftProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
