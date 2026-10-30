@@ -35,6 +35,50 @@
         }
       }
     },
+    "anthropic-ignored-sse-envelopes": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IHByb3h5LnN0YXRzCmRhdGE6IG5vdCBqc29uCgpldmVudDogcGluZwpkYXRhOiBub3QganNvbgoKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJpZ25vcmVkIn19CgpldmVudDogbWVzc2FnZV9zdGFydApkYXRhOiB7fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRoLWZpbHRlcmVkIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfX19CgpldmVudDogY29udGVudF9ibG9ja19zdGFydApkYXRhOiB7InR5cGUiOiJmdXR1cmVfZXZlbnQifQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdGFydCIsImluZGV4IjowLCJjb250ZW50X2Jsb2NrIjp7InR5cGUiOiJ0ZXh0IiwidGV4dCI6IiJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfZGVsdGEKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19kZWx0YSIsImluZGV4IjowLCJkZWx0YSI6eyJ0eXBlIjoidGV4dF9kZWx0YSIsInRleHQiOiJIZWxsbyJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RvcApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0b3AiLCJpbmRleCI6MH0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjF9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoKZXZlbnQ6IHByb3h5LnN0YXRzCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6InJlZnVzYWwifX0KCmV2ZW50OiBkb25lCmRhdGE6IFtET05FXQoKZXZlbnQ6IHByb3h5LnN0YXRzCmRhdGE6IG5vdCBqc29uCgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "Hello",
+          "type": "textDelta"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "anth-filtered",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 2
+        }
+      }
+    },
     "anthropic-mid-output-fallback": {
       "decoderInput": {
         "chunksBase64": [

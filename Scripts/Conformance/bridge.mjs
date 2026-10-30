@@ -345,7 +345,8 @@ async function mockResponse(model, request, body, options, connection) {
   const frames = (async function* () {
     for await (const event of reply.data) {
       await options.onProviderStreamEvent?.(event, model);
-      yield Buffer.from(`data: ${JSON.stringify(event)}\n\n`).toString("base64");
+      const label = model.api === "anthropic-messages" ? `event: ${event.type}\n` : "";
+      yield Buffer.from(`${label}data: ${JSON.stringify(event)}\n\n`).toString("base64");
     }
     if (model.api === "openai-completions") yield Buffer.from("data: [DONE]\n\n").toString("base64");
   })();

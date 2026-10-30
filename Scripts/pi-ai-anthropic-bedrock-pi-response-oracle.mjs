@@ -157,6 +157,22 @@ function canonicalTerminal(message) {
 
 function stimulus(caseID) {
   switch (caseID) {
+    case "anthropic-ignored-sse-envelopes": return sse([
+      "event: proxy.stats\ndata: not json",
+      "event: ping\ndata: not json",
+      `data: ${JSON.stringify({type: "message_start", message: {id: "ignored"}})}`,
+      anth("message_start", {}),
+      anth("message_start", { type: "message_start", message: { id: "anth-filtered", model: "fixture-model", usage: { input_tokens: 1, output_tokens: 0 } } }),
+      anth("content_block_start", { type: "future_event" }),
+      anth("content_block_start", { type: "content_block_start", index: 0, content_block: { type: "text", text: "" } }),
+      anth("content_block_delta", { type: "content_block_delta", index: 0, delta: { type: "text_delta", text: "Hello" } }),
+      anth("content_block_stop", { type: "content_block_stop", index: 0 }),
+      anth("message_delta", { type: "message_delta", delta: { stop_reason: "end_turn" }, usage: { output_tokens: 1 } }),
+      anth("message_stop", { type: "message_stop" }),
+      anth("proxy.stats", { type: "message_delta", delta: { stop_reason: "refusal" } }),
+      "event: done\ndata: [DONE]",
+      "event: proxy.stats\ndata: not json",
+    ]);
     case "anthropic-mid-output-fallback": return sse([
       anth("message_start", { type: "message_start", message: { id: "fallback", model: "fixture-model", usage: {input_tokens: 0, output_tokens: 0} } }),
       anth("content_block_start", { type: "content_block_start", index: 0, content_block: {type: "text", text: ""} }),

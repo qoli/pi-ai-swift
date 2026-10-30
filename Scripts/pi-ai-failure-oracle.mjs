@@ -294,7 +294,8 @@ function failureInput(protocolID) {
         chunksBase64: [Buffer.from([0, 0, 0, 8, 0, 0, 0, 0]).toString("base64")],
       };
     }
-    const raw = Buffer.from("data: {not-json}\n\n").toString("base64");
+    const label = protocolID === "anthropic-messages" ? "event: message_start\n" : "";
+    const raw = Buffer.from(`${label}data: {not-json}\n\n`).toString("base64");
     return {
       kind: protocolID === "openrouter-images" ? "http-json" : "http-sse",
       status: 200,

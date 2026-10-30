@@ -129,14 +129,15 @@ private actor ProviderVerticalTransport: ProviderHTTPStreamingTransport {
     if request.value(forHTTPHeaderField: "anthropic-version") != nil {
       return (
         [:],
-        sse([
-          #"{"type":"message_start","message":{"id":"vertical-anthropic","model":"fixture","usage":{"input_tokens":1,"output_tokens":0}}}"#,
-          #"{"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}"#,
-          #"{"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"ok"}}"#,
-          #"{"type":"content_block_stop","index":0}"#,
-          #"{"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":1}}"#,
-          #"{"type":"message_stop"}"#,
-        ])
+        sse(
+          [
+            #"{"type":"message_start","message":{"id":"vertical-anthropic","model":"fixture","usage":{"input_tokens":1,"output_tokens":0}}}"#,
+            #"{"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}"#,
+            #"{"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"ok"}}"#,
+            #"{"type":"content_block_stop","index":0}"#,
+            #"{"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":1}}"#,
+            #"{"type":"message_stop"}"#,
+          ], named: true)
       )
     }
     if request.url?.absoluteString.contains("streamGenerateContent") == true {
@@ -180,8 +181,17 @@ private actor ProviderVerticalTransport: ProviderHTTPStreamingTransport {
     )
   }
 
-  private func sse(_ payloads: [String], done: Bool = false) -> Data {
-    var values = payloads.map { "data: \($0)" }
+  private func sse(_ payloads: [String], done: Bool = false, named: Bool = false) -> Data {
+    var values = payloads.map { payload in
+      let prefix: String
+      if named {
+        let object = try! JSONDecoder().decode(JSONValue.self, from: Data(payload.utf8))
+        prefix = "event: \(object.objectValue!.string("type")!)\n"
+      } else {
+        prefix = ""
+      }
+      return "\(prefix)data: \(payload)"
+    }
     if done { values.append("data: [DONE]") }
     return Data((values.joined(separator: "\n\n") + "\n\n").utf8)
   }

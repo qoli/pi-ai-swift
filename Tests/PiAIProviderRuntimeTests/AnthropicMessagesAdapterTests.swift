@@ -242,20 +242,30 @@ private actor AnthropicFixtureTransport: ProviderHTTPStreamingTransport {
 private func anthropicFixtureChunks() -> [Data] {
   let stream =
     [
-      #"data: {"type":"message_start","message":{"id":"message-1","model":"k3-256k","usage":{"input_tokens":12,"output_tokens":0,"cache_read_input_tokens":2}}}"#,
-      #"data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}"#,
-      #"data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Checking"}}"#,
-      #"data: {"type":"content_block_stop","index":0}"#,
-      #"data: {"type":"content_block_start","index":2,"content_block":{"type":"thinking","thinking":""}}"#,
-      #"data: {"type":"content_block_delta","index":2,"delta":{"type":"thinking_delta","thinking":"inspect"}}"#,
-      #"data: {"type":"content_block_delta","index":2,"delta":{"type":"signature_delta","signature":"opaque-signature"}}"#,
-      #"data: {"type":"content_block_stop","index":2}"#,
-      #"data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"tool-1","name":"weather","input":{}}}"#,
-      #"data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"city\":\"Tai"}}"#,
-      #"data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"pei\"}"}}"#,
-      #"data: {"type":"content_block_stop","index":1}"#,
-      #"data: {"type":"message_delta","delta":{"stop_reason":"tool_use"},"usage":{"output_tokens":8}}"#,
-      #"data: {"type":"message_stop"}"#,
+      "event: message_start\n"
+        + #"data: {"type":"message_start","message":{"id":"message-1","model":"k3-256k","usage":{"input_tokens":12,"output_tokens":0,"cache_read_input_tokens":2}}}"#,
+      "event: content_block_start\n"
+        + #"data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}"#,
+      "event: content_block_delta\n"
+        + #"data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Checking"}}"#,
+      "event: content_block_stop\n" + #"data: {"type":"content_block_stop","index":0}"#,
+      "event: content_block_start\n"
+        + #"data: {"type":"content_block_start","index":2,"content_block":{"type":"thinking","thinking":""}}"#,
+      "event: content_block_delta\n"
+        + #"data: {"type":"content_block_delta","index":2,"delta":{"type":"thinking_delta","thinking":"inspect"}}"#,
+      "event: content_block_delta\n"
+        + #"data: {"type":"content_block_delta","index":2,"delta":{"type":"signature_delta","signature":"opaque-signature"}}"#,
+      "event: content_block_stop\n" + #"data: {"type":"content_block_stop","index":2}"#,
+      "event: content_block_start\n"
+        + #"data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"tool-1","name":"weather","input":{}}}"#,
+      "event: content_block_delta\n"
+        + #"data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"{\"city\":\"Tai"}}"#,
+      "event: content_block_delta\n"
+        + #"data: {"type":"content_block_delta","index":1,"delta":{"type":"input_json_delta","partial_json":"pei\"}"}}"#,
+      "event: content_block_stop\n" + #"data: {"type":"content_block_stop","index":1}"#,
+      "event: message_delta\n"
+        + #"data: {"type":"message_delta","delta":{"stop_reason":"tool_use"},"usage":{"output_tokens":8}}"#,
+      "event: message_stop\n" + #"data: {"type":"message_stop"}"#,
     ].joined(separator: "\n\n") + "\n\n"
   let bytes = Array(stream.utf8)
   return [

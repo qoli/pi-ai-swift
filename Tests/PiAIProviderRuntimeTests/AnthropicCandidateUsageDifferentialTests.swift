@@ -116,7 +116,10 @@ private actor CandidateTTLTransport: ProviderHTTPStreamingTransport {
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     userAgent = request.value(forHTTPHeaderField: "User-Agent")
     let chunks = try frames.map { frame in
-      Data("data: \(String(decoding: try JSONEncoder().encode(frame), as: UTF8.self))\n\n".utf8)
+      let name = try #require(frame.objectValue?.string("type"))
+      return Data(
+        "event: \(name)\ndata: \(String(decoding: try JSONEncoder().encode(frame), as: UTF8.self))\n\n"
+          .utf8)
     }
     return ProviderHTTPStreamingResponse(
       statusCode: 200, headers: ["content-type": "text/event-stream"],

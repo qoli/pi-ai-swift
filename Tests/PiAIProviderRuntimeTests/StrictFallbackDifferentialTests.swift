@@ -165,7 +165,12 @@ private actor StrictFallbackTransport: ProviderHTTPStreamingTransport {
         #"{"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":0}}"#,
         #"{"type":"message_stop"}"#,
       ]
-    return response(status: 200, data: Data(frames.map { "data: \($0)\n\n" }.joined().utf8))
+    let sse = try frames.map { frame in
+      let object = try JSONDecoder().decode(JSONValue.self, from: Data(frame.utf8))
+      let name = try #require(object.objectValue?.string("type"))
+      return "event: \(name)\ndata: \(frame)\n\n"
+    }.joined()
+    return response(status: 200, data: Data(sse.utf8))
   }
   private func response(status: Int, data: Data) -> ProviderHTTPStreamingResponse {
     ProviderHTTPStreamingResponse(

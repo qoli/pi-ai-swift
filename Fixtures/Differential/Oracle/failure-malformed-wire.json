@@ -8,7 +8,7 @@
           "content-type": "text/event-stream"
         },
         "kind": "http-sse",
-        "rawBodyBase64": "ZGF0YToge25vdC1qc29ufQoK",
+        "rawBodyBase64": "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YToge25vdC1qc29ufQoK",
         "status": 200
       },
       "outcome": "failure",

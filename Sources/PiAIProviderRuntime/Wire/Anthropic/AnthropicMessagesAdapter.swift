@@ -757,13 +757,18 @@ private struct AnthropicEventReducer {
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
-    if event.data == "[DONE]" { return [] }
+    guard let name = event.event,
+      [
+        "message_start", "message_delta", "message_stop",
+        "content_block_start", "content_block_delta", "content_block_stop", "error",
+      ].contains(name)
+    else { return [] }
     let object = try decodeJSONObject(
       Data(event.data.utf8),
       providerID: providerID,
       operation: "anthropic.event.decode"
     )
-    let type = object.string("type") ?? event.event
+    let type = object.string("type")
     switch type {
     case "ping":
       return []
@@ -969,7 +974,7 @@ private struct AnthropicEventReducer {
         causeDescription: error?.string("type")
       )
     default:
-      throw invalid("unsupported Anthropic event: \(type ?? "<missing>")")
+      return []
     }
   }
 
