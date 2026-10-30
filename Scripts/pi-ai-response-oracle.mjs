@@ -217,7 +217,7 @@ async function projectAssistantStream(sourceStream, protocol) {
     if (snapshot.type === "thinking_delta") events.push({ type: "reasoningDelta", delta: snapshot.delta });
     if (snapshot.type === "toolcall_start") {
       const block = partial?.content?.[snapshot.contentIndex];
-      appendBlockSignature(events, signatures, snapshot.contentIndex, block);
+      appendBlockSignature(events, signatures, snapshot.contentIndex, block, protocol.protocolID);
       events.push({ type: "toolCallStarted", id: block?.id ?? "", name: block?.name ?? "" });
     }
     if (snapshot.type === "toolcall_delta") {
@@ -233,6 +233,7 @@ async function projectAssistantStream(sourceStream, protocol) {
         signatures,
         snapshot.contentIndex,
         partial?.content?.[snapshot.contentIndex],
+        protocol.protocolID,
       );
     }
     if (snapshot.type === "done" || snapshot.type === "error") terminal = snapshot.message ?? snapshot.error;
@@ -241,7 +242,7 @@ async function projectAssistantStream(sourceStream, protocol) {
   if (terminal.stopReason === "error" || terminal.stopReason === "aborted") {
     throw new Error(`${protocol.protocolID} oracle failed: ${terminal.errorMessage ?? terminal.stopReason}`);
   }
-  appendSignatureDeltas(events, signatures, terminal.content ?? []);
+  appendSignatureDeltas(events, signatures, terminal.content ?? [], protocol.protocolID);
   if (terminal.usage) events.push(usageEvent(terminal.usage));
   events.push({ type: "completed", reason: mapReason(terminal.stopReason) });
   if (startSeen) events.unshift({
@@ -252,15 +253,15 @@ async function projectAssistantStream(sourceStream, protocol) {
   return { events: canonicalize(events), terminalReplay: canonicalTerminalMessage(terminal) };
 }
 
-function appendSignatureDeltas(events, signatures, content) {
-  content.forEach((block, index) => appendBlockSignature(events, signatures, index, block));
+function appendSignatureDeltas(events, signatures, content, api) {
+  content.forEach((block, index) => appendBlockSignature(events, signatures, index, block, api));
 }
 
-function appendBlockSignature(events, signatures, index, block) {
+function appendBlockSignature(events, signatures, index, block, api) {
   if (!block) return;
   const value = block.type === "thinking" ? block.thinkingSignature : block.type === "toolCall" ? block.thoughtSignature : undefined;
   if (typeof value !== "string" || value.length === 0) return;
-  const normalizedValue = canonicalSignature(value);
+  const normalizedValue = canonicalSignature(value, api);
   const previous = signatures.get(index) ?? "";
   if (normalizedValue !== previous) {
     events.push({ type: "reasoningSignatureDelta", delta: normalizedValue.startsWith(previous) ? normalizedValue.slice(previous.length) : normalizedValue });
@@ -268,7 +269,8 @@ function appendBlockSignature(events, signatures, index, block) {
   }
 }
 
-function canonicalSignature(value) {
+function canonicalSignature(value, api) {
+  if (api === "openai-completions") return value;
   try {
     return JSON.stringify(canonicalize(JSON.parse(value)));
   } catch {
@@ -430,6 +432,6 @@ function canonicalArgumentError(value) {
 }
 function canonicalToolCall(call) { return { id: call?.id ?? "", name: call?.name ?? "", arguments: canonicalize(call?.arguments ?? {}), ...(call?.argumentsError !== undefined ? {argumentsError:canonicalArgumentError(call.argumentsError)} : {}) }; }
 function usageEvent(usage) { return { type: "usage", inputTokens: usage.input ?? null, outputTokens: usage.output ?? null, reasoningTokens: usage.reasoning ?? null, cachedInputTokens: usage.cacheRead ?? null, cost: usage.cost }; }
-function canonicalTerminalMessage(message) { return canonicalize({ responseID: message.responseId ?? null, responseModel: message.responseModel ?? null, providerID: message.provider, modelID: message.model, stopReason: mapReason(message.stopReason), rawStopReason: message.rawStopReason ?? null, content: (message.content ?? []).map((block) => ({ ...block, ...(block.argumentsError !== undefined ? {argumentsError:canonicalArgumentError(block.argumentsError)} : {}), ...(typeof block.thinkingSignature === "string" ? { thinkingSignature: canonicalSignature(block.thinkingSignature) } : {}), ...(typeof block.thoughtSignature === "string" ? { thoughtSignature: canonicalSignature(block.thoughtSignature) } : {}) })), usage: message.usage ? { input: message.usage.input, output: message.usage.output, reasoning: message.usage.reasoning ?? null, cacheRead: message.usage.cacheRead, cacheWrite: message.usage.cacheWrite, totalTokens: message.usage.totalTokens, cost: message.usage.cost } : null }); }
+function canonicalTerminalMessage(message) { return canonicalize({ responseID: message.responseId ?? null, responseModel: message.responseModel ?? null, providerID: message.provider, modelID: message.model, stopReason: mapReason(message.stopReason), rawStopReason: message.rawStopReason ?? null, content: (message.content ?? []).map((block) => ({ ...block, ...(block.argumentsError !== undefined ? {argumentsError:canonicalArgumentError(block.argumentsError)} : {}), ...(typeof block.thinkingSignature === "string" ? { thinkingSignature: canonicalSignature(block.thinkingSignature, message.api) } : {}), ...(typeof block.thoughtSignature === "string" ? { thoughtSignature: canonicalSignature(block.thoughtSignature, message.api) } : {}) })), usage: message.usage ? { input: message.usage.input, output: message.usage.output, reasoning: message.usage.reasoning ?? null, cacheRead: message.usage.cacheRead, cacheWrite: message.usage.cacheWrite, totalTokens: message.usage.totalTokens, cost: message.usage.cost } : null }); }
 function canonicalTerminalImages(output) { return canonicalize({ responseID: output.responseId ?? null, providerID: output.provider, modelID: output.model, stopReason: output.stopReason, output: output.output, usage: output.usage ? { input: output.usage.input, output: output.usage.output, cacheRead: output.usage.cacheRead, cacheWrite: output.usage.cacheWrite, totalTokens: output.usage.totalTokens, cost: output.usage.cost } : null }); }
 function canonicalize(value) { if (Array.isArray(value)) return value.map(canonicalize); if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, canonicalize(item)])); return value; }

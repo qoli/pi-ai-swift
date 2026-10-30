@@ -3471,6 +3471,214 @@
         ]
       }
     },
+    "completions-structured-replay.as-text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "think",
+                "type": "text"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "reasoning_details": [
+              {
+                "data": "encrypted-signature",
+                "id": "call_1",
+                "type": "reasoning.encrypted"
+              }
+            ],
+            "role": "assistant"
+          }
+        ]
+      }
+    },
+    "completions-structured-replay.first-valid-array": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": "answer",
+            "reasoning_details": [
+              {
+                "data": "encrypted-signature",
+                "id": "call_1",
+                "type": "reasoning.encrypted"
+              }
+            ],
+            "role": "assistant"
+          }
+        ]
+      }
+    },
+    "completions-structured-replay.fraction-index": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": "answer",
+            "reasoning_details": [
+              {
+                "index": 0.5,
+                "text": "a",
+                "type": "reasoning.text"
+              }
+            ],
+            "role": "assistant"
+          }
+        ]
+      }
+    },
+    "completions-structured-replay.invalid-array": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": "answer",
+            "role": "assistant"
+          }
+        ]
+      }
+    },
+    "completions-structured-replay.invalid-legacy": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          }
+        ]
+      }
+    },
+    "completions-structured-replay.legacy": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "reasoning_details": [
+              {
+                "data": "encrypted-signature",
+                "id": "call_1",
+                "type": "reasoning.encrypted"
+              }
+            ],
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          }
+        ]
+      }
+    },
+    "completions-structured-replay.signed": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": "answer",
+            "reasoning_details": [
+              {
+                "data": "encrypted-signature",
+                "id": "call_1",
+                "type": "reasoning.encrypted"
+              }
+            ],
+            "role": "assistant"
+          }
+        ]
+      }
+    },
+    "completions-structured-replay.signed-wins": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "reasoning_details": [
+              {
+                "data": "encrypted-signature",
+                "id": "call_1",
+                "type": "reasoning.encrypted"
+              }
+            ],
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          }
+        ]
+      }
+    },
     "google-generative-ai.thinking-disabled-budget": {
       "requestBody": {
         "thinkingConfig": {

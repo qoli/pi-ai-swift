@@ -2265,7 +2265,8 @@
         "Fixtures/Differential/Cases/provider-intent.json",
         "Fixtures/Differential/Oracle/provider-intent.json",
         "Scripts/pi-ai-provider-intent-oracle.mjs",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsReasoningDetailSignaturesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2544,7 +2545,8 @@
       "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift",
-        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsCompatibility.swift"
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsCompatibility.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsReasoningDetails.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2630,7 +2632,10 @@
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsEmptyToolsMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsRawReasoningMatchesPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsReasoningReplayMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsReasoningReplayMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsReasoningDetailSignaturesRetainPinnedSourceOrdering",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsReasoningDetailSignaturesMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsStructuredReasoningReplayMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test",

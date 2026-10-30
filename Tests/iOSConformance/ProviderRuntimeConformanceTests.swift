@@ -1205,6 +1205,95 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testCompletionsReasoningDetailSignaturesMatchPinnedSource() async throws {
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    let cases = try XCTUnwrap(
+      oracle.object("cases")?.object("completions.reasoning-detail-signatures"))
+    XCTAssertEqual(cases.count, 6)
+    for (name, value) in cases {
+      let spec = try XCTUnwrap(value.objectValue)
+      let (request, context) = inputs(api: "openai-completions")
+      let result = try await replay(
+        OpenAICompletionsAdapter(), request: request, context: context,
+        chunks: [Data(try XCTUnwrap(spec.string("sse")).utf8)])
+      XCTAssertNil(result.failure, name)
+      let reasoning = try XCTUnwrap(result.snapshot, name).content.compactMap {
+        item -> ProviderReasoningContent? in
+        guard case .reasoning(let value) = item else { return nil }
+        return value
+      }.first
+      let expected = spec.array("content")?.compactMap(\.objectValue).first {
+        $0.string("type") == "thinking"
+      }
+      XCTAssertEqual(reasoning?.signature, expected?.string("thinkingSignature"), name)
+      XCTAssertEqual(reasoning?.text, expected?.string("thinking"), name)
+    }
+  }
+
+  func testCompletionsStructuredReasoningReplayMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("completions-structured-replay.") == true }
+    XCTAssertEqual(cases.count, 8)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let model = try XCTUnwrap(spec.object("model"))
+      let modelID = try XCTUnwrap(model.string("id"))
+      let provider = try XCTUnwrap(model.string("provider"))
+      let (_, context) = inputs(
+        api: "openai-completions", providerID: provider, modelID: modelID,
+        reasoning: true, metadata: model)
+      let assistant: [ProviderAssistantContent] = try XCTUnwrap(spec.array("assistantContent")).map
+      { value in
+        let block = try XCTUnwrap(value.objectValue)
+        switch block.string("type") {
+        case "thinking":
+          return .reasoning(
+            .init(
+              text: block.string("thinking") ?? "", signature: block.string("thinkingSignature"),
+              providerMetadata: [:]))
+        case "toolCall":
+          return .toolCall(
+            .init(
+              id: try XCTUnwrap(block.string("id")), name: try XCTUnwrap(block.string("name")),
+              arguments: try XCTUnwrap(block["arguments"]),
+              thoughtSignature: block.string("thoughtSignature")))
+        default: return .text(block.string("text") ?? "")
+        }
+      }
+      let request = ProviderRequest(
+        id: name, providerID: provider, modelID: modelID,
+        messages: [
+          .user([.text("hello")]),
+          .assistantMessage(
+            .init(
+              content: assistant,
+              source: .init(api: "openai-completions", providerID: provider, modelID: modelID),
+              usage: .init(
+                inputTokens: 0, outputTokens: 0, reasoningTokens: nil, cachedInputTokens: 0,
+                providerMetadata: [:]),
+              stopReason: .stop, timestampMilliseconds: 1)),
+        ], tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil, responseSchema: nil,
+          providerOptions: [:], cacheRetention: .none))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: provider,
+        operation: "ios.completions.structured.body")
+      XCTAssertEqual(
+        body["messages"], oracle.object("cases")?.object(name)?.object("requestBody")?["messages"],
+        name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

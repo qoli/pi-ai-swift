@@ -555,6 +555,42 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func completionsReasoningDetailSignaturesRetainPinnedSourceOrdering() async throws {
+    let root = responseEventRepositoryRoot()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: root.appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "completions.reasoning-detail.oracle")
+    let cases = try #require(
+      oracle.object("cases")?.object("completions.reasoning-detail-signatures"))
+    #expect(cases.count == 6)
+    for (name, value) in cases {
+      let spec = try #require(value.objectValue)
+      let sse = try #require(spec.string("sse"))
+      let (request, context) = eventRequestContext(
+        protocolID: "openai-completions", modelID: "requested-model", tools: [], metadata: [:])
+      var snapshot: ProviderResponseSnapshot?
+      for try await event in OpenAICompletionsAdapter().stream(
+        request, context: context, transport: EventBranchTransport(chunks: [Data(sse.utf8)]))
+      {
+        if case .responseSnapshot(let value) = event { snapshot = value }
+      }
+      let reasoning = try #require(snapshot).content.compactMap {
+        item -> ProviderReasoningContent? in
+        guard case .reasoning(let value) = item else { return nil }
+        return value
+      }.first
+      let expected = spec.array("content")?.compactMap(\.objectValue).first {
+        $0.string("type") == "thinking"
+      }
+      #expect(
+        reasoning?.signature == expected?.string("thinkingSignature"), Comment(rawValue: name))
+      #expect(reasoning?.text == expected?.string("thinking"), Comment(rawValue: name))
+    }
+  }
+
+  @Test
   func completionsStructuredReasoningResponseModelAndUsageMatchSource() async throws {
     let fixture = try responseEventFixture()
     let chunks = try #require(fixture.array("completionChunks"))

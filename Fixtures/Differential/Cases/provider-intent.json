@@ -9130,6 +9130,332 @@
       "projectFields": [
         "messages"
       ]
+    },
+    {
+      "id": "completions-structured-replay.signed",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "reasoning-detail-fixture",
+        "api": "openai-completions",
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 100000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {}
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "think",
+          "thinkingSignature": "[{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"}]"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
+    },
+    {
+      "id": "completions-structured-replay.legacy",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "reasoning-detail-fixture",
+        "api": "openai-completions",
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 100000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {}
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {},
+          "thoughtSignature": "{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"}"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
+    },
+    {
+      "id": "completions-structured-replay.signed-wins",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "reasoning-detail-fixture",
+        "api": "openai-completions",
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 100000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {}
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "think",
+          "thinkingSignature": "[{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"}]"
+        },
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {},
+          "thoughtSignature": "{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"older-signature\"}"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
+    },
+    {
+      "id": "completions-structured-replay.invalid-array",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "reasoning-detail-fixture",
+        "api": "openai-completions",
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 100000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {}
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "think",
+          "thinkingSignature": "[{\"type\":\"reasoning.text\",\"text\":\"a\",\"format\":null}]"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
+    },
+    {
+      "id": "completions-structured-replay.first-valid-array",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "reasoning-detail-fixture",
+        "api": "openai-completions",
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 100000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {}
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "a",
+          "thinkingSignature": "[]"
+        },
+        {
+          "type": "thinking",
+          "thinking": "b",
+          "thinkingSignature": "[{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"}]"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
+    },
+    {
+      "id": "completions-structured-replay.invalid-legacy",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "reasoning-detail-fixture",
+        "api": "openai-completions",
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 100000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {}
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {},
+          "thoughtSignature": "{\"type\":\"reasoning.encrypted\",\"id\":\"\",\"data\":\"sig\"}"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
+    },
+    {
+      "id": "completions-structured-replay.as-text",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "reasoning-detail-fixture",
+        "api": "openai-completions",
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 100000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": true
+        }
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "think",
+          "thinkingSignature": "[{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"}]"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
+    },
+    {
+      "id": "completions-structured-replay.fraction-index",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "reasoning-detail-fixture",
+        "api": "openai-completions",
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 100000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {}
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "think",
+          "thinkingSignature": "[{\"type\":\"reasoning.text\",\"text\":\"a\",\"index\":0.5}]"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
     }
   ]
 }

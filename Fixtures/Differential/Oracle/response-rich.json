@@ -5506,7 +5506,7 @@
           "type": "textDelta"
         },
         {
-          "delta": "[{\"data\":\"opaque-synthetic\",\"id\":\"reasoning-fixture\",\"type\":\"reasoning.encrypted\"}]",
+          "delta": "[{\"type\":\"reasoning.encrypted\",\"data\":\"opaque-synthetic\",\"id\":\"reasoning-fixture\"}]",
           "type": "reasoningSignatureDelta"
         },
         {
@@ -5537,7 +5537,7 @@
         "content": [
           {
             "thinking": "",
-            "thinkingSignature": "[{\"data\":\"opaque-synthetic\",\"id\":\"reasoning-fixture\",\"type\":\"reasoning.encrypted\"}]",
+            "thinkingSignature": "[{\"type\":\"reasoning.encrypted\",\"data\":\"opaque-synthetic\",\"id\":\"reasoning-fixture\"}]",
             "type": "thinking"
           },
           {

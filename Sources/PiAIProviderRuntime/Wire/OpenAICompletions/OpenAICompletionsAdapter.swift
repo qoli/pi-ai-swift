@@ -458,6 +458,14 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           guard case .reasoning(let value) = item else { return nil }
           return value
         }
+        let signedDetails = reasoning.lazy.compactMap {
+          OpenAICompletionsReasoningDetails.parse($0.signature)
+        }.first
+        let legacyDetails = content.compactMap { item -> JSONValue? in
+          guard case .toolCall(let call) = item else { return nil }
+          return OpenAICompletionsReasoningDetails.legacy(call.thoughtSignature)
+        }
+        let preservedDetails = signedDetails ?? (legacyDetails.isEmpty ? nil : legacyDetails)
         let nonEmptyReasoning = reasoning.filter {
           !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
@@ -472,7 +480,8 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
               + nonEmptyTexts.map { .object(["type": .string("text"), "text": .string($0)]) })
         } else {
           if !nonEmptyTexts.isEmpty { object["content"] = .string(nonEmptyTexts.joined()) }
-          if let first = nonEmptyReasoning.first, let signature = first.signature,
+          if preservedDetails == nil,
+            let first = nonEmptyReasoning.first, let signature = first.signature,
             ["reasoning", "reasoning_content", "reasoning_text"].contains(signature)
           {
             let field =
@@ -499,6 +508,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
             }
           )
         }
+        if let preservedDetails { object["reasoning_details"] = .array(preservedDetails) }
         if compat.bool("requiresReasoningContentOnAssistantMessages") == true,
           context.model.capabilities.reasoning,
           object["reasoning_content"] == nil
@@ -765,7 +775,7 @@ private struct OpenAICompletionsReducer {
   private var toolSlotsByID: [String: Int] = [:]
   private var usage: ProviderUsage?
   private var reasoningSignature: String?
-  private var reasoningDetails: [[String: JSONValue]] = []
+  private var reasoningDetails: [ProviderOrderedJSON] = []
   private let isOpenRouter: Bool
   private enum ContentBlock: Equatable {
     case text, reasoning
@@ -822,7 +832,8 @@ private struct OpenAICompletionsReducer {
     if let usage = object.object("usage") {
       try updateUsage(usage)
     }
-    for choiceValue in object.array("choices") ?? [] {
+    let ordered = try ProviderOrderedJSON(data: Data(event.data.utf8))
+    for (choiceIndex, choiceValue) in (object.array("choices") ?? []).enumerated() {
       guard let choice = choiceValue.objectValue else {
         throw invalid("completion choice is not an object")
       }
@@ -845,10 +856,13 @@ private struct OpenAICompletionsReducer {
           break
         }
       }
-      for detail in delta.array("reasoning_details") ?? [] {
-        guard let object = validReasoningDetail(detail) else { continue }
+      let details =
+        ordered["choices"]?.arrayValue?[choiceIndex]["delta"]?["reasoning_details"]?.arrayValue
+        ?? []
+      for detail in details {
+        guard OpenAICompletionsReasoningDetails.valid(detail.jsonValue) else { continue }
         retainBlock(.reasoning)
-        appendReasoningDetail(object)
+        OpenAICompletionsReasoningDetails.append(detail, to: &reasoningDetails)
       }
       if let text = delta.string("content"), !text.isEmpty {
         retainBlock(.text)
@@ -910,13 +924,7 @@ private struct OpenAICompletionsReducer {
   mutating func finish() throws -> [ProviderEvent] {
     var events: [ProviderEvent] = []
     if !reasoningDetails.isEmpty {
-      let encoder = JSONEncoder()
-      encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
-      let data = try encoder.encode(JSONValue.array(reasoningDetails.map(JSONValue.object)))
-      guard let signature = String(data: data, encoding: .utf8) else {
-        throw invalid("structured reasoning details are not valid UTF-8 JSON")
-      }
-      reasoningSignature = signature
+      reasoningSignature = try ProviderOrderedJSON.array(reasoningDetails).encodedString()
     }
     if let reasoningSignature {
       events.append(.reasoningSignatureDelta(reasoningSignature))
@@ -1029,44 +1037,6 @@ private struct OpenAICompletionsReducer {
         rawFinishReason: rawFinishReason,
         timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000)
       ))
-  }
-
-  private func validReasoningDetail(_ value: JSONValue) -> [String: JSONValue]? {
-    guard case .object(let object) = value, let type = object.string("type") else { return nil }
-    if let id = object["id"], id != .null, id.stringValue == nil { return nil }
-    if object["format"] != nil, object.string("format") == nil { return nil }
-    if object["index"] != nil, object.int("index") == nil { return nil }
-    switch type {
-    case "reasoning.summary": guard object.string("summary") != nil else { return nil }
-    case "reasoning.encrypted": guard object.string("data") != nil else { return nil }
-    case "reasoning.text":
-      guard object.string("text") != nil else { return nil }
-      if let signature = object["signature"], signature != .null, signature.stringValue == nil {
-        return nil
-      }
-    default: return nil
-    }
-    return object
-  }
-
-  private mutating func appendReasoningDetail(_ detail: [String: JSONValue]) {
-    guard var last = reasoningDetails.last, last.string("type") == detail.string("type"),
-      ["reasoning.text", "reasoning.summary"].contains(detail.string("type") ?? "")
-    else {
-      reasoningDetails.append(detail)
-      return
-    }
-    let valueKey = detail.string("type") == "reasoning.text" ? "text" : "summary"
-    last[valueKey] = .string((last.string(valueKey) ?? "") + (detail.string(valueKey) ?? ""))
-    for key in ["id", "format", "index"] where last[key] == nil || last[key] == .null {
-      if let value = detail[key] { last[key] = value }
-    }
-    if valueKey == "text", last["signature"] == nil || last["signature"] == .null,
-      let signature = detail["signature"]
-    {
-      last["signature"] = signature
-    }
-    reasoningDetails[reasoningDetails.count - 1] = last
   }
 
   private final class ToolCallState {

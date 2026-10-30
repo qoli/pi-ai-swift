@@ -80,6 +80,14 @@ for (const [name, events] of Object.entries(fixture.responsesTerminalStatusEvent
   catch (error) { terminalStatuses[name] = { thrown: error.message }; }
 }
 const completions = await runCompletions(fixture.completionChunks);
+const completionReasoningDetails = {};
+for (const [name, chunks] of Object.entries(fixture.completionReasoningDetailChunks)) {
+  const output = await runCompletions(chunks);
+  completionReasoningDetails[name] = {
+    sse: chunks.map(chunk => `data: ${JSON.stringify(chunk)}\n\n`).join("") + "data: [DONE]\n\n",
+    content: output.content,
+  };
+}
 const completionHTTPRawMetadata = await runCompletionHTTPRawMetadata();
 const completionAbort = await runCompletionAbort();
 const completionBranches = {};
@@ -111,6 +119,7 @@ process.stdout.write(`${JSON.stringify({
     "responses.terminal-without-start": terminalWithoutStart,
     "responses.terminal-status": terminalStatuses,
     "completions.reasoning-details-response-model": projectCompletions(completions),
+    "completions.reasoning-detail-signatures": completionReasoningDetails,
     "completions.stop-reason-response-branches": completionBranches,
     "completions.transport-termination": completionTransport,
     "completions.http-raw-metadata": projectCompletions(completionHTTPRawMetadata),

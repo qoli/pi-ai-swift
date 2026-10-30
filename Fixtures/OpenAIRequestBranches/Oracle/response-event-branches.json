@@ -24,6 +24,92 @@
         "totalTokens": 0
       }
     },
+    "completions.reasoning-detail-signatures": {
+      "empty-backfill": {
+        "content": [
+          {
+            "thinking": "",
+            "thinkingSignature": "[{\"type\":\"reasoning.text\",\"text\":\"abc\",\"signature\":\"sig\",\"format\":\"fmt\",\"id\":\"later\",\"index\":0}]",
+            "type": "thinking"
+          },
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "sse": "data: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.text\",\"text\":\"a\",\"signature\":\"\",\"format\":\"\"}]},\"finish_reason\":null}]}\n\ndata: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.text\",\"text\":\"b\"}]},\"finish_reason\":null}]}\n\ndata: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.text\",\"text\":\"c\",\"signature\":\"sig\",\"id\":\"later\",\"format\":\"fmt\",\"index\":0}]},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"answer\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n"
+      },
+      "encrypted": {
+        "content": [
+          {
+            "thinking": "",
+            "thinkingSignature": "[{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"}]",
+            "type": "thinking"
+          },
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "sse": "data: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"}]},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"answer\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n"
+      },
+      "fraction-index": {
+        "content": [
+          {
+            "thinking": "",
+            "thinkingSignature": "[{\"type\":\"reasoning.summary\",\"summary\":\"Fraction index\",\"index\":0.5}]",
+            "type": "thinking"
+          },
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "sse": "data: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.summary\",\"summary\":\"Fraction index\",\"index\":0.5}]},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"answer\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n"
+      },
+      "invalid-details": {
+        "content": [
+          {
+            "thinking": "",
+            "thinkingSignature": "[{\"type\":\"reasoning.encrypted\",\"data\":\"ok\",\"id\":null}]",
+            "type": "thinking"
+          },
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "sse": "data: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.summary\",\"summary\":\"bad\",\"format\":null},{\"type\":\"reasoning.text\",\"text\":\"bad\",\"signature\":false},{\"type\":\"reasoning.encrypted\",\"data\":\"ok\",\"id\":null}]},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"answer\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n"
+      },
+      "merged": {
+        "content": [
+          {
+            "thinking": "",
+            "thinkingSignature": "[{\"type\":\"reasoning.text\",\"text\":\"The user\",\"index\":0,\"signature\":\"signed\",\"format\":\"openai-responses-v1\"},{\"type\":\"reasoning.summary\",\"summary\":\"Looked up\",\"index\":0,\"format\":\"openai-responses-v1\"},{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"},{\"type\":\"reasoning.summary\",\"summary\":\"Summary\",\"id\":\"s1\",\"format\":\"anthropic-claude-v1\",\"index\":1}]",
+            "type": "thinking"
+          },
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "sse": "data: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.text\",\"text\":\"The\",\"index\":0}]},\"finish_reason\":null}]}\n\ndata: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.text\",\"text\":\" user\",\"signature\":\"signed\",\"format\":\"openai-responses-v1\",\"index\":0}]},\"finish_reason\":null}]}\n\ndata: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.summary\",\"summary\":\"Looked\",\"index\":0}]},\"finish_reason\":null}]}\n\ndata: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.summary\",\"summary\":\" up\",\"format\":\"openai-responses-v1\",\"index\":0}]},\"finish_reason\":null}]}\n\ndata: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"}]},\"finish_reason\":null}]}\n\ndata: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.summary\",\"summary\":\"Summary\",\"id\":\"s1\",\"format\":\"anthropic-claude-v1\",\"index\":1}]},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"answer\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n"
+      },
+      "signed-sequence": {
+        "content": [
+          {
+            "thinking": "",
+            "thinkingSignature": "[{\"type\":\"reasoning.text\",\"text\":\"Signed thinking\",\"signature\":\"sha256:signed\",\"id\":\"r1\",\"format\":\"anthropic-claude-v1\",\"index\":0},{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"},{\"type\":\"reasoning.summary\",\"summary\":\"Summary\",\"id\":\"s1\",\"format\":\"anthropic-claude-v1\",\"index\":1}]",
+            "type": "thinking"
+          },
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "sse": "data: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.text\",\"text\":\"Signed thinking\",\"signature\":\"sha256:signed\",\"id\":\"r1\",\"format\":\"anthropic-claude-v1\",\"index\":0}]},\"finish_reason\":null}]}\n\ndata: {\"id\":\"chat-fixture\",\"model\":\"requested-model\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning_details\":[{\"type\":\"reasoning.encrypted\",\"id\":\"call_1\",\"data\":\"encrypted-signature\"},{\"type\":\"reasoning.summary\",\"summary\":\"Summary\",\"id\":\"s1\",\"format\":\"anthropic-claude-v1\",\"index\":1}]},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"answer\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n"
+      }
+    },
     "completions.reasoning-details-response-model": {
       "content": [
         {

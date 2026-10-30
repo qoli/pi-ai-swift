@@ -2,6 +2,7 @@ import Foundation
 
 /// Retains object member order when provider JSON is carried in an opaque string.
 indirect enum ProviderOrderedJSON {
+  case undefined
   case object([(String, ProviderOrderedJSON)])
   case array([ProviderOrderedJSON])
   case scalar(JSONValue)
@@ -17,9 +18,51 @@ indirect enum ProviderOrderedJSON {
     return members.first { $0.0 == key }?.1
   }
 
+  var arrayValue: [ProviderOrderedJSON]? {
+    guard case .array(let values) = self else { return nil }
+    return values
+  }
+
+  var stringValue: String? {
+    guard case .scalar(.string(let value)) = self else { return nil }
+    return value
+  }
+
+  var isNullish: Bool {
+    switch self {
+    case .undefined, .scalar(.null): true
+    default: false
+    }
+  }
+
+  var jsonValue: JSONValue {
+    switch self {
+    case .undefined: .null
+    case .scalar(let value): value
+    case .array(let values): .array(values.map(\.jsonValue))
+    case .object(let members):
+      .object(
+        Dictionary(
+          uniqueKeysWithValues: members.compactMap { key, value in
+            if case .undefined = value { return nil }
+            return (key, value.jsonValue)
+          }))
+    }
+  }
+
+  mutating func set(_ value: ProviderOrderedJSON, for key: String) {
+    guard case .object(var members) = self else { return }
+    if let existing = members.firstIndex(where: { $0.0 == key }) {
+      members[existing].1 = value
+    } else {
+      members.append((key, value))
+    }
+    self = .object(members)
+  }
+
   var isTruthy: Bool {
     switch self {
-    case .scalar(.null), .scalar(.bool(false)): false
+    case .undefined, .scalar(.null), .scalar(.bool(false)): false
     case .scalar(.string(let value)): !value.isEmpty
     case .scalar(.integer(let value)): value != 0
     case .scalar(.number(let value)): value != 0
@@ -29,15 +72,20 @@ indirect enum ProviderOrderedJSON {
 
   func encodedString() throws -> String {
     switch self {
+    case .undefined: return "null"
     case .object(let members):
-      let indices = members.compactMap { member -> (UInt32, (String, ProviderOrderedJSON))? in
+      let defined = members.filter {
+        if case .undefined = $0.1 { return false }
+        return true
+      }
+      let indices = defined.compactMap { member -> (UInt32, (String, ProviderOrderedJSON))? in
         guard let index = UInt32(member.0), index != .max, String(index) == member.0 else {
           return nil
         }
         return (index, member)
       }.sorted { $0.0 < $1.0 }
       let indexKeys = Set(indices.map { $0.1.0 })
-      let ordered = indices.map(\.1) + members.filter { !indexKeys.contains($0.0) }
+      let ordered = indices.map(\.1) + defined.filter { !indexKeys.contains($0.0) }
       return "{"
         + (try ordered.map { key, value in
           try Self.scalar(.string(key)).encodedString() + ":" + value.encodedString()
