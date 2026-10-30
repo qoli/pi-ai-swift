@@ -440,7 +440,10 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         result.append(
           contentsOf: try makeMessages([.user(user.content)], context: context, tools: tools))
       case .assistant(let content):
-        var object: [String: JSONValue] = ["role": .string("assistant")]
+        var object: [String: JSONValue] = [
+          "role": .string("assistant"),
+          "content": compat.bool("requiresAssistantAfterToolResult") == true ? .string("") : .null,
+        ]
         let texts = content.compactMap { item -> String? in
           switch item {
           case .text(let text): return text
@@ -448,21 +451,34 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           default: return nil
           }
         }
+        let nonEmptyTexts = texts.filter {
+          !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
         let reasoning = content.compactMap { item -> ProviderReasoningContent? in
           guard case .reasoning(let value) = item else { return nil }
           return value
         }
-        if compat.bool("requiresThinkingAsText") == true, !reasoning.isEmpty {
+        let nonEmptyReasoning = reasoning.filter {
+          !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+        if compat.bool("requiresThinkingAsText") == true, !nonEmptyReasoning.isEmpty {
           object["content"] = .array(
-            reasoning.map { .object(["type": .string("text"), "text": .string($0.text)]) }
-              + texts.map { .object(["type": .string("text"), "text": .string($0)]) })
+            [
+              .object([
+                "type": .string("text"),
+                "text": .string(nonEmptyReasoning.map(\.text).joined(separator: "\n\n")),
+              ])
+            ]
+              + nonEmptyTexts.map { .object(["type": .string("text"), "text": .string($0)]) })
         } else {
-          object["content"] = texts.isEmpty ? .null : .string(texts.joined())
-          if let first = reasoning.first,
-            let signature = first.signature,
+          if !nonEmptyTexts.isEmpty { object["content"] = .string(nonEmptyTexts.joined()) }
+          if let first = nonEmptyReasoning.first, let signature = first.signature,
             ["reasoning", "reasoning_content", "reasoning_text"].contains(signature)
           {
-            object[signature] = .string(reasoning.map(\.text).joined(separator: "\n"))
+            let field =
+              context.provider.id == "opencode-go" && signature == "reasoning"
+              ? "reasoning_content" : signature
+            object[field] = .string(nonEmptyReasoning.map(\.text).joined(separator: "\n"))
           }
         }
         let calls = content.compactMap { item -> ProviderToolCall? in
@@ -489,7 +505,12 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         {
           object["reasoning_content"] = .string("")
         }
-        let hasContent = object["content"] != .null
+        let hasContent: Bool
+        switch object["content"] {
+        case .string(let value): hasContent = !value.isEmpty
+        case .array(let value): hasContent = !value.isEmpty
+        default: hasContent = false
+        }
         if hasContent || object["tool_calls"] != nil {
           result.append(.object(object))
         }

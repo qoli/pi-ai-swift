@@ -8398,6 +8398,491 @@
       "rawOptionKeys": [
         "reasoningEffort"
       ]
+    },
+    {
+      "id": "completions-reasoning-replay.opencode-field",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "opencode-go",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "first",
+          "thinkingSignature": "reasoning"
+        },
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.other-field",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "first",
+          "thinkingSignature": "reasoning"
+        },
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.opencode-existing-content",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "opencode-go",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "first",
+          "thinkingSignature": "reasoning_content"
+        },
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.empty-first",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "thinkingSignature": "reasoning"
+        },
+        {
+          "type": "thinking",
+          "thinking": "second",
+          "thinkingSignature": "reasoning_text"
+        },
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.whitespace-first",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": " \n\t",
+          "thinkingSignature": "reasoning"
+        },
+        {
+          "type": "thinking",
+          "thinking": "second",
+          "thinkingSignature": "reasoning_content"
+        },
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.join-thinking",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "first",
+          "thinkingSignature": "reasoning"
+        },
+        {
+          "type": "thinking",
+          "thinking": "second",
+          "thinkingSignature": "reasoning_text"
+        },
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.thinking-as-text",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": true,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "first",
+          "thinkingSignature": "reasoning"
+        },
+        {
+          "type": "thinking",
+          "thinking": "second",
+          "thinkingSignature": "reasoning"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        },
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.empty-assistant",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.thinking-only",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "first",
+          "thinkingSignature": "reasoning"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "completions-reasoning-replay.non-null-tool-content",
+      "operation": "completionsMessages",
+      "model": {
+        "id": "replay-chat",
+        "name": "Replay Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "requiresThinkingAsText": false,
+          "requiresAssistantAfterToolResult": true,
+          "requiresToolResultName": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
     }
   ]
 }

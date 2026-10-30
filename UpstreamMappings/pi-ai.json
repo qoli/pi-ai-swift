@@ -2622,7 +2622,8 @@
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsEmptyToolsMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsRawReasoningMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsRawReasoningMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsReasoningReplayMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test",

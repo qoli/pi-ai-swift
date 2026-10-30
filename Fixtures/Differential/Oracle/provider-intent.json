@@ -2920,6 +2920,317 @@
         }
       }
     },
+    "completions-reasoning-replay.empty-assistant": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.empty-first": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "reasoning_text": "second",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.join-thinking": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "reasoning": "first\nsecond",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.non-null-tool-content": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": "",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          },
+          {
+            "content": "I have processed the tool results.",
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.opencode-existing-content": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "reasoning_content": "first",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.opencode-field": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "reasoning_content": "first",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.other-field": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "reasoning": "first",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.thinking-as-text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "first\n\nsecond",
+                "type": "text"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.thinking-only": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "completions-reasoning-replay.whitespace-first": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "reasoning_content": "second",
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "No result provided",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
     "google-generative-ai.thinking-disabled-budget": {
       "requestBody": {
         "thinkingConfig": {
