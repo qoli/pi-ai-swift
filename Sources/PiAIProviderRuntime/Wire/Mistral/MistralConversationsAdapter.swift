@@ -15,13 +15,26 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
             try makeURLRequest(request, context: context)
           )
           guard (200..<300).contains(response.statusCode) else {
-            let body = try await collectErrorBody(from: response.body)
+            var data = Data()
+            for try await chunk in response.body { data.append(chunk) }
+            let body = String(decoding: data, as: UTF8.self)
+            let trimCharacters = CharacterSet.whitespacesAndNewlines
+              .union(CharacterSet(charactersIn: "\u{FEFF}"))
+              .subtracting(CharacterSet(charactersIn: "\u{85}"))
+            let text = body.trimmingCharacters(in: trimCharacters)
+            let units = Array(text.utf16)
+            let display =
+              units.count > 4_000
+              ? String(decoding: units.prefix(4_000), as: UTF16.self)
+                + "... [truncated \(units.count - 4_000) chars]" : text
             throw failure(
               .transportFailed,
               providerID: request.providerID,
               operation: "mistral.response",
-              message: "Mistral Conversations request failed (HTTP \(response.statusCode))",
-              cause: body
+              message: display.isEmpty
+                ? "Mistral Conversations request failed (HTTP \(response.statusCode))"
+                : "Mistral API error (\(response.statusCode)): \(display)",
+              cause: body.isEmpty ? nil : body
             )
           }
 
@@ -81,15 +94,6 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     urlRequest.httpMethod = "POST"
     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
     urlRequest.setValue("text/event-stream", forHTTPHeaderField: "Accept")
-    for (name, value) in context.headers {
-      urlRequest.setValue(value, forHTTPHeaderField: name)
-    }
-    if request.options.cacheRetention != .none,
-      let sessionID = request.options.sessionID, !sessionID.isEmpty,
-      urlRequest.value(forHTTPHeaderField: "x-affinity") == nil
-    {
-      urlRequest.setValue(sessionID, forHTTPHeaderField: "x-affinity")
-    }
     switch context.credential {
     case .apiKey(let credential):
       urlRequest.setValue(
@@ -110,6 +114,18 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
         operation: "mistral.request.auth",
         message: "Mistral Conversations credential is missing"
       )
+    }
+    for (name, value) in context.headers {
+      urlRequest.setValue(value, forHTTPHeaderField: name)
+    }
+    if request.options.cacheRetention != .none,
+      let sessionID = request.options.sessionID, !sessionID.isEmpty,
+      urlRequest.value(forHTTPHeaderField: "x-affinity") == nil
+    {
+      urlRequest.setValue(sessionID, forHTTPHeaderField: "x-affinity")
+    }
+    for (name, value) in request.options.providerOptions.object("headers") ?? [:] {
+      urlRequest.setValue(value.stringValue, forHTTPHeaderField: name)
     }
     urlRequest.httpBody = try encodeJSONObject(
       try makeBody(request, context: context),
@@ -193,7 +209,7 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
         message: "Mistral Conversations structured output is not in the pinned upstream contract"
       )
     }
-    for (key, value) in request.options.providerOptions {
+    for (key, value) in request.options.providerOptions where key != "headers" {
       body[key] = value
     }
     return body

@@ -386,6 +386,7 @@
     "packages/ai/test/llama-cpp-classify.test.ts",
     "packages/ai/test/memory-helpers.ts",
     "packages/ai/test/meta-oauth.test.ts",
+    "packages/ai/test/mistral-http-transport.test.ts",
     "packages/ai/test/model-catalog-types.test.ts",
     "packages/ai/test/model-data-validation.test.ts",
     "packages/ai/test/models-runtime.test.ts",

@@ -111,7 +111,10 @@ struct SwiftConformanceProbe {
       "serviceTier", "toolChoice", "thinkingBudgets", "textVerbosity", "env",
       "azureBaseUrl", "azureResourceName", "azureApiVersion", "azureDeploymentName", "region",
     ]
-    let providerOptions = options.filter { !mappedOptions.contains($0.key) }
+    var providerOptions = options.filter { !mappedOptions.contains($0.key) }
+    if api == "mistral-conversations", let headers = options["headers"] {
+      providerOptions["headers"] = headers
+    }
     let request = ProviderRequest(
       id: "upstream-conformance", providerID: provider, modelID: modelID,
       messages: messages, tools: tools,

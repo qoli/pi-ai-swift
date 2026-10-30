@@ -2324,10 +2324,13 @@
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/mistral-conversations.ts",
-        "packages/ai/src/api/mistral-conversations.lazy.ts"
+        "packages/ai/src/api/mistral-conversations.lazy.ts",
+        "packages/ai/src/utils/error-body.ts",
+        "packages/ai/src/utils/text.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/mistral-http-transport.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2355,10 +2358,16 @@
         "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Tests/PiAIProviderRuntimeTests/MistralHTTPTests.swift#headersAndErrorBodiesMatchPinnedSource",
+        "Scripts/pi-ai-mistral-http-oracle.mjs",
+        "Fixtures/Differential/Cases/mistral-http.json",
+        "Fixtures/Differential/Oracle/mistral-http.json",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralHTTPMatchesPinnedSource"
       ],
       "requiredGates": [
-        "swift-test"
+        "swift-test",
+        "ios-simulator-source-fixtures"
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
