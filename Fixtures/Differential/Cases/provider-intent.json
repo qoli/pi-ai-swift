@@ -8007,6 +8007,397 @@
           "top_p": 0.7
         }
       }
+    },
+    {
+      "id": "completions-raw-options.openai-minimal",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoningEffort": "minimal"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.openai-low",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoningEffort": "low"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.openai-medium",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoningEffort": "medium"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.openai-high",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.openai-xhigh",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoningEffort": "xhigh"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.openai-max",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoningEffort": "max"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.openai-None",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.ant-ling-unmapped",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "thinkingFormat": "ant-ling"
+        },
+        "thinkingLevelMap": {
+          "low": "xhigh",
+          "high": "max"
+        }
+      },
+      "options": {
+        "reasoningEffort": "medium"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.nonreasoning",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "thinkingFormat": "ant-ling"
+        },
+        "thinkingLevelMap": {
+          "low": "xhigh",
+          "high": "max"
+        }
+      },
+      "options": {
+        "reasoningEffort": "medium"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.sampling-null-level",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "high": null
+        },
+        "samplingParamsByThinkingLevel": {
+          "off": {
+            "seed": 0
+          },
+          "medium": {
+            "seed": 20
+          },
+          "high": {
+            "seed": 40
+          },
+          "xhigh": {
+            "seed": 80
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.sampling-override",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParamsByThinkingLevel": {
+          "off": {
+            "seed": 0
+          },
+          "high": {
+            "seed": 40
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "high",
+        "samplingParams": {
+          "seed": 99
+        }
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
+    },
+    {
+      "id": "completions-raw-options.effort-disabled",
+      "model": {
+        "id": "raw-chat",
+        "name": "Raw Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsReasoningEffort": false
+        }
+      },
+      "options": {
+        "reasoningEffort": "high"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoningEffort"
+      ]
     }
   ]
 }

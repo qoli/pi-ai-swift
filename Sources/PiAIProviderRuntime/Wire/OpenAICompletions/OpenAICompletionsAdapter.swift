@@ -306,7 +306,10 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
       body["prompt_cache_retention"] = .string("24h")
     }
     if context.model.capabilities.reasoning {
-      let effort = request.options.reasoningEffort ?? .off
+      let effort =
+        request.options.providerOptions["reasoningEffort"].map {
+          $0.stringValue.flatMap(ProviderReasoningEffort.init(rawValue:)) ?? .off
+        } ?? request.options.reasoningEffort ?? .off
       applyReasoning(
         effort, metadata: metadata, compat: compat, body: &body, providerID: request.providerID,
         maximumOutputTokens: request.options.maximumOutputTokens
@@ -377,7 +380,8 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         body["providerOptions"] = .object(["gateway": .object(gateway)])
       }
     }
-    for (key, value) in request.options.providerOptions where key != "samplingParams" {
+    for (key, value) in request.options.providerOptions
+    where key != "samplingParams" && key != "reasoningEffort" {
       body[key] = value
     }
     for (key, value) in ProviderSamplingParameters.resolve(request: request, context: context) {

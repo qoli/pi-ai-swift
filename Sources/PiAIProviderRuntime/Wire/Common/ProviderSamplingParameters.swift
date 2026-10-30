@@ -10,8 +10,16 @@ enum ProviderSamplingParameters {
       if level == .xhigh || level == .max { return mapped != nil }
       return true
     }
-    let requested =
-      request.options.reasoningEffort ?? (request.options.reasoningSummary == nil ? .off : .medium)
+    let requested: ProviderReasoningEffort
+    if context.model.protocolID == "openai-completions",
+      let raw = request.options.providerOptions["reasoningEffort"]
+    {
+      requested = raw.stringValue.flatMap(ProviderReasoningEffort.init(rawValue:)) ?? .off
+    } else {
+      requested =
+        request.options.reasoningEffort
+        ?? (request.options.reasoningSummary == nil ? .off : .medium)
+    }
     let order = ProviderReasoningEffort.allCases
     let index = order.firstIndex(of: requested)!
     let effective =

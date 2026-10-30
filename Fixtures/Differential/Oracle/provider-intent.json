@@ -2706,6 +2706,220 @@
         ]
       }
     },
+    "completions-raw-options.ant-ling-unmapped": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.effort-disabled": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.nonreasoning": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.openai-None": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.openai-high": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "reasoning_effort": "high",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.openai-low": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "reasoning_effort": "low",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.openai-max": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "reasoning_effort": "max",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.openai-medium": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "reasoning_effort": "medium",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.openai-minimal": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "reasoning_effort": "minimal",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.openai-xhigh": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "reasoning_effort": "xhigh",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.sampling-null-level": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "reasoning_effort": "high",
+        "seed": 20,
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "completions-raw-options.sampling-override": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "raw-chat",
+        "reasoning_effort": "high",
+        "seed": 99,
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
     "google-generative-ai.thinking-disabled-budget": {
       "requestBody": {
         "thinkingConfig": {

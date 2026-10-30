@@ -102,8 +102,10 @@ struct SwiftConformanceProbe {
     let usesRawMistralOptions = api == "mistral-conversations" && input.generationMode != .simple
     let usesRawAnthropicOptions = api == "anthropic-messages" && input.generationMode != .simple
     let usesRawBedrockOptions = api == "bedrock-converse-stream" && input.generationMode != .simple
+    let usesRawCompletionsOptions = api == "openai-completions" && input.generationMode != .simple
     let effort =
       usesRawMistralOptions || usesRawAnthropicOptions || usesRawBedrockOptions
+        || usesRawCompletionsOptions
       ? nil
       : (options.string("reasoningEffort") ?? options.string("reasoning")
         ?? (options.bool("thinkingEnabled") == false ? "off" : nil))
@@ -131,6 +133,9 @@ struct SwiftConformanceProbe {
       }
     }
     if usesRawBedrockOptions { providerOptions["reasoning"] = options["reasoning"] ?? .null }
+    if usesRawCompletionsOptions {
+      providerOptions["reasoningEffort"] = options["reasoningEffort"] ?? .null
+    }
     let request = ProviderRequest(
       id: "upstream-conformance", providerID: provider, modelID: modelID,
       messages: messages, tools: tools,

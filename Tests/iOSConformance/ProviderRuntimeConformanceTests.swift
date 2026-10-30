@@ -988,6 +988,42 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testCompletionsRawReasoningMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("completions-raw-options.") == true }
+    XCTAssertEqual(cases.count, 12)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let model = try XCTUnwrap(spec.object("model"))
+      let modelID = try XCTUnwrap(model.string("id"))
+      let sourceOptions = spec.object("options") ?? [:]
+      var providerOptions = sourceOptions.filter { $0.key == "samplingParams" }
+      providerOptions["reasoningEffort"] = sourceOptions["reasoningEffort"] ?? .null
+      let (_, context) = inputs(
+        api: "openai-completions", providerID: "fixture", modelID: modelID,
+        reasoning: model.bool("reasoning"), metadata: model)
+      let request = ProviderRequest(
+        id: name, providerID: "fixture", modelID: modelID,
+        messages: [.user([.text("hello")])], tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: providerOptions, cacheRetention: .none))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+        operation: "ios.completions.raw.body")
+      XCTAssertEqual(body, oracle.object("cases")?.object(name)?.object("requestBody"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

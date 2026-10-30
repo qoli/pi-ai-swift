@@ -2254,7 +2254,11 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsDetectedCompatibilityMatchesPinnedSource",
         "Scripts/openai-request-branch-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/completions-compat.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsRawReasoningMatchesPinnedSource",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json",
+        "Scripts/pi-ai-provider-intent-oracle.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2617,7 +2621,8 @@
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsEmptyToolsMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsEmptyToolsMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsRawReasoningMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
