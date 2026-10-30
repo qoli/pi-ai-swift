@@ -407,6 +407,8 @@ function usage(raw) {
   return {
     input: raw.inputTokens ?? 0, output: raw.outputTokens ?? 0,
     cacheRead: raw.cachedInputTokens ?? 0, cacheWrite: raw.cacheWriteTokens ?? 0,
+    ...(raw.providerMetadata?.cacheWrite1h !== undefined ? { cacheWrite1h: raw.providerMetadata.cacheWrite1h } : {}),
+    ...(raw.reasoningTokens !== undefined ? { reasoning: raw.reasoningTokens } : {}),
     totalTokens: raw.totalTokens ?? (raw.inputTokens ?? 0) + (raw.outputTokens ?? 0),
     cost: raw.cost ?? { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
   };

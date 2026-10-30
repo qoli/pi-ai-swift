@@ -846,6 +846,7 @@ private struct BedrockEventReducer {
   private var stopReason: ProviderFinishReason?
   private var rawStopReason: String?
   private var completed = false
+  private var emittedUsage = false
   private var tools: [Int: ToolState] = [:]
   private var completedTools: [Int: ProviderToolCall] = [:]
   private var textBlocks: [Int: String] = [:]
@@ -989,11 +990,6 @@ private struct BedrockEventReducer {
       stopReason = try mapStopReason(reason)
       return []
     case "metadata":
-      guard let reason = stopReason else {
-        throw invalid("Bedrock metadata arrived before messageStop")
-      }
-      guard !completed else { throw invalid("Bedrock emitted duplicate metadata") }
-      completed = true
       var events: [ProviderEvent] = []
       if let usage = object.object("usage") {
         guard let pricing else {
@@ -1006,6 +1002,16 @@ private struct BedrockEventReducer {
         let output = usage.int("outputTokens") ?? 0
         let cacheRead = usage.int("cacheReadInputTokens") ?? 0
         let cacheWrite = usage.int("cacheWriteInputTokens") ?? 0
+        let cacheWrite1h = usage.array("cacheDetails").map { details in
+          details.reduce(0) { total, detail in
+            guard let detail = detail.objectValue, detail.string("ttl") == "1h" else {
+              return total
+            }
+            return total + (detail.int("inputTokens") ?? 0)
+          }
+        }
+        var metadata = usage
+        if let cacheWrite1h { metadata["cacheWrite1h"] = .integer(Int64(cacheWrite1h)) }
         self.usage = ProviderUsage(
           inputTokens: input,
           outputTokens: output,
@@ -1014,14 +1020,14 @@ private struct BedrockEventReducer {
           cacheWriteTokens: cacheWrite,
           totalTokens: usage.int("totalTokens")
             ?? input + output,
-          providerMetadata: usage,
+          providerMetadata: metadata,
           cost: pricing.cost(
-            input: input, output: output, cacheRead: cacheRead, cacheWrite: cacheWrite)
+            input: input, output: output, cacheRead: cacheRead, cacheWrite: cacheWrite,
+            cacheWrite1h: cacheWrite1h ?? 0)
         )
+        emittedUsage = true
         events.append(.usage(self.usage))
       }
-      events.append(responseSnapshot(reason))
-      events.append(.completed(reason))
       return events
     default:
       throw invalid("unsupported Bedrock event: \(eventType)")
@@ -1035,7 +1041,10 @@ private struct BedrockEventReducer {
     guard tools.isEmpty else { throw invalid("Bedrock stream ended with incomplete tool calls") }
     if completed { return [] }
     completed = true
-    return [.usage(usage), responseSnapshot(reason), .completed(reason)]
+    var events: [ProviderEvent] = emittedUsage ? [] : [.usage(usage)]
+    events.append(responseSnapshot(reason))
+    events.append(.completed(reason))
+    return events
   }
 
   private func responseSnapshot(_ reason: ProviderFinishReason) -> ProviderEvent {

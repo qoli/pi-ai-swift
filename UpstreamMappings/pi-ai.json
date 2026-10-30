@@ -1966,7 +1966,10 @@
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
+        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2047,7 +2050,8 @@
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts",
         "packages/ai/test/bedrock-strict-tool-fallback.test.ts",
-        "packages/ai/test/anthropic-error-tool-result-images.test.ts"
+        "packages/ai/test/anthropic-error-tool-result-images.test.ts",
+        "packages/ai/test/bedrock-cache-write-1h-cost.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2077,7 +2081,11 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift",
+        "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
+        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json"
       ],
       "requiredGates": [
         "swift-test"

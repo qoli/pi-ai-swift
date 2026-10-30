@@ -112,6 +112,39 @@
       "caseID": "pi-string-content-index",
       "protocolID": "pi-messages",
       "category": "invalidResponse"
+    },
+    {
+      "caseID": "bedrock-cache-write-1h-before-stop",
+      "protocolID": "bedrock-converse-stream",
+      "category": "success",
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cacheRead": 0.5,
+        "cacheWrite": 6.25
+      }
+    },
+    {
+      "caseID": "bedrock-cache-write-1h-after-stop",
+      "protocolID": "bedrock-converse-stream",
+      "category": "success",
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cacheRead": 0.5,
+        "cacheWrite": 6.25
+      }
+    },
+    {
+      "caseID": "bedrock-cache-write-1h-repeated",
+      "protocolID": "bedrock-converse-stream",
+      "category": "success",
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cacheRead": 0.5,
+        "cacheWrite": 6.25
+      }
     }
   ]
 }

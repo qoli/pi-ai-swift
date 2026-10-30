@@ -64,7 +64,7 @@ async function runBedrock(scenario, input) {
       await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href),
     );
     const stream = implementation.stream(
-      { ...model(scenario.protocolID), baseUrl: `http://127.0.0.1:${address.port}` },
+      { ...model(scenario.protocolID), ...(scenario.cost ? { cost: scenario.cost } : {}), baseUrl: `http://127.0.0.1:${address.port}` },
       context(),
       { maxRetries: 0, env: { AWS_BEDROCK_FORCE_HTTP1: "1", AWS_BEDROCK_SKIP_AUTH: "1", AWS_REGION: "us-east-1" } },
     );
@@ -148,6 +148,8 @@ function canonicalTerminal(message) {
       reasoning: message.usage.reasoning ?? null,
       cacheRead: message.usage.cacheRead ?? null,
       cacheWrite: message.usage.cacheWrite ?? null,
+      cacheWrite1h: message.usage.cacheWrite1h ?? null,
+      cacheWriteCost: message.usage.cost?.cacheWrite ?? null,
       totalTokens: message.usage.totalTokens ?? null,
     } : null,
   });
@@ -198,6 +200,27 @@ function stimulus(caseID) {
     case "anthropic-missing-terminal": return sse([
       anth("message_start", { type: "message_start", message: { id: "anth-partial", model: "fixture-model", usage: { input_tokens: 1, output_tokens: 0 } } }),
     ]);
+    case "bedrock-cache-write-1h-before-stop":
+    case "bedrock-cache-write-1h-after-stop":
+    case "bedrock-cache-write-1h-repeated": {
+      const metadata = ["metadata", { usage: {
+        inputTokens: 100, outputTokens: 5, totalTokens: 1_000_105,
+        cacheWriteInputTokens: 1_000_000,
+        cacheDetails: [
+          { ttl: "1h", inputTokens: 150_000 },
+          { ttl: "5m", inputTokens: 600_000 },
+          { ttl: "1h", inputTokens: 250_000 },
+        ],
+      } }];
+      const stop = ["messageStop", { stopReason: "end_turn" }];
+      const initial = ["messageStart", { role: "assistant" }];
+      if (caseID.endsWith("before-stop")) return aws([initial, metadata, stop]);
+      if (caseID.endsWith("repeated")) return aws([
+        initial, ["metadata", { usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 } }],
+        stop, metadata,
+      ]);
+      return aws([initial, stop, metadata]);
+    }
     case "bedrock-redacted-length-usage": return aws([
       ["messageStart", { role: "assistant" }],
       ["contentBlockDelta", { contentBlockIndex: 0, delta: { reasoningContent: { redactedContent: Buffer.from([1, 2]).toString("base64") } } }],

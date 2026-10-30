@@ -26,6 +26,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -63,6 +65,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -95,6 +99,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
           "input": 1,
           "output": 0,
           "reasoning": null,
@@ -143,6 +149,8 @@
         "usage": {
           "cacheRead": 2,
           "cacheWrite": 4,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
           "input": 10,
           "output": 5,
           "reasoning": 1,
@@ -175,6 +183,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
           "input": 1,
           "output": 0,
           "reasoning": null,
@@ -222,6 +232,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
           "input": 4,
           "output": 7,
           "reasoning": null,
@@ -285,10 +297,124 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
           "input": 3,
           "output": 2,
           "reasoning": null,
           "totalTokens": 5
+        }
+      }
+    },
+    "bedrock-cache-write-1h-after-stop": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAegAAAFHKLEZlDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoiZW5kX3R1cm4ifT3DO/o=",
+          "AAABOQAAAE6TK7qsDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6MTAwLCJvdXRwdXRUb2tlbnMiOjUsInRvdGFsVG9rZW5zIjoxMDAwMTA1LCJjYWNoZVdyaXRlSW5wdXRUb2tlbnMiOjEwMDAwMDAsImNhY2hlRGV0YWlscyI6W3sidHRsIjoiMWgiLCJpbnB1dFRva2VucyI6MTUwMDAwfSx7InR0bCI6IjVtIiwiaW5wdXRUb2tlbnMiOjYwMDAwMH0seyJ0dGwiOiIxaCIsImlucHV0VG9rZW5zIjoyNTAwMDB9XX19W0Rkdw=="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "end_turn",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 1000000,
+          "cacheWrite1h": 400000,
+          "cacheWriteCost": 7.75,
+          "input": 100,
+          "output": 5,
+          "reasoning": null,
+          "totalTokens": 1000105
+        }
+      }
+    },
+    "bedrock-cache-write-1h-before-stop": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAABOQAAAE6TK7qsDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6MTAwLCJvdXRwdXRUb2tlbnMiOjUsInRvdGFsVG9rZW5zIjoxMDAwMTA1LCJjYWNoZVdyaXRlSW5wdXRUb2tlbnMiOjEwMDAwMDAsImNhY2hlRGV0YWlscyI6W3sidHRsIjoiMWgiLCJpbnB1dFRva2VucyI6MTUwMDAwfSx7InR0bCI6IjVtIiwiaW5wdXRUb2tlbnMiOjYwMDAwMH0seyJ0dGwiOiIxaCIsImlucHV0VG9rZW5zIjoyNTAwMDB9XX19W0Rkdw==",
+          "AAAAegAAAFHKLEZlDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoiZW5kX3R1cm4ifT3DO/o="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "end_turn",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 1000000,
+          "cacheWrite1h": 400000,
+          "cacheWriteCost": 7.75,
+          "input": 100,
+          "output": 5,
+          "reasoning": null,
+          "totalTokens": 1000105
+        }
+      }
+    },
+    "bedrock-cache-write-1h-repeated": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAmgAAAE5v8IxPDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6MSwib3V0cHV0VG9rZW5zIjoxLCJ0b3RhbFRva2VucyI6Mn19MQTTiA==",
+          "AAAAegAAAFHKLEZlDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoiZW5kX3R1cm4ifT3DO/o=",
+          "AAABOQAAAE6TK7qsDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcACG1ldGFkYXRhDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJ1c2FnZSI6eyJpbnB1dFRva2VucyI6MTAwLCJvdXRwdXRUb2tlbnMiOjUsInRvdGFsVG9rZW5zIjoxMDAwMTA1LCJjYWNoZVdyaXRlSW5wdXRUb2tlbnMiOjEwMDAwMDAsImNhY2hlRGV0YWlscyI6W3sidHRsIjoiMWgiLCJpbnB1dFRva2VucyI6MTUwMDAwfSx7InR0bCI6IjVtIiwiaW5wdXRUb2tlbnMiOjYwMDAwMH0seyJ0dGwiOiIxaCIsImlucHV0VG9rZW5zIjoyNTAwMDB9XX19W0Rkdw=="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "end_turn",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 1000000,
+          "cacheWrite1h": 400000,
+          "cacheWriteCost": 7.75,
+          "input": 100,
+          "output": 5,
+          "reasoning": null,
+          "totalTokens": 1000105
         }
       }
     },
@@ -318,6 +444,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -362,6 +490,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -396,6 +526,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -450,6 +582,8 @@
         "usage": {
           "cacheRead": 2,
           "cacheWrite": 4,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 10,
           "output": 5,
           "reasoning": null,
@@ -497,6 +631,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 2,
           "output": 1,
           "reasoning": null,
@@ -566,6 +702,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 2,
           "output": 1,
           "reasoning": null,
@@ -598,6 +736,8 @@
         "usage": {
           "cacheRead": 2,
           "cacheWrite": 4,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 10,
           "output": 5,
           "reasoning": 1,
@@ -630,6 +770,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -677,6 +819,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -709,6 +853,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -741,6 +887,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -831,6 +979,8 @@
         "usage": {
           "cacheRead": 2,
           "cacheWrite": 4,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 10,
           "output": 5,
           "reasoning": 1,
@@ -873,6 +1023,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 2,
           "output": 1,
           "reasoning": null,
@@ -905,6 +1057,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 0,
           "output": 0,
           "reasoning": null,
@@ -968,6 +1122,8 @@
         "usage": {
           "cacheRead": 0,
           "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
           "input": 2,
           "output": 1,
           "reasoning": null,

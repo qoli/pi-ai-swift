@@ -44,7 +44,7 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
     scenario: ResponseBranchScenario,
     expected: ResponseBranchExpected
   ) async throws -> ResponseBranchResult {
-    let input = responseBranchInput(protocolID: scenario.protocolID)
+    let input = responseBranchInput(protocolID: scenario.protocolID, cost: scenario.cost)
     let adapter = try #require(
       StandardWireProtocols.make().first { $0.protocolID == scenario.protocolID })
     var events: [JSONValue] = []
@@ -56,7 +56,7 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
     ) {
       if let value = canonicalBranchEvent(event) { events.append(value) }
       if case .responseSnapshot(let snapshot) = event {
-        terminal = canonicalBranchSnapshot(snapshot)
+        terminal = try canonicalBranchSnapshot(snapshot)
       }
     }
     return ResponseBranchResult(events: events, terminal: try #require(terminal))
@@ -81,7 +81,7 @@ private struct ResponseBranchTransport: ProviderHTTPStreamingTransport {
 }
 
 private func responseBranchInput(
-  protocolID: String
+  protocolID: String, cost: [String: JSONValue]? = nil
 ) -> (request: ProviderRequest, context: WireProtocolContext) {
   let providerID: String
   switch protocolID {
@@ -117,7 +117,7 @@ private func responseBranchInput(
       protocolID: protocolID,
       baseURL: nil,
       headers: [:],
-      metadata: fixtureMetadataWithCost()))
+      metadata: fixtureMetadataWithCost(cost.map { ["cost": .object($0)] } ?? [:])))
   let request = ProviderRequest(
     id: "response-branch",
     providerID: providerID,
@@ -167,7 +167,12 @@ private func canonicalBranchEvent(_ event: ProviderEvent) -> JSONValue? {
   }
 }
 
-private func canonicalBranchSnapshot(_ snapshot: ProviderResponseSnapshot) -> JSONValue {
+private func canonicalBranchNumber(_ value: Double?) throws -> JSONValue {
+  guard let value else { return .null }
+  return try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(value))
+}
+
+private func canonicalBranchSnapshot(_ snapshot: ProviderResponseSnapshot) throws -> JSONValue {
   let usage: JSONValue
   if let value = snapshot.usage {
     usage = .object([
@@ -176,6 +181,8 @@ private func canonicalBranchSnapshot(_ snapshot: ProviderResponseSnapshot) -> JS
       "reasoning": value.reasoningTokens.map { .integer(Int64($0)) } ?? .null,
       "cacheRead": value.cachedInputTokens.map { .integer(Int64($0)) } ?? .null,
       "cacheWrite": value.cacheWriteTokens.map { .integer(Int64($0)) } ?? .null,
+      "cacheWrite1h": value.providerMetadata["cacheWrite1h"] ?? .null,
+      "cacheWriteCost": try canonicalBranchNumber(value.cost?.cacheWrite),
       "totalTokens": value.totalTokens.map { .integer(Int64($0)) } ?? .null,
     ])
   } else {
@@ -245,6 +252,7 @@ private struct ResponseBranchScenario: Decodable {
   let caseID: String
   let protocolID: String
   let category: String
+  let cost: [String: JSONValue]?
 }
 
 private struct ResponseBranchOracle: Decodable {

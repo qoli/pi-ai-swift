@@ -73,11 +73,12 @@ struct AnthropicCandidateUsageDifferentialTests {
       #expect(actual.outputTokens == expected.usage.output)
       #expect(actual.cachedInputTokens == expected.usage.cacheRead)
       #expect(actual.cacheWriteTokens == expected.usage.cacheWrite)
+      #expect(actual.providerMetadata.int("cacheWrite1h") == expected.usage.cacheWrite1h)
       #expect(actual.totalTokens == expected.usage.totalTokens)
       #expect(actual.cost == expected.usage.cost)
     }
     #expect(
-      snapshots.dropLast().map { $0.providerMetadata }
+      snapshots.dropLast().map { $0.providerMetadata.filter { $0.key != "cacheWrite1h" } }
         == fixture.frames.compactMap {
           guard $0.objectValue?.string("type") == "message_delta" else { return nil }
           return $0.objectValue?.object("usage")
@@ -103,6 +104,7 @@ private struct CandidateTTLOracle: Decodable {
     let output: Int
     let cacheRead: Int
     let cacheWrite: Int
+    let cacheWrite1h: Int
     let totalTokens: Int
     let cost: ProviderUsageCost
   }

@@ -940,7 +940,9 @@ private struct AnthropicEventReducer {
             cachedInputTokens: cachedInputTokens,
             cacheWriteTokens: cacheWriteTokens,
             totalTokens: input + output + cacheRead + cacheWrite,
-            providerMetadata: object.object("usage") ?? [:],
+            providerMetadata: (object.object("usage") ?? [:]).merging(
+              ["cacheWrite1h": .integer(Int64(cacheWrite1hTokens))],
+              uniquingKeysWith: { _, value in value }),
             cost: pricing.cost(
               input: input, output: output, cacheRead: cacheRead,
               cacheWrite: cacheWrite, cacheWrite1h: cacheWrite1hTokens)
@@ -1034,7 +1036,7 @@ private struct AnthropicEventReducer {
           cachedInputTokens: cachedInputTokens,
           cacheWriteTokens: cacheWriteTokens ?? 0,
           totalTokens: input + output + cacheRead + cacheWrite,
-          providerMetadata: [:],
+          providerMetadata: ["cacheWrite1h": .integer(Int64(cacheWrite1hTokens))],
           cost: pricing?.cost(
             input: input, output: output, cacheRead: cacheRead,
             cacheWrite: cacheWrite, cacheWrite1h: cacheWrite1hTokens)

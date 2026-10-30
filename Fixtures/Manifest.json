@@ -56,11 +56,14 @@
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
+        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json"
       ],
       "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "07ab6c8e43537d09f967512b470140f2061b0f62acc1315f945d962ec0e7c86f"
+      "swiftEvidenceSHA256": "4efa6209fb7465313167b845820bdcc16722e8d5c7ea74101688f2458f007b40"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -114,7 +117,8 @@
       "upstreamTests": [
         "packages/ai/test/stream.test.ts",
         "packages/ai/test/bedrock-strict-tool-fallback.test.ts",
-        "packages/ai/test/anthropic-error-tool-result-images.test.ts"
+        "packages/ai/test/anthropic-error-tool-result-images.test.ts",
+        "packages/ai/test/bedrock-cache-write-1h-cost.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop",
@@ -139,11 +143,15 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift",
+        "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
+        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json"
       ],
       "upstreamSourceSHA256": "fcd722758fa9205f6f2633c0445fa6ef36e82c3c5eca2ea959c8af6b2dd6d9f7",
-      "upstreamTestSHA256": "5450a06fff18c24ee731bed4905c4d8a203c8ba4e68d71752a38aa7918d0d93d",
-      "swiftEvidenceSHA256": "2ada468418432abc3713365004059ba1eed01a2dd755b331d85744a14221d475"
+      "upstreamTestSHA256": "616f7bbfd6f524666540459ccfe6bd608fd9adb8e30828afeeaa111fa07d1669",
+      "swiftEvidenceSHA256": "02515b22415d99a071bee49b84e28c4c9ef017e24231aa4083e7053a6495dafc"
     },
     {
       "protocolID": "google-generative-ai",
