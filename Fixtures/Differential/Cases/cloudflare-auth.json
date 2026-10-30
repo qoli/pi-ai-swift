@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "logins": [
+    {
+      "id": "cloudflare-workers-ai",
+      "providerID": "cloudflare-workers-ai",
+      "answers": [
+        "fixture-cf-key",
+        "fixture-account"
+      ]
+    },
+    {
+      "id": "cloudflare-workers-ai.cancel",
+      "providerID": "cloudflare-workers-ai",
+      "answers": [
+        "fixture-cf-key",
+        "fixture-account"
+      ],
+      "stopAt": 1
+    },
+    {
+      "id": "cloudflare-ai-gateway",
+      "providerID": "cloudflare-ai-gateway",
+      "answers": [
+        "fixture-cf-key",
+        "fixture-account",
+        "fixture-gateway"
+      ]
+    },
+    {
+      "id": "cloudflare-ai-gateway.cancel",
+      "providerID": "cloudflare-ai-gateway",
+      "answers": [
+        "fixture-cf-key",
+        "fixture-account",
+        "fixture-gateway"
+      ],
+      "stopAt": 1
+    },
+    {
+      "id": "gateway-verbatim-key",
+      "providerID": "cloudflare-ai-gateway",
+      "answers": [
+        " fixture-cf-key ",
+        "fixture-account",
+        "fixture-gateway"
+      ]
+    }
+  ],
+  "resolutions": [
+    {
+      "id": "cloudflare-workers-ai.complete",
+      "providerID": "cloudflare-workers-ai",
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-cf-key",
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "fixture-account",
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        }
+      }
+    },
+    {
+      "id": "cloudflare-workers-ai.missing-account",
+      "providerID": "cloudflare-workers-ai",
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-cf-key",
+        "env": {
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        }
+      }
+    },
+    {
+      "id": "cloudflare-workers-ai.empty-account",
+      "providerID": "cloudflare-workers-ai",
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-cf-key",
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "",
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        }
+      }
+    },
+    {
+      "id": "cloudflare-workers-ai.empty-key",
+      "providerID": "cloudflare-workers-ai",
+      "credential": {
+        "type": "api_key",
+        "key": "",
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "fixture-account",
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        }
+      }
+    },
+    {
+      "id": "cloudflare-ai-gateway.complete",
+      "providerID": "cloudflare-ai-gateway",
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-cf-key",
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "fixture-account",
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        }
+      }
+    },
+    {
+      "id": "cloudflare-ai-gateway.missing-account",
+      "providerID": "cloudflare-ai-gateway",
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-cf-key",
+        "env": {
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        }
+      }
+    },
+    {
+      "id": "cloudflare-ai-gateway.empty-account",
+      "providerID": "cloudflare-ai-gateway",
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-cf-key",
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "",
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        }
+      }
+    },
+    {
+      "id": "cloudflare-ai-gateway.empty-key",
+      "providerID": "cloudflare-ai-gateway",
+      "credential": {
+        "type": "api_key",
+        "key": "",
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "fixture-account",
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        }
+      }
+    },
+    {
+      "id": "gateway-missing-gateway",
+      "providerID": "cloudflare-ai-gateway",
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-cf-key",
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "fixture-account"
+        }
+      }
+    }
+  ]
+}

@@ -166,6 +166,16 @@ struct SwiftConformanceProbe {
     let liveTransport = InteractiveProbeTransport(channel: channel)
     let transport: any ProviderHTTPStreamingTransport =
       interactive ? liveTransport : fixtureTransport
+    let authorization: any ProviderAuthorizationAdapter
+    if input.requestSource == "provider",
+      CloudflareAuthorizationAdapter.providerIDs.contains(provider),
+      options.string("apiKey")?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false,
+      options.object("headers")?.string("cf-aig-authorization") == nil
+    {
+      authorization = CloudflareAuthorizationAdapter(providerID: provider, methodID: "api-key")
+    } else {
+      authorization = FixtureAuthorization()
+    }
     let runtime = try ProviderRuntimeKernel(
       catalogRevision: "upstream-conformance",
       providers: [
@@ -180,7 +190,7 @@ struct SwiftConformanceProbe {
           ],
           credentialRequirement: credential == nil ? .none : .required,
           endpointPolicy: .httpOrHTTPS,
-          authorization: FixtureAuthorization())
+          authorization: authorization)
       ],
       wireProtocols: StandardWireProtocols.make(),
       credentialStore: InMemoryProviderCredentialStore(
@@ -357,6 +367,7 @@ struct SwiftConformanceProbe {
 
 private struct ProbeInput: Decodable {
   let model: [String: JSONValue]
+  let requestSource: String?
   let context: Context
   let options: [String: JSONValue]
   let credential: Credential

@@ -364,11 +364,15 @@
         "Fixtures/Differential/Oracle/provider-options.json",
         "Fixtures/Differential/ResponseBranchInventory.json",
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitOpenAIAuthorizationOverridesCredentialDefaults",
-        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
+        "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
+        "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
+        "Fixtures/Differential/Cases/cloudflare-auth.json",
+        "Fixtures/Differential/Oracle/cloudflare-auth.json"
       ],
       "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "65cb098364c58da70527501e19938866241ac17c585a14a15eda544bd12cb6d7"
+      "swiftEvidenceSHA256": "ef42650f64e54e89c33daf9253761c9e9f36c8c3251009fa947e9b5c6022e49f"
     },
     {
       "protocolID": "openai-responses",
@@ -415,11 +419,15 @@
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
         "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
-        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitOpenAIAuthorizationOverridesCredentialDefaults"
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitOpenAIAuthorizationOverridesCredentialDefaults",
+        "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
+        "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
+        "Fixtures/Differential/Cases/cloudflare-auth.json",
+        "Fixtures/Differential/Oracle/cloudflare-auth.json"
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "f92c4980fd986ec444b4f414c0190fc70dd14e9d8b4ae915c35ef377494ff0e0"
+      "swiftEvidenceSHA256": "b432e56c7e8809f317594473e0696ecdb0726eb80a3fec0724ceb9483b3ca803"
     },
     {
       "protocolID": "openrouter-images",

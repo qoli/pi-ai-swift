@@ -10,7 +10,16 @@ enum ProviderEndpointPolicy: Sendable {
   case httpOrHTTPS
 }
 
+struct ProviderRequestAuthorization: Sendable {
+  let credential: ProviderCredential?
+  let headers: [String: String?]
+  var usesHeaderAuthentication: Bool { credential == nil && !headers.isEmpty }
+}
+
 protocol ProviderAuthorizationAdapter: Sendable {
+  func requestAuthorization(for credential: ProviderCredential?) throws
+    -> ProviderRequestAuthorization
+
   func authorize(
     _ operation: AuthorizationOperation,
     interaction: @escaping AuthorizationInteraction,
@@ -25,6 +34,12 @@ protocol ProviderAuthorizationAdapter: Sendable {
 }
 
 extension ProviderAuthorizationAdapter {
+  func requestAuthorization(for credential: ProviderCredential?) throws
+    -> ProviderRequestAuthorization
+  {
+    .init(credential: credential, headers: [:])
+  }
+
   func resolveCredential(
     providerID: String,
     credentialStore: any ProviderCredentialStore,
@@ -88,6 +103,7 @@ struct WireProtocolContext: Sendable {
   let headers: [String: String]
   let credential: ProviderCredential?
   let modelConfiguration: ProviderModelConfiguration
+  var usesHeaderAuthentication = false
 }
 
 protocol WireProtocolAdapter: Sendable {
@@ -220,6 +236,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       )
     }
 
+    let requestAuthorization = try provider.authorization.requestAuthorization(for: credential)
+
     let route = ProviderModelRoute(
       modelID: model.id,
       outputModality: request.options.outputModality
@@ -287,7 +305,10 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       providerID: request.providerID,
       endpointPolicy: provider.endpointPolicy
     )
-    var headers = provider.headers
+    var headers = requestAuthorization.headers.compactMapValues { $0 }
+    let providerHeaderNames = Set(provider.headers.keys.map { $0.lowercased() })
+    headers = headers.filter { !providerHeaderNames.contains($0.key.lowercased()) }
+    headers.merge(provider.headers) { _, providerValue in providerValue }
     if [
       "google-generative-ai", "google-vertex", "openrouter-images",
       "openai-completions", "openai-responses", "anthropic-messages", "mistral-conversations",
@@ -306,8 +327,9 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         model: model.withProtocolID(modelConfiguration.protocolID),
         baseURL: baseURL,
         headers: headers,
-        credential: credential,
-        modelConfiguration: modelConfiguration
+        credential: requestAuthorization.credential,
+        modelConfiguration: modelConfiguration,
+        usesHeaderAuthentication: requestAuthorization.usesHeaderAuthentication
       ),
       transport: transport
     )

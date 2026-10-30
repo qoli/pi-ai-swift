@@ -255,6 +255,13 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       if flavor != .standard || urlRequest.value(forHTTPHeaderField: "Authorization") == nil {
         urlRequest.setValue("Bearer \(credential.accessToken)", forHTTPHeaderField: "Authorization")
       }
+    case (_, nil)
+    where context.usesHeaderAuthentication
+      && context.headers.contains(where: {
+        ["authorization", "cf-aig-authorization"].contains($0.key.lowercased())
+          && !$0.value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+      }):
+      break
     case (_, nil):
       throw failure(
         .missingCredential,

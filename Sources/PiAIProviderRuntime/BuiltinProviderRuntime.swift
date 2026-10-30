@@ -213,6 +213,9 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     var adapters: [String: any ProviderAuthorizationAdapter] = [:]
     for method in methods {
       switch method.id {
+      case "api-key" where CloudflareAuthorizationAdapter.providerIDs.contains(record.id):
+        adapters[method.id] = CloudflareAuthorizationAdapter(
+          providerID: record.id, methodID: method.id)
       case "api-key":
         adapters[method.id] = APIKeyAuthorizationAdapter(
           providerID: record.id,

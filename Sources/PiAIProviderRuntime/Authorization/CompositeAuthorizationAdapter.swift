@@ -65,6 +65,21 @@ struct CompositeAuthorizationAdapter: ProviderAuthorizationAdapter {
     )
   }
 
+  func requestAuthorization(for credential: ProviderCredential?) throws
+    -> ProviderRequestAuthorization
+  {
+    guard let credential else { return .init(credential: nil, headers: [:]) }
+    let method: String
+    switch credential {
+    case .apiKey: method = "api-key"
+    case .oauth: method = "oauth"
+    }
+    guard let adapter = methods[method] else {
+      throw failure("stored credential has no authorization adapter: \(method)")
+    }
+    return try adapter.requestAuthorization(for: credential)
+  }
+
   private func failure(_ message: String) -> ProviderRuntimeFailure {
     ProviderRuntimeFailure(
       code: .authorizationFailed,

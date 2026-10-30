@@ -50,9 +50,9 @@ function fixtureCredential(model, options) {
   };
 }
 
-function fixtureInput(model, context, options, responses, credential) {
+function fixtureInput(model, context, options, responses, credential, requestSource = "api") {
   return {
-    model,
+    model, requestSource,
     context: {
       systemPrompt: getCurrentSystemPrompt(context.messages),
       tools: getCurrentTools(context.messages),
@@ -136,7 +136,7 @@ export async function processResponsesStream(events, partial, output, model, opt
   if (decoded.failure) throw new Error(decoded.failure.message ?? decoded.failure.code);
 }
 
-export function stream(model, context, options = {}) {
+export function stream(model, context, options = {}, requestSource = "api") {
   const output = new AssistantMessageEventStream();
   (async () => {
     const partial = {
@@ -146,7 +146,7 @@ export function stream(model, context, options = {}) {
         cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
     };
     try {
-      await nativeStream(model, context, options, event => emit(event, partial, output));
+      await nativeStream(model, context, options, event => emit(event, partial, output), requestSource);
       output.push({ type: "done", reason: partial.stopReason, message: partial });
       output.end(partial);
     } catch (error) {
@@ -159,7 +159,7 @@ export function stream(model, context, options = {}) {
   return output;
 }
 
-async function nativeStream(model, context, options, emitEvent) {
+async function nativeStream(model, context, options, emitEvent, requestSource) {
   const credential = fixtureCredential(model, options);
   const connection = { credential };
   const child = spawn(process.env.PI_CONFORMANCE_PROBE, ["--stream"], { stdio: ["pipe", "pipe", "pipe"] });
@@ -176,7 +176,7 @@ async function nativeStream(model, context, options, emitEvent) {
   const cancel = () => send({ kind: "cancel" });
   options.signal?.addEventListener("abort", cancel, { once: true });
   record("encode", model.api, undefined, capabilities(options), "stream");
-  send(fixtureInput(model, context, options, [], credential));
+  send(fixtureInput(model, context, options, [], credential, requestSource));
   const serve = async request => {
     let body = request.body;
     const google = model.api === "google-generative-ai" || model.api === "google-vertex";
@@ -223,7 +223,7 @@ async function nativeStream(model, context, options, emitEvent) {
   }
 }
 
-export function streamSimple(model, context, options = {}) {
+export function streamSimple(model, context, options = {}, requestSource = "api") {
   const { reasoning, ...base } = options;
   let reasoningEffort;
   if (reasoning) {
@@ -249,7 +249,7 @@ export function streamSimple(model, context, options = {}) {
     maxTokens: clampMaxTokensToContext(model, context, options.maxTokens ?? model.maxTokens),
     reasoningEffort: disableGoogleThinking ? undefined : reasoningEffort,
     ...(disableGoogleThinking ? { thinking: { enabled: false } } : {}),
-  });
+  }, requestSource);
 }
 
 async function mockResponse(model, request, body, options, connection) {

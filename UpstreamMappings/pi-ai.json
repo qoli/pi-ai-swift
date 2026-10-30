@@ -168,7 +168,8 @@
         "Sources/PiAIProviderRuntime/Authorization/InMemoryProviderCredentialStore.swift",
         "Sources/PiAIProviderRuntime/Authorization/KeychainProviderCredentialStore.swift",
         "Sources/PiAIProviderRuntime/Authorization/CredentialRefreshCoordinator.swift",
-        "Sources/PiAIProviderRuntime/Authorization/OAuthUtilities.swift"
+        "Sources/PiAIProviderRuntime/Authorization/OAuthUtilities.swift",
+        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -196,7 +197,11 @@
         "Tests/PiAIProviderRuntimeTests/KeychainProviderCredentialStoreTests.swift#roundTripsListsUpdatesAndDeletesCredentialsWithoutExposingSecrets",
         "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#coalescesConcurrentRefreshAndCommitsRotatedCredentialOnce",
         "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#logoutCancelsInFlightRefreshWithoutResurrectingCredential",
-        "Docs/UPSTREAM_GATES.md"
+        "Docs/UPSTREAM_GATES.md",
+        "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
+        "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
+        "Fixtures/Differential/Cases/cloudflare-auth.json",
+        "Fixtures/Differential/Oracle/cloudflare-auth.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -605,7 +610,8 @@
       "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -627,7 +633,11 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
+        "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
+        "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
+        "Fixtures/Differential/Cases/cloudflare-auth.json",
+        "Fixtures/Differential/Oracle/cloudflare-auth.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -642,7 +652,8 @@
       "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -662,7 +673,11 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
+        "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
+        "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
+        "Fixtures/Differential/Cases/cloudflare-auth.json",
+        "Fixtures/Differential/Oracle/cloudflare-auth.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -1857,7 +1872,11 @@
         "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
+        "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
+        "Fixtures/Differential/Cases/cloudflare-auth.json",
+        "Fixtures/Differential/Oracle/cloudflare-auth.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2447,7 +2466,11 @@
         "Fixtures/Differential/Oracle/provider-options.json",
         "Fixtures/Differential/ResponseBranchInventory.json",
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitOpenAIAuthorizationOverridesCredentialDefaults",
-        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
+        "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
+        "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
+        "Fixtures/Differential/Cases/cloudflare-auth.json",
+        "Fixtures/Differential/Oracle/cloudflare-auth.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2514,7 +2537,11 @@
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
         "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
-        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitOpenAIAuthorizationOverridesCredentialDefaults"
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitOpenAIAuthorizationOverridesCredentialDefaults",
+        "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
+        "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
+        "Fixtures/Differential/Cases/cloudflare-auth.json",
+        "Fixtures/Differential/Oracle/cloudflare-auth.json"
       ],
       "requiredGates": [
         "swift-test"

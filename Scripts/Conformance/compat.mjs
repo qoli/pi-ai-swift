@@ -5,11 +5,11 @@ import { stream as swiftStream, streamSimple as swiftStreamSimple } from "./brid
 import { normalizeContext } from "pi-conformance:upstream-compat";
 
 export function stream(model, context, options) {
-  return swiftStream(model, normalizeContext(context), options);
+  return swiftStream(model, normalizeContext(context), options, "provider");
 }
 
 export function streamSimple(model, context, options) {
-  return swiftStreamSimple(model, normalizeContext(context), options);
+  return swiftStreamSimple(model, normalizeContext(context), options, "provider");
 }
 
 export function complete(model, context, options) {

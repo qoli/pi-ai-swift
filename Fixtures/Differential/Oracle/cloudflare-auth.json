@@ -1,0 +1,136 @@
+{
+  "logins": {
+    "cloudflare-ai-gateway": {
+      "cancelled": false,
+      "credential": {
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "fixture-account",
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        },
+        "key": "fixture-cf-key",
+        "type": "api_key"
+      },
+      "prompts": [
+        {
+          "message": "Enter Cloudflare API key",
+          "type": "secret"
+        },
+        {
+          "message": "Enter Cloudflare account ID",
+          "type": "text"
+        },
+        {
+          "message": "Enter Cloudflare AI Gateway ID",
+          "type": "text"
+        }
+      ]
+    },
+    "cloudflare-ai-gateway.cancel": {
+      "cancelled": true,
+      "credential": null,
+      "prompts": [
+        {
+          "message": "Enter Cloudflare API key",
+          "type": "secret"
+        },
+        {
+          "message": "Enter Cloudflare account ID",
+          "type": "text"
+        }
+      ]
+    },
+    "cloudflare-workers-ai": {
+      "cancelled": false,
+      "credential": {
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "fixture-account"
+        },
+        "key": "fixture-cf-key",
+        "type": "api_key"
+      },
+      "prompts": [
+        {
+          "message": "Enter Cloudflare API key",
+          "type": "secret"
+        },
+        {
+          "message": "Enter Cloudflare account ID",
+          "type": "text"
+        }
+      ]
+    },
+    "cloudflare-workers-ai.cancel": {
+      "cancelled": true,
+      "credential": null,
+      "prompts": [
+        {
+          "message": "Enter Cloudflare API key",
+          "type": "secret"
+        },
+        {
+          "message": "Enter Cloudflare account ID",
+          "type": "text"
+        }
+      ]
+    },
+    "gateway-verbatim-key": {
+      "cancelled": false,
+      "credential": {
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "fixture-account",
+          "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+        },
+        "key": " fixture-cf-key ",
+        "type": "api_key"
+      },
+      "prompts": [
+        {
+          "message": "Enter Cloudflare API key",
+          "type": "secret"
+        },
+        {
+          "message": "Enter Cloudflare account ID",
+          "type": "text"
+        },
+        {
+          "message": "Enter Cloudflare AI Gateway ID",
+          "type": "text"
+        }
+      ]
+    }
+  },
+  "resolutions": {
+    "cloudflare-ai-gateway.complete": {
+      "auth": {
+        "headers": {
+          "Authorization": null,
+          "cf-aig-authorization": "Bearer fixture-cf-key",
+          "x-api-key": null
+        }
+      },
+      "env": {
+        "CLOUDFLARE_ACCOUNT_ID": "fixture-account",
+        "CLOUDFLARE_GATEWAY_ID": "fixture-gateway"
+      },
+      "source": "stored credential"
+    },
+    "cloudflare-ai-gateway.empty-account": null,
+    "cloudflare-ai-gateway.empty-key": null,
+    "cloudflare-ai-gateway.missing-account": null,
+    "cloudflare-workers-ai.complete": {
+      "auth": {
+        "apiKey": "fixture-cf-key"
+      },
+      "env": {
+        "CLOUDFLARE_ACCOUNT_ID": "fixture-account"
+      },
+      "source": "stored credential"
+    },
+    "cloudflare-workers-ai.empty-account": null,
+    "cloudflare-workers-ai.empty-key": null,
+    "cloudflare-workers-ai.missing-account": null,
+    "gateway-missing-gateway": null
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}
