@@ -521,6 +521,39 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testMistralFailureMetadataMatchesPinnedSource() async throws {
+    let oracle = try load("Differential/Oracle/failure-provider-declared.json")
+    let source = try XCTUnwrap(oracle.object("protocols")?.object("mistral-conversations"))
+    let decoder = try XCTUnwrap(source.object("decoderInput"))
+    let body = try XCTUnwrap(Data(base64Encoded: try XCTUnwrap(decoder.string("rawBodyBase64"))))
+    let (request, context) = inputs(api: "mistral-conversations")
+    let result = try await replay(
+      MistralConversationsAdapter(), request: request,
+      context: context, chunks: [body])
+    XCTAssertEqual(result.failure?.code, .transportFailed)
+    XCTAssertEqual(result.failure?.message, source.string("sourceErrorMessage"))
+    XCTAssertEqual(
+      result.failure?.providerMetadata?.string("rawStopReason"), source.string("rawStopReason"))
+    XCTAssertNil(result.snapshot)
+    let branches = try load("Differential/Oracle/response-provider-branches.json")
+    let unknown = try XCTUnwrap(
+      branches.object("cases")?.object("mistral-unknown-stop")?.object("mistral-conversations"))
+    let chunks = try XCTUnwrap(unknown.object("decoderInput")?.array("events")).map { event in
+      Data(
+        ("data: " + String(decoding: try JSONEncoder().encode(event), as: UTF8.self) + "\n\n").utf8)
+    }
+    let unknownResult = try await replay(
+      MistralConversationsAdapter(), request: request,
+      context: context, chunks: chunks)
+    let expected = try XCTUnwrap(unknown.object("sourceOutcome"))
+    XCTAssertEqual(unknownResult.failure?.code, .transportFailed)
+    XCTAssertEqual(unknownResult.failure?.message, expected.string("errorMessage"))
+    XCTAssertEqual(
+      unknownResult.failure?.providerMetadata?.string("rawStopReason"),
+      expected.string("rawStopReason"))
+    XCTAssertNil(unknownResult.snapshot)
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

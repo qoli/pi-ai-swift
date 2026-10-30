@@ -109,7 +109,7 @@ struct SourceDerivedFailureDifferentialTests {
             #expect(operation.contains("error") || operation.contains("finish"))
             if [
               "google-generative-ai", "google-vertex", "openai-responses",
-              "azure-openai-responses", "openai-codex-responses",
+              "azure-openai-responses", "openai-codex-responses", "mistral-conversations",
             ].contains(protocolCase.protocolID) {
               #expect(
                 failure.providerMetadata?.string("rawStopReason") == source.rawStopReason,

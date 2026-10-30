@@ -845,15 +845,15 @@ private struct MistralEventReducer {
     case "stop": .stop
     case "length", "model_length": .length
     case "tool_calls": .toolCalls
-    case "error":
+    default:
       throw ProviderRuntimeFailure(
         code: .transportFailed,
-        message: "Mistral provider stopped with an error",
+        message: "Provider stopped with: \(value)\(value == "error" ? " (server error)" : "")",
         providerID: providerID,
         operation: "mistral.event.finish",
-        causeDescription: value
+        causeDescription: value,
+        providerMetadata: ["rawStopReason": .string(value)]
       )
-    default: throw invalid("unsupported Mistral finish reason: \(value)")
     }
   }
 

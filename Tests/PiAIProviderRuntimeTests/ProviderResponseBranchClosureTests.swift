@@ -69,10 +69,17 @@ struct ProviderResponseBranchClosureTests {
           #expect(failure.operation != nil)
           switch scenario.caseID {
           case "google-safety-stop", "google-sdk-error", "mistral-error-stop",
+            "mistral-unknown-stop",
             "mistral-http-error", "openrouter-provider-error", "openrouter-http-error":
             #expect(failure.code == .transportFailed)
           default:
             #expect(failure.code == .invalidResponse)
+          }
+          if ["mistral-error-stop", "mistral-unknown-stop"].contains(scenario.caseID) {
+            #expect(failure.message == expected.sourceOutcome.errorMessage)
+            #expect(
+              failure.providerMetadata?.string("rawStopReason")
+                == expected.sourceOutcome.rawStopReason)
           }
           #expect(
             !emitted.contains { event in
@@ -386,6 +393,8 @@ private struct ProviderResponseBranchSourceOutcome: Decodable {
   let kind: String
   let events: [JSONValue]?
   let terminalReplay: JSONValue?
+  let rawStopReason: String?
+  let errorMessage: String?
 }
 
 private struct ProviderResponseBranchDecoderInput: Decodable, Sendable {

@@ -2422,7 +2422,13 @@
         "Scripts/Conformance/SwiftProbe.swift",
         "Scripts/openai-request-branch-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/mistral-request-options.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/mistral-request-options.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/mistral-request-options.json",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralFailureMetadataMatchesPinnedSource",
+        "Scripts/pi-ai-failure-oracle.mjs",
+        "Fixtures/Differential/Oracle/failure-provider-declared.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleMistralAndOpenRouterResponsesMatchPinnedSource",
+        "Fixtures/Differential/Oracle/response-provider-branches.json"
       ],
       "requiredGates": [
         "swift-test",
