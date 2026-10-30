@@ -36,13 +36,56 @@ enum PreferredStrictToolFallback {
           options: request.options, connectionOptions: request.connectionOptions)
         continue
       }
-      let name = api == .anthropic ? "Anthropic Messages" : "Bedrock ConverseStream"
       throw ProviderRuntimeFailure(
         code: .transportFailed,
-        message: "\(name) request failed (HTTP \(response.statusCode))",
+        message: errorMessage(api: api, response: response, body: body),
         providerID: request.providerID,
         operation: api == .anthropic ? "anthropic.response" : "bedrock.response",
         causeDescription: body)
+    }
+  }
+
+  private static func errorMessage(
+    api: API, response: ProviderHTTPStreamingResponse, body: String?
+  ) -> String {
+    switch api {
+    case .anthropic:
+      var message = body
+      if let body, let parsed = try? ProviderOrderedJSON(data: Data(body.utf8)) {
+        if let detail = parsed["message"], detail.isTruthy {
+          if case .scalar(.string(let text)) = detail {
+            message = text
+          } else {
+            message = try? detail.encodedString()
+          }
+        } else if parsed.isTruthy {
+          message = try? parsed.encodedString()
+        }
+      }
+      guard let message, !message.isEmpty else {
+        return "\(response.statusCode) status code (no body)"
+      }
+      return "\(response.statusCode) \(message)"
+    case .bedrock:
+      let object = body.flatMap {
+        try? JSONDecoder().decode(JSONValue.self, from: Data($0.utf8)).objectValue
+      }
+      let header = response.headers.first { $0.key.lowercased() == "x-amzn-errortype" }?.value
+      let type = (header ?? object?.string("__type") ?? object?.string("code"))?
+        .split(separator: "#").last?.split(separator: ":").first.map(String.init)
+      let message = object?.string("message") ?? object?.string("Message") ?? body ?? "UnknownError"
+      let prefixes = [
+        "InternalServerException": "Internal server error",
+        "ModelStreamErrorException": "Model stream error",
+        "ValidationException": "Validation error",
+        "ThrottlingException": "Throttling error",
+        "ServiceUnavailableException": "Service unavailable",
+      ]
+      let hint =
+        message.range(of: "data retention mode", options: .caseInsensitive) == nil
+        ? ""
+        : " See https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html for supported data retention modes."
+      return type.map { "\(prefixes[$0] ?? $0): \(message)\(hint)" } ?? "\(message)\(hint)"
     }
   }
 

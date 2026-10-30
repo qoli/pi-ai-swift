@@ -1146,6 +1146,65 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testProviderHTTPErrorMessagesMatchPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/strict-fallback.json")
+    let oracle = try load("Differential/Oracle/strict-fallback.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue).filter {
+      $0.array("failures")?.count == 1
+        && $0.array("preferences")?.contains(.string("prefer")) == false
+    }
+    XCTAssertEqual(cases.count, 14)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let api = try XCTUnwrap(spec.string("protocolID"))
+      let bedrock = api == "bedrock-converse-stream"
+      let provider = bedrock ? "amazon-bedrock" : "anthropic"
+      let failure = try XCTUnwrap(spec.array("failures")?.first?.objectValue)
+      let body =
+        try failure.string("body").map { Data($0.utf8) }
+        ?? JSONEncoder().encode(
+          JSONValue.object([
+            "__type": .string(try XCTUnwrap(failure.string("type"))),
+            "message": .string(try XCTUnwrap(failure.string("message"))),
+          ]))
+      let (_, context) = inputs(
+        api: api, providerID: provider, modelID: "fixture-claude",
+        baseURL: bedrock
+          ? "https://bedrock-runtime.us-east-1.amazonaws.com" : "https://fixture.invalid",
+        reasoning: false,
+        metadata: [
+          "compat": .object([bedrock ? "supportsStrictMode" : "supportsStrictTools": .bool(true)])
+        ])
+      let request = ProviderRequest(
+        id: name, providerID: provider, modelID: "fixture-claude",
+        messages: [.user([.text("Hello")])],
+        tools: try XCTUnwrap(spec.array("preferences")).enumerated().map { index, value in
+          let preference: ProviderStrictPreference?
+          if case .string(let text) = value {
+            preference = ProviderStrictPreference(rawValue: text)
+          } else {
+            preference = nil
+          }
+          return ProviderToolDefinition(
+            name: "tool_\(index)", description: "Fixture lookup",
+            inputSchema: try XCTUnwrap(fixture["schema"]),
+            constrainedSampling: preference.map { .jsonSchema(strict: $0) })
+        },
+        options: .init(
+          maximumOutputTokens: 100, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: [:], cacheRetention: .none))
+      let transport = IOSMistralHTTPFixture(
+        status: try XCTUnwrap(failure.int("status")), body: body)
+      let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
+      var observed: ProviderRuntimeFailure?
+      do {
+        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+      } catch let failure as ProviderRuntimeFailure { observed = failure }
+      let expected = oracle.object("cases")?.object(name)?.array("outcomes")?.first?.objectValue
+      XCTAssertEqual(try XCTUnwrap(observed, name).message, expected?.string("errorMessage"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

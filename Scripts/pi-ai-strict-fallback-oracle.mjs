@@ -75,7 +75,7 @@ for (const test of fixture.cases) {
       signal:controller.signal,env:{AWS_BEDROCK_SKIP_AUTH:"1",AWS_REGION:"us-east-1"},
       fetch:async (_url,init)=> {
         const failure=responseFor(JSON.parse(init.body));
-        if(failure) return Response.json({type:"error",error:{type:failure.type,message:failure.message}}, {status:failure.status});
+        if(failure) return new Response(failure.body, {status:failure.status,headers:{"content-type":"application/json"}});
         const frames=test.streamError
           ? [{type:"error",error:{type:"invalid_request_error",message:fixture.limitMessages[0]}}]
           : [{type:"message_start",message:{id:"msg_fixture",model:model.id,usage:{input_tokens:0,output_tokens:0}}},
@@ -85,7 +85,9 @@ for (const test of fixture.cases) {
     });
     const events=[];
     for await(const event of stream) events.push(event.type);
-    outcomes.push({stopReason:(await stream.result()).stopReason,events});
+    const result=await stream.result();
+    outcomes.push({stopReason:result.stopReason,events,
+      ...(result.stopReason==="error"?{errorMessage:result.errorMessage}:{})});
   }
   cases[test.id]={requests,outcomes};
 }

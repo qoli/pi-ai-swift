@@ -75,10 +75,10 @@ struct StrictFallbackDifferentialTests {
           #expect(expected.outcomes[call].stopReason == "stop", Comment(rawValue: test.id))
         } catch is CancellationError {
           #expect(expected.outcomes[call].stopReason == "aborted", Comment(rawValue: test.id))
-        } catch {
+        } catch let failure as ProviderRuntimeFailure {
+          #expect(expected.outcomes[call].stopReason == "error", Comment(rawValue: test.id))
           #expect(
-            expected.outcomes[call].stopReason == "error", Comment(rawValue: "\(test.id): \(error)")
-          )
+            failure.message == expected.outcomes[call].errorMessage, Comment(rawValue: test.id))
         }
       }
       let actual = await transport.requests
@@ -108,6 +108,7 @@ private struct StrictFallbackCase: Decodable, Sendable {
     let status: Int
     let type: String
     let message: String
+    let body: String?
   }
 }
 private struct StrictFallbackOracle: Decodable {
@@ -117,7 +118,10 @@ private struct StrictFallbackOracle: Decodable {
     let requests: [JSONValue]
     let outcomes: [Outcome]
   }
-  struct Outcome: Decodable { let stopReason: String }
+  struct Outcome: Decodable {
+    let stopReason: String
+    let errorMessage: String?
+  }
 }
 private actor StrictFallbackTransport: ProviderHTTPStreamingTransport {
   let test: StrictFallbackCase
@@ -138,7 +142,9 @@ private actor StrictFallbackTransport: ProviderHTTPStreamingTransport {
             "type": .string(failure.type), "message": .string(failure.message),
           ]),
         ])
-      return response(status: failure.status, data: try JSONEncoder().encode(body))
+      return response(
+        status: failure.status,
+        data: try failure.body.map { Data($0.utf8) } ?? JSONEncoder().encode(body))
     }
     if test.protocolID == "bedrock-converse-stream" {
       var data = Data()

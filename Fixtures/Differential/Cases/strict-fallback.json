@@ -5,7 +5,8 @@
         {
           "message": "The compiled grammar is too large",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
         }
       ],
       "id": "anthropic-messages.limit-0",
@@ -21,7 +22,8 @@
         {
           "message": "Too many strict tools (32).",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Too many strict tools (32).\"}}"
         }
       ],
       "id": "anthropic-messages.limit-1",
@@ -37,7 +39,8 @@
         {
           "message": "Schemas contains too many parameters with union types (20).",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Schemas contains too many parameters with union types (20).\"}}"
         }
       ],
       "id": "anthropic-messages.limit-2",
@@ -53,7 +56,8 @@
         {
           "message": "The compiled grammar is too large",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
         }
       ],
       "id": "anthropic-messages.required-only",
@@ -67,7 +71,8 @@
         {
           "message": "The compiled grammar is too large",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
         }
       ],
       "id": "anthropic-messages.ordinary-only",
@@ -81,7 +86,8 @@
         {
           "message": "messages field required",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"messages field required\"}}"
         }
       ],
       "id": "anthropic-messages.unrelated",
@@ -95,7 +101,8 @@
         {
           "message": "The compiled grammar is too large",
           "status": 400,
-          "type": "other_error"
+          "type": "other_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"other_error\",\"message\":\"The compiled grammar is too large\"}}"
         }
       ],
       "id": "anthropic-messages.wrong-type",
@@ -109,12 +116,14 @@
         {
           "message": "The compiled grammar is too large",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
         },
         {
           "message": "The compiled grammar is too large",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
         }
       ],
       "id": "anthropic-messages.second-rejection",
@@ -129,7 +138,8 @@
         {
           "message": "The compiled grammar is too large",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
         }
       ],
       "id": "anthropic-messages.cancel-before-retry",
@@ -144,7 +154,8 @@
         {
           "message": "The compiled grammar is too large",
           "status": 400,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
         },
         null,
         null
@@ -315,7 +326,8 @@
         {
           "message": "The compiled grammar is too large",
           "status": 403,
-          "type": "invalid_request_error"
+          "type": "invalid_request_error",
+          "body": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
         }
       ],
       "id": "anthropic-messages.wrong-status",
@@ -332,6 +344,151 @@
       ],
       "protocolID": "anthropic-messages",
       "streamError": true
+    },
+    {
+      "id": "anthropic-messages.pretty-error",
+      "protocolID": "anthropic-messages",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "invalid_request_error",
+          "message": "fixture error",
+          "body": "{\n  \"type\": \"error\",\n  \"error\": { \"message\": \"bad request\", \"type\": \"invalid_request_error\" }\n}"
+        }
+      ]
+    },
+    {
+      "id": "anthropic-messages.top-message",
+      "protocolID": "anthropic-messages",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "invalid_request_error",
+          "message": "fixture error",
+          "body": "{\"message\":\"A \\u0062ad / request\",\"error\":{\"type\":\"invalid_request_error\"}}"
+        }
+      ]
+    },
+    {
+      "id": "anthropic-messages.object-message",
+      "protocolID": "anthropic-messages",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "invalid_request_error",
+          "message": "fixture error",
+          "body": "{\"message\":{\"z\":\"last\",\"a\":\"first\"},\"error\":{}}"
+        }
+      ]
+    },
+    {
+      "id": "anthropic-messages.plain-body",
+      "protocolID": "anthropic-messages",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "invalid_request_error",
+          "message": "fixture error",
+          "body": "upstream gateway unavailable"
+        }
+      ]
+    },
+    {
+      "id": "anthropic-messages.empty-body",
+      "protocolID": "anthropic-messages",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "invalid_request_error",
+          "message": "fixture error",
+          "body": ""
+        }
+      ]
+    },
+    {
+      "id": "bedrock-converse-stream.InternalServerException",
+      "protocolID": "bedrock-converse-stream",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "InternalServerException",
+          "message": "fixture rejection"
+        }
+      ]
+    },
+    {
+      "id": "bedrock-converse-stream.ModelStreamErrorException",
+      "protocolID": "bedrock-converse-stream",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "ModelStreamErrorException",
+          "message": "fixture rejection"
+        }
+      ]
+    },
+    {
+      "id": "bedrock-converse-stream.ThrottlingException",
+      "protocolID": "bedrock-converse-stream",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "ThrottlingException",
+          "message": "fixture rejection"
+        }
+      ]
+    },
+    {
+      "id": "bedrock-converse-stream.ServiceUnavailableException",
+      "protocolID": "bedrock-converse-stream",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "ServiceUnavailableException",
+          "message": "fixture rejection"
+        }
+      ]
+    },
+    {
+      "id": "bedrock-converse-stream.data-retention",
+      "protocolID": "bedrock-converse-stream",
+      "preferences": [
+        null
+      ],
+      "failures": [
+        {
+          "status": 400,
+          "type": "ValidationException",
+          "message": "data retention mode 'default' is not available for this model"
+        }
+      ]
     }
   ],
   "limitMessages": [

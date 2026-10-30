@@ -2027,7 +2027,8 @@
         "Scripts/Conformance/SwiftProbe.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicRawOptionsMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicIgnoresGenericSamplingParamsLikePinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicImageToolResultsMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicImageToolResultsMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
@@ -2162,7 +2163,8 @@
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockFailureMetadataMatchesPinnedSource",
         "Scripts/Conformance/SwiftProbe.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockRawReasoningMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockRawReasoningMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2183,7 +2185,8 @@
         "Sources/PiAIProviderRuntime/Wire/Common/PreferredStrictToolFallback.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ErrorToolResultImages.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderSamplingParameters.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/GrammarToolInputJSONBuffer.swift"
+        "Sources/PiAIProviderRuntime/Wire/Common/GrammarToolInputJSONBuffer.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderOrderedJSON.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2259,7 +2262,8 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsRawReasoningMatchesPinnedSource",
         "Fixtures/Differential/Cases/provider-intent.json",
         "Fixtures/Differential/Oracle/provider-intent.json",
-        "Scripts/pi-ai-provider-intent-oracle.mjs"
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
