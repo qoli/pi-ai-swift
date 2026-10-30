@@ -65,13 +65,22 @@ struct StrictFallbackDifferentialTests {
       for call in 0..<(test.calls ?? 1) {
         let task = Task {
           var completed = false
+          var diagnostics: [JSONValue] = []
           for try await event in adapter.stream(request, context: context, transport: transport) {
             if case .completed = event { completed = true }
+            if case .responseSnapshot(let value) = event {
+              diagnostics = value.providerMetadata.array("diagnostics") ?? []
+            }
           }
-          return completed
+          return (completed, diagnostics)
         }
         do {
-          #expect(try await task.value, Comment(rawValue: test.id))
+          let result = try await task.value
+          #expect(result.0, Comment(rawValue: test.id))
+          #expect(
+            withoutDiagnosticTimestamps(result.1)
+              == expected.outcomes[call].strictFallbackDiagnostics,
+            Comment(rawValue: test.id))
           #expect(expected.outcomes[call].stopReason == "stop", Comment(rawValue: test.id))
         } catch is CancellationError {
           #expect(expected.outcomes[call].stopReason == "aborted", Comment(rawValue: test.id))
@@ -79,6 +88,9 @@ struct StrictFallbackDifferentialTests {
           #expect(expected.outcomes[call].stopReason == "error", Comment(rawValue: test.id))
           #expect(
             failure.message == expected.outcomes[call].errorMessage, Comment(rawValue: test.id))
+          #expect(
+            withoutDiagnosticTimestamps(failure.providerMetadata?.array("diagnostics") ?? [])
+              == expected.outcomes[call].strictFallbackDiagnostics, Comment(rawValue: test.id))
         }
       }
       let actual = await transport.requests
@@ -121,7 +133,12 @@ private struct StrictFallbackOracle: Decodable {
   struct Outcome: Decodable {
     let stopReason: String
     let errorMessage: String?
+    let strictFallbackDiagnostics: [JSONValue]
   }
+}
+private func withoutDiagnosticTimestamps(_ diagnostics: [JSONValue]) -> [JSONValue] {
+  diagnostics.filter { $0.objectValue?.string("type")?.hasSuffix("_strict_tools_fallback") == true }
+    .map { value in .object((value.objectValue ?? [:]).filter { $0.key != "timestamp" }) }
 }
 private actor StrictFallbackTransport: ProviderHTTPStreamingTransport {
   let test: StrictFallbackCase

@@ -74,11 +74,13 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicImageToolResultsMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#anthropicWireObservationsMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift#sourceDerivedPreferredStrictRetriesPreserveRequiredAndFailureBoundaries",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource"
       ],
       "upstreamSourceSHA256": "40a0870f7cb7ce59fc078261fc3bd6c0c53b6bdcee1a24fed995e8b03d30b209",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "e74de57c5e3d943fe47fc5c53cbd56cfb6a565551c72ac1525845c1e28785c26"
+      "swiftEvidenceSHA256": "96c0e38352faf260437d95994a0cffe5fe44941800d810d2094b2eff62b8f876"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -140,7 +142,7 @@
       ],
       "upstreamSourceSHA256": "44f1ffc77bf9899c2e7067280720c0fc5a0b458c0fccd650d3f5739182c2c33f",
       "upstreamTestSHA256": "32bd02c09ad074cb1b498bc752d2e91160d998c39cb5a4e0e07c598ef32a8f4c",
-      "swiftEvidenceSHA256": "5050de76e53a906b5b3250bdee7adf6c4d4a7f129013ac45228fdc5e78bac230"
+      "swiftEvidenceSHA256": "44aa0bfc02fcaf399021a1cf1c8adb7e4275b06524b02544ca053b175c81c7a8"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -190,11 +192,13 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource",
         "Scripts/Conformance/bedrock-payload.mjs",
         "Scripts/tests/test_bedrock_payload.py",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockBlankContentMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockBlankContentMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift#sourceDerivedPreferredStrictRetriesPreserveRequiredAndFailureBoundaries",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource"
       ],
       "upstreamSourceSHA256": "fcd722758fa9205f6f2633c0445fa6ef36e82c3c5eca2ea959c8af6b2dd6d9f7",
       "upstreamTestSHA256": "616f7bbfd6f524666540459ccfe6bd608fd9adb8e30828afeeaa111fa07d1669",
-      "swiftEvidenceSHA256": "fb6bc403ef8fe06121b16ad7788dae0cd3adffc904b7a2ee7ab9339ec6a8eb53"
+      "swiftEvidenceSHA256": "10157bcf712289d95a3bd6ad6bee29bf0b79f5055b11ba8c965bb7a01b53b017"
     },
     {
       "protocolID": "google-generative-ai",
@@ -242,7 +246,7 @@
       ],
       "upstreamSourceSHA256": "20f47dd4749034075eb61695802c2a9587eaa5307442802243b6834d893b3ff0",
       "upstreamTestSHA256": "7daeb72c8c987e20d0e2d4ffd7223b44fc565924f10efe18d725a75559305354",
-      "swiftEvidenceSHA256": "8fcd377c223aac2308aadc8c43d24ffe56e0b7908d7af46565ea36f182d01bab"
+      "swiftEvidenceSHA256": "d387083744d1c2771d043d67e481a1483284cf693039100218ec754776d3071f"
     },
     {
       "protocolID": "google-vertex",
@@ -286,7 +290,7 @@
       ],
       "upstreamSourceSHA256": "ab23a583792c46d1da02c82fa55f2a794f92074ca5afcea8839b129ce58818f0",
       "upstreamTestSHA256": "594752aed17eaf8830a52c2c4718aa8ad82f5f3d6f52945866e11700189a4edd",
-      "swiftEvidenceSHA256": "63f2958e58ddef23b06997e661bae20aade73646a0bd5408a327223ec0d7bf86"
+      "swiftEvidenceSHA256": "700316916b723c02a86f1715a290765fc02914b3ca3fb8f600377f6bb75eb261"
     },
     {
       "protocolID": "mistral-conversations",
@@ -350,7 +354,7 @@
       ],
       "upstreamSourceSHA256": "2ea02438b2f7ac650434868b43feee9e07ab32480c01da9587245dd14cece8d5",
       "upstreamTestSHA256": "4b860d483b44bc3489f5be721e71fbf96b8a952288fde35c3c53096419f23dfa",
-      "swiftEvidenceSHA256": "c46bc86af34d50053e194cab3db486bc3102bb5502809c4b26178774a95d3053"
+      "swiftEvidenceSHA256": "b25f9b86336a260ba21e63afbc09310a03c208a9d4bd1ae50895ff3655205a8c"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -409,7 +413,7 @@
       ],
       "upstreamSourceSHA256": "805ed5c861052c125e0f1fc34b3630b832d615624536f86db4571e88dc3f760d",
       "upstreamTestSHA256": "ad9cce3e861f84c8fec0aa144728a72bf3c56155046187ccfb136a86f7ce1b27",
-      "swiftEvidenceSHA256": "b9096252a3729f7998d38efb449a770ba71576ad24e57e81b527d73de3c85c82"
+      "swiftEvidenceSHA256": "25e08a75dfa96ae89f88ba8cdd021cdf69dc82cffc861c56fb0012bf1bbd89cf"
     },
     {
       "protocolID": "openai-completions",
@@ -505,7 +509,7 @@
       ],
       "upstreamSourceSHA256": "6b5bcab7327f12ad95c1e6464d8d9254b35bf2e8121ae91cf047195e70850406",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "6aef4fbf597527e1354af948f3f7a9e7187b4f4b2fdaf761a0a65c9551d915ab"
+      "swiftEvidenceSHA256": "2edda4ed4221016274d26ee3ef2601bad3b37a3a33b3794bf8fc3dba40e8205e"
     },
     {
       "protocolID": "openai-responses",
@@ -577,7 +581,7 @@
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "405883eac7d18c92324cf8739694ab9601c4e8e7314046ae3e15150e44154c96"
+      "swiftEvidenceSHA256": "bd59f6a428ca6d4cb799273b90248c16835e96556ef14d95779768ad763b1e76"
     },
     {
       "protocolID": "openrouter-images",
@@ -635,7 +639,7 @@
       ],
       "upstreamSourceSHA256": "46d587ce7304d9d5f462da7483c2d7786a08a642ba6fc856a93fb979b864bbb4",
       "upstreamTestSHA256": "f8eabb92338a98392533e98f98e409cc94f6ea685405d048e6d3016906c23f5c",
-      "swiftEvidenceSHA256": "d0492db6fe72470af1a327a540da76563135fb54ebc22f55fa3efe1d548a267f"
+      "swiftEvidenceSHA256": "d102e93162d9e12387f066b82b919aa56fce46d6fbe68fbb88cbdad1fd504a32"
     }
   ]
 }

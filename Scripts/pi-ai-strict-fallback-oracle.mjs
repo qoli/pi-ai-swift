@@ -87,6 +87,7 @@ for (const test of fixture.cases) {
     for await(const event of stream) events.push(event.type);
     const result=await stream.result();
     outcomes.push({stopReason:result.stopReason,events,
+      ...(fixture.observeStrictFallbackDiagnostics ? { strictFallbackDiagnostics: (result.diagnostics ?? []).filter(value => value.type.endsWith("_strict_tools_fallback")).map(({ timestamp, ...value }) => value) } : {}),
       ...(result.stopReason==="error"?{errorMessage:result.errorMessage}:{})});
   }
   cases[test.id]={requests,outcomes};

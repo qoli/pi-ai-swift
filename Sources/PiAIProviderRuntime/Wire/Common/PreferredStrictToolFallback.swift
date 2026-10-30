@@ -9,6 +9,7 @@ enum PreferredStrictToolFallback {
     request: ProviderRequest,
     api: API,
     transport: any ProviderHTTPStreamingTransport,
+    onDowngrade: (JSONValue) -> Void = { _ in },
     makeRequest: (ProviderRequest) async throws -> URLRequest
   ) async throws -> ProviderHTTPStreamingResponse {
     var current = request
@@ -25,6 +26,24 @@ enum PreferredStrictToolFallback {
         isLimitRejection(response: response, body: body, api: api)
       {
         downgraded = true
+        let message: String
+        if api == .anthropic {
+          message = errorMessage(api: api, response: response, body: body)
+        } else {
+          let object = body.flatMap {
+            try? JSONDecoder().decode(JSONValue.self, from: Data($0.utf8)).objectValue
+          }
+          message = object?.string("message") ?? object?.string("Message") ?? body ?? "UnknownError"
+        }
+        onDowngrade(
+          .object([
+            "type": .string(
+              api == .anthropic
+                ? "anthropic_strict_tools_fallback" : "bedrock_strict_tools_fallback"),
+            "timestamp": .integer(Int64(Date().timeIntervalSince1970 * 1_000)),
+            "error": .object(["message": .string(message)]),
+            "details": .object(["reason": .string("strict_tool_limits_exceeded")]),
+          ]))
         current = ProviderRequest(
           id: request.id, providerID: request.providerID, modelID: request.modelID,
           messages: request.messages,

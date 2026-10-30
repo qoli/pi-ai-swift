@@ -15,9 +15,11 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
   ) -> AsyncThrowingStream<ProviderEvent, any Error> {
     AsyncThrowingStream { continuation in
       let task = Task {
+        var diagnostics: [JSONValue] = []
         do {
           let response = try await PreferredStrictToolFallback.response(
             request: request, api: .bedrock, transport: transport,
+            onDowngrade: { diagnostics.append($0) },
             makeRequest: { try makeURLRequest($0, context: context) })
           let requestID = transportRequestID(response.headers)
           var decoder = AWSEventStreamDecoder()
@@ -28,7 +30,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
             pricing: try ProviderUsagePricing.parse(
               metadata: context.modelConfiguration.metadata,
               providerID: request.providerID,
-              operation: "bedrock.usage.pricing")
+              operation: "bedrock.usage.pricing"), diagnostics: diagnostics
           )
           for try await chunk in response.body {
             try Task.checkCancellation()
@@ -47,6 +49,14 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
             continuation.yield(event)
           }
           continuation.finish()
+        } catch let error as ProviderRuntimeFailure where !diagnostics.isEmpty {
+          var metadata = error.providerMetadata ?? [:]
+          metadata["diagnostics"] = .array(diagnostics)
+          continuation.finish(
+            throwing: ProviderRuntimeFailure(
+              code: error.code, message: error.message, providerID: error.providerID,
+              operation: error.operation, causeDescription: error.causeDescription,
+              providerMetadata: metadata))
         } catch {
           continuation.finish(throwing: error)
         }
@@ -886,6 +896,12 @@ private struct BedrockEventReducer {
   let requestedModelID: String
   let transportRequestID: String?
   let pricing: ProviderUsagePricing?
+  let diagnostics: [JSONValue]
+  private var providerMetadata: [String: JSONValue] {
+    var metadata = transportRequestID.map { ["transportRequestID": JSONValue.string($0)] } ?? [:]
+    if !diagnostics.isEmpty { metadata["diagnostics"] = .array(diagnostics) }
+    return metadata
+  }
   private var started = false
   private var stopReason: ProviderFinishReason?
   private var rawStopReason: String?
@@ -909,12 +925,13 @@ private struct BedrockEventReducer {
     providerID: String,
     requestedModelID: String,
     transportRequestID: String?,
-    pricing: ProviderUsagePricing?
+    pricing: ProviderUsagePricing?, diagnostics: [JSONValue] = []
   ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
     self.transportRequestID = transportRequestID
     self.pricing = pricing
+    self.diagnostics = diagnostics
   }
 
   mutating func reduce(_ message: AWSEventStreamMessage) throws -> [ProviderEvent] {
@@ -950,7 +967,7 @@ private struct BedrockEventReducer {
             responseID: nil,
             providerID: providerID,
             modelID: requestedModelID,
-            providerMetadata: transportRequestID.map { ["transportRequestID": .string($0)] } ?? [:]
+            providerMetadata: providerMetadata
           )
         )
       ]
@@ -1128,7 +1145,7 @@ private struct BedrockEventReducer {
         finishReason: reason,
         rawFinishReason: rawStopReason,
         timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000),
-        providerMetadata: transportRequestID.map { ["transportRequestID": .string($0)] } ?? [:]
+        providerMetadata: providerMetadata
       ))
   }
 

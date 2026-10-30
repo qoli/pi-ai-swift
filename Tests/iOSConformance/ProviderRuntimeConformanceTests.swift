@@ -1798,6 +1798,68 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testPreferredStrictFallbackDiagnosticsMatchPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/strict-fallback.json")
+    let expectedCases = try XCTUnwrap(
+      load("Differential/Oracle/strict-fallback.json").object("cases"))
+    let schema = try XCTUnwrap(fixture["schema"])
+    for value in try XCTUnwrap(fixture.array("cases")) {
+      let spec = try XCTUnwrap(value.objectValue)
+      let name = try XCTUnwrap(spec.string("id"))
+      guard
+        [".limit-0", ".second-rejection", ".later-request-restores-strict"].contains(
+          where: name.hasSuffix)
+      else { continue }
+      let api = try XCTUnwrap(spec.string("protocolID"))
+      let bedrock = api == "bedrock-converse-stream"
+      let providerID = bedrock ? "amazon-bedrock" : "anthropic"
+      let expected = try XCTUnwrap(expectedCases.object(name))
+      let outcomes = try XCTUnwrap(expected.array("outcomes"))
+      let (base, context) = inputs(
+        api: api, providerID: providerID, modelID: "fixture-claude", reasoning: false,
+        metadata: [
+          "compat": .object([bedrock ? "supportsStrictMode" : "supportsStrictTools": .bool(true)])
+        ],
+        options: .init(
+          maximumOutputTokens: 100, temperature: nil, reasoningEffort: nil, responseSchema: nil,
+          providerOptions: [:], cacheRetention: .none))
+      let tools = try XCTUnwrap(spec.array("preferences")).enumerated().map { index, value in
+        ProviderToolDefinition(
+          name: "tool_\(index)", description: "Fixture lookup", inputSchema: schema,
+          constrainedSampling: value.stringValue.flatMap(ProviderStrictPreference.init(rawValue:))
+            .map { .jsonSchema(strict: $0) })
+      }
+      let request = ProviderRequest(
+        id: name, providerID: providerID, modelID: "fixture-claude", messages: base.messages,
+        tools: tools, options: base.options)
+      let transport = IOSStrictFallbackFixture(spec: spec)
+      let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
+      for outcomeValue in outcomes {
+        let outcome = try XCTUnwrap(outcomeValue.objectValue)
+        var diagnostics: [JSONValue] = []
+        do {
+          for try await event in adapter.stream(request, context: context, transport: transport) {
+            if case .responseSnapshot(let snapshot) = event {
+              diagnostics = snapshot.providerMetadata.array("diagnostics") ?? []
+            }
+          }
+          XCTAssertEqual(outcome.string("stopReason"), "stop", name)
+        } catch let failure as ProviderRuntimeFailure {
+          XCTAssertEqual(outcome.string("stopReason"), "error", name)
+          XCTAssertEqual(failure.message, outcome.string("errorMessage"), name)
+          diagnostics = failure.providerMetadata?.array("diagnostics") ?? []
+        }
+        let observed = diagnostics.filter {
+          $0.objectValue?.string("type")?.hasSuffix("_strict_tools_fallback") == true
+        }
+        .map { JSONValue.object(($0.objectValue ?? [:]).filter { $0.key != "timestamp" }) }
+        XCTAssertEqual(observed, outcome.array("strictFallbackDiagnostics"), name)
+      }
+      let attempts = await transport.attempts
+      XCTAssertEqual(attempts, expected.array("requests")?.count, name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
@@ -1899,6 +1961,57 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     } catch let error as ProviderRuntimeFailure {
       return (snapshot, error, starts)
     }
+  }
+}
+
+private actor IOSStrictFallbackFixture: ProviderHTTPStreamingTransport {
+  let spec: [String: JSONValue]
+  var attempts = 0
+  init(spec: [String: JSONValue]) { self.spec = spec }
+  func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    let index = attempts
+    attempts += 1
+    let bedrock = spec.string("protocolID") == "bedrock-converse-stream"
+    let data: Data
+    let status: Int
+    if let failures = spec.array("failures"), index < failures.count,
+      let failure = failures[index].objectValue
+    {
+      status = try XCTUnwrap(failure.int("status"))
+      if let body = failure.string("body") {
+        data = Data(body.utf8)
+      } else {
+        let fields: [String: JSONValue] = [
+          "message": try XCTUnwrap(failure["message"]), "__type": try XCTUnwrap(failure["type"]),
+        ]
+        data = try JSONEncoder().encode(JSONValue.object(fields))
+      }
+    } else if bedrock {
+      status = 200
+      var bytes = Data()
+      for (type, payload) in [
+        ("messageStart", #"{"role":"assistant"}"#), ("messageStop", #"{"stopReason":"end_turn"}"#),
+      ] {
+        bytes.append(
+          try AWSEventStreamDecoder.encode(
+            headers: [
+              ":message-type": "event", ":event-type": type, ":content-type": "application/json",
+            ], payload: Data(payload.utf8)))
+      }
+      data = bytes
+    } else {
+      status = 200
+      data = Data(
+        ("event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_fixture\",\"model\":\"fixture-claude\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}}\n\n"
+          + "event: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}\n\n"
+          + "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n").utf8)
+    }
+    return .init(
+      statusCode: status, headers: ["x-amzn-requestid": "fixture-request"],
+      body: AsyncThrowingStream {
+        $0.yield(data)
+        $0.finish()
+      })
   }
 }
 

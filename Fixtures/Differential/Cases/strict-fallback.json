@@ -510,5 +510,6 @@
     ],
     "type": "object"
   },
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "observeStrictFallbackDiagnostics": true
 }

@@ -11,10 +11,12 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         var preparedThinkingLevel: String?
+        var diagnostics: [JSONValue] = []
         do {
           let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await PreferredStrictToolFallback.response(
             request: request, api: .anthropic, transport: transport,
+            onDowngrade: { diagnostics.append($0) },
             makeRequest: { current in
               let wire = try makeRequest(current, context: context)
               preparedThinkingLevel = managedThinkingLevel(request: current, context: context)
@@ -32,7 +34,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
             isOpenRouter: request.providerID == "openrouter"
               || context.baseURL.absoluteString.contains("openrouter.ai"),
             fallbackModels: context.modelConfiguration.metadata.object("compat")?.array(
-              "allowedFallbackModels") ?? []
+              "allowedFallbackModels") ?? [], diagnostics: diagnostics
           )
           var decoder = ServerSentEventDecoder()
           for try await chunk in response.body {
@@ -51,9 +53,12 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
           for event in try reducer.finish() { continuation.yield(event) }
           continuation.finish()
         } catch let error as ProviderRuntimeFailure {
-          if let preparedThinkingLevel {
+          if preparedThinkingLevel != nil || !diagnostics.isEmpty {
             var metadata = error.providerMetadata ?? [:]
-            metadata["providerThinkingLevel"] = .string(preparedThinkingLevel)
+            if let preparedThinkingLevel {
+              metadata["providerThinkingLevel"] = .string(preparedThinkingLevel)
+            }
+            if !diagnostics.isEmpty { metadata["diagnostics"] = .array(diagnostics) }
             continuation.finish(
               throwing: ProviderRuntimeFailure(
                 code: error.code, message: error.message, providerID: error.providerID,
@@ -819,6 +824,7 @@ private struct AnthropicEventReducer {
   var pricing: ProviderUsagePricing?
   let fallbackModels: [JSONValue]
   let isOpenRouter: Bool
+  let diagnostics: [JSONValue]
   private var reportedAccounting: [String: JSONValue] = [:]
   private var inputTransformations: [JSONValue]?
   private var responseID: String?
@@ -844,7 +850,7 @@ private struct AnthropicEventReducer {
     providerThinkingLevel: String?,
     pricing: ProviderUsagePricing?,
     isOpenRouter: Bool = false,
-    fallbackModels: [JSONValue] = []
+    fallbackModels: [JSONValue] = [], diagnostics: [JSONValue] = []
   ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
@@ -852,6 +858,7 @@ private struct AnthropicEventReducer {
     self.pricing = pricing
     self.isOpenRouter = isOpenRouter
     self.fallbackModels = fallbackModels
+    self.diagnostics = diagnostics
   }
 
   mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
@@ -914,7 +921,7 @@ private struct AnthropicEventReducer {
             responseID: nil,
             providerID: providerID,
             modelID: requestedModelID,
-            providerMetadata: [:]
+            providerMetadata: diagnostics.isEmpty ? [:] : ["diagnostics": .array(diagnostics)]
           )
         )
       ]
@@ -1143,8 +1150,9 @@ private struct AnthropicEventReducer {
     let cacheWrite = cacheWriteTokens ?? 0
     var metadata =
       providerThinkingLevel.map { ["providerThinkingLevel": JSONValue.string($0)] } ?? [:]
+    var allDiagnostics = diagnostics
     if let inputTransformations, !inputTransformations.isEmpty {
-      metadata["diagnostics"] = .array([
+      allDiagnostics.append(
         .object([
           "type": .string("anthropic_input_transformations"),
           "timestamp": .integer(Int64(Date().timeIntervalSince1970 * 1_000)),
@@ -1157,9 +1165,9 @@ private struct AnthropicEventReducer {
                   })
               })
           ]),
-        ])
-      ])
+        ]))
     }
+    if !allDiagnostics.isEmpty { metadata["diagnostics"] = .array(allDiagnostics) }
     return .responseSnapshot(
       ProviderResponseSnapshot(
         responseID: responseID,

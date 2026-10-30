@@ -2048,7 +2048,9 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicImageToolResultsMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#anthropicWireObservationsMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift#sourceDerivedPreferredStrictRetriesPreserveRequiredAndFailureBoundaries",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
@@ -2193,7 +2195,9 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource",
         "Scripts/Conformance/bedrock-payload.mjs",
         "Scripts/tests/test_bedrock_payload.py",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockBlankContentMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockBlankContentMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift#sourceDerivedPreferredStrictRetriesPreserveRequiredAndFailureBoundaries",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2299,7 +2303,9 @@
         "Tests/PiAIProviderRuntimeTests/OrderedJSONTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOrderedStrictSchemasMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#anthropicWireObservationsMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift#sourceDerivedPreferredStrictRetriesPreserveRequiredAndFailureBoundaries",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

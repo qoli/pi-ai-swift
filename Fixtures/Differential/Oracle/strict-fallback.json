@@ -6,7 +6,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "aborted"
+          "stopReason": "aborted",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -61,7 +62,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -106,14 +108,26 @@
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
+              },
+              "type": "anthropic_strict_tools_fallback"
+            }
+          ]
         },
         {
           "events": [
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -242,7 +256,18 @@
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
+              },
+              "type": "anthropic_strict_tools_fallback"
+            }
+          ]
         }
       ],
       "requests": [
@@ -425,7 +450,18 @@
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Too many strict tools (32).\"}}"
+              },
+              "type": "anthropic_strict_tools_fallback"
+            }
+          ]
         }
       ],
       "requests": [
@@ -608,7 +644,18 @@
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Schemas contains too many parameters with union types (20).\"}}"
+              },
+              "type": "anthropic_strict_tools_fallback"
+            }
+          ]
         }
       ],
       "requests": [
@@ -791,7 +838,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -836,7 +884,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -881,7 +930,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -926,7 +976,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -971,7 +1022,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1026,7 +1078,18 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
+              },
+              "type": "anthropic_strict_tools_fallback"
+            }
+          ]
         }
       ],
       "requests": [
@@ -1114,7 +1177,8 @@
             "start",
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1169,7 +1233,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1214,7 +1279,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1269,7 +1335,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1324,7 +1391,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1379,7 +1447,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1433,7 +1502,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1487,7 +1557,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1541,7 +1612,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1594,7 +1666,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "aborted"
+          "stopReason": "aborted",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1658,7 +1731,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1712,14 +1786,26 @@
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "The compiled grammar is too large"
+              },
+              "type": "bedrock_strict_tools_fallback"
+            }
+          ]
         },
         {
           "events": [
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -1875,7 +1961,18 @@
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "The compiled grammar is too large"
+              },
+              "type": "bedrock_strict_tools_fallback"
+            }
+          ]
         }
       ],
       "requests": [
@@ -2088,7 +2185,18 @@
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "Too many strict tools (32)."
+              },
+              "type": "bedrock_strict_tools_fallback"
+            }
+          ]
         }
       ],
       "requests": [
@@ -2301,7 +2409,18 @@
             "start",
             "done"
           ],
-          "stopReason": "stop"
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "Schemas contains too many parameters with union types (20)."
+              },
+              "type": "bedrock_strict_tools_fallback"
+            }
+          ]
         }
       ],
       "requests": [
@@ -2514,7 +2633,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -2568,7 +2688,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -2632,7 +2753,18 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "The compiled grammar is too large"
+              },
+              "type": "bedrock_strict_tools_fallback"
+            }
+          ]
         }
       ],
       "requests": [
@@ -2737,7 +2869,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
@@ -2801,7 +2934,8 @@
           "events": [
             "error"
           ],
-          "stopReason": "error"
+          "stopReason": "error",
+          "strictFallbackDiagnostics": []
         }
       ],
       "requests": [
