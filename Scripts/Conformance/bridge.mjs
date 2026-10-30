@@ -10,7 +10,7 @@ import { GoogleGenAI } from "@google/genai";
 import { BedrockRuntimeClient, ConverseStreamCommand } from "@aws-sdk/client-bedrock-runtime";
 import { EventStreamCodec } from "@smithy/core/event-streams";
 import { mistralSDKPayload, mistralWirePayload } from "./mistral-payload.mjs";
-import { bedrockSDKPayload } from "./bedrock-payload.mjs";
+import { bedrockSDKPayload, bedrockWirePayload } from "./bedrock-payload.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
@@ -76,7 +76,7 @@ function fixtureInput(model, context, options, responses, credential, requestSou
 }
 
 function hasNativeWireObserver(model) {
-  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses", "mistral-conversations", "google-generative-ai", "google-vertex"].includes(model.api);
+  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses", "mistral-conversations", "google-generative-ai", "google-vertex", "bedrock-converse-stream"].includes(model.api);
 }
 
 function capabilities(options, model) {
@@ -238,10 +238,11 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
           if (stage === "payload") {
             const mistral = model.api === "mistral-conversations";
             const google = ["google-generative-ai", "google-vertex"].includes(model.api);
-            const payload = google ? googleSDKPayload(value, model) : mistral ? mistralSDKPayload(value) : value;
+            const bedrock = model.api === "bedrock-converse-stream";
+            const payload = bedrock ? bedrockSDKPayload(value) : google ? googleSDKPayload(value, model) : mistral ? mistralSDKPayload(value) : value;
             const replacement = await options.onPayload(payload, model);
             const modified = replacement === undefined ? payload : replacement;
-            send({ kind: "observerReply", payload: google ? googleWireBody(modified) : mistral ? mistralWirePayload(modified) : modified, replaced: replacement !== undefined });
+            send({ kind: "observerReply", payload: bedrock ? bedrockWirePayload(modified) : google ? googleWireBody(modified) : mistral ? mistralWirePayload(modified) : modified, replaced: replacement !== undefined });
           } else if (stage === "response") {
             await options.onResponse(value, model);
             send({ kind: "observerReply" });
@@ -319,17 +320,20 @@ async function mockResponse(model, request, body, options, connection) {
     const codec = new EventStreamCodec(bytes => new TextDecoder().decode(bytes), value => new TextEncoder().encode(value));
     const chunks = (async function* () {
       for await (const event of response.stream) {
-        await options.onProviderStreamEvent?.(event, model);
         const [type, payload] = Object.entries(event)[0];
-        const exception = type.endsWith("Exception");
+        const body = JSON.stringify(payload instanceof Error ? { ...payload, message: payload.message } : payload,
+          (_key, value) => value instanceof Uint8Array ? Buffer.from(value).toString("base64") : value);
+        if (hasNativeWireObserver(model) && options.onProviderStreamEvent) {
+          connection.providerEvents.push({ reference: event, serialized: { [type]: JSON.parse(body) } });
+        } else if (!hasNativeWireObserver(model)) await options.onProviderStreamEvent?.(event, model);
         yield Buffer.from(codec.encode({
           headers: {
-            ":message-type": { type: "string", value: exception ? "exception" : "event" },
-            [exception ? ":exception-type" : ":event-type"]: { type: "string", value: type },
+            // The fixture has already yielded a parsed SDK item, including any error item.
+            ":message-type": { type: "string", value: "event" },
+            ":event-type": { type: "string", value: type },
             ":content-type": { type: "string", value: "application/json" },
           },
-          body: new TextEncoder().encode(JSON.stringify(payload instanceof Error ? { ...payload, message: payload.message } : payload,
-            (_key, value) => value instanceof Uint8Array ? Buffer.from(value).toString("base64") : value)),
+          body: new TextEncoder().encode(body),
         })).toString("base64");
       }
     })();

@@ -17,10 +17,14 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       let task = Task {
         var diagnostics: [JSONValue] = []
         do {
+          let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await PreferredStrictToolFallback.response(
             request: request, api: .bedrock, transport: transport,
             onDowngrade: { diagnostics.append($0) },
-            makeRequest: { try makeURLRequest($0, context: context) })
+            onResponse: observation.response,
+            makeRequest: {
+              try await makeURLRequest($0, context: context, observation: observation)
+            })
           let requestID = transportRequestID(response.headers)
           var decoder = AWSEventStreamDecoder()
           var reducer = BedrockEventReducer(
@@ -35,13 +39,13 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           for try await chunk in response.body {
             try Task.checkCancellation()
             for message in try decoder.append(chunk) {
-              for event in try reducer.reduce(message) {
+              for event in try await reducer.reduce(message, observation: observation) {
                 continuation.yield(event)
               }
             }
           }
           for message in try decoder.finish() {
-            for event in try reducer.reduce(message) {
+            for event in try await reducer.reduce(message, observation: observation) {
               continuation.yield(event)
             }
           }
@@ -67,10 +71,19 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
 
   private func makeURLRequest(
     _ request: ProviderRequest,
-    context: WireProtocolContext
-  ) throws -> URLRequest {
+    context: WireProtocolContext,
+    observation: ProviderWireObservation
+  ) async throws -> URLRequest {
     try request.validateSingleSystemMessage(operation: "bedrock.request.system")
-    let endpoint = try endpointURL(baseURL: context.baseURL, modelID: request.modelID)
+    var payload = try makeBody(request, context: context)
+    payload["modelId"] = .string(request.modelID)
+    payload = try await observation.payload(payload)
+    guard let modelID = payload.removeValue(forKey: "modelId")?.stringValue else {
+      throw failure(
+        .invalidRequest, request, "bedrock.request.model",
+        "Bedrock request payload requires modelId")
+    }
+    let endpoint = try endpointURL(baseURL: context.baseURL, modelID: modelID)
     var urlRequest = URLRequest(url: endpoint)
     urlRequest.httpMethod = "POST"
     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -83,7 +96,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
     urlRequest.httpBody = try encodeJSONObject(
-      try makeBody(request, context: context),
+      payload,
       providerID: request.providerID,
       operation: "bedrock.request.encode"
     )
@@ -934,7 +947,9 @@ private struct BedrockEventReducer {
     self.diagnostics = diagnostics
   }
 
-  mutating func reduce(_ message: AWSEventStreamMessage) throws -> [ProviderEvent] {
+  mutating func reduce(_ message: AWSEventStreamMessage, observation: ProviderWireObservation)
+    async throws -> [ProviderEvent]
+  {
     let messageType = message.headers[":message-type"] ?? "event"
     let eventType = message.headers[":event-type"] ?? message.headers[":exception-type"]
     let object = try decodeJSONObject(
@@ -942,6 +957,9 @@ private struct BedrockEventReducer {
       providerID: providerID,
       operation: "bedrock.event.decode"
     )
+    if messageType != "exception", let eventType {
+      try await observation.streamEvent(.object([eventType: .object(object)]))
+    }
     if messageType == "exception" || eventType?.hasSuffix("Exception") == true {
       throw ProviderRuntimeFailure(
         code: .transportFailed,

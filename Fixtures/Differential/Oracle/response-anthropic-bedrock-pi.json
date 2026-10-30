@@ -1593,6 +1593,90 @@
         }
       }
     },
+    "bedrock-native-sdk-error-event": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAkAAAAF2h/tUwDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAF2ludGVybmFsU2VydmVyRXhjZXB0aW9uDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJtZXNzYWdlIjoiYmVkcm9jayBzdHJlYW0gZmFpbGVkIn0EqRrO"
+        ],
+        "headers": {
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "requestId": "bedrock-branch"
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "bedrock stream failed",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      },
+      "wire": {
+        "events": [
+          {
+            "messageStart": {
+              "role": "assistant"
+            }
+          },
+          {
+            "internalServerException": {
+              "message": "bedrock stream failed"
+            }
+          }
+        ],
+        "models": [
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          }
+        ],
+        "responses": [
+          {
+            "headers": {
+              "x-amzn-requestid": "bedrock-branch"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event"
+        ],
+        "temperature": 0.25
+      }
+    },
     "bedrock-provider-stop-error": {
       "decoderInput": {
         "chunksBase64": [
@@ -1691,6 +1775,108 @@
           "reasoning": null,
           "totalTokens": 99
         }
+      },
+      "wire": {
+        "events": [
+          {
+            "messageStart": {
+              "role": "assistant"
+            }
+          },
+          {
+            "contentBlockDelta": {
+              "contentBlockIndex": 0,
+              "delta": {
+                "reasoningContent": {
+                  "redactedContent": "AQI="
+                }
+              }
+            }
+          },
+          {
+            "contentBlockDelta": {
+              "contentBlockIndex": 0,
+              "delta": {
+                "reasoningContent": {
+                  "redactedContent": "AwQ="
+                }
+              }
+            }
+          },
+          {
+            "contentBlockStop": {
+              "contentBlockIndex": 0
+            }
+          },
+          {
+            "messageStop": {
+              "stopReason": "max_tokens"
+            }
+          },
+          {
+            "metadata": {
+              "usage": {
+                "cacheReadInputTokens": 2,
+                "cacheWriteInputTokens": 4,
+                "inputTokens": 10,
+                "outputTokens": 5,
+                "totalTokens": 99
+              }
+            }
+          }
+        ],
+        "models": [
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          }
+        ],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "application/vnd.amazon.eventstream",
+              "x-amzn-requestid": "bedrock-branch"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event"
+        ],
+        "temperature": 0.25
       }
     },
     "bedrock-stop": {
@@ -1740,6 +1926,88 @@
           "reasoning": null,
           "totalTokens": 3
         }
+      },
+      "wire": {
+        "events": [
+          {
+            "messageStart": {
+              "role": "assistant"
+            }
+          },
+          {
+            "contentBlockDelta": {
+              "contentBlockIndex": 0,
+              "delta": {
+                "text": "done"
+              }
+            }
+          },
+          {
+            "contentBlockStop": {
+              "contentBlockIndex": 0
+            }
+          },
+          {
+            "messageStop": {
+              "stopReason": "end_turn"
+            }
+          },
+          {
+            "metadata": {
+              "usage": {
+                "inputTokens": 2,
+                "outputTokens": 1,
+                "totalTokens": 3
+              }
+            }
+          }
+        ],
+        "models": [
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          },
+          {
+            "api": "bedrock-converse-stream",
+            "id": "fixture-model",
+            "provider": "amazon-bedrock"
+          }
+        ],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "application/vnd.amazon.eventstream",
+              "x-amzn-requestid": "bedrock-branch"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event"
+        ],
+        "temperature": 0.25
       }
     },
     "bedrock-tool-use": {

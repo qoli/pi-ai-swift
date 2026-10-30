@@ -10,6 +10,7 @@ enum PreferredStrictToolFallback {
     api: API,
     transport: any ProviderHTTPStreamingTransport,
     onDowngrade: (JSONValue) -> Void = { _ in },
+    onResponse: (ProviderHTTPStreamingResponse) async throws -> Void = { _ in },
     makeRequest: (ProviderRequest) async throws -> URLRequest
   ) async throws -> ProviderHTTPStreamingResponse {
     var current = request
@@ -18,6 +19,7 @@ enum PreferredStrictToolFallback {
       try Task.checkCancellation()
       let wire = try await makeRequest(current)
       let response = try await transport.stream(wire)
+      try await onResponse(response)
       if (200..<300).contains(response.statusCode) { return response }
       let body = try await collectErrorBody(from: response.body)
       try Task.checkCancellation()

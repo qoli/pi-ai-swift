@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { createRequire } from "node:module";
+import { createRequire, registerHooks } from "node:module";
 import { execFileSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
@@ -17,6 +17,36 @@ if (fixture.schemaVersion !== 1) throw new Error("unsupported response fixture s
 const revision = execFileSync("git", ["-C", upstreamRoot, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 if (revision !== fixture.upstreamRevision) throw new Error(`revision mismatch: ${revision}`);
 const apiRoot = path.join(upstreamRoot, "packages/ai/src/api");
+const bedrockMockURL = "oracle:bedrock-decoded-event-fixture";
+registerHooks({
+  resolve(specifier, context, next) {
+    return specifier === "@aws-sdk/client-bedrock-runtime" && context.parentURL?.endsWith("?decoded-fixture")
+      ? { url: bedrockMockURL, shortCircuit: true } : next(specifier, context);
+  },
+  load(url, context, next) {
+    if (url !== bedrockMockURL) return next(url, context);
+    return { format: "module", shortCircuit: true, source: `
+      export class BedrockRuntimeServiceException extends Error {}
+      export class ConverseStreamCommand { constructor(input) { this.input = input; } }
+      export class BedrockRuntimeClient {
+        middlewareStack = { add() {} };
+        async send(command) {
+          globalThis.__PI_BEDROCK_OBSERVER_PARAMS__ = command.input;
+          return { $metadata: { httpStatusCode: 200, requestId: "bedrock-branch" }, stream: (async function* () {
+            yield { messageStart: { role: "assistant" } };
+            yield { internalServerException: new Error("bedrock stream failed") };
+          })() };
+        }
+      }
+      export const StopReason = { END_TURN: "end_turn" };
+      export const CachePointType = { DEFAULT: "default" };
+      export const CacheTTL = { ONE_HOUR: "ONE_HOUR" };
+      export const ConversationRole = { ASSISTANT: "assistant", USER: "user" };
+      export const ImageFormat = { JPEG: "jpeg", PNG: "png", GIF: "gif", WEBP: "webp" };
+      export const ToolResultStatus = { ERROR: "error", SUCCESS: "success" };
+    ` };
+  },
+});
 const results = {};
 for (const scenario of fixture.scenarios) {
   const input = stimulus(scenario.caseID);
@@ -68,10 +98,13 @@ async function runSSE(scenario, input) {
 }
 
 async function runBedrock(scenario, input) {
+  const wire = { stages: [], events: [], models: [], responses: [] };
   const chunks = input.chunksBase64.map((value) => Buffer.from(value, "base64"));
   const server = http.createServer((request, response) => {
-    request.resume();
+    const body = [];
+    request.on("data", bytes => body.push(bytes));
     request.on("end", () => {
+      if (scenario.observeWire) wire.temperature = JSON.parse(Buffer.concat(body)).inferenceConfig.temperature;
       response.writeHead(input.status, input.headers);
       chunks.forEach((chunk) => response.write(chunk));
       response.end();
@@ -86,14 +119,35 @@ async function runBedrock(scenario, input) {
     if (!address || typeof address === "string") throw new Error("invalid loopback address");
     const implementation = await providerStreams(
       upstreamRoot,
-      await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href),
+      await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href + (scenario.driver === "decoded-sdk-events" ? "?decoded-fixture" : "")),
     );
     const stream = implementation.stream(
       { ...model(scenario.protocolID), ...(scenario.cost ? { cost: scenario.cost } : {}), baseUrl: `http://127.0.0.1:${address.port}` },
       context(),
-      { maxRetries: 0, env: { AWS_BEDROCK_FORCE_HTTP1: "1", AWS_BEDROCK_SKIP_AUTH: "1", AWS_REGION: "us-east-1" } },
+      { maxRetries: 0, env: { AWS_BEDROCK_FORCE_HTTP1: "1", AWS_BEDROCK_SKIP_AUTH: "1", AWS_REGION: "us-east-1" },
+        ...(scenario.observeWire ? {
+          onPayload: async payload => {
+            await Promise.resolve();
+            wire.stages.push("payload");
+            payload.inferenceConfig.temperature = 0.25;
+          },
+          onResponse: async response => {
+            await Promise.resolve();
+            wire.stages.push("response");
+            wire.responses.push({ status: response.status, headers: { "content-type": response.headers["content-type"], "x-amzn-requestid": response.headers["x-amzn-requestid"] } });
+          },
+          onProviderStreamEvent: async (event, model) => {
+            await Promise.resolve();
+            wire.stages.push("event");
+            wire.events.push(JSON.parse(JSON.stringify(event, (_key, value) => value instanceof Error ? { ...value, message: value.message } : value instanceof Uint8Array ? Buffer.from(value).toString("base64") : value)));
+            wire.models.push({ id: model.id, provider: model.provider, api: model.api });
+          },
+        } : {}),
+      },
     );
-    return await project(stream);
+    const result = await project(stream);
+    if (scenario.driver === "decoded-sdk-events") wire.temperature = globalThis.__PI_BEDROCK_OBSERVER_PARAMS__.inferenceConfig.temperature;
+    return { ...result, ...(scenario.observeWire ? { wire } : {}) };
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }
@@ -184,6 +238,14 @@ function canonicalTerminal(message) {
 
 function stimulus(caseID) {
   switch (caseID) {
+    case "bedrock-native-sdk-error-event": {
+      const input = aws([
+        ["messageStart", { role: "assistant" }],
+        ["internalServerException", { message: "bedrock stream failed" }],
+      ]);
+      input.headers = { "x-amzn-requestid": "bedrock-branch" };
+      return input;
+    }
     case "anthropic-observer-payload-replacement":
     case "anthropic-observer-payload-mutation": return sse([
       anth("message_start", { type: "message_start", message: { id: "msg_test", usage: { input_tokens: 12, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 } } }),

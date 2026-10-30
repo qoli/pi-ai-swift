@@ -57,17 +57,26 @@ struct ProviderWireObservation: Sendable {
   func payload(_ original: URLRequest, forceStreamingReplacement: Bool = false) async throws
     -> URLRequest
   {
-    guard let callback = observer?.onPayload, let data = original.httpBody else { return original }
-    var payload = try decodeJSONObject(
+    guard observer?.onPayload != nil, let data = original.httpBody else { return original }
+    let payload = try decodeJSONObject(
       data, providerID: context.model.providerID, operation: "wire-observer.payload")
+    var request = original
+    request.httpBody = try encodeJSONObject(
+      try await self.payload(payload, forceStreamingReplacement: forceStreamingReplacement),
+      providerID: context.model.providerID, operation: "wire-observer.payload")
+    return request
+  }
+
+  func payload(_ original: ProviderWireObserver.Payload, forceStreamingReplacement: Bool = false)
+    async throws -> ProviderWireObserver.Payload
+  {
+    guard let callback = observer?.onPayload else { return original }
+    var payload = original
     if let replacement = try await callback(&payload, context) {
       payload = replacement
       if forceStreamingReplacement { payload["stream"] = .bool(true) }
     }
-    var request = original
-    request.httpBody = try encodeJSONObject(
-      payload, providerID: context.model.providerID, operation: "wire-observer.payload")
-    return request
+    return payload
   }
 
   func response(_ response: ProviderHTTPStreamingResponse) async throws {

@@ -1740,7 +1740,9 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       load("Differential/Oracle/response-anthropic-bedrock-pi.json").object("scenarios"))
     for value in try XCTUnwrap(fixture.array("scenarios")) {
       let scenario = try XCTUnwrap(value.objectValue)
-      guard scenario.bool("observeWire") == true else { continue }
+      guard scenario.string("protocolID") == "anthropic-messages",
+        scenario.bool("observeWire") == true
+      else { continue }
       let name = try XCTUnwrap(scenario.string("caseID"))
       let spec = try XCTUnwrap(cases.object(name))
       let expected = try XCTUnwrap(spec.object("wire"))
@@ -1978,6 +1980,75 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       let body = try decodeJSONObject(
         try XCTUnwrap(sent?.httpBody), providerID: provider, operation: "ios.google.observer")
       XCTAssertEqual(body.object("generationConfig")?["temperature"], wire["temperature"], api)
+    }
+  }
+
+  func testBedrockNativeWireObserverMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/response-anthropic-bedrock-pi.json")
+    let cases = try XCTUnwrap(
+      load("Differential/Oracle/response-anthropic-bedrock-pi.json").object("scenarios"))
+    for value in try XCTUnwrap(fixture.array("scenarios")) {
+      let scenario = try XCTUnwrap(value.objectValue)
+      guard scenario.string("protocolID") == "bedrock-converse-stream",
+        scenario.bool("observeWire") == true
+      else { continue }
+      let name = try XCTUnwrap(scenario.string("caseID"))
+      let spec = try XCTUnwrap(cases.object(name))
+      let wire = try XCTUnwrap(spec.object("wire"))
+      let decoder = try XCTUnwrap(spec.object("decoderInput"))
+      let chunks = try XCTUnwrap(decoder.array("chunksBase64")).map {
+        try XCTUnwrap(Data(base64Encoded: try XCTUnwrap($0.stringValue)))
+      }
+      let capture = IOSWireObserverCapture()
+      let (request, base) = inputs(
+        api: "bedrock-converse-stream", providerID: "amazon-bedrock", modelID: "fixture-model")
+      var context = base
+      context.wireObserver = .init(
+        onPayload: { payload, context in
+          await Task.yield()
+          await capture.stage("payload", context)
+          var config = payload["inferenceConfig"]?.objectValue ?? [:]
+          config["temperature"] = .number(0.25)
+          payload["inferenceConfig"] = .object(config)
+          return nil
+        },
+        onResponse: { response, context in
+          await Task.yield()
+          await capture.response(response, context)
+        },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      let transport = IOSMistralHTTPFixture(
+        status: try XCTUnwrap(decoder.int("status")),
+        body: chunks.reduce(into: Data()) { $0.append($1) },
+        headers: (decoder.object("headers") ?? [:]).compactMapValues(\.stringValue))
+      do {
+        for try await _ in BedrockConverseStreamAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+        XCTAssertEqual(spec.string("outcome"), "success", name)
+      } catch let failure as ProviderRuntimeFailure {
+        XCTAssertEqual(spec.string("outcome"), "failure", name)
+        XCTAssertEqual(failure.message, spec.object("terminal")?.string("errorMessage"), name)
+      }
+      let observed = await capture.events
+      let models = await capture.models
+      let stages = await capture.stages
+      let responses = await capture.responses
+      let ids = await capture.requestIDs
+      XCTAssertEqual(observed, wire.array("events"), name)
+      XCTAssertEqual(models, wire.array("models"), name)
+      XCTAssertEqual(stages.map(JSONValue.string), wire.array("stages"), name)
+      XCTAssertEqual(responses, wire.array("responses"), name)
+      XCTAssertEqual(ids, Array(repeating: request.id, count: stages.count), name)
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody), providerID: "amazon-bedrock",
+        operation: "ios.bedrock.observer")
+      XCTAssertEqual(body.object("inferenceConfig")?["temperature"], wire["temperature"], name)
+      XCTAssertNil(body["modelId"], name)
     }
   }
 

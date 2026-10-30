@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 import Testing
 
@@ -9,7 +10,8 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
   func anthropicWireObservationsMatchPinnedSource() async throws {
     let fixture = try responseBranchFixture()
     let oracle = try responseBranchOracle()
-    for scenario in fixture.scenarios where scenario.observeWire == true {
+    for scenario in fixture.scenarios
+    where scenario.protocolID == "anthropic-messages" && scenario.observeWire == true {
       let expected = try #require(oracle.scenarios[scenario.caseID])
       let capture = AnthropicWireCapture()
       let mode = scenario.payloadMode
@@ -42,6 +44,58 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
         #expect(expected.outcome == "failure")
       }
       #expect(await capture.value() == expected.wire, "wire observations for \(scenario.caseID)")
+      #expect(await capture.requestIDs.allSatisfy { $0 == input.request.id })
+    }
+  }
+
+  @Test
+  func bedrockWireObservationsMatchPinnedSourceBeforeNormalizationAndSigning() async throws {
+    let fixture = try responseBranchFixture()
+    let oracle = try responseBranchOracle()
+    for scenario in fixture.scenarios
+    where scenario.protocolID == "bedrock-converse-stream" && scenario.observeWire == true {
+      let expected = try #require(oracle.scenarios[scenario.caseID])
+      let capture = AnthropicWireCapture()
+      var input = responseBranchInput(protocolID: scenario.protocolID)
+      if scenario.caseID == "bedrock-stop" {
+        input.context = WireProtocolContext(
+          provider: input.context.provider, model: input.context.model,
+          baseURL: input.context.baseURL, headers: [:],
+          credential: .apiKey(
+            .init(
+              key: "synthetic-fixture-secret",
+              metadata: [
+                "authentication": "sigv4", "accessKeyID": "SYNTHETICFIXTURE", "region": "us-east-1",
+              ])), modelConfiguration: input.context.modelConfiguration)
+      }
+      input.context.wireObserver = .init(
+        onPayload: { payload, context in
+          await Task.yield()
+          await capture.stage("payload", context)
+          var config = payload["inferenceConfig"]?.objectValue ?? [:]
+          config["temperature"] = .number(0.25)
+          payload["inferenceConfig"] = .object(config)
+          return nil
+        },
+        onResponse: { response, context in
+          await Task.yield()
+          await capture.response(response, context)
+        },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      do {
+        for try await _ in BedrockConverseStreamAdapter().stream(
+          input.request, context: input.context,
+          transport: ResponseBranchTransport(input: expected.decoderInput, capture: capture))
+        {}
+        #expect(expected.outcome == "success")
+      } catch let failure as ProviderRuntimeFailure {
+        #expect(expected.outcome == "failure")
+        #expect(failure.message == expected.terminal.objectValue?.string("errorMessage"))
+      }
+      #expect(await capture.bedrockValue() == expected.wire, Comment(rawValue: scenario.caseID))
       #expect(await capture.requestIDs.allSatisfy { $0 == input.request.id })
     }
   }
@@ -127,6 +181,13 @@ private struct ResponseBranchTransport: ProviderHTTPStreamingTransport {
       let payload = try decodeJSONObject(
         try #require(request.httpBody), providerID: "anthropic", operation: "test.observer.payload")
       await capture.sent(payload["stream"])
+      await capture.sentTemperature(payload.object("inferenceConfig")?["temperature"])
+      if let digest = request.value(forHTTPHeaderField: "x-amz-content-sha256") {
+        #expect(
+          digest
+            == SHA256.hash(data: try #require(request.httpBody)).map { String(format: "%02x", $0) }
+            .joined())
+      }
     }
     let chunks = try input.chunksBase64.map { value in
       try #require(Data(base64Encoded: value))
@@ -355,12 +416,14 @@ private actor AnthropicWireCapture {
   var models: [JSONValue] = []
   var responses: [JSONValue] = []
   var streaming: JSONValue?
+  var temperature: JSONValue?
 
   func stage(_ name: String, _ context: ProviderWireObserver.Context) {
     stages.append(name)
     requestIDs.append(context.requestID)
   }
   func sent(_ value: JSONValue?) { streaming = value }
+  func sentTemperature(_ value: JSONValue?) { temperature = value }
   func response(_ response: ProviderWireObserver.Response, _ context: ProviderWireObserver.Context)
   {
     stage("response", context)
@@ -383,6 +446,12 @@ private actor AnthropicWireCapture {
     .object([
       "stages": .array(stages.map(JSONValue.string)), "events": .array(events),
       "models": .array(models), "responses": .array(responses), "stream": streaming ?? .null,
+    ])
+  }
+  func bedrockValue() -> JSONValue {
+    .object([
+      "stages": .array(stages.map(JSONValue.string)), "events": .array(events),
+      "models": .array(models), "responses": .array(responses), "temperature": temperature ?? .null,
     ])
   }
 }

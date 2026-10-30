@@ -54,12 +54,14 @@
     {
       "caseID": "bedrock-redacted-length-usage",
       "protocolID": "bedrock-converse-stream",
-      "category": "success"
+      "category": "success",
+      "observeWire": true
     },
     {
       "caseID": "bedrock-stop",
       "protocolID": "bedrock-converse-stream",
-      "category": "success"
+      "category": "success",
+      "observeWire": true
     },
     {
       "caseID": "bedrock-tool-use",
@@ -247,6 +249,13 @@
       "category": "success",
       "observeWire": true,
       "payloadMode": "mutation"
+    },
+    {
+      "caseID": "bedrock-native-sdk-error-event",
+      "protocolID": "bedrock-converse-stream",
+      "category": "providerError",
+      "observeWire": true,
+      "driver": "decoded-sdk-events"
     }
   ]
 }

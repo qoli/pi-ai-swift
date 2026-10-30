@@ -18,3 +18,8 @@ export function bedrockSDKPayload(body) {
   return { ...body, messages: body.messages.map(message => ({ ...message,
     content: message.content.map(contentBlock) })) };
 }
+
+export function bedrockWirePayload(payload) {
+  return JSON.parse(JSON.stringify(payload, (_key, value) =>
+    value instanceof Uint8Array ? Buffer.from(value).toString("base64") : value));
+}
