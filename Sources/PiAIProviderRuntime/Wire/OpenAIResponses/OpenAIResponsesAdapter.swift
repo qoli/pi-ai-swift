@@ -194,7 +194,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               continuation.yield(normalized)
             }
           }
-          try reducer.validateTerminal()
+          for event in try reducer.finish() { continuation.yield(event) }
           continuation.finish()
         } catch {
           continuation.finish(throwing: error)
@@ -1051,6 +1051,9 @@ private struct OpenAIResponsesReducer {
   let flavor: OpenAIResponsesAdapter.Flavor
   private var started = false
   private var terminal = false
+  private var terminalFinishReason: ProviderFinishReason?
+  private var rawTerminalFinishReason: String?
+  private var terminalErrorMessage: String?
   private var responseID: String?
   private var tools: [String: ToolState] = [:]
   private var toolOrder: [String] = []
@@ -1261,15 +1264,11 @@ private struct OpenAIResponsesReducer {
       completedToolCall = true
       toolsByIndex[object.int("output_index") ?? toolsByIndex.count] = call
       return events + [.toolCallCompleted(call)]
-    case "response.completed",
+    case "response.completed", "response.incomplete",
       "response.done"
-    where type == "response.completed" || acceptsCodexTerminalAliases:
+    where type != "response.done" || acceptsCodexTerminalAliases:
       guard let response = object.object("response") else {
-        throw invalid("completed event is missing response")
-      }
-      if let id = toolOrder.first(where: { tools[$0] != nil }), let state = tools[id] {
-        throw invalid(
-          "OpenAI Responses stream completed with an unfinished tool call: \(state.name) (\(id))")
+        throw invalid("terminal event is missing response")
       }
       terminal = true
       try backfillReasoningSignatures(from: response)
@@ -1280,45 +1279,39 @@ private struct OpenAIResponsesReducer {
         events.append(.usage(self.usage!))
       }
       if let id = response.string("id"), !id.isEmpty { responseID = id }
-      guard response.string("status") == nil || response.string("status") == "completed" else {
+      let status = response.string("status")
+      let incompleteReason = response.object("incomplete_details")?.string("reason")
+      var reason: ProviderFinishReason
+      terminalErrorMessage = nil
+      switch status {
+      case nil, "", "completed", "in_progress", "queued":
+        reason = .stop
+      case "incomplete":
+        if incompleteReason == "max_output_tokens" {
+          reason = .length
+        } else {
+          reason = .error
+          terminalErrorMessage =
+            incompleteReason.flatMap { $0.isEmpty ? nil : $0 }
+            .map { "Response incomplete: \($0)" }
+            ?? "Response incomplete without a provider reason"
+        }
+      case "failed", "cancelled":
+        reason = .error
+      default:
         throw ProviderRuntimeFailure(
           code: .transportFailed,
-          message: "OpenAI response has unsupported terminal status: \(response.string("status")!)",
+          message: "Unhandled stop reason: \(status!)",
           providerID: providerID,
           operation: "openai-responses.event.completed",
-          causeDescription: response.string("status"))
+          causeDescription: status)
       }
-      let reason: ProviderFinishReason = completedToolCall ? .toolCalls : .stop
-      events.append(responseSnapshot(reason, rawFinishReason: response.string("status")))
-      events.append(.completed(reason))
-      return events
-    case "response.incomplete":
-      guard let response = object.object("response") else {
-        throw invalid("incomplete event is missing response")
-      }
-      let rawReason = response.object("incomplete_details")?.string("reason")
-      guard rawReason == "max_output_tokens" else {
-        terminal = true
-        throw ProviderRuntimeFailure(
-          code: .transportFailed,
-          message: rawReason.map { "OpenAI response incomplete: \($0)" }
-            ?? "OpenAI response incomplete without a provider reason",
-          providerID: providerID,
-          operation: "openai-responses.event.incomplete",
-          causeDescription: rawReason
-        )
-      }
-      terminal = true
-      if let id = response.string("id"), !id.isEmpty { responseID = id }
-      var events: [ProviderEvent] = []
-      if let usage = response.object("usage") {
-        self.usage = try pricedUsage(
-          usage, responseServiceTier: response.string("service_tier"))
-        events.append(.usage(self.usage!))
-      }
-      let raw = "incomplete.\(rawReason!)"
-      events.append(responseSnapshot(.length, rawFinishReason: raw))
-      events.append(.completed(.length))
+      if reason == .stop, completedToolCall || !tools.isEmpty { reason = .toolCalls }
+      terminalFinishReason = reason
+      let raw =
+        incompleteReason.flatMap { $0.isEmpty ? nil : $0 }
+        .map { "\(status ?? "undefined").\($0)" } ?? status
+      rawTerminalFinishReason = raw
       return events
     case "response.failed", "error":
       terminal = true
@@ -1355,13 +1348,21 @@ private struct OpenAIResponsesReducer {
     }
   }
 
-  func validateTerminal() throws {
+  func finish() throws -> [ProviderEvent] {
     guard terminal else {
       throw invalid("OpenAI Responses stream ended before a terminal response event")
     }
-    guard tools.isEmpty else {
-      throw invalid("OpenAI Responses stream ended with incomplete tool calls")
+    if terminalFinishReason == .toolCalls,
+      let id = toolOrder.first(where: { tools[$0] != nil }), let state = tools[id]
+    {
+      throw invalid(
+        "OpenAI Responses stream completed with an unfinished tool call: \(state.name) (\(id))")
     }
+    guard let terminalFinishReason else { return [] }
+    return [
+      responseSnapshot(terminalFinishReason, rawFinishReason: rawTerminalFinishReason),
+      .completed(terminalFinishReason),
+    ]
   }
 
   private func invalid(_ message: String) -> ProviderRuntimeFailure {
@@ -1443,6 +1444,10 @@ private struct OpenAIResponsesReducer {
       if let tool = toolsByIndex[index] { return .toolCall(tool) }
       return nil
     }
+    var metadata =
+      providerThinkingLevel.map { ["providerThinkingLevel": JSONValue.string($0)] }
+      ?? [:]
+    if let terminalErrorMessage { metadata["errorMessage"] = .string(terminalErrorMessage) }
     return .responseSnapshot(
       ProviderResponseSnapshot(
         responseID: responseID,
@@ -1455,8 +1460,7 @@ private struct OpenAIResponsesReducer {
         finishReason: reason,
         rawFinishReason: rawFinishReason,
         timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000),
-        providerMetadata: providerThinkingLevel.map { ["providerThinkingLevel": .string($0)] }
-          ?? [:]
+        providerMetadata: metadata
       ))
   }
 

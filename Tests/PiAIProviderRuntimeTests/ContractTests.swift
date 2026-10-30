@@ -295,7 +295,7 @@ struct ContractTests {
 
   @Test
   func responseSnapshotRejectsNonReplayableFinishReasons() {
-    for finishReason in [ProviderFinishReason.contentFilter, .cancelled] {
+    for finishReason in [ProviderFinishReason.contentFilter, .cancelled, .error] {
       let snapshot = replayableSnapshot(
         content: [.text(ProviderTextContent(text: "answer", signature: nil))],
         finishReason: finishReason

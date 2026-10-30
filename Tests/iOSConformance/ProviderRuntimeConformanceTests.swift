@@ -521,6 +521,47 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testResponsesTerminalStatusesMatchPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    let cases = try XCTUnwrap(fixture.object("responsesTerminalStatusEvents"))
+    let expectedCases = try XCTUnwrap(oracle.object("cases")?.object("responses.terminal-status"))
+    for api in ["openai-responses", "azure-openai-responses"] {
+      for name in cases.keys.sorted() {
+        let expected = try XCTUnwrap(expectedCases.object(name))
+        let chunks = try XCTUnwrap(cases.array(name)).map { event in
+          Data(
+            ("data: " + String(decoding: try JSONEncoder().encode(event), as: UTF8.self) + "\n\n")
+              .utf8)
+        }
+        let (request, context) = inputs(api: api)
+        let result = try await replay(
+          OpenAIResponsesAdapter(
+            protocolID: api, flavor: api == "azure-openai-responses" ? .azure : .standard),
+          request: request, context: context, chunks: chunks)
+        if let thrown = expected.string("thrown") {
+          XCTAssertEqual(result.failure?.message, thrown, name)
+          XCTAssertNil(result.snapshot, name)
+        } else {
+          XCTAssertNil(result.failure, name)
+          let snapshot = try XCTUnwrap(result.snapshot, name)
+          XCTAssertEqual(snapshot.finishReason.rawValue, expected.string("stopReason"), name)
+          XCTAssertEqual(snapshot.rawFinishReason, expected.string("rawStopReason"), name)
+          XCTAssertEqual(
+            snapshot.providerMetadata.string("errorMessage"), expected.string("errorMessage"), name)
+          XCTAssertEqual(snapshot.responseID, expected.string("responseId"), name)
+          XCTAssertEqual(snapshot.usage?.inputTokens, expected.object("usage")?.int("input"), name)
+          XCTAssertEqual(
+            snapshot.usage?.outputTokens, expected.object("usage")?.int("output"), name)
+          XCTAssertEqual(
+            snapshot.usage?.reasoningTokens, expected.object("usage")?.int("reasoning"), name)
+          XCTAssertEqual(
+            snapshot.usage?.totalTokens, expected.object("usage")?.int("totalTokens"), name)
+        }
+      }
+    }
+  }
+
   func testMistralFailureMetadataMatchesPinnedSource() async throws {
     let oracle = try load("Differential/Oracle/failure-provider-declared.json")
     let source = try XCTUnwrap(oracle.object("protocols")?.object("mistral-conversations"))

@@ -154,7 +154,9 @@ export function stream(model, context, options = {}, requestSource = "api", gene
     };
     try {
       await nativeStream(model, context, options, event => emit(event, partial, output), requestSource, generationMode);
-      output.push({ type: "done", reason: partial.stopReason, message: partial });
+      output.push(partial.stopReason === "error" || partial.stopReason === "aborted"
+        ? { type: "error", reason: partial.stopReason, error: partial }
+        : { type: "done", reason: partial.stopReason, message: partial });
       output.end(partial);
     } catch (error) {
       Object.assign(partial, error.providerMetadata);
@@ -451,6 +453,7 @@ function emit(event, partial, output) {
     partial.responseId = value.responseID;
     if (value.responseModelID) partial.responseModel = value.responseModelID;
     partial.rawStopReason = value.rawFinishReason;
+    delete partial.errorMessage;
     Object.assign(partial, value.providerMetadata);
     if (value.usage) partial.usage = usage(value.usage);
   } else if (type === "usage") partial.usage = usage(value);

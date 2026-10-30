@@ -74,6 +74,11 @@ const terminalWithoutStart = {};
 for (const [name, events] of Object.entries(fixture.responsesTerminalWithoutStartEvents)) {
   terminalWithoutStart[name] = projectResponses(await runResponses(events, {}));
 }
+const terminalStatuses = {};
+for (const [name, events] of Object.entries(fixture.responsesTerminalStatusEvents)) {
+  try { terminalStatuses[name] = projectResponses(await runResponses(events, {})); }
+  catch (error) { terminalStatuses[name] = { thrown: error.message }; }
+}
 const completions = await runCompletions(fixture.completionChunks);
 const completionHTTPRawMetadata = await runCompletionHTTPRawMetadata();
 const completionAbort = await runCompletionAbort();
@@ -104,6 +109,7 @@ process.stdout.write(`${JSON.stringify({
     "responses.tool-slot-lifecycle": toolSlots,
     "responses.grammar-history-replay": grammarReplay,
     "responses.terminal-without-start": terminalWithoutStart,
+    "responses.terminal-status": terminalStatuses,
     "completions.reasoning-details-response-model": projectCompletions(completions),
     "completions.stop-reason-response-branches": completionBranches,
     "completions.transport-termination": completionTransport,

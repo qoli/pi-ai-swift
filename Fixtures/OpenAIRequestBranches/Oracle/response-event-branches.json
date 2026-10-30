@@ -851,6 +851,430 @@
         }
       }
     },
+    "responses.terminal-status": {
+      "completed-event-incomplete": {
+        "content": [],
+        "errorMessage": "Response incomplete: content_filter",
+        "rawStopReason": "incomplete.content_filter",
+        "responseId": "resp-completed-event-incomplete",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "content-filter": {
+        "content": [],
+        "errorMessage": "Response incomplete: content_filter",
+        "rawStopReason": "incomplete.content_filter",
+        "responseId": "resp-content-filter",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "empty-reason": {
+        "content": [],
+        "errorMessage": "Response incomplete without a provider reason",
+        "rawStopReason": "incomplete",
+        "responseId": "resp-empty-reason",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "error-then-success": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-status-completed",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "incomplete-event-completed": {
+        "content": [],
+        "rawStopReason": "completed.content_filter",
+        "responseId": "resp-incomplete-event-completed",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "max-output": {
+        "content": [],
+        "rawStopReason": "incomplete.max_output_tokens",
+        "responseId": "resp-max-output",
+        "stopReason": "length",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "missing-reason": {
+        "content": [],
+        "errorMessage": "Response incomplete without a provider reason",
+        "rawStopReason": "incomplete",
+        "responseId": "resp-missing-reason",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "nonstring-reason": {
+        "content": [],
+        "errorMessage": "Response incomplete without a provider reason",
+        "rawStopReason": "incomplete",
+        "responseId": "resp-nonstring-reason",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "status-": {
+        "content": [],
+        "rawStopReason": "",
+        "responseId": "resp-status-",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "status-None": {
+        "content": [],
+        "responseId": "resp-status-None",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "status-cancelled": {
+        "content": [],
+        "rawStopReason": "cancelled",
+        "responseId": "resp-status-cancelled",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "status-completed": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-status-completed",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "status-failed": {
+        "content": [],
+        "rawStopReason": "failed",
+        "responseId": "resp-status-failed",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "status-in_progress": {
+        "content": [],
+        "rawStopReason": "in_progress",
+        "responseId": "resp-status-in_progress",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "status-mystery": {
+        "thrown": "Unhandled stop reason: mystery"
+      },
+      "status-queued": {
+        "content": [],
+        "rawStopReason": "queued",
+        "responseId": "resp-status-queued",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "unfinished-error": {
+        "content": [
+          {
+            "arguments": {},
+            "id": "call_unfinished|fc_unfinished",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "errorMessage": "Response incomplete: content_filter",
+        "rawStopReason": "incomplete.content_filter",
+        "responseId": "resp-content-filter",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "unfinished-length": {
+        "content": [
+          {
+            "arguments": {},
+            "id": "call_unfinished|fc_unfinished",
+            "name": "weather",
+            "type": "toolCall"
+          }
+        ],
+        "rawStopReason": "incomplete.max_output_tokens",
+        "responseId": "resp-max-output",
+        "stopReason": "length",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      },
+      "unfinished-stop": {
+        "thrown": "OpenAI Responses stream completed with an unfinished tool call: weather (call_unfinished|fc_unfinished)"
+      },
+      "unknown-reason": {
+        "content": [],
+        "errorMessage": "Response incomplete: max_time_limit",
+        "rawStopReason": "incomplete.max_time_limit",
+        "responseId": "resp-unknown-reason",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 18,
+          "output": 7,
+          "reasoning": 4,
+          "totalTokens": 31
+        }
+      }
+    },
     "responses.terminal-without-start": {
       "completed": {
         "content": [],

@@ -1414,5 +1414,508 @@
         }
       }
     }
+  },
+  "responsesTerminalStatusEvents": {
+    "content-filter": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-content-filter",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "content_filter"
+          }
+        }
+      }
+    ],
+    "unknown-reason": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-unknown-reason",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "max_time_limit"
+          }
+        }
+      }
+    ],
+    "missing-reason": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-missing-reason",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete"
+        }
+      }
+    ],
+    "empty-reason": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-empty-reason",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": ""
+          }
+        }
+      }
+    ],
+    "nonstring-reason": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-nonstring-reason",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": 23
+          }
+        }
+      }
+    ],
+    "max-output": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-max-output",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "max_output_tokens"
+          }
+        }
+      }
+    ],
+    "status-completed": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-completed",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "completed"
+        }
+      }
+    ],
+    "status-queued": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-queued",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "queued"
+        }
+      }
+    ],
+    "status-in_progress": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-in_progress",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "in_progress"
+        }
+      }
+    ],
+    "status-failed": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-failed",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "failed"
+        }
+      }
+    ],
+    "status-cancelled": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-cancelled",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "cancelled"
+        }
+      }
+    ],
+    "status-None": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-None",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          }
+        }
+      }
+    ],
+    "status-": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": ""
+        }
+      }
+    ],
+    "status-mystery": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-mystery",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "mystery"
+        }
+      }
+    ],
+    "completed-event-incomplete": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-completed-event-incomplete",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "content_filter"
+          }
+        }
+      }
+    ],
+    "incomplete-event-completed": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-incomplete-event-completed",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "completed",
+          "incomplete_details": {
+            "reason": "content_filter"
+          }
+        }
+      }
+    ],
+    "unfinished-error": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_unfinished",
+          "call_id": "call_unfinished",
+          "name": "weather",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-content-filter",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "content_filter"
+          }
+        }
+      }
+    ],
+    "unfinished-length": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_unfinished",
+          "call_id": "call_unfinished",
+          "name": "weather",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-max-output",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "max_output_tokens"
+          }
+        }
+      }
+    ],
+    "unfinished-stop": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_unfinished",
+          "call_id": "call_unfinished",
+          "name": "weather",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-completed",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "completed"
+        }
+      }
+    ],
+    "error-then-success": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-content-filter",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "content_filter"
+          }
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-status-completed",
+          "usage": {
+            "input_tokens": 23,
+            "output_tokens": 7,
+            "total_tokens": 31,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            },
+            "output_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "status": "completed"
+        }
+      }
+    ]
   }
 }

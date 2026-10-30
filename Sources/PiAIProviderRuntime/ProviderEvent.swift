@@ -70,7 +70,7 @@ public struct ProviderResponseSnapshot: Sendable, Equatable, Codable {
     case .stop: stopReason = .stop
     case .length: stopReason = .length
     case .toolCalls: stopReason = .toolUse
-    case .contentFilter, .cancelled:
+    case .contentFilter, .cancelled, .error:
       throw ProviderRuntimeFailure(
         code: .invalidResponse,
         message:
@@ -418,4 +418,5 @@ public enum ProviderFinishReason: String, Sendable, Equatable, Codable {
   case toolCalls
   case contentFilter
   case cancelled
+  case error
 }

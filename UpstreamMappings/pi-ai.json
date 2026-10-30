@@ -113,7 +113,9 @@
         "Fixtures/Differential/Oracle/candidate-provider-headers.json",
         "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift",
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
-        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift"
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseStatusesMatchSourceResultsAndPreserveUsage",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesTerminalStatusesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2081,7 +2083,9 @@
         "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
-        "Fixtures/Differential/Oracle/failure-provider-declared.json"
+        "Fixtures/Differential/Oracle/failure-provider-declared.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseStatusesMatchSourceResultsAndPreserveUsage",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesTerminalStatusesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2495,7 +2499,9 @@
         "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
-        "Fixtures/Differential/Oracle/failure-provider-declared.json"
+        "Fixtures/Differential/Oracle/failure-provider-declared.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseStatusesMatchSourceResultsAndPreserveUsage",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesTerminalStatusesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2675,7 +2681,9 @@
         "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
-        "Fixtures/Differential/Oracle/failure-provider-declared.json"
+        "Fixtures/Differential/Oracle/failure-provider-declared.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseStatusesMatchSourceResultsAndPreserveUsage",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesTerminalStatusesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

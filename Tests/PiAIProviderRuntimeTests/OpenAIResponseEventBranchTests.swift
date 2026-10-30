@@ -284,6 +284,51 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func terminalResponseStatusesMatchSourceResultsAndPreserveUsage() async throws {
+    let fixture = try responseEventFixture()
+    let cases = try #require(fixture.object("responsesTerminalStatusEvents"))
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "terminal-status.oracle")
+    let expectedCases = try #require(oracle.object("cases")?.object("responses.terminal-status"))
+    for api in ["openai-responses", "azure-openai-responses"] {
+      for name in cases.keys.sorted() {
+        let expected = try #require(expectedCases.object(name))
+        do {
+          let result = try await responseEvents(
+            protocolID: api, modelID: "gpt-model",
+            events: try #require(cases.array(name)), tools: [], metadata: [:])
+          #expect(expected.string("thrown") == nil, Comment(rawValue: name))
+          #expect(
+            result.finishReason.rawValue == expected.string("stopReason"), Comment(rawValue: name))
+          #expect(
+            result.rawFinishReason == expected.string("rawStopReason"), Comment(rawValue: name))
+          #expect(
+            result.providerMetadata.string("errorMessage") == expected.string("errorMessage"),
+            Comment(rawValue: name))
+          #expect(result.responseID == expected.string("responseId"), Comment(rawValue: name))
+          #expect(
+            result.usage?.inputTokens == expected.object("usage")?.int("input"),
+            Comment(rawValue: name))
+          #expect(
+            result.usage?.outputTokens == expected.object("usage")?.int("output"),
+            Comment(rawValue: name))
+          #expect(
+            result.usage?.totalTokens == expected.object("usage")?.int("totalTokens"),
+            Comment(rawValue: name))
+          #expect(
+            result.usage?.reasoningTokens == expected.object("usage")?.int("reasoning"),
+            Comment(rawValue: name))
+        } catch let failure as ProviderRuntimeFailure {
+          #expect(failure.message == expected.string("thrown"), Comment(rawValue: name))
+        }
+      }
+    }
+  }
+
+  @Test
   func responsesFailureBranchesAreTypedAcrossAllFlavors() async throws {
     let fixture = try responseEventFixture()
     let failures = try #require(fixture.object("responsesFailureEvents"))
@@ -297,7 +342,6 @@ struct OpenAIResponseEventBranchTests {
       "failedError": "server_error",
       "failedDetails": "policy",
       "streamError": "bad_event",
-      "contentFilter": "content_filter",
       "unknownStatus": "mystery",
     ]
     for (protocolID, modelID) in [
