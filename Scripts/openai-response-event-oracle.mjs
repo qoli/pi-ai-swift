@@ -190,7 +190,8 @@ async function runToolSlots(events) {
     const call = event.toolCall ?? event.partial?.content?.[event.contentIndex];
     if (event.type === "toolcall_start") return [{ type: "toolCallStarted", id: call.id, name: call.name }];
     if (event.type === "toolcall_delta") return [{ type: "toolInputDelta", id: call.id, delta: event.delta }];
-    if (event.type === "toolcall_end") return [{ type: "toolCallCompleted", id: call.id, name: call.name, arguments: call.arguments }];
+    if (event.type === "toolcall_end") return [{ type: "toolCallCompleted", id: call.id, name: call.name, arguments: call.arguments,
+      ...(call.namespace !== undefined ? { namespace: call.namespace } : {}) }];
     return [];
   });
   return { thrown, events: projected, content: output.content, stopReason: output.stopReason };

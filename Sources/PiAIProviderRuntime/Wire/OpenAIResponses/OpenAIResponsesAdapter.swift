@@ -1163,6 +1163,16 @@ private struct OpenAIResponsesReducer {
       state.arguments += delta
       tools[id] = state
       return [.toolInputDelta(id: id, delta: delta)]
+    case "response.function_call_arguments.done":
+      guard let id = toolIDsByOutputIndex[object.int("output_index")],
+        let arguments = object.string("arguments"), let state = tools[id],
+        state.customInputProperty == nil
+      else { return [] }
+      let previous = state.arguments
+      state.arguments = arguments
+      guard arguments.utf8.starts(with: previous.utf8) else { return [] }
+      let delta = String(decoding: arguments.utf8.dropFirst(previous.utf8.count), as: UTF8.self)
+      return delta.isEmpty ? [] : [.toolInputDelta(id: id, delta: delta)]
     case "response.custom_tool_call_input.delta":
       guard
         let id = toolIDsByOutputIndex[object.int("output_index")],
@@ -1174,9 +1184,9 @@ private struct OpenAIResponsesReducer {
     case "response.custom_tool_call_input.done":
       guard
         let id = toolIDsByOutputIndex[object.int("output_index")],
-        let input = object.string("input"), let state = tools[id], state.customInputProperty != nil
-      else { throw invalid("custom tool call completion has no matching item") }
-      guard let json = try state.customInput?.close(input) else { return [] }
+        let state = tools[id], state.customInputProperty != nil
+      else { return [] }
+      guard let json = try state.customInput?.close(object.string("input")) else { return [] }
       return [.toolInputDelta(id: id, delta: json)]
     case "response.output_item.done":
       guard let item = object.object("item"), let itemType = item.string("type") else {
@@ -1239,10 +1249,12 @@ private struct OpenAIResponsesReducer {
         call = ProviderToolCall(
           id: id, name: state.name,
           arguments: .object([property: .string(state.customInput?.input ?? "")]),
-          namespace: item.string("namespace"))
+          namespace: item.string("namespace") ?? state.namespace)
       } else {
         let raw = item.string("arguments").flatMap { $0.isEmpty ? nil : $0 } ?? state.arguments
-        call = .parsing(id: id, name: state.name, input: raw, namespace: item.string("namespace"))
+        call = .parsing(
+          id: id, name: state.name, input: raw,
+          namespace: item.string("namespace") ?? state.namespace)
       }
       tools.removeValue(forKey: id)
       toolIDsByOutputIndex.removeValue(forKey: index)
@@ -1333,7 +1345,7 @@ private struct OpenAIResponsesReducer {
       )
     case "response.output_text.done", "response.content_part.added",
       "response.content_part.done",
-      "response.function_call_arguments.done", "response.reasoning_summary_part.added",
+      "response.reasoning_summary_part.added",
       "response.reasoning_summary_text.done":
       return []
     default:
@@ -1483,7 +1495,7 @@ private struct OpenAIResponsesReducer {
     if tools[id] == nil { toolOrder.append(id) }
     tools[id] = try ToolState(
       name: name, arguments: item.string("arguments") ?? item.string("input") ?? "",
-      customInputProperty: customProperty)
+      customInputProperty: customProperty, namespace: item.string("namespace"))
     return [.toolCallStarted(id: id, name: name)]
   }
 
@@ -1491,11 +1503,13 @@ private struct OpenAIResponsesReducer {
     let name: String
     var arguments: String
     let customInputProperty: String?
+    let namespace: String?
     var customInput: GrammarToolInputJSONBuffer?
-    init(name: String, arguments: String, customInputProperty: String?) throws {
+    init(name: String, arguments: String, customInputProperty: String?, namespace: String?) throws {
       self.name = name
       self.arguments = arguments
       self.customInputProperty = customInputProperty
+      self.namespace = namespace
       if let customInputProperty {
         customInput = try .init(property: customInputProperty, initialInput: arguments)
       }

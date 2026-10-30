@@ -856,6 +856,66 @@
       }
     },
     "responses.tool-slot-lifecycle": {
+      "customDeltaAfterClose": {
+        "content": [
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"input\":\"hello\"}",
+            "id": "call_state|ctc_state",
+            "type": "toolInputDelta"
+          }
+        ],
+        "stopReason": "pending",
+        "thrown": "grammar tool input for property \"input\" changed after it was closed"
+      },
+      "customDoneMissingInput": {
+        "content": [
+          {
+            "arguments": {
+              "input": ""
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"input\":\"\"}",
+            "id": "call_state|ctc_state",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "input": ""
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
       "customDoneOnly": {
         "content": [
           {
@@ -884,6 +944,178 @@
             },
             "id": "call_c|ctc_c",
             "name": "custom",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "customDoneOrphan": {
+        "content": [],
+        "events": [],
+        "stopReason": "stop",
+        "thrown": null
+      },
+      "customEscapedInitialInput": {
+        "content": [
+          {
+            "arguments": {
+              "input": "quote \"\n👨‍👩‍👧 /end"
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"input\":\"quote \\\"\\n👨‍👩‍👧 /end",
+            "id": "call_state|ctc_state",
+            "type": "toolInputDelta"
+          },
+          {
+            "delta": "\"}",
+            "id": "call_state|ctc_state",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "input": "quote \"\n👨‍👩‍👧 /end"
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "customNamespaceOnAdded": {
+        "content": [
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "namespace": "dynamic_tools",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"input\":\"hello\"}",
+            "id": "call_state|ctc_state",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "namespace": "dynamic_tools",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "customRepeatedCloseDifferent": {
+        "content": [
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"input\":\"hello\"}",
+            "id": "call_state|ctc_state",
+            "type": "toolInputDelta"
+          }
+        ],
+        "stopReason": "pending",
+        "thrown": "grammar tool input for property \"input\" changed after it was closed"
+      },
+      "customRepeatedCloseSame": {
+        "content": [
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"input\":\"hello\"}",
+            "id": "call_state|ctc_state",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_state|ctc_state",
+            "name": "query",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "doneOverridesNamespace": {
+        "content": [
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "namespace": "new_tools",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "namespace": "new_tools",
             "type": "toolCallCompleted"
           }
         ],
@@ -973,6 +1205,135 @@
             },
             "id": "call_a|fc_a",
             "name": "bash",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "functionDoneOrphan": {
+        "content": [],
+        "events": [],
+        "stopReason": "stop",
+        "thrown": null
+      },
+      "functionDoneReplacement": {
+        "content": [
+          {
+            "arguments": {
+              "new": 2
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "arguments": {
+              "new": 2
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "functionDoneSame": {
+        "content": [
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "functionDoneSuffix": {
+        "content": [
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "1}",
+            "id": "call_state|fc_state",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "functionNamespaceOnAdded": {
+        "content": [
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "namespace": "dynamic_tools",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_state|fc_state",
+            "name": "query",
+            "type": "toolCallStarted"
+          },
+          {
+            "arguments": {
+              "value": 1
+            },
+            "id": "call_state|fc_state",
+            "name": "query",
+            "namespace": "dynamic_tools",
             "type": "toolCallCompleted"
           }
         ],

@@ -437,7 +437,11 @@ function emit(event, partial, output) {
       if (kind === "text") return { type: "text", text: payload._0.text, textSignature: payload._0.signature };
       if (kind === "reasoning") return { type: "thinking", thinking: payload._0.text, thinkingSignature: payload._0.signature,
         ...(payload._0.isRedacted !== undefined ? { redacted: payload._0.isRedacted } : {}) };
-      if (kind === "toolCall") return { type: "toolCall", ...payload._0 };
+      if (kind === "toolCall") {
+        const call = partial.content.find(block => block.type === "toolCall" && block.id === payload._0.id) ?? {};
+        for (const key of Object.keys(call)) delete call[key];
+        return Object.assign(call, { type: "toolCall", ...payload._0 });
+      }
       throw new Error(`Unmapped Swift response content: ${kind}`);
     });
     partial.responseId = value.responseID;

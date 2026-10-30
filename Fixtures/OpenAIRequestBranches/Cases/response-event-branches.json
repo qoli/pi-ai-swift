@@ -834,6 +834,415 @@
           "status": "completed"
         }
       }
+    ],
+    "functionDoneSuffix": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": "{\"value\":"
+        }
+      },
+      {
+        "type": "response.function_call_arguments.done",
+        "output_index": 0,
+        "arguments": "{\"value\":1}"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "functionDoneReplacement": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": "{\"old\":1}"
+        }
+      },
+      {
+        "type": "response.function_call_arguments.done",
+        "output_index": 0,
+        "arguments": "{\"new\":2}"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "functionDoneSame": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": "{\"value\":1}"
+        }
+      },
+      {
+        "type": "response.function_call_arguments.done",
+        "output_index": 0,
+        "arguments": "{\"value\":1}"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "functionDoneOrphan": [
+      {
+        "type": "response.function_call_arguments.done",
+        "output_index": 9,
+        "arguments": "{\"value\":1}"
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "customDoneOrphan": [
+      {
+        "type": "response.custom_tool_call_input.done",
+        "output_index": 9,
+        "input": "ignored"
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "customDoneMissingInput": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": ""
+        }
+      },
+      {
+        "type": "response.custom_tool_call_input.done",
+        "output_index": 0
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "customDeltaAfterClose": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": ""
+        }
+      },
+      {
+        "type": "response.custom_tool_call_input.done",
+        "output_index": 0,
+        "input": "hello"
+      },
+      {
+        "type": "response.custom_tool_call_input.delta",
+        "output_index": 0,
+        "delta": "x"
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "customRepeatedCloseSame": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": ""
+        }
+      },
+      {
+        "type": "response.custom_tool_call_input.done",
+        "output_index": 0,
+        "input": "hello"
+      },
+      {
+        "type": "response.custom_tool_call_input.done",
+        "output_index": 0,
+        "input": "hello"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": "hello"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "customRepeatedCloseDifferent": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": ""
+        }
+      },
+      {
+        "type": "response.custom_tool_call_input.done",
+        "output_index": 0,
+        "input": "hello"
+      },
+      {
+        "type": "response.custom_tool_call_input.done",
+        "output_index": 0,
+        "input": "changed"
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "functionNamespaceOnAdded": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": "",
+          "namespace": "dynamic_tools"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": "{\"value\":1}"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "customNamespaceOnAdded": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": "",
+          "namespace": "dynamic_tools"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": "hello"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "doneOverridesNamespace": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": "",
+          "namespace": "old_tools"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "arguments": "{\"value\":1}",
+          "namespace": "new_tools"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
+    ],
+    "customEscapedInitialInput": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": "quote \"\n👨‍👩‍👧"
+        }
+      },
+      {
+        "type": "response.custom_tool_call_input.delta",
+        "output_index": 0,
+        "delta": " /end"
+      },
+      {
+        "type": "response.custom_tool_call_input.done",
+        "output_index": 0,
+        "input": "quote \"\n👨‍👩‍👧 /end"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_state",
+          "call_id": "call_state",
+          "name": "query",
+          "input": "quote \"\n👨‍👩‍👧 /end"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-tools",
+          "status": "completed"
+        }
+      }
     ]
   },
   "responsesGrammarReplay": {

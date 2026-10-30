@@ -383,10 +383,12 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       case .text(let value):
         return .object(["type": .string("text"), "text": .string(value.text)])
       case .toolCall(let value):
-        return .object([
+        var object: [String: JSONValue] = [
           "type": .string("toolCall"), "id": .string(value.id), "name": .string(value.name),
           "arguments": value.arguments,
-        ])
+        ]
+        if let namespace = value.namespace { object["namespace"] = .string(namespace) }
+        return .object(object)
       default:
         XCTFail("unexpected content in the selected source fixtures")
         return .null

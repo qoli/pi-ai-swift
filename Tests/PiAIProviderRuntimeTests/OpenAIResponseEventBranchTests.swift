@@ -404,11 +404,13 @@ struct OpenAIResponseEventBranchTests {
                   "type": .string("toolInputDelta"), "id": .string(id), "delta": .string(delta),
                 ]))
             case .toolCallCompleted(let call):
+              var object: [String: JSONValue] = [
+                "type": .string("toolCallCompleted"), "id": .string(call.id),
+                "name": .string(call.name), "arguments": call.arguments,
+              ]
+              if let namespace = call.namespace { object["namespace"] = .string(namespace) }
               observed.append(
-                .object([
-                  "type": .string("toolCallCompleted"), "id": .string(call.id),
-                  "name": .string(call.name), "arguments": call.arguments,
-                ]))
+                .object(object))
             case .responseSnapshot(let value): snapshot = value
             default: break
             }
@@ -422,10 +424,12 @@ struct OpenAIResponseEventBranchTests {
           #expect(failure == nil, Comment(rawValue: "\(api):\(name)"))
           let calls = try #require(snapshot).content.compactMap { content -> JSONValue? in
             guard case .toolCall(let call) = content else { return nil }
-            return .object([
+            var object: [String: JSONValue] = [
               "type": .string("toolCall"), "id": .string(call.id), "name": .string(call.name),
               "arguments": call.arguments,
-            ])
+            ]
+            if let namespace = call.namespace { object["namespace"] = .string(namespace) }
+            return .object(object)
           }
           #expect(calls == expected.array("content"), Comment(rawValue: "\(api):\(name)"))
         }
