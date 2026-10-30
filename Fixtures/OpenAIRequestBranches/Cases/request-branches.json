@@ -337,6 +337,684 @@
       "baseURL": "https://fixture.openai.azure.com/openai/v1",
       "reasoning": false,
       "options": { "toolChoice": { "type": "function", "name": "sample_tool" } }
+    },
+    {
+      "id": "completions.template-chat-template-mapped-effort",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "xhigh": "max"
+      },
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "xhigh",
+        "maxTokens": 20000
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-chat-template-off",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {},
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": true
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {},
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-chat-template-mapped-off",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "off": "disabled"
+      },
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {},
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-chat-template-mapped-null",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "low": null
+      },
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "low"
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-chat-template-no-answer-room",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {},
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "high",
+        "maxTokens": 512
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-chat-template-xhigh-custom-budget",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "xhigh": "xhigh"
+      },
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "xhigh",
+        "maxTokens": 2048,
+        "thinkingBudgets": {
+          "high": 9999
+        }
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-chat-template-max-custom-budget",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "max": "max"
+      },
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "max",
+        "maxTokens": 2048,
+        "thinkingBudgets": {
+          "high": 42
+        }
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-chat-template-unrecognized-variable",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "low": "low-wire"
+      },
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "future.variable",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "low"
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-chat-template-static-only",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {},
+      "compat": {
+        "thinkingFormat": "chat-template",
+        "supportsReasoningEffort": false,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateKwargs": {
+          "preserve_thinking": true
+        }
+      },
+      "options": {},
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-mapped-effort",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "xhigh": "max"
+      },
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "xhigh",
+        "maxTokens": 20000
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-off",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {},
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": true
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {},
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-mapped-off",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "off": "disabled"
+      },
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {},
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-mapped-null",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "low": null
+      },
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "low"
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-no-answer-room",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {},
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "high",
+        "maxTokens": 512
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-xhigh-custom-budget",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "xhigh": "xhigh"
+      },
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "xhigh",
+        "maxTokens": 2048,
+        "thinkingBudgets": {
+          "high": 9999
+        }
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-max-custom-budget",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "max": "max"
+      },
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "thinking.effort",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "max",
+        "maxTokens": 2048,
+        "thinkingBudgets": {
+          "high": 42
+        }
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-unrecognized-variable",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {
+        "low": "low-wire"
+      },
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true,
+          "enabled": {
+            "$var": "thinking.enabled"
+          },
+          "effort": {
+            "$var": "future.variable",
+            "omitWhenOff": false
+          },
+          "budget": {
+            "$var": "thinking.budget"
+          }
+        }
+      },
+      "options": {
+        "reasoningEffort": "low"
+      },
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
+    },
+    {
+      "id": "completions.template-baseten-static-only",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "template-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "thinkingLevelMap": {},
+      "compat": {
+        "thinkingFormat": "baseten",
+        "supportsReasoningEffort": true,
+        "thinkingTokenBudgetField": "thinking_token_budget",
+        "chatTemplateArgs": {
+          "preserve_thinking": true
+        }
+      },
+      "options": {},
+      "includeSupportedThinkingLevels": true,
+      "projectFields": [
+        "chat_template_kwargs",
+        "chat_template_args",
+        "reasoning_effort",
+        "thinking_token_budget"
+      ]
     }
   ],
   "matrices": {

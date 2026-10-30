@@ -1005,6 +1005,316 @@
         "temperature": 0.7
       }
     },
+    "completions.template-baseten-mapped-effort": {
+      "requestBody": {
+        "chat_template_args": {
+          "budget": 16384,
+          "effort": "max",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "reasoning_effort": "max",
+        "thinking_token_budget": 16384
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ]
+    },
+    "completions.template-baseten-mapped-null": {
+      "requestBody": {
+        "chat_template_args": {
+          "budget": 2048,
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "thinking_token_budget": 2048
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-baseten-mapped-off": {
+      "requestBody": {
+        "chat_template_args": {
+          "effort": "disabled",
+          "enabled": false,
+          "preserve_thinking": true
+        },
+        "reasoning_effort": "disabled"
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-baseten-max-custom-budget": {
+      "requestBody": {
+        "chat_template_args": {
+          "budget": 42,
+          "effort": "max",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "reasoning_effort": "max",
+        "thinking_token_budget": 42
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "max"
+      ]
+    },
+    "completions.template-baseten-no-answer-room": {
+      "requestBody": {
+        "chat_template_args": {
+          "effort": "high",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "reasoning_effort": "high"
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-baseten-off": {
+      "requestBody": {
+        "chat_template_args": {
+          "enabled": false,
+          "preserve_thinking": true
+        }
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-baseten-static-only": {
+      "requestBody": {
+        "chat_template_args": {
+          "preserve_thinking": true
+        }
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-baseten-unrecognized-variable": {
+      "requestBody": {
+        "chat_template_args": {
+          "budget": 2048,
+          "effort": "low-wire",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "reasoning_effort": "low-wire",
+        "thinking_token_budget": 2048
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-baseten-xhigh-custom-budget": {
+      "requestBody": {
+        "chat_template_args": {
+          "budget": 1024,
+          "effort": "xhigh",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "reasoning_effort": "xhigh",
+        "thinking_token_budget": 1024
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ]
+    },
+    "completions.template-chat-template-mapped-effort": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "budget": 16384,
+          "effort": "max",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "thinking_token_budget": 16384
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ]
+    },
+    "completions.template-chat-template-mapped-null": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "budget": 2048,
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "thinking_token_budget": 2048
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-chat-template-mapped-off": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "effort": "disabled",
+          "enabled": false,
+          "preserve_thinking": true
+        }
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-chat-template-max-custom-budget": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "budget": 42,
+          "effort": "max",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "thinking_token_budget": 42
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "max"
+      ]
+    },
+    "completions.template-chat-template-no-answer-room": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "effort": "high",
+          "enabled": true,
+          "preserve_thinking": true
+        }
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-chat-template-off": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "enabled": false,
+          "preserve_thinking": true
+        }
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-chat-template-static-only": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "preserve_thinking": true
+        }
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-chat-template-unrecognized-variable": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "budget": 2048,
+          "effort": "low-wire",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "thinking_token_budget": 2048
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "completions.template-chat-template-xhigh-custom-budget": {
+      "requestBody": {
+        "chat_template_kwargs": {
+          "budget": 1024,
+          "effort": "xhigh",
+          "enabled": true,
+          "preserve_thinking": true
+        },
+        "thinking_token_budget": 1024
+      },
+      "supportedThinkingLevels": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ]
+    },
     "completions.vercel-routing": {
       "requestBody": {
         "providerOptions": {

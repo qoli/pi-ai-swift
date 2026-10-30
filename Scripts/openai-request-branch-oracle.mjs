@@ -25,6 +25,9 @@ if (revision !== lock.revision) {
 }
 
 const results = {};
+const { getSupportedThinkingLevels } = await import(pathToFileURL(path.join(
+  upstreamRoot, "packages/ai/src/models.ts",
+)).href);
 for (const testCase of [...fixture.cases, ...expandMatrices(fixture.matrices)]) {
   results[testCase.id] = await capture(testCase);
 }
@@ -283,7 +286,11 @@ async function capture(testCase) {
   };
   const stream = implementation.stream(model, context, options);
   const result = await stream.result();
-  if (payload !== undefined) return { requestBody: canonicalize(project(testCase, payload)) };
+  if (payload !== undefined) return {
+    requestBody: canonicalize(project(testCase, payload)),
+    ...(testCase.includeSupportedThinkingLevels
+      ? { supportedThinkingLevels: getSupportedThinkingLevels(model) } : {}),
+  };
   return { errorMessage: result.errorMessage ?? "unknown error" };
 }
 

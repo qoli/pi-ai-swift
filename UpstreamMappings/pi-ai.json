@@ -1833,7 +1833,8 @@
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/types.ts",
-        "packages/ai/src/models.ts"
+        "packages/ai/src/models.ts",
+        "packages/ai/src/api/simple-options.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/models-runtime.test.ts",
@@ -1844,7 +1845,12 @@
         "Tests/PiAIProviderRuntimeTests/ContractTests.swift#runtimeSurfacesUnsupportedProviderAsAnExplicitStreamFailure",
         "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#missingNullAndExtendedLevelsHaveDistinctMeanings",
         "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#unsupportedSelectionFailsBeforeCredentialResolution",
-        "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#catalogProjectsModelSpecificChoicesAndRoundTrips"
+        "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#catalogProjectsModelSpecificChoicesAndRoundTrips",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#templateEffortsAndBudgetsMatchSourceWithoutExtraCapabilityRejections",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTemplateEffortsAndBudgetsMatchPinnedSource",
+        "Scripts/openai-request-branch-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/request-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2465,7 +2471,9 @@
         "packages/ai/src/api/openai-completions.ts",
         "packages/ai/src/api/openai-completions.lazy.ts",
         "packages/ai/src/api/openai-prompt-cache.ts",
-        "packages/ai/src/api/constrained-sampling.ts"
+        "packages/ai/src/api/constrained-sampling.ts",
+        "packages/ai/src/api/simple-options.ts",
+        "packages/ai/src/models.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/openai-completions-empty-tools.test.ts",
@@ -2520,7 +2528,12 @@
         "Fixtures/Differential/Oracle/cloudflare-auth.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsTransportTerminationMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#omittedReasoningUsesPinnedSourceDefaultControls",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTerminationMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTerminationMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#templateEffortsAndBudgetsMatchSourceWithoutExtraCapabilityRejections",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTemplateEffortsAndBudgetsMatchPinnedSource",
+        "Scripts/openai-request-branch-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/request-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json"
       ],
       "requiredGates": [
         "swift-test",

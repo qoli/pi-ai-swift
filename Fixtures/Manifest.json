@@ -65,7 +65,7 @@
       ],
       "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "3c67a07f685a321c41e5af6ae54b27e5792fec8458418f56ebeb67b875bacb17"
+      "swiftEvidenceSHA256": "8bae7ca2439a6ab1af4e2cd9075b6d6d8cb1545edad34f8ebff92f7d10c276fc"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -113,7 +113,7 @@
       ],
       "upstreamSourceSHA256": "44f1ffc77bf9899c2e7067280720c0fc5a0b458c0fccd650d3f5739182c2c33f",
       "upstreamTestSHA256": "32bd02c09ad074cb1b498bc752d2e91160d998c39cb5a4e0e07c598ef32a8f4c",
-      "swiftEvidenceSHA256": "dfe33af24afdbd9577ff27c15d75b9f0e705602279d05897c4edecb93ee20b96"
+      "swiftEvidenceSHA256": "354d8fbb107a9d8cc89b1b18eb06099e39cdcd06bb953ec4f00d2fbd80f2f1e8"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -290,7 +290,7 @@
       ],
       "upstreamSourceSHA256": "2ea02438b2f7ac650434868b43feee9e07ab32480c01da9587245dd14cece8d5",
       "upstreamTestSHA256": "4b860d483b44bc3489f5be721e71fbf96b8a952288fde35c3c53096419f23dfa",
-      "swiftEvidenceSHA256": "6fe6cff7a05d646cb63f66b7605942184db04ebe62ee8064106822b9f0fb37bc"
+      "swiftEvidenceSHA256": "1ea69bef4bae8ccaa03203fe0274979a1c1dbbda2f8938ddc18ea72d0ba33ef7"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -339,7 +339,7 @@
       ],
       "upstreamSourceSHA256": "805ed5c861052c125e0f1fc34b3630b832d615624536f86db4571e88dc3f760d",
       "upstreamTestSHA256": "ad9cce3e861f84c8fec0aa144728a72bf3c56155046187ccfb136a86f7ce1b27",
-      "swiftEvidenceSHA256": "a34e7ff8d45a477a7b1979bbc90007384108044d1999cf32b8d1ebb8ff272f88"
+      "swiftEvidenceSHA256": "0fa9bb78752ac98b69352136f262c9d0db1cd5d473720cf430a516f668e5257e"
     },
     {
       "protocolID": "openai-completions",
@@ -348,7 +348,9 @@
         "packages/ai/src/api/openai-completions.ts",
         "packages/ai/src/api/openai-completions.lazy.ts",
         "packages/ai/src/api/openai-prompt-cache.ts",
-        "packages/ai/src/api/constrained-sampling.ts"
+        "packages/ai/src/api/constrained-sampling.ts",
+        "packages/ai/src/api/simple-options.ts",
+        "packages/ai/src/models.ts"
       ],
       "upstreamTests": [
         "packages/ai/test/openai-completions-empty-tools.test.ts",
@@ -398,11 +400,16 @@
         "Fixtures/Differential/Oracle/cloudflare-auth.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsTransportTerminationMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#omittedReasoningUsesPinnedSourceDefaultControls",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTerminationMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTerminationMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#templateEffortsAndBudgetsMatchSourceWithoutExtraCapabilityRejections",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTemplateEffortsAndBudgetsMatchPinnedSource",
+        "Scripts/openai-request-branch-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/request-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json"
       ],
-      "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
+      "upstreamSourceSHA256": "64682c2b2ffd6459c1f724599149fad785ef59f51d90ce5fff8657d36a0dc551",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "e949898d43872a20cf96645539fa4886864003bcc4a9ee5d1facf9236dbe8645"
+      "swiftEvidenceSHA256": "40fd51b371a1ef4b8a8f898d27592a03a91daf78a0ca2fc064c3ec4aebbaf417"
     },
     {
       "protocolID": "openai-responses",
@@ -463,7 +470,7 @@
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "c09e573e96beadd6c0341b3cc5d366a428dbbee8836b6c56556217a604a3cf3b"
+      "swiftEvidenceSHA256": "ea44a702f42889c418a4642342351009fd0cd5fc13154f89924eaf03d528a371"
     },
     {
       "protocolID": "openrouter-images",

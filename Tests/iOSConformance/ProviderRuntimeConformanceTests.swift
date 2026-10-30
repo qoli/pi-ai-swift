@@ -252,6 +252,63 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testCompletionsTemplateEffortsAndBudgetsMatchPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/request-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/request-branches.json")
+    for value in try XCTUnwrap(fixture.array("cases")) {
+      let spec = try XCTUnwrap(value.objectValue)
+      guard let name = spec.string("id"), name.hasPrefix("completions.template-") else { continue }
+      let metadata: [String: JSONValue] = [
+        "compat": try XCTUnwrap(spec["compat"]),
+        "thinkingLevelMap": try XCTUnwrap(spec["thinkingLevelMap"]),
+      ]
+      let expected = try XCTUnwrap(oracle.object("cases")?.object(name))
+      let levels = try ProviderReasoning.supportedEfforts(
+        reasoning: true, metadata: metadata, protocolID: "openai-completions", providerID: "fixture"
+      )
+      XCTAssertEqual(
+        levels.map { JSONValue.string($0.rawValue) }, expected.array("supportedThinkingLevels"),
+        name)
+      let rawOptions = try XCTUnwrap(spec.object("options"))
+      let budgets = rawOptions.object("thinkingBudgets").map { raw in
+        Dictionary(
+          uniqueKeysWithValues: raw.compactMap { key, value -> (ProviderReasoningEffort, Int)? in
+            guard let effort = ProviderReasoningEffort(rawValue: key),
+              case .integer(let count) = value
+            else { return nil }
+            return (effort, Int(count))
+          })
+      }
+      let (request, context) = inputs(
+        api: "openai-completions", providerID: "fixture",
+        modelID: "template-model", metadata: metadata,
+        options: .init(
+          maximumOutputTokens: rawOptions.int("maxTokens"), temperature: nil,
+          reasoningEffort: rawOptions.string("reasoningEffort").flatMap(
+            ProviderReasoningEffort.init(rawValue:)),
+          responseSchema: nil, providerOptions: [:], thinkingBudgets: budgets))
+      let transport = IOSMistralHTTPFixture(status: 418, body: Data())
+      do {
+        for try await _ in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch let failure as ProviderRuntimeFailure {
+        XCTAssertEqual(failure.code, .transportFailed, name)
+      }
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name),
+        providerID: "fixture", operation: "ios.template.body")
+      let projection = Dictionary(
+        uniqueKeysWithValues:
+          try XCTUnwrap(spec.array("projectFields")).compactMap { value -> (String, JSONValue)? in
+            guard let key = value.stringValue, let value = body[key] else { return nil }
+            return (key, value)
+          })
+      XCTAssertEqual(projection, expected.object("requestBody"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

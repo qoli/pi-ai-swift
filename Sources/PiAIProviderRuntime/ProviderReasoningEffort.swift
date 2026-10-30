@@ -77,36 +77,6 @@ enum ProviderReasoning {
         return false
       }
       if protocolID == "openai-completions" {
-        if ["chat-template", "baseten"].contains(format) {
-          let template =
-            compat.object(format == "baseten" ? "chatTemplateArgs" : "chatTemplateKwargs") ?? [:]
-          if effort == .xhigh || effort == .max,
-            template.values.contains(where: {
-              if case .object(let variable) = $0 {
-                return variable.string("$var") == "thinking.budget"
-              }
-              return false
-            })
-          {
-            return false
-          }
-          let encodesControl = template.values.contains { value in
-            guard case .object(let variable) = value else { return false }
-            if effort == .off, variable.bool("omitWhenOff") == true { return false }
-            switch variable.string("$var") {
-            case "thinking.enabled": return true
-            case "thinking.level": return effort != .off || map["off"]?.stringValue != nil
-            case "thinking.budget": return effort != .off
-            default: return false
-            }
-          }
-          if !encodesControl
-            && !(format == "baseten" && compat.bool("supportsReasoningEffort") != false
-              && (effort != .off || map["off"]?.stringValue != nil))
-          {
-            return false
-          }
-        }
         if format == "ant-ling", map[effort.rawValue] == nil { return false }
       }
       if effort == .xhigh || effort == .max { return map[effort.rawValue] != nil }

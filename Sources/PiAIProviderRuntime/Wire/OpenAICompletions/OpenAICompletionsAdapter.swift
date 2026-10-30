@@ -75,9 +75,10 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     providerID: String,
     maximumOutputTokens: Int?,
     thinkingBudgets: [ProviderReasoningEffort: Int]?
-  ) throws {
+  ) {
     let enabled = effort != .off
-    let mapped = metadata.object("thinkingLevelMap")?.string(effort.rawValue)
+    let mapping = metadata.object("thinkingLevelMap")?[effort.rawValue]
+    let mapped = mapping?.stringValue
     let mappedOffIsNull = effort == .off && metadata.object("thinkingLevelMap")?["off"] == .null
     let wireEffort = mapped ?? (enabled ? effort.rawValue : "none")
     let supportsEffort = compat.bool("supportsReasoningEffort") != false
@@ -115,43 +116,22 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         if !enabled && variable.bool("omitWhenOff") == true { continue }
         switch variable.string("$var") {
         case "thinking.enabled": values[name] = .bool(enabled)
-        case "thinking.level":
-          if enabled || mapped != nil { values[name] = .string(wireEffort) }
         case "thinking.budget":
-          if enabled {
-            let defaults: [ProviderReasoningEffort: Int] = [
-              .minimal: 1_024, .low: 2_048, .medium: 8_192, .high: 16_384,
-            ]
-            guard let budget = thinkingBudgets?[effort] ?? defaults[effort] else {
-              throw failure(
-                .unsupportedCapability, providerID: providerID,
-                operation: "openai-completions.request.reasoning",
-                message: "reasoning budget requires a supported budget level")
-            }
-            guard let ceiling = maximumOutputTokens else {
-              throw failure(
-                .invalidRequest, providerID: providerID,
-                operation: "openai-completions.request.reasoning",
-                message: "reasoning budget requires an output limit")
-            }
-            let clamped = min(budget, max(0, ceiling - 1_024))
-            guard clamped > 0 else {
-              throw failure(
-                .invalidRequest, providerID: providerID,
-                operation: "openai-completions.request.reasoning",
-                message: "output limit leaves no room for reasoning")
-            }
-            values[name] = .integer(Int64(clamped))
+          if let budget = clampedThinkingBudget(
+            effort, maximumOutputTokens: maximumOutputTokens, budgets: thinkingBudgets)
+          {
+            values[name] = .integer(Int64(budget))
           }
         default:
-          throw failure(
-            .unsupportedCapability, providerID: providerID,
-            operation: "openai-completions.request.reasoning",
-            message: "unknown reasoning template variable")
+          if let mapped = mapping?.stringValue {
+            values[name] = .string(mapped)
+          } else if mapping == nil, enabled {
+            values[name] = .string(effort.rawValue)
+          }
         }
       }
       if !values.isEmpty { body[field] = .object(values) }
-      if format == "baseten", supportsEffort, enabled || mapped != nil {
+      if format == "baseten", supportsEffort, mapped != nil || (mapping == nil && enabled) {
         body["reasoning_effort"] = .string(wireEffort)
       }
     case "openrouter":
@@ -170,6 +150,21 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         body["reasoning_effort"] = .string(wireEffort)
       }
     }
+  }
+
+  private func clampedThinkingBudget(
+    _ effort: ProviderReasoningEffort,
+    maximumOutputTokens: Int?,
+    budgets: [ProviderReasoningEffort: Int]?
+  ) -> Int? {
+    guard effort != .off, let ceiling = maximumOutputTokens else { return nil }
+    let level: ProviderReasoningEffort = effort == .xhigh || effort == .max ? .high : effort
+    let defaults: [ProviderReasoningEffort: Int] = [
+      .minimal: 1_024, .low: 2_048, .medium: 8_192, .high: 16_384,
+    ]
+    guard let budget = budgets?[level] ?? defaults[level] else { return nil }
+    let clamped = min(budget, max(0, ceiling - 1_024))
+    return clamped > 0 ? clamped : nil
   }
 
   private func makeURLRequest(
@@ -311,7 +306,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     }
     if context.model.capabilities.reasoning {
       let effort = request.options.reasoningEffort ?? .off
-      try applyReasoning(
+      applyReasoning(
         effort, metadata: metadata, compat: compat, body: &body, providerID: request.providerID,
         maximumOutputTokens: request.options.maximumOutputTokens
           ?? context.model.maximumOutputTokens,
@@ -319,16 +314,14 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
       let budgetField =
         compat.string("thinkingTokenBudgetField")
         ?? (compat.bool("supportsThinkingTokenBudget") == true ? "thinking_token_budget" : nil)
-      if effort != .off, let budgetField {
-        let defaults: [ProviderReasoningEffort: Int] = [
-          .minimal: 1_024, .low: 2_048, .medium: 8_192, .high: 16_384,
-        ]
-        if let requested = request.options.thinkingBudgets?[effort] ?? defaults[effort],
-          let ceiling = request.options.maximumOutputTokens ?? context.model.maximumOutputTokens
-        {
-          let clamped = min(requested, max(0, ceiling - 1_024))
-          if clamped > 0 { body[budgetField] = .integer(Int64(clamped)) }
-        }
+      if let budgetField,
+        let budget = clampedThinkingBudget(
+          effort,
+          maximumOutputTokens: request.options.maximumOutputTokens
+            ?? context.model.maximumOutputTokens,
+          budgets: request.options.thinkingBudgets)
+      {
+        body[budgetField] = .integer(Int64(budget))
       }
     }
     if !activeTools.isEmpty {

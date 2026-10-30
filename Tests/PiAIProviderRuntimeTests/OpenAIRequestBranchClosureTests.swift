@@ -772,6 +772,64 @@ struct OpenAIRequestBranchClosureTests {
   }
 
   @Test
+  func templateEffortsAndBudgetsMatchSourceWithoutExtraCapabilityRejections() async throws {
+    let fixture = try decodeJSONObject(
+      Data(
+        contentsOf: repositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Cases/request-branches.json")),
+      providerID: "fixture", operation: "template.cases")
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: repositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json")),
+      providerID: "fixture", operation: "template.oracle")
+    for value in try #require(fixture.array("cases")) {
+      let spec = try #require(value.objectValue)
+      guard let id = spec.string("id"), id.hasPrefix("completions.template-") else { continue }
+      let metadata: [String: JSONValue] = [
+        "compat": try #require(spec["compat"]),
+        "thinkingLevelMap": try #require(spec["thinkingLevelMap"]),
+      ]
+      let expected = try #require(oracle.object("cases")?.object(id))
+      let levels = try ProviderReasoning.supportedEfforts(
+        reasoning: true, metadata: metadata, protocolID: "openai-completions", providerID: "fixture"
+      )
+      #expect(
+        levels.map { JSONValue.string($0.rawValue) } == expected.array("supportedThinkingLevels"),
+        Comment(rawValue: id))
+      let rawOptions = try #require(spec.object("options"))
+      let budgets = rawOptions.object("thinkingBudgets").map { raw in
+        Dictionary(
+          uniqueKeysWithValues: raw.compactMap { key, value -> (ProviderReasoningEffort, Int)? in
+            guard let effort = ProviderReasoningEffort(rawValue: key),
+              case .integer(let count) = value
+            else { return nil }
+            return (effort, Int(count))
+          })
+      }
+      do {
+        let body = try await capture(
+          protocolID: "openai-completions", providerID: "fixture", modelID: "template-model",
+          reasoning: true, metadata: metadata,
+          options: options(
+            maximum: rawOptions.int("maxTokens"),
+            effort: rawOptions.string("reasoningEffort").flatMap(
+              ProviderReasoningEffort.init(rawValue:)),
+            thinkingBudgets: budgets),
+          tool: ProviderToolDefinition(
+            name: "sample_tool", description: "Sample tool", inputSchema: toolSchema()))
+        let projection = Dictionary(
+          uniqueKeysWithValues:
+            try #require(spec.array("projectFields")).compactMap { value -> (String, JSONValue)? in
+              guard let key = value.stringValue, let value = body[key] else { return nil }
+              return (key, value)
+            })
+        #expect(projection == expected.object("requestBody"), Comment(rawValue: id))
+      } catch { Issue.record("\(id): \(error)") }
+    }
+  }
+
+  @Test
   func responsesSummaryAndCodexVerbosityMatchSource() async throws {
     let summary = try await capture(
       protocolID: "openai-responses", providerID: "openai", modelID: "gpt-model",
