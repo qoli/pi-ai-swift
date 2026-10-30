@@ -49,7 +49,7 @@ struct OpenAIResponsesAdapterTests {
       model: model,
       baseURL: URL(string: "https://api.openai.com/v1")!,
       headers: [:],
-      credential: .apiKey(APIKeyCredential(key: "fixture", metadata: [:])),
+      credential: .apiKey(APIKeyCredential(key: "sk-fixture", metadata: [:])),
       modelConfiguration: ProviderModelConfiguration(
         protocolID: model.protocolID,
         baseURL: nil,
@@ -85,7 +85,7 @@ struct OpenAIResponsesAdapterTests {
 
     let sent = try #require(await transport.request())
     #expect(sent.url?.absoluteString == "https://api.openai.com/v1/responses")
-    #expect(sent.value(forHTTPHeaderField: "Authorization") == "Bearer fixture")
+    #expect(sent.value(forHTTPHeaderField: "Authorization") == "Bearer sk-fixture")
     let body = try decodeJSONObject(
       try #require(sent.httpBody),
       providerID: "fixture",
@@ -108,7 +108,7 @@ struct OpenAIResponsesAdapterTests {
       let fixture = responsesFixture(
         providerID: "openai", protocolID: "openai-responses",
         baseURL: "https://api.openai.com/v1",
-        credential: .apiKey(APIKeyCredential(key: "fixture", metadata: [:])),
+        credential: .apiKey(APIKeyCredential(key: "sk-fixture", metadata: [:])),
         options: ProviderGenerationOptions(
           maximumOutputTokens: nil, temperature: nil, reasoningEffort: effort,
           responseSchema: nil, providerOptions: [:]),

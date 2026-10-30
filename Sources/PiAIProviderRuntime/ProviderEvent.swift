@@ -219,19 +219,63 @@ public struct ProviderUsageCost: Sendable, Equatable, Codable {
   public let cacheRead: Double
   public let cacheWrite: Double
   public let total: Double
+  public let totalFromProvider: Bool?
 
   public init(
     input: Double,
     output: Double,
     cacheRead: Double,
     cacheWrite: Double,
-    total: Double
+    total: Double,
+    totalFromProvider: Bool? = nil
   ) {
     self.input = input
     self.output = output
     self.cacheRead = cacheRead
     self.cacheWrite = cacheWrite
     self.total = total
+    self.totalFromProvider = totalFromProvider
+  }
+}
+
+extension ProviderUsage {
+  func applyingOpenRouterCost(_ raw: [String: JSONValue], enabled: Bool) -> ProviderUsage {
+    func amount(_ value: JSONValue?) -> Double? {
+      let result: Double
+      switch value {
+      case .integer(let value): result = Double(value)
+      case .number(let value): result = value
+      default: return nil
+      }
+      return result.isFinite && result >= 0 ? result : nil
+    }
+    guard enabled, let cost, let reported = amount(raw["cost"]) else { return self }
+    let total: Double
+    if raw.bool("is_byok") == false {
+      total = reported
+    } else if raw.bool("is_byok") == true, let details = raw.object("cost_details") {
+      let upstream: Double
+      if details["upstream_inference_cost"] == .null {
+        guard let input = amount(details["upstream_inference_prompt_cost"]),
+          let output = amount(details["upstream_inference_completions_cost"])
+        else { return self }
+        upstream = input + output
+      } else {
+        guard let value = amount(details["upstream_inference_cost"]) else { return self }
+        upstream = value
+      }
+      total = reported + upstream
+    } else {
+      return self
+    }
+    return ProviderUsage(
+      inputTokens: inputTokens, outputTokens: outputTokens, reasoningTokens: reasoningTokens,
+      cachedInputTokens: cachedInputTokens, cacheWriteTokens: cacheWriteTokens,
+      totalTokens: totalTokens, providerMetadata: providerMetadata,
+      cost: ProviderUsageCost(
+        input: cost.input, output: cost.output, cacheRead: cost.cacheRead,
+        cacheWrite: cost.cacheWrite,
+        total: total, totalFromProvider: true))
   }
 }
 
@@ -304,7 +348,8 @@ struct ProviderUsagePricing: Sendable {
       output: outputCost,
       cacheRead: cacheReadCost,
       cacheWrite: cacheWriteCost,
-      total: inputCost + outputCost + cacheReadCost + cacheWriteCost)
+      total: inputCost + outputCost + cacheReadCost + cacheWriteCost,
+      totalFromProvider: false)
   }
 
   static func directCost(
@@ -326,7 +371,7 @@ struct ProviderUsagePricing: Sendable {
     }
     return ProviderUsageCost(
       input: input, output: output, cacheRead: cacheRead, cacheWrite: cacheWrite,
-      total: total)
+      total: total, totalFromProvider: object.bool("totalFromProvider"))
   }
 
   private static func rates(

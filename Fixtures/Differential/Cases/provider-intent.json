@@ -1,0 +1,919 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "bedrock.openai.gpt-oss-120b-1:0.minimal",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "openai.gpt-oss-120b-1:0",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "xhigh"
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      }
+    },
+    {
+      "id": "bedrock.openai.gpt-oss-120b-1:0.high",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "openai.gpt-oss-120b-1:0",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "xhigh"
+        }
+      },
+      "options": {
+        "reasoning": "high"
+      }
+    },
+    {
+      "id": "bedrock.openai.gpt-oss-120b-1:0.xhigh",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "openai.gpt-oss-120b-1:0",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "xhigh"
+        }
+      },
+      "options": {
+        "reasoning": "xhigh"
+      }
+    },
+    {
+      "id": "bedrock.openai.gpt-5.4.minimal",
+      "model": {
+        "id": "openai.gpt-5.4",
+        "name": "openai.gpt-5.4",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "xhigh"
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      }
+    },
+    {
+      "id": "bedrock.openai.gpt-5.4.high",
+      "model": {
+        "id": "openai.gpt-5.4",
+        "name": "openai.gpt-5.4",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "xhigh"
+        }
+      },
+      "options": {
+        "reasoning": "high"
+      }
+    },
+    {
+      "id": "bedrock.openai.gpt-5.4.xhigh",
+      "model": {
+        "id": "openai.gpt-5.4",
+        "name": "openai.gpt-5.4",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "xhigh"
+        }
+      },
+      "options": {
+        "reasoning": "xhigh"
+      }
+    },
+    {
+      "id": "bedrock.anthropic.claude-haiku-5.minimal",
+      "model": {
+        "id": "anthropic.claude-haiku-5",
+        "name": "anthropic.claude-haiku-5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "xhigh"
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      }
+    },
+    {
+      "id": "bedrock.anthropic.claude-haiku-5.high",
+      "model": {
+        "id": "anthropic.claude-haiku-5",
+        "name": "anthropic.claude-haiku-5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "xhigh"
+        }
+      },
+      "options": {
+        "reasoning": "high"
+      }
+    },
+    {
+      "id": "bedrock.anthropic.claude-haiku-5.xhigh",
+      "model": {
+        "id": "anthropic.claude-haiku-5",
+        "name": "anthropic.claude-haiku-5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "xhigh": "low"
+        }
+      },
+      "options": {
+        "reasoning": "xhigh"
+      }
+    },
+    {
+      "id": "mistral.map",
+      "model": {
+        "id": "renamed-model",
+        "name": "renamed-model",
+        "api": "mistral-conversations",
+        "provider": "mistral",
+        "baseUrl": "https://api.mistral.ai/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "low": "high",
+          "off": "none"
+        }
+      },
+      "entrypoint": "streamSimple",
+      "options": {
+        "reasoning": "low"
+      }
+    },
+    {
+      "id": "mistral.no-map",
+      "model": {
+        "id": "renamed-model",
+        "name": "renamed-model",
+        "api": "mistral-conversations",
+        "provider": "mistral",
+        "baseUrl": "https://api.mistral.ai/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "entrypoint": "streamSimple",
+      "options": {
+        "reasoning": "low"
+      }
+    },
+    {
+      "id": "mistral.off",
+      "model": {
+        "id": "renamed-model",
+        "name": "renamed-model",
+        "api": "mistral-conversations",
+        "provider": "mistral",
+        "baseUrl": "https://api.mistral.ai/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "low": "high",
+          "off": "none"
+        }
+      },
+      "entrypoint": "streamSimple",
+      "options": {
+        "reasoning": "off"
+      }
+    },
+    {
+      "id": "responses.configuration-false",
+      "model": {
+        "id": "gpt-6",
+        "name": "gpt-6",
+        "api": "openai-responses",
+        "provider": "openai",
+        "baseUrl": "https://api.openai.com/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsMidConvoEffort": true,
+          "supportsExplicitPromptCacheMode": true
+        },
+        "thinkingLevelMap": {
+          "high": "xhigh"
+        }
+      },
+      "history": true,
+      "apiKey": "sk-fixture",
+      "options": {
+        "reasoningEffort": "high",
+        "temperature": 0.7,
+        "cacheRetention": "long",
+        "sessionId": "fixture"
+      }
+    },
+    {
+      "id": "responses.configuration-true",
+      "model": {
+        "id": "gpt-6",
+        "name": "gpt-6",
+        "api": "openai-responses",
+        "provider": "openai",
+        "baseUrl": "https://api.openai.com/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsMidConvoEffort": true,
+          "supportsExplicitPromptCacheMode": true
+        },
+        "thinkingLevelMap": {
+          "high": "xhigh"
+        }
+      },
+      "history": true,
+      "apiKey": "fixture-chatgpt-access",
+      "options": {
+        "reasoningEffort": "high",
+        "temperature": 0.7,
+        "cacheRetention": "long",
+        "sessionId": "fixture"
+      }
+    },
+    {
+      "id": "openai-completions.sampling-low",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParams": {
+          "temperature": 0.3,
+          "top_p": 0.1,
+          "presence_penalty": 0.2
+        },
+        "samplingParamsByThinkingLevel": {
+          "low": {
+            "temperature": 0.9,
+            "top_p": 0.6
+          },
+          "off": {
+            "temperature": 0.2
+          }
+        },
+        "compat": {
+          "supportsReasoningEffort": true
+        }
+      },
+      "options": {
+        "reasoningEffort": "low",
+        "temperature": 0.5,
+        "samplingParams": {
+          "top_p": 0.8,
+          "seed": 7
+        }
+      }
+    },
+    {
+      "id": "openai-completions.sampling-off",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParams": {
+          "temperature": 0.3,
+          "top_p": 0.1,
+          "presence_penalty": 0.2
+        },
+        "samplingParamsByThinkingLevel": {
+          "low": {
+            "temperature": 0.9,
+            "top_p": 0.6
+          },
+          "off": {
+            "temperature": 0.2
+          }
+        },
+        "compat": {
+          "supportsReasoningEffort": true
+        }
+      },
+      "options": {
+        "temperature": 0.5,
+        "samplingParams": {
+          "top_p": 0.8,
+          "seed": 7
+        }
+      },
+      "explicitOff": true
+    },
+    {
+      "id": "openai-responses.sampling-low",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "openai-responses",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParams": {
+          "temperature": 0.3,
+          "top_p": 0.1,
+          "presence_penalty": 0.2
+        },
+        "samplingParamsByThinkingLevel": {
+          "low": {
+            "temperature": 0.9,
+            "top_p": 0.6
+          },
+          "off": {
+            "temperature": 0.2
+          }
+        },
+        "compat": {
+          "supportsReasoningEffort": true
+        }
+      },
+      "options": {
+        "reasoningEffort": "low",
+        "temperature": 0.5,
+        "samplingParams": {
+          "top_p": 0.8,
+          "seed": 7
+        }
+      }
+    },
+    {
+      "id": "openai-responses.sampling-off",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "openai-responses",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParams": {
+          "temperature": 0.3,
+          "top_p": 0.1,
+          "presence_penalty": 0.2
+        },
+        "samplingParamsByThinkingLevel": {
+          "low": {
+            "temperature": 0.9,
+            "top_p": 0.6
+          },
+          "off": {
+            "temperature": 0.2
+          }
+        },
+        "compat": {
+          "supportsReasoningEffort": true
+        }
+      },
+      "options": {
+        "temperature": 0.5,
+        "samplingParams": {
+          "top_p": 0.8,
+          "seed": 7
+        }
+      },
+      "explicitOff": true
+    },
+    {
+      "id": "azure-openai-responses.sampling-low",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "azure-openai-responses",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParams": {
+          "temperature": 0.3,
+          "top_p": 0.1,
+          "presence_penalty": 0.2
+        },
+        "samplingParamsByThinkingLevel": {
+          "low": {
+            "temperature": 0.9,
+            "top_p": 0.6
+          },
+          "off": {
+            "temperature": 0.2
+          }
+        },
+        "compat": {
+          "supportsReasoningEffort": true
+        }
+      },
+      "options": {
+        "reasoningEffort": "low",
+        "temperature": 0.5,
+        "samplingParams": {
+          "top_p": 0.8,
+          "seed": 7
+        }
+      }
+    },
+    {
+      "id": "azure-openai-responses.sampling-off",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "azure-openai-responses",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParams": {
+          "temperature": 0.3,
+          "top_p": 0.1,
+          "presence_penalty": 0.2
+        },
+        "samplingParamsByThinkingLevel": {
+          "low": {
+            "temperature": 0.9,
+            "top_p": 0.6
+          },
+          "off": {
+            "temperature": 0.2
+          }
+        },
+        "compat": {
+          "supportsReasoningEffort": true
+        }
+      },
+      "options": {
+        "temperature": 0.5,
+        "samplingParams": {
+          "top_p": 0.8,
+          "seed": 7
+        }
+      },
+      "explicitOff": true
+    },
+    {
+      "id": "anthropic.managed-off",
+      "model": {
+        "id": "claude-haiku-5",
+        "name": "claude-haiku-5",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      }
+    },
+    {
+      "id": "azure.completions-deployment",
+      "model": {
+        "id": "gpt-4.1",
+        "name": "gpt-4.1",
+        "api": "openai-completions",
+        "provider": "azure",
+        "baseUrl": "https://fixture.openai.azure.com",
+        "reasoning": false,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "azureProvider": true,
+      "options": {
+        "azureDeploymentName": "deployment-name",
+        "azureResourceName": "fixture"
+      }
+    },
+    {
+      "id": "responses.current-tools-additional-no-history",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "openai-responses",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsAdditionalTools": true,
+          "supportsMidConvoSystemMessages": false,
+          "supportsToolSearch": false
+        }
+      },
+      "options": {},
+      "tools": [
+        {
+          "name": "alpha",
+          "description": "alpha",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        {
+          "name": "beta",
+          "description": "beta",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "responses.current-tools-additional-native",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "openai-responses",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsAdditionalTools": true,
+          "supportsMidConvoSystemMessages": true,
+          "supportsToolSearch": false
+        }
+      },
+      "options": {},
+      "tools": [
+        {
+          "name": "alpha",
+          "description": "alpha",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        {
+          "name": "beta",
+          "description": "beta",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      ]
+    },
+    {
+      "id": "responses.current-tools-search",
+      "model": {
+        "id": "fixture-model",
+        "name": "fixture-model",
+        "api": "openai-responses",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": true,
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 262144,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsAdditionalTools": false,
+          "supportsMidConvoSystemMessages": false,
+          "supportsToolSearch": true
+        }
+      },
+      "options": {},
+      "tools": [
+        {
+          "name": "alpha",
+          "description": "alpha",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        {
+          "name": "beta",
+          "description": "beta",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      ]
+    }
+  ]
+}

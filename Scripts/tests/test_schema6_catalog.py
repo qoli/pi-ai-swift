@@ -47,7 +47,7 @@ class Schema6CatalogTests(unittest.TestCase):
         counts = {kind: sum(m.get('type', 'chat') == kind for p in providers for m in p['models'])
                   for kind in ['chat', 'image', 'classifier']}
         self.assertEqual(counts, self.evidence['modelCounts'])
-        self.assertEqual(self.catalog['classifierProviderIDs'], ['cloudflare-workers-ai', 'openrouter', 'typesafe'])
+        self.assertEqual(self.catalog['classifierProviderIDs'], ['cloudflare-workers-ai', 'openai', 'opencode', 'openrouter', 'typesafe', 'vercel-ai-gateway'])
         self.assertEqual(self.catalog['imageProviderIDs'], ['openrouter'])
         self.assertNotIn('publishedArtifact', self.catalog)
         fixture = json.loads((FIXTURES / 'routing.json').read_text())

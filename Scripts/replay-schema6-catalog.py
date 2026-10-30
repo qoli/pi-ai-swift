@@ -11,6 +11,7 @@ import gzip
 import hashlib
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import tarfile
@@ -25,7 +26,7 @@ def run(*args, **kwargs):
     return subprocess.run(args, check=True, **kwargs)
 
 
-def replay(upstream, manifest_path, output):
+def replay(upstream, manifest_path, output, generated_data_output=None):
     repo = Path(__file__).resolve().parent.parent
     evidence_bytes = manifest_path.read_bytes()
     evidence = json.loads(evidence_bytes)
@@ -60,6 +61,24 @@ def replay(upstream, manifest_path, output):
         for relative, digest in evidence['generatorSourceHashes'].items():
             if sha256((source / relative).read_bytes()) != digest:
                 raise ValueError('Generator source digest mismatch: ' + relative)
+        # Share installed external dependencies, but resolve workspace packages
+        # from this exact archive. A node_modules symlink alone would load a
+        # workspace export from the cache's working tree instead of the archive.
+        dependencies = source / 'node_modules'
+        dependencies.mkdir()
+        installed = (upstream / 'node_modules').resolve()
+        checkout = upstream.resolve()
+        for entry in installed.iterdir():
+            target = dependencies / entry.name
+            if entry.name != '@earendil-works':
+                target.symlink_to(entry.resolve(), target_is_directory=entry.is_dir())
+                continue
+            target.mkdir()
+            for package in entry.iterdir():
+                resolved_package = package.resolve()
+                if resolved_package.is_relative_to(checkout / 'packages'):
+                    resolved_package = source / resolved_package.relative_to(checkout)
+                (target / package.name).symlink_to(resolved_package, target_is_directory=True)
         captures = root / 'responses'
         captures.mkdir()
         for item in responses:
@@ -67,7 +86,7 @@ def replay(upstream, manifest_path, output):
         env = {'PATH': os.environ['PATH'], 'SCHEMA6_MODE': 'replay', 'SCHEMA6_RESPONSES': str(captures)}
         package = source / evidence['package']['path']
         run('node', '--import', str(repo / 'Scripts/schema6-probe-fetch.mjs'),
-            str(package / 'scripts/generate-models.ts'), '--strict', '--data-only', env=env)
+            str(package / evidence['generatorEntrypoint']), '--strict', '--data-only', env=env)
         run('node', str(package / 'scripts/check-model-data.ts'), env=env)
         model_manifest = json.loads((package / 'src/providers/data/.manifest.json').read_text())
         if (model_manifest['schemaVersion'] != evidence['schemaVersion']
@@ -80,6 +99,9 @@ def replay(upstream, manifest_path, output):
         # Write only after all source and replay gates pass.
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_bytes(candidate.read_bytes())
+        if generated_data_output is not None:
+            shutil.copytree(package / 'src/providers/data', generated_data_output,
+                            dirs_exist_ok=True)
         print('Candidate catalog generated:', output)
 
 
@@ -88,8 +110,10 @@ if __name__ == '__main__':
     parser.add_argument('--upstream', type=Path, required=True, help='Local git repository containing the exact commit')
     parser.add_argument('--manifest', type=Path, default=Path(__file__).resolve().parent.parent / 'Fixtures/Catalog/Schema6/manifest.json')
     parser.add_argument('--output', type=Path, required=True, help='Candidate output; never the accepted bundled catalog')
+    parser.add_argument('--generated-data-output', type=Path,
+                        help='Explicit bootstrap destination for verified upstream generated model data')
     options = parser.parse_args()
     accepted = Path(__file__).resolve().parent.parent / 'Sources/PiAIProviderRuntime/Resources/BuiltinCatalog.json'
     if options.output.resolve() == accepted:
         parser.error('Candidate replay cannot overwrite the accepted bundled catalog')
-    replay(options.upstream, options.manifest, options.output)
+    replay(options.upstream, options.manifest, options.output, options.generated_data_output)

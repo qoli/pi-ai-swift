@@ -155,6 +155,14 @@ function canonicalTerminal(message) {
 
 function stimulus(caseID) {
   switch (caseID) {
+    case "anthropic-mid-output-fallback": return sse([
+      anth("message_start", { type: "message_start", message: { id: "fallback", model: "fixture-model", usage: {input_tokens: 0, output_tokens: 0} } }),
+      anth("content_block_start", { type: "content_block_start", index: 0, content_block: {type: "text", text: ""} }),
+      anth("content_block_start", { type: "content_block_start", index: 1, content_block: {type: "fallback"} }),
+    ]);
+    case "pi-future-content-index": return sse(piEvents([{type: "start"}, {type: "text_start", contentIndex: 1}]));
+    case "pi-negative-content-index": return sse(piEvents([{type: "start"}, {type: "text_start", contentIndex: -1}]));
+    case "pi-string-content-index": return sse(piEvents([{type: "start"}, {type: "text_start", contentIndex: "__proto__"}]));
     case "anthropic-redacted-pause-usage": return sse([
       anth("message_start", { type: "message_start", message: { id: "anth-redacted", model: "fixture-model", usage: { input_tokens: 10, output_tokens: 0, cache_read_input_tokens: 2, cache_creation_input_tokens: 3 } } }),
       anth("content_block_start", { type: "content_block_start", index: 0, content_block: { type: "redacted_thinking", data: "opaque-redacted" } }),

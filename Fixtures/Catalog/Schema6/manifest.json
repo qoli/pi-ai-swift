@@ -1,16 +1,15 @@
 {
   "status": "candidate-catalog-only",
-  "candidate": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "candidate": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "nodeVersion": "v26.0.0",
   "schemaVersion": 6,
-  "structureHash": "53e161de9d88baaa7e561f3594051ed714c8e7a8f52c27c320462da24289f147",
-  "generatedAt": "2026-09-24T15:29:28.894Z",
+  "structureHash": "312c356a7d3ee3998618307020742191183268a30673256153dd0b230c5a2bae",
+  "generatedAt": "2026-10-29T19:46:21.098Z",
+  "generatorEntrypoint": "catalog/generate.ts",
+  "nodeConditions": [
+    "source"
+  ],
   "providerFiles": 42,
-  "modelCounts": {
-    "chat": 1518,
-    "image": 57,
-    "classifier": 4
-  },
   "offlineReplay": {
     "structureEqual": true,
     "allProviderFileHashesEqual": true,
@@ -20,104 +19,170 @@
     {
       "url": "https://openrouter.ai/api/v1/models",
       "status": 200,
-      "sha256": "622f496fc86ded9bcb8581be235b2ba9a1998067676f2c84a7b2c7b9dfc1c549"
+      "sha256": "b42358e4fbfa651cffc6b90a237f9995f36b0233d793faa8709a718effed7538"
     },
     {
       "url": "https://integrate.api.nvidia.com/v1/models",
       "status": 200,
-      "sha256": "df7082149b84f116c2c93173fe188a308914311b2e5b449adefa3ef259c11f0a"
+      "sha256": "0a17a6e846a3192756c77cfeb6781038b33bb0be7b194e5832c5e21e14762eee"
     },
     {
       "url": "https://models.dev/models.json?type=decision",
       "status": 200,
-      "sha256": "bd4e0a7f7898f39a9484eb23d1455298d8c3ff19aca8121f9bcdddac816b4093"
+      "sha256": "7d0ddf3122859dcabec516ebfe63603198cc698c5f4c44bc015304f10becaf36"
     },
     {
       "url": "https://radius.pi.dev/v1/config",
       "status": 200,
-      "sha256": "991d287c3f44f6536300d96a4fb4fdbaf7bbcf576115bbeeff50812c611bb2e2"
+      "sha256": "7d59223c0d54152f0edbcd71907f1b16e36d9848583e72d41b6e0c2243739334"
     },
     {
       "url": "https://ai-gateway.vercel.sh/v1/models",
       "status": 200,
-      "sha256": "49206fb3d3ad171cb1ad4f9b195c3a4d820e62ee415ece0dd83d17ce96e04ab8"
+      "sha256": "36e52ecd2aedcac595e0b81de40e572194d4243907cd551a53d30496fe3f3034"
+    },
+    {
+      "url": "https://models.dev/experimental/v2.0/api.json",
+      "status": 200,
+      "sha256": "c53fd0d95f6e6c7d671c40fc3f68b3ef8c6e9e536b5a008bd66a7689014c5b05"
     },
     {
       "url": "https://openrouter.ai/api/v1/models?output_modalities=image",
       "status": 200,
-      "sha256": "f0f3917f87393fc0dee4d0e1fd30b2bf13fe76500050fc50161114e45392b840"
+      "sha256": "f04fffd22d9a2bef48a94989122d715b85dbbe9c8131900cc8b2f4b4b8a9d563"
     },
     {
       "url": "https://openrouter.ai/api/v1/models?output_modalities=decisions",
       "status": 200,
-      "sha256": "0a30bc17a6c81ba1c167f55ba33216ff6a0ce2f86d01592d1349b7d853e95306"
-    },
-    {
-      "url": "https://models.dev/api.json",
-      "status": 200,
-      "sha256": "ac8c5aa796c5bb319cf7e466d702deb5a1c3cec84d64185b3f0cf7f8b49ca12d"
+      "sha256": "800d60633b17ff6510beb296933e475b060edb33774c69a197618869c9b71f47"
     }
   ],
   "providerFileHashes": {
-    "amazon-bedrock.json": "3e523d9be1675e7c14903e5a3810292ccdb2cee5b7bc5578606b7fbfb6fa38b1",
+    "amazon-bedrock.json": "7688f295f84a50aa390255a68c2e8fdc7ec0768f5737ab40358844d597e89803",
     "ant-ling.json": "628feab3ef6c7d80ce96f75999804e1d9f05fec3851e5302e30fff3b69db90f6",
-    "anthropic.json": "311790f257a5d16aeb1c62abaae30ae4497d721d70836c3e5d63266f34af1ec0",
-    "azure-openai-responses.json": "60a2c2e6a33b63bebaf62e1c8d790a9789b5aa825d9dcc1f227c3e8460a568e5",
-    "baseten.json": "883cdb952fd9eb8d8e3605c460744af36802d325f9a38f75998365e2871a5bcc",
-    "cerebras.json": "599b8885cea721d0e18912141cb83f0c861b92ef2a889ad680cf9e880ee8345f",
-    "cloudflare-ai-gateway.json": "7927c094a73ade3afd099d40842e58bb0849cf4ef3fb9b23c977bbd94099a108",
-    "cloudflare-workers-ai.json": "3f0a7654180c72fce112986567bb899f4a19815a9e8655e95876729b67e9529e",
+    "anthropic.json": "e462beb2e6d227b4dd1a8df22152cdebc9f3768d5dcf0939e1bf35e359129753",
+    "azure.json": "f95a8325f93825ab21d1d83fd2aff580f4d5cfa1a537c3108cd5ddb36f26e7fc",
+    "baseten.json": "db68a67a9aff8ad2cc05be9fc935dfe0c64cf72c46cca04bb2f2631f42f7fe80",
+    "cerebras.json": "2eb969b2956844f9a641d3de52c19f1791293c58f607282fb3b0ebfe85ff66f8",
+    "cloudflare-ai-gateway.json": "89736349f607dbe9680f7cc6431ba53302726e8984209de98f899246e63dcefb",
+    "cloudflare-workers-ai.json": "0dc5eda87ff6de3ee75ee6d547a60162319bb2d51ed09b1e7d47d8ae9ef8548e",
     "deepseek.json": "10a296fb3e898f7715c80890c8af0af4f5fd58f22dbcd6612fdc5d762157ccdc",
-    "fireworks.json": "9efd5fd4f42999d170d07f4a13b9c69ef9224742185bf8bba6d558282a4dd776",
-    "github-copilot.json": "f7b137c8815e3f9cebba8b917439fa189ca918c1cb89c47f97f477baade2d241",
-    "google-vertex.json": "40090c680538bc867f2624d986a449f361be4dfa6ba96d7a27402050f036e009",
-    "google.json": "c0f5a633e5e5a5044432db3e537f4bc674d4de18df09325c6349547fcc13cabe",
-    "groq.json": "910952ad9dad07856983459d63fce0148dba1203edd7b10d801a77c5824f3405",
-    "huggingface.json": "1b8604bd31a5e05fe43a40ec1ec6dfc1a51a28b0b020151ef057fab43f57c923",
-    "kimi-coding.json": "582250b920454d98940da3e7e99d30b807edbea28f2eb8ac15f658d2ef41e8fc",
-    "meta.json": "0c7e9a370a7005c5a89dc94f0f93bc67b8935c3f802de324f11af6ff56fff429",
-    "minimax-cn.json": "f962c20ee6a6a342820f778e9dc363a18a524bf11998f6e2c57f2989915d62e5",
-    "minimax.json": "17a432f80d0ea6dd26eade80a4314250d3a855678601728a5f70dd8fa0d21dd2",
-    "mistral.json": "790517a3abf5f652251f42658d6b285ecebe5a653bebe1fe69887caa1dd05f1d",
-    "moonshotai-cn.json": "79c9585dc84ee525ebaebbc78b3c55f3d369ec884d4f943488f1e0b14e3587f5",
-    "moonshotai.json": "1da2c4e34f22aef17a07c974d85bdee8e1b68b6dc712e3769c935b3f1e7dadca",
-    "nvidia.json": "3b4e7b799bf3eaacd1af0491eef77fe33147ea7f72a3a9fa54d77af0e7eacf4c",
-    "openai-codex.json": "4282a98c79de2cc98f45145f469d7936ab3273fd96d048aa103e3a507ce7de13",
-    "openai.json": "c38b47e2e10a81ef308a9777c7e85fc52df24d2db13028e3f5b40e9c1e00a6ff",
-    "opencode-go.json": "41db161844de0829193e41c3a8bcea2277e68265de53304478d7ac831141a3db",
-    "opencode.json": "88867f9e9fea0a8405901401990387c4b04c2d3b218f0eeb0d64c41b83cf1332",
-    "openrouter.json": "a865982ff257bbc9df9ccc00f01c679958c2a40866c8cb5085675b6d39df2c85",
-    "qwen-token-plan-cn.json": "2469a4091c474ec3db0a49a9962d8d2726c074ad9065b96bc4e0c87861c4c6c5",
-    "qwen-token-plan-individual.json": "0fb7cf64faf39d1a3b0a884210a86c87084b805eda15644f5f39293287b959dd",
-    "qwen-token-plan.json": "eff10620cb577142de4ec02698d5961a71fda2fe4f6ae7ea9432bad9d6844176",
-    "radius.json": "cbc5f1a2d70301d14ba01450322ac32310f2c9bad86e0235452d545d944829f9",
-    "together.json": "9b801ea54d982885f94ca16fa054a85a80c083653ac19fc9e741e73478dd78d4",
-    "typesafe.json": "a4429a2f696d5cc5273969af61a7310bda07d6bdcd27bf9ac9c76c534cc43716",
-    "vercel-ai-gateway.json": "6e6cc34632eae8c7e2de3da916a79fe57c8cba67be493e6107d0a564e0480b97",
-    "xai.json": "879c49b78b663a52a220ac4ee013e726b10c4f50aaa03bc58ee53a4b54c76928",
-    "xiaomi-token-plan-ams.json": "ca65178f4525d9705bc8d085ed136cecbe149c4080e857ea6a64ae643d2ac00a",
-    "xiaomi-token-plan-cn.json": "b065326926681c2262084e59c1c19ebdaf146c07107b5242c76b456becf74db0",
-    "xiaomi-token-plan-sgp.json": "92c3d6d707f81fd9cd2b6d1fb57dc431d90ba51e10fe49d97bc8806035c23492",
-    "xiaomi.json": "b81d01a374f7b558728c78d81f4168efa9c8996e6e2b5618409a8094b083c759",
-    "zai-coding-cn.json": "ee5ee705fb6e413a6088db5e3616c27fce802a8ece6c355f1db35490d787f610",
-    "zai.json": "58e6642fdfb736f0b9a4a277c760c536a3cea66a030abbfb2615f7b2851d5c6f"
+    "fireworks.json": "4c8b4942ce08b55df711ac8b1eea65bbf28135b2bf2f475c95f11b2e7aa1012d",
+    "github-copilot.json": "85330f133dac9017c97ad72dd2b356f3f03992c7ca3d5b0543060cbe13dcd34d",
+    "google-vertex.json": "bc32e24bfd8ab0caedda4c11a7527a1dcc7f783ff5326ce4c72a13bd7ab47d9b",
+    "google.json": "61a36b42e1436b84c8ed8d738ecb1a2a9d9267f876f7c612407a349b7ca4c301",
+    "groq.json": "087df37206e9eed8b10f1e558e4c496289bef60074b7e8afba4f20fb102b4ec2",
+    "huggingface.json": "cf34e226723c542afc4d024a1b1270b911738410dc5cf706fef5d9d4a0e08171",
+    "kimi-coding.json": "04e7914391e8e986d04b5cc8f84c49267d148a53a2d92bf968b7570dd8ff09b9",
+    "meta.json": "563f5ec07973f52ab8c3eb26ef91a36ad8a79e950b37174935666cdcb624bf35",
+    "minimax-cn.json": "fa15d1f67a07046d38e191af9bd97ed922ba45a99a11af4ad281151cc6b762aa",
+    "minimax.json": "1e0459dda3858ea24151182106fc4179b95f43a0a8dffc1c3d2e7db4c2d9206e",
+    "mistral.json": "f97d5a09edd370f2e8e731ba9880d793e8b7a00bcdee027c88ef3df56fe18cf6",
+    "moonshotai-cn.json": "1a15468b1edf9205956e4c5ea41fc4cacc14eabf00523b9143e23a38264f57f7",
+    "moonshotai.json": "f31cdf2e6c81a403c4cb0e6b7e759ceff2820f966b08dbec80cfafa3f80dfc63",
+    "nvidia.json": "e030898fb1d1778b85c5b86fdde95b28e4dd75f36302f50bcff8bf2941f919b1",
+    "openai-codex.json": "dd30453068f310317abf35d9adc6d841339a1351f0c6925a6aff45d975e0257c",
+    "openai.json": "df2fe1f312051bbe29801ef903ab370c701a74a680f1370e96eb465eacd1d82d",
+    "opencode-go.json": "daed1626c48d9cec6da77f53a163aec917d5d5fc8d6e4d53c23f448f99463328",
+    "opencode.json": "89049678c12b553fd44d3b760514ead39ebc6fa68d84b135db69c133ab443bc9",
+    "openrouter.json": "b053a3f6aa1da4c0488a490d84c75db3b7057c4b7c5c9da5e451f83044683d33",
+    "qwen-token-plan-cn.json": "80824536f0c3cd83ab27424df2d664738cbe3f971b4e568a625432288fa53229",
+    "qwen-token-plan-individual.json": "7d416a2af46d5ad5d7872f8edfa7727af4392827a5b77618ce89a3786628492a",
+    "qwen-token-plan.json": "0630bf7fea9d8579c7ac990e32c40c3685f9db20b6dbfaf745b361fe5203113c",
+    "radius.json": "a9bcc74b4a1ad2e01b6360d5f9197d802c18559a58be0ccd588662a01598368a",
+    "together.json": "ce03a702cf835ae1d3b4fd14ea4a1eae71a81224bc4a0826182f3f87b824aeee",
+    "typesafe.json": "631b03f70597ad656e8f45a393ab46bd4137459b9b499708ac3d5d9d9decd3f2",
+    "vercel-ai-gateway.json": "555a13d0b4fae16606bfc9cae0f5187c10bf7648ed64148df337df316344af7a",
+    "xai.json": "db408985a02980ba9d30f359b4f394a7d088cc75e26bd4bef30aecb43077771b",
+    "xiaomi-token-plan-ams.json": "34fe47b0a79fec7843a01d542cb64b736e651a3e6691cc851183e5ce3eae0118",
+    "xiaomi-token-plan-cn.json": "e69f9704b450dbb34b6db61a7b224dab5e5a91a39af3e505ecca4db8bfdc04f0",
+    "xiaomi-token-plan-sgp.json": "fd28cc293208617127ff888873772b7b52160538caa07ca3af641f3208d3ad20",
+    "xiaomi.json": "65bc04b2ab6c9e97594de34bcea4ef7e45befd87901b4208d1ea4142b93f0561",
+    "zai-coding-cn.json": "b335901611ad018680e5bb7fe7ba12a9f1be28e9d1530c783cbd6f4567a29a92",
+    "zai.json": "08b29b02416c26f0c1a219492fa7f9b23bdb90ef4e9f7693800b9e670dcc5860"
   },
   "generatorSourceHashes": {
-    "packages/ai/scripts/generate-models.ts": "6d7e6a1a18ad390e4b94c41ca996f2c471be47abb56aee74dfde30f82db6d5e3",
-    "packages/ai/scripts/model-data.ts": "39d8d085e709af4e67cf157868dccbec2fd7777c2bf80061f457c8eebcf76b83",
-    "packages/ai/scripts/openrouter-catalog.ts": "b0167118d4b8bebc78ba3e89a689e2a55c41ac22feadd68bd3da37d2e249ce09",
-    "packages/ai/scripts/models-dev-reasoning-options.ts": "a0c9deb26bf88b1af8950f06f2594c9f5a08c4c81c7461f9ee1d2a22e358d07f",
-    "packages/ai/src/providers/radius-config.ts": "1f82a7db25753be09374792ae0a3cd63417739018fb69b3212ad8b3b9eb11c21"
+    "package-lock.json": "5acba9a5ff112c8dd4e62c5ac686199c3a0f99721b86302bb3bb0f35d640ecb1",
+    "packages/ai/catalog/build.ts": "b26671f56a7774541c48847e30afe5bded49535c5d1e8e91882434b41b78de48",
+    "packages/ai/catalog/define.ts": "966c757cc898028c9eef1971516011928eaa5d5f4d21451a574be69b90bc5a31",
+    "packages/ai/catalog/families/anthropic.ts": "f044d99b3970b47e7bf4170160b3b42cdc09748622a45510e739c89cd2c4568c",
+    "packages/ai/catalog/families/deepseek.ts": "f8ef46270bda33741d8f6a87649c5e614167665adb14f0ae5d64bf348ad78cf4",
+    "packages/ai/catalog/families/google.ts": "201d2ba2da4cd441c3362f5a9c04b0fc3419493dba4f31f63853bd474356084b",
+    "packages/ai/catalog/families/kimi.ts": "b2a5a8bc64c1979b650c8a09a3ba19d12b2d94a09a18a221bd69db61c135c2de",
+    "packages/ai/catalog/families/openai.ts": "c37baec7f69e053ec46d7a0a4fea908b408f82702b39d1b1f7ad94d32739e549",
+    "packages/ai/catalog/generate.ts": "216abe76de82ca57c3e4b425d088c0cca8eafd28ebaa2a33bc8bba825d617cd5",
+    "packages/ai/catalog/providers/amazon-bedrock.ts": "83a82820d72507c2a845badeb6eff9e18f4e0eb54fddd9a6a85a0bee308a5acc",
+    "packages/ai/catalog/providers/ant-ling.ts": "013c67590ef8cd19dc199e1d92ef2649ff6a7101bf80912a3852287c24e4ca79",
+    "packages/ai/catalog/providers/anthropic.ts": "7230815973a164578e19246eb3bcd2875a9613ef808facb47ada8169be623bdb",
+    "packages/ai/catalog/providers/azure.ts": "81c503dda5f5423ea1cd0181421ee09ae0f23bd3a92e149bb46bf3301f4cdfd7",
+    "packages/ai/catalog/providers/baseten.ts": "c907a6ccd076e69c64fe9df2ccbfbc2c8986078b946a280d6472e5c641ba1466",
+    "packages/ai/catalog/providers/cerebras.ts": "205c913bf1289768b862bdb414aea4259c21da22f981efb3e8ef0701ab62b5fe",
+    "packages/ai/catalog/providers/cloudflare-ai-gateway.ts": "ed132820ffd8f67bb1573c68384219aa561db4cee52f422e09b18589b5c6f00b",
+    "packages/ai/catalog/providers/cloudflare-workers-ai.ts": "384632bc3a320df2c14664d226acaf7301e9d6731e34329b560dd2e39f22c1a5",
+    "packages/ai/catalog/providers/deepseek.ts": "2094212cff13c16ca9b2f594439c190cd8696e049a9ec9edabd164d093e3edef",
+    "packages/ai/catalog/providers/fireworks.ts": "8b54992c69de29ad07b770df87c87814d7e3314572a6c087dbc9f8dab8504b91",
+    "packages/ai/catalog/providers/github-copilot.ts": "79654602a8c6fc0583997239842f53d7d59a691210ab6fca83c2935a43b44968",
+    "packages/ai/catalog/providers/google-vertex.ts": "fdf3aaa9c5603ae95d5c651b8eb6c59eaaef7d8b9c14336a72c16988b022d4c7",
+    "packages/ai/catalog/providers/google.ts": "9b576fc54123e3264c60dcfd681e31de2476df734c4c1262ca99df658a6f0527",
+    "packages/ai/catalog/providers/groq.ts": "447a5a438e54d2fc5bfd6e1fe070ee82e2b2283a37b130681d7b955f48666fa5",
+    "packages/ai/catalog/providers/huggingface.ts": "fb8b413cd7f45d3f4b1e2033edcb9515eff2159d9d1d91f57c0ce07201cc8791",
+    "packages/ai/catalog/providers/index.ts": "24668ff5ab92d966afbb4662d70b5b1b371cbbcf5bc80c39b030be611bb0fa2e",
+    "packages/ai/catalog/providers/kimi-coding.ts": "0b671154d03017b71ca25fd982373ca1c14ff4611d1673905e4dc8db892fe037",
+    "packages/ai/catalog/providers/meta.ts": "71cfc67cf496a3671835b3787529a724db82cd2a68bf5a409cabfffaaca9d0c0",
+    "packages/ai/catalog/providers/minimax-cn.ts": "eb17f5c6eeec6736640e3f2bcf9dd8ad57450557a19f40cc5458ced465b2f748",
+    "packages/ai/catalog/providers/minimax.ts": "0f3a5bb7b7669c25915bad364617b1c2dfdde50eb19df15d558368453a716566",
+    "packages/ai/catalog/providers/mistral.ts": "f5669adb9d9facfb244e8a252f4df812cd4022bd48941d18252ad9273ae2a07d",
+    "packages/ai/catalog/providers/moonshotai-cn.ts": "5437054d5bc6ce74ada782051a6989073015fe4619da28407cba910d4cd2c9fa",
+    "packages/ai/catalog/providers/moonshotai.ts": "994d88db4c173b06f54584604314640b07f73f1ff2342b6fb942ba3ee8bd4b00",
+    "packages/ai/catalog/providers/nvidia.ts": "1a082e47d1f0a48dac9c974b970384e4c0ab3e549d06c3c449809993897a473d",
+    "packages/ai/catalog/providers/openai-codex.ts": "369c10a2f7f105f30626dee8bd52366c1eb1d313e4af783ae49f243e69469ae1",
+    "packages/ai/catalog/providers/openai.ts": "8b9f4f3973fa45dad7030a7c54f2fb1e82144ba59733bede8b24818558a43ef6",
+    "packages/ai/catalog/providers/opencode-go.ts": "3ff7992154930b76ad2376e2bb6b0df76e34bf048a6b3c2f4d907d52922bc83a",
+    "packages/ai/catalog/providers/opencode.ts": "739ecc20f7a6d764d60573b1f24cdeb333c073881eccd1a5979f061b32cebab1",
+    "packages/ai/catalog/providers/openrouter.ts": "032f47644d3f825d87615f1bc18730a01d258aff09617d6f7e08c9adcd03944d",
+    "packages/ai/catalog/providers/qwen-token-plan-cn.ts": "2ffe161e63b63e86780b1b668a7d6f4de7c831f5a730429fe2dae41577346e59",
+    "packages/ai/catalog/providers/qwen-token-plan-individual.ts": "f8aad3dea6c71b374a73f62c788937af95d15ce5ecc668a3b380f9185e4faf2f",
+    "packages/ai/catalog/providers/qwen-token-plan.ts": "67e1cce48ca567e67d1303afbecdeaae7471ad9fce93bbd961ae1fd966ba5626",
+    "packages/ai/catalog/providers/radius.ts": "0ee6db47ce94d1ff0f592dcdafc9f8e5c4cfb60f31a3cd8fb5b137e3826ddc91",
+    "packages/ai/catalog/providers/together.ts": "d9bc2e64799ac178876456c46dbd63af9f81e18b0f3dbc5bb55d845392fba523",
+    "packages/ai/catalog/providers/typesafe.ts": "a4d269944c72c74c4deb310f06db4c58036903be1b04c5776bed221a3c437c21",
+    "packages/ai/catalog/providers/vercel-ai-gateway.ts": "07a3ff017fc3a672af6608be2046f7e206b997f67c431cd93dd381e5fe6e8607",
+    "packages/ai/catalog/providers/xai.ts": "1c939eccaedbbf50b5f8ec9c1e86a83c3cb61bfce458e6afd40d1862385cbd08",
+    "packages/ai/catalog/providers/xiaomi-token-plan-ams.ts": "aaee6ae9d411b205cfc7b137f46b50690d22e4b89a0539e48115c76d9dbf66a2",
+    "packages/ai/catalog/providers/xiaomi-token-plan-cn.ts": "90ecb7dbb8944de3a95588bb72c1a73fa9c554d55a91d596386400e6aa88b98e",
+    "packages/ai/catalog/providers/xiaomi-token-plan-sgp.ts": "7ba76a6c320f58348b6aa46248e9fd9ee96a93ddf34dec9ac6081bd8effc10ab",
+    "packages/ai/catalog/providers/xiaomi.ts": "9d5004dc43be1f827cc1318ea3097d5b04c8ed6a671dfac6f76f78f77f8f85b6",
+    "packages/ai/catalog/providers/zai-coding-cn.ts": "261df5914d6499deffb48b7de8044743d4681d616701fcd4d84772276fcb3a20",
+    "packages/ai/catalog/providers/zai.ts": "387f6fdca15795e39bf5d8f7f4d6e4a2c624390e4fbf3503ce6d9fb10c7dfa17",
+    "packages/ai/catalog/reasoning.ts": "7060898e78a011e33e3da99c09c6f181e0d0f333d53289b5daf23b4d22282ae3",
+    "packages/ai/catalog/sources/index.ts": "c5f52cbbcdcde8c1561577eaa37af978578ed25e5f4cda1134af17ea43b16400",
+    "packages/ai/catalog/sources/models-dev.ts": "1158bf23507bfdd23a07c8d47230a63efaad0a0bd408feef04722715f86fe3f0",
+    "packages/ai/catalog/sources/openrouter.ts": "76384062de99774492a916a267591cfb8775f3a36a590a4423cdd11a65bc67cc",
+    "packages/ai/catalog/sources/vercel-ai-gateway.ts": "d241984929e65519d35bfb74ebbfedf76c53b81fcd329278a5e4fdda668119ce",
+    "packages/ai/scripts/model-data.ts": "f2605a61ad57d8a3edb93e5c36c0f543d051796b8353452a1fd584eec33f02f4",
+    "packages/ai/src/providers/radius-config.ts": "0e8c55d29039d760ba4cb8a763e61ea742ac13b3acdf42891c82486a610ab4f4",
+    "packages/ai/src/utils/identity.ts": "873fded86c5310497e6cc375256f3c85fffb2a9528145d96e6464142778ba1de",
+    "packages/ai/src/utils/text.ts": "afd14685bef440b184b32c2ddb8bc5c751c542e5114d4384b66befbc6af0cec3",
+    "packages/ai/src/utils/version.ts": "8b7a126cbf9b5f608edff3fcc0bb0f9cf295e0b243d9ccbcede343275fa2dd4a",
+    "packages/telemetry/src/index.ts": "97839ea4755527f472303ffd512ff94c0ccd9497716f725a0039eb7fc0a9a310",
+    "packages/telemetry/src/memory.ts": "a6fe141791a800b50cdf17834803a203e1925f7b5a8afaaa0331dc8517164656",
+    "packages/telemetry/src/metrics.ts": "4a7ca7009322e63e12dff530b8850e97e0539f109ac41d90f635b1102103e4f1",
+    "packages/telemetry/src/noop.ts": "77eec443152d4ca9898ded124b1b2e75fb8f31bc01e3e74bfcb0306158e0853d"
   },
   "responseArchive": {
     "path": "responses.json.gz",
-    "sha256": "ff7074962f62caa3688584557fc815912fd9d894a047d558ec462d630de13bdd"
+    "sha256": "2a2f0ad582d621f6757b97c888e1290c7ae645f75fc13bcd333809b9a5889cf2"
   },
   "repository": "https://github.com/earendil-works/pi.git",
   "package": {
     "path": "packages/ai",
     "name": "@earendil-works/pi-ai",
-    "version": "0.87.1"
+    "version": "1.4.0"
   },
-  "projectedProvidersSHA256": "049f1561b7686d12cf302dbb39cd49c45b66d5479f9e3139bfab8659c30252e8"
+  "modelCounts": {
+    "chat": 1596,
+    "image": 64,
+    "classifier": 55
+  },
+  "projectedProvidersSHA256": "2fa972d38d824505580e255ff089f168db8a62af6723dadd7a37cf810d667b9d"
 }

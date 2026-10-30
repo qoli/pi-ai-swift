@@ -1,7 +1,1596 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "providers": [
+    {
+      "id": "azure",
+      "name": "Azure",
+      "baseURL": null,
+      "headers": {},
+      "authorizationMethods": [
+        "apiKey"
+      ],
+      "models": [
+        {
+          "id": "chat-latest",
+          "name": "Chat Latest",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 5,
+            "output": 30,
+            "cacheRead": 0.5,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4",
+          "name": "GPT-4",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 30,
+            "output": 60,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 8192,
+          "maxTokens": 8192,
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4-turbo",
+          "name": "GPT-4 Turbo",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 10,
+            "output": 30,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 128000,
+          "maxTokens": 4096,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4.1",
+          "name": "GPT-4.1",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2,
+            "output": 8,
+            "cacheRead": 0.5,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1047576,
+          "maxTokens": 32768,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4.1-mini",
+          "name": "GPT-4.1 mini",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.4,
+            "output": 1.6,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1047576,
+          "maxTokens": 32768,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4.1-nano",
+          "name": "GPT-4.1 nano",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0.4,
+            "cacheRead": 0.025,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1047576,
+          "maxTokens": 32768,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4o",
+          "name": "GPT-4o",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2.5,
+            "output": 10,
+            "cacheRead": 1.25,
+            "cacheWrite": 0
+          },
+          "contextWindow": 128000,
+          "maxTokens": 16384,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4o-2024-05-13",
+          "name": "GPT-4o (2024-05-13)",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 5,
+            "output": 15,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 128000,
+          "maxTokens": 4096,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4o-2024-08-06",
+          "name": "GPT-4o (2024-08-06)",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2.5,
+            "output": 10,
+            "cacheRead": 1.25,
+            "cacheWrite": 0
+          },
+          "contextWindow": 128000,
+          "maxTokens": 16384,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4o-2024-11-20",
+          "name": "GPT-4o (2024-11-20)",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2.5,
+            "output": 10,
+            "cacheRead": 1.25,
+            "cacheWrite": 0
+          },
+          "contextWindow": 128000,
+          "maxTokens": 16384,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-4o-mini",
+          "name": "GPT-4o mini",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.15,
+            "output": 0.6,
+            "cacheRead": 0.075,
+            "cacheWrite": 0
+          },
+          "contextWindow": 128000,
+          "maxTokens": 16384,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5",
+          "name": "GPT-5",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1.25,
+            "output": 10,
+            "cacheRead": 0.125,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5-chat-latest",
+          "name": "GPT-5 Chat Latest",
+          "api": "azure-openai-responses",
+          "baseUrl": "",
+          "provider": "azure",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1.25,
+            "output": 10,
+            "cacheRead": 0.125,
+            "cacheWrite": 0
+          },
+          "contextWindow": 128000,
+          "maxTokens": 16384,
+          "thinkingLevelMap": {
+            "off": null
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5-mini",
+          "name": "GPT-5 Mini",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.25,
+            "output": 2,
+            "cacheRead": 0.025,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5-nano",
+          "name": "GPT-5 Nano",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.05,
+            "output": 0.4,
+            "cacheRead": 0.005,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5-pro",
+          "name": "GPT-5 Pro",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 15,
+            "output": 120,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.1",
+          "name": "GPT-5.1",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1.25,
+            "output": 10,
+            "cacheRead": 0.125,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.2",
+          "name": "GPT-5.2",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cacheRead": 0.175,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.2-pro",
+          "name": "GPT-5.2 Pro",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 21,
+            "output": 168,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.3-codex",
+          "name": "GPT-5.3 Codex",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cacheRead": 0.175,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.3-codex-spark",
+          "name": "GPT-5.3 Codex Spark",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cacheRead": 0.175,
+            "cacheWrite": 0
+          },
+          "contextWindow": 128000,
+          "maxTokens": 32000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.4",
+          "name": "GPT-5.4",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2.5,
+            "output": 15,
+            "cacheRead": 0.25,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1050000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.4-mini",
+          "name": "GPT-5.4 mini",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.75,
+            "output": 4.5,
+            "cacheRead": 0.075,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.4-nano",
+          "name": "GPT-5.4 nano",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.2,
+            "output": 1.25,
+            "cacheRead": 0.02,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.4-pro",
+          "name": "GPT-5.4 Pro",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 30,
+            "output": 180,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1050000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.5",
+          "name": "GPT-5.5",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 5,
+            "output": 30,
+            "cacheRead": 0.5,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1050000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.5-pro",
+          "name": "GPT-5.5 Pro",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 30,
+            "output": 180,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1050000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh",
+            "minimal": null,
+            "low": null
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.6-cyber",
+          "name": "GPT-5.6 Cyber",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 12.5,
+            "output": 75,
+            "cacheRead": 1.25,
+            "cacheWrite": 15.625
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "name": "GPT-5.6 Luna",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.2,
+            "output": 1.2,
+            "cacheRead": 0.02,
+            "cacheWrite": 0.25
+          },
+          "contextWindow": 1050000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.6-sol",
+          "name": "GPT-5.6 Sol",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 4,
+            "output": 20,
+            "cacheRead": 0.4,
+            "cacheWrite": 5
+          },
+          "contextWindow": 1050000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-5.6-terra",
+          "name": "GPT-5.6 Terra",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2,
+            "output": 12,
+            "cacheRead": 0.2,
+            "cacheWrite": 2.5
+          },
+          "contextWindow": 1050000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-6-astra",
+          "name": "GPT-6 Astra",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 10,
+            "output": 50,
+            "cacheRead": 1,
+            "cacheWrite": 12.5
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-6-luna",
+          "name": "GPT-6 Luna",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0.5,
+            "cacheRead": 0.01,
+            "cacheWrite": 0.125
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-6-sol",
+          "name": "GPT-6 Sol",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2,
+            "output": 10,
+            "cacheRead": 0.2,
+            "cacheWrite": 2.5
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-6.1-sol",
+          "name": "GPT-6.1 Sol",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2,
+            "output": 10,
+            "cacheRead": 0.1,
+            "cacheWrite": 2.5
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-6.1-terra",
+          "name": "GPT-6.1 Terra",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 5,
+            "cacheRead": 0.05,
+            "cacheWrite": 1.25
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "compat": {
+            "supportsOpenAIGrammarTools": true
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-daybreak-blue-latest",
+          "name": "Daybreak Blue",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 4,
+            "output": 20,
+            "cacheRead": 0.4,
+            "cacheWrite": 5
+          },
+          "contextWindow": 1050000,
+          "maxTokens": 128000,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "gpt-daybreak-red-latest",
+          "name": "Daybreak Red",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 12.5,
+            "output": 75,
+            "cacheRead": 1.25,
+            "cacheWrite": 15.625
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "o1",
+          "name": "o1",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 15,
+            "output": 60,
+            "cacheRead": 7.5,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 100000,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "o1-pro",
+          "name": "o1-pro",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 150,
+            "output": 600,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 100000,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "o3",
+          "name": "o3",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2,
+            "output": 8,
+            "cacheRead": 0.5,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 100000,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "o3-mini",
+          "name": "o3-mini",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1.1,
+            "output": 4.4,
+            "cacheRead": 0.55,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 100000,
+          "type": "chat"
+        },
+        {
+          "id": "o3-pro",
+          "name": "o3-pro",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 20,
+            "output": 80,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 100000,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "o4-mini",
+          "name": "o4-mini",
+          "api": "azure-openai-responses",
+          "provider": "azure",
+          "baseUrl": "",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1.1,
+            "output": 4.4,
+            "cacheRead": 0.275,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 100000,
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "deepseek-v4-pro",
+          "name": "DeepSeek V4 Pro",
+          "api": "openai-completions",
+          "baseUrl": "",
+          "provider": "azure",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1.925,
+            "output": 3.828,
+            "cacheRead": 0.165,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1000000,
+          "maxTokens": 384000,
+          "compat": {
+            "supportsStrictMode": true,
+            "requiresReasoningContentOnAssistantMessages": true,
+            "thinkingFormat": "openai",
+            "supportsDeveloperRole": false,
+            "supportsMidConvoSystemMessages": true,
+            "supportsLongCacheRetention": false
+          },
+          "thinkingLevelMap": {
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": null,
+            "max": null
+          },
+          "type": "chat"
+        }
+      ]
+    },
     {
       "id": "cloudflare-workers-ai",
       "name": "Cloudflare Workers AI",
@@ -13,11 +1602,500 @@
       "models": [
         {
           "type": "classifier",
+          "id": "@cf/cloudflare/clef",
+          "name": "Clef",
+          "api": "cloudflare-workers-ai-system-one",
+          "provider": "cloudflare-workers-ai",
+          "baseUrl": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.24,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 65536,
+          "compat": {
+            "imageInput": "images"
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "@cf/cloudflare/clef-flash",
+          "name": "Clef Flash",
+          "api": "cloudflare-workers-ai-system-one",
+          "provider": "cloudflare-workers-ai",
+          "baseUrl": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.038,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 24576,
+          "compat": {
+            "imageInput": "images"
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "@cf/cloudflare/clef-omni",
+          "name": "Clef Omni",
+          "api": "cloudflare-workers-ai-system-one",
+          "provider": "cloudflare-workers-ai",
+          "baseUrl": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.15,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 64000,
+          "compat": {
+            "imageInput": "images"
+          }
+        },
+        {
+          "type": "classifier",
           "id": "typesafe/jev",
           "name": "Jev",
           "api": "cloudflare-workers-ai-system-one",
           "provider": "cloudflare-workers-ai",
           "baseUrl": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32000,
+          "compat": {
+            "imageInput": "assets"
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "typesafe/jev-1.14.0",
+          "name": "Jev 1.14",
+          "api": "cloudflare-workers-ai-system-one",
+          "provider": "cloudflare-workers-ai",
+          "baseUrl": "https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32000,
+          "compat": {
+            "imageInput": "assets"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kimi-coding",
+      "name": "Kimi For Coding",
+      "baseURL": "https://api.kimi.com/coding/v1",
+      "headers": {},
+      "authorizationMethods": [
+        "apiKey",
+        "oauth"
+      ],
+      "models": [
+        {
+          "id": "k3",
+          "name": "Kimi K3",
+          "api": "openai-completions",
+          "provider": "kimi-coding",
+          "baseUrl": "https://api.kimi.com/coding/v1",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 3,
+            "output": 15,
+            "cacheRead": 0.3,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1048576,
+          "maxTokens": 131072,
+          "compat": {
+            "supportsStrictMode": false,
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": true,
+            "maxTokensField": "max_tokens",
+            "thinkingFormat": "openai",
+            "requiresReasoningContentOnAssistantMessages": true,
+            "supportsMidConvoSystemMessages": true,
+            "supportsMidConvoToolAdditions": true
+          },
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": null,
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "k3-256k",
+          "name": "Kimi K3-256K",
+          "api": "openai-completions",
+          "provider": "kimi-coding",
+          "baseUrl": "https://api.kimi.com/coding/v1",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 3,
+            "output": 15,
+            "cacheRead": 0.3,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "maxTokens": 131072,
+          "compat": {
+            "supportsStrictMode": false,
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": true,
+            "maxTokensField": "max_tokens",
+            "thinkingFormat": "openai",
+            "requiresReasoningContentOnAssistantMessages": true,
+            "supportsMidConvoSystemMessages": true,
+            "supportsMidConvoToolAdditions": true
+          },
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": null,
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "k3.1-pro",
+          "name": "Kimi K3.1 Pro",
+          "api": "openai-completions",
+          "provider": "kimi-coding",
+          "baseUrl": "https://api.kimi.com/coding/v1",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2,
+            "output": 10,
+            "cacheRead": 0.2,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1048576,
+          "maxTokens": 131072,
+          "compat": {
+            "supportsStrictMode": false,
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": true,
+            "maxTokensField": "max_tokens",
+            "thinkingFormat": "openai",
+            "requiresReasoningContentOnAssistantMessages": true,
+            "supportsMidConvoSystemMessages": true,
+            "supportsMidConvoToolAdditions": true
+          },
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": null,
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "k3.1-pro-highspeed",
+          "name": "Kimi K3.1 Pro Highspeed",
+          "api": "openai-completions",
+          "provider": "kimi-coding",
+          "baseUrl": "https://api.kimi.com/coding/v1",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 4,
+            "output": 20,
+            "cacheRead": 0.2,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1048576,
+          "maxTokens": 131072,
+          "compat": {
+            "supportsStrictMode": false,
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": true,
+            "maxTokensField": "max_tokens",
+            "thinkingFormat": "openai",
+            "requiresReasoningContentOnAssistantMessages": true,
+            "supportsMidConvoSystemMessages": true,
+            "supportsMidConvoToolAdditions": true
+          },
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": null,
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "kimi-for-coding",
+          "name": "kimi-for-coding",
+          "api": "openai-completions",
+          "provider": "kimi-coding",
+          "baseUrl": "https://api.kimi.com/coding/v1",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.95,
+            "output": 4,
+            "cacheRead": 0.19,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1048576,
+          "maxTokens": 32768,
+          "compat": {
+            "supportsStrictMode": false,
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": true,
+            "maxTokensField": "max_tokens",
+            "thinkingFormat": "openai",
+            "requiresReasoningContentOnAssistantMessages": true,
+            "supportsMidConvoSystemMessages": true,
+            "supportsMidConvoToolAdditions": true
+          },
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": null,
+            "low": "low",
+            "medium": null,
+            "high": "high",
+            "xhigh": null,
+            "max": "max"
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        },
+        {
+          "id": "kimi-for-coding-highspeed",
+          "name": "Kimi For Coding HighSpeed",
+          "api": "openai-completions",
+          "provider": "kimi-coding",
+          "baseUrl": "https://api.kimi.com/coding/v1",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 1.9,
+            "output": 8,
+            "cacheRead": 0.38,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "compat": {
+            "supportsStrictMode": false,
+            "supportsStore": false,
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": false,
+            "maxTokensField": "max_tokens",
+            "thinkingFormat": "deepseek",
+            "supportsMidConvoSystemMessages": true
+          },
+          "thinkingLevelMap": {
+            "off": null
+          },
+          "inputLimits": {
+            "images": {
+              "resize": {
+                "maxWidth": 2000,
+                "maxHeight": 2000,
+                "maxBytes": 4718592,
+                "jpegQuality": 80
+              }
+            }
+          },
+          "type": "chat"
+        }
+      ]
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "baseURL": "https://api.openai.com/v1",
+      "headers": {},
+      "authorizationMethods": [
+        "apiKey",
+        "oauth"
+      ],
+      "models": [
+        {
+          "type": "classifier",
+          "id": "gpt-6-luna",
+          "name": "GPT-6 Luna",
+          "api": "openai-decisions",
+          "provider": "openai",
+          "baseUrl": "https://api.openai.com/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "tiers": [
+              {
+                "inputTokensAbove": 272000,
+                "input": 0.2,
+                "output": 0,
+                "cacheRead": 0,
+                "cacheWrite": 0
+              }
+            ]
+          },
+          "contextWindow": 922000
+        }
+      ]
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode Zen",
+      "baseURL": null,
+      "headers": {},
+      "authorizationMethods": [
+        "apiKey"
+      ],
+      "models": [
+        {
+          "type": "classifier",
+          "id": "jev-1.13",
+          "name": "Jev 1.13",
+          "api": "typesafe-system-one",
+          "provider": "opencode",
+          "baseUrl": "https://opencode.ai/inference/systemone/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32000
+        },
+        {
+          "type": "classifier",
+          "id": "jev-1.13-free",
+          "name": "Jev 1.13 Free",
+          "api": "typesafe-system-one",
+          "provider": "opencode",
+          "baseUrl": "https://opencode.ai/inference/systemone/v1",
           "input": [
             "text"
           ],
@@ -94,8 +2172,8 @@
             "image"
           ],
           "cost": {
-            "input": -1000000,
-            "output": -1000000,
+            "input": 0,
+            "output": 0,
             "cacheRead": 0,
             "cacheWrite": 0
           },
@@ -131,13 +2209,13 @@
             "image"
           ],
           "cost": {
-            "input": -1000000,
-            "output": -1000000,
+            "input": 0,
+            "output": 0,
             "cacheRead": 0,
             "cacheWrite": 0
           },
           "contextWindow": 2000000,
-          "maxTokens": 4096,
+          "maxTokens": 65536,
           "compat": {
             "supportsDeveloperRole": false,
             "thinkingFormat": "openrouter",
@@ -203,8 +2281,8 @@
             "image"
           ],
           "cost": {
-            "input": -1000000,
-            "output": -1000000,
+            "input": 0,
+            "output": 0,
             "cacheRead": 0,
             "cacheWrite": 0
           },
@@ -235,8 +2313,8 @@
             "image"
           ],
           "cost": {
-            "input": -1000000,
-            "output": -1000000,
+            "input": 0,
+            "output": 0,
             "cacheRead": 0,
             "cacheWrite": 0
           },
@@ -253,8 +2331,259 @@
         },
         {
           "type": "classifier",
+          "id": "~liquid/d1-latest",
+          "name": "LiquidAI: d1 Latest",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0.02,
+            "cacheWrite": 0
+          },
+          "contextWindow": 65536,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "~liquid/d1-ultra-latest",
+          "name": "LiquidAI: d1-ultra Latest",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0.042,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32768,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "~perplexity/pplx-decider-flash-latest",
+          "name": "Perplexity: Decider Flash Latest",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.01,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "~perplexity/pplx-decider-latest",
+          "name": "Perplexity: Decider Latest",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
           "id": "~typesafe/jev-latest",
           "name": "TypeSafe: Jev Latest",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "baseten/elephant-1",
+          "name": "Baseten: Elephant 1",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.035,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 16384,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "baseten/mammoth-1",
+          "name": "Baseten: Mammoth 1",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 16384,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "cloudflare/clef",
+          "name": "Cloudflare: Clef",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.24,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 65536,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "cloudflare/clef-flash",
+          "name": "Cloudflare: Clef Flash",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.038,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 24576,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "cloudflare/clef-omni",
+          "name": "Cloudflare: Clef Omni",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.15,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 65536,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "inception/mercury-decide",
+          "name": "Inception: Mercury Decide",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 65536,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "jaredpalmer/kev-4b",
+          "name": "Jared Palmer: Kev 4B",
           "api": "typesafe-system-one",
           "provider": "openrouter",
           "baseUrl": "https://openrouter.ai/api/v1",
@@ -267,7 +2596,372 @@
             "cacheRead": 0,
             "cacheWrite": 0
           },
-          "contextWindow": 32000
+          "contextWindow": 8192,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "liquid/d1",
+          "name": "LiquidAI: d1",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0.02,
+            "cacheWrite": 0
+          },
+          "contextWindow": 65536,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "liquid/d1-ultra",
+          "name": "LiquidAI: d1-ultra",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0.042,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32768,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "liquid/d1.1",
+          "name": "LiquidAI: d1.1",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0.02,
+            "cacheWrite": 0
+          },
+          "contextWindow": 65536,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "microsoft/microsoft-decision-1",
+          "name": "Microsoft: Microsoft-Decision-1",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32768,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "nace-ai/drex-max",
+          "name": "Nace.AI: Drex Max",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.06,
+            "output": 0,
+            "cacheRead": 0.06,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "nace-ai/drex-v1.5",
+          "name": "Nace.AI: Drex v1.5",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.04,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 131072,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "nace-ai/drex-v2.0",
+          "name": "Nace.AI: Drex v2.0",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.06,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 131072,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "openai/gpt-6-luna-decisions",
+          "name": "OpenAI: GPT-6 Luna Decisions",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1050000,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "perplexity/pplx-decider-flash-v1.2",
+          "name": "Perplexity: Decider Flash V1.2",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.01,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "perplexity/pplx-decider-v1.2",
+          "name": "Perplexity: Decider V1.2",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "respan/span-01",
+          "name": "Respan: Span-01",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 4096,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "respan/span-01-lite",
+          "name": "Respan: Span-01 Lite",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 4096,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "respan/span-01-lite:free",
+          "name": "Respan: Span-01 Lite (free)",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 4096,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "respan/span-02",
+          "name": "Respan: Span-02",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.01,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 131072,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "scaledown/classify-1",
+          "name": "ScaleDown: Classify-1",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.04,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1000000,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "togethercomputer/tev1-4b-experimental",
+          "name": "Together: Tev1 4B Experimental",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32768,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
         },
         {
           "type": "classifier",
@@ -277,7 +2971,8 @@
           "provider": "openrouter",
           "baseUrl": "https://openrouter.ai/api/v1",
           "input": [
-            "text"
+            "text",
+            "image"
           ],
           "cost": {
             "input": 0.042,
@@ -285,7 +2980,78 @@
             "cacheRead": 0,
             "cacheWrite": 0
           },
-          "contextWindow": 32000
+          "contextWindow": 262144,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "typesafe/jev-1.14",
+          "name": "TypeSafe: Jev 1.14",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "upstage/solar-decide",
+          "name": "Upstage: Solar Decide",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.05,
+            "output": 0,
+            "cacheRead": 0.05,
+            "cacheWrite": 0
+          },
+          "contextWindow": 524288,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
+        },
+        {
+          "type": "classifier",
+          "id": "upstage/solar-decide-flash",
+          "name": "Upstage: Solar Decide Flash",
+          "api": "typesafe-system-one",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.05,
+            "output": 0,
+            "cacheRead": 0.05,
+            "cacheWrite": 0
+          },
+          "contextWindow": 524288,
+          "compat": {
+            "imageInput": "state-image-urls",
+            "sendImageOptInHeader": false
+          }
         }
       ]
     },
@@ -306,6 +3072,76 @@
           "provider": "typesafe",
           "baseUrl": "https://api.typesafe.ai/v1/",
           "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 64000,
+          "compat": {
+            "imageInput": "assets",
+            "sendImageOptInHeader": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "vercel-ai-gateway",
+      "name": "Vercel AI Gateway",
+      "baseURL": "https://ai-gateway.vercel.sh",
+      "headers": {},
+      "authorizationMethods": [
+        "apiKey"
+      ],
+      "models": [
+        {
+          "type": "classifier",
+          "id": "baseten/elephant-1",
+          "name": "Elephant-1",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.035,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 16384
+        },
+        {
+          "type": "classifier",
+          "id": "baseten/mammoth-1",
+          "name": "Mammoth-1",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 16384
+        },
+        {
+          "type": "classifier",
+          "id": "convaiinnovations/laya",
+          "name": "Laya",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
             "text"
           ],
           "cost": {
@@ -314,7 +3150,205 @@
             "cacheRead": 0,
             "cacheWrite": 0
           },
-          "contextWindow": 64000
+          "contextWindow": 8192
+        },
+        {
+          "type": "classifier",
+          "id": "convaiinnovations/laya-free",
+          "name": "Laya (Free)",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 8192
+        },
+        {
+          "type": "classifier",
+          "id": "liquid/d1",
+          "name": "Liquid d1",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 65536
+        },
+        {
+          "type": "classifier",
+          "id": "liquid/d1-ultra",
+          "name": "Liquid d1 Ultra",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32768
+        },
+        {
+          "type": "classifier",
+          "id": "microsoft/microsoft-decision-1",
+          "name": "Decision-1",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32768
+        },
+        {
+          "type": "classifier",
+          "id": "openai/gpt-6-luna-decisions",
+          "name": "GPT-6 Luna Decisions",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1050000
+        },
+        {
+          "type": "classifier",
+          "id": "perplexity/pplx-decider-flash-v1.2",
+          "name": "Decider Flash V1.2 4B",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.01,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144
+        },
+        {
+          "type": "classifier",
+          "id": "perplexity/pplx-decider-v1.2",
+          "name": "Decider V1.2 27B",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.02,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 262144
+        },
+        {
+          "type": "classifier",
+          "id": "scaledown/scaledown-classify-1",
+          "name": "Classify-1",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.05,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 4096
+        },
+        {
+          "type": "classifier",
+          "id": "typesafe-ai/jev",
+          "name": "Jev",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32000
+        },
+        {
+          "type": "classifier",
+          "id": "typesafe-ai/jev-1.13.0",
+          "name": "Jev 1.13.0",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32000
+        },
+        {
+          "type": "classifier",
+          "id": "typesafe-ai/jev-1.14.0",
+          "name": "Jev 1.14.0",
+          "api": "typesafe-system-one",
+          "provider": "vercel-ai-gateway",
+          "baseUrl": "https://ai-gateway.vercel.sh/typesafe/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0.042,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 32000
         }
       ]
     }

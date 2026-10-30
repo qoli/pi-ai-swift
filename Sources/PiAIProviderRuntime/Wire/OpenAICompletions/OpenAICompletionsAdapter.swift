@@ -34,7 +34,9 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
             pricing: try ProviderUsagePricing.parse(
               metadata: context.modelConfiguration.metadata,
               providerID: request.providerID,
-              operation: "openai-completions.usage.pricing")
+              operation: "openai-completions.usage.pricing"),
+            isOpenRouter: request.providerID == "openrouter"
+              || context.baseURL.absoluteString.contains("openrouter.ai")
           )
           for try await chunk in response.body {
             try Task.checkCancellation()
@@ -196,7 +198,12 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     context: WireProtocolContext
   ) throws -> URLRequest {
     try request.validateSingleSystemMessage(operation: "openai-completions.request.system")
-    let endpoint = context.baseURL.appending(path: "chat/completions")
+    let azure =
+      request.providerID == "azure"
+      ? try ResolvedAzureOpenAIResponsesConfiguration.resolve(
+        request: request, modelBaseURL: context.baseURL.absoluteString) : nil
+    let endpoint = (azure.flatMap { URL(string: $0.baseURL) } ?? context.baseURL).appending(
+      path: "chat/completions")
     var urlRequest = URLRequest(url: endpoint)
     urlRequest.httpMethod = "POST"
     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -226,8 +233,10 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         message: "OpenAI Completions credential is missing"
       )
     }
+    var body = try makeBody(request, context: context)
+    if let azure { body["model"] = .string(azure.deploymentName) }
     urlRequest.httpBody = try encodeJSONObject(
-      try makeBody(request, context: context),
+      body,
       providerID: request.providerID,
       operation: "openai-completions.request.encode"
     )
@@ -259,15 +268,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
   ) throws -> [String: JSONValue] {
     let metadata = context.modelConfiguration.metadata
     let compat = metadata.object("compat") ?? [:]
-    let deferredNames: Set<String> =
-      compat.string("deferredToolsMode") == "kimi"
-      ? Set(
-        request.messages.flatMap { message -> [String] in
-          guard case .toolResult(let result) = message else { return [] }
-          return result.addedToolNames ?? []
-        })
-      : []
-    let activeTools = request.tools.filter { !deferredNames.contains($0.name) }
+    let activeTools = request.tools
     var body: [String: JSONValue] = [
       "model": .string(request.modelID),
       "messages": .array(
@@ -371,7 +372,10 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         body["providerOptions"] = .object(["gateway": .object(gateway)])
       }
     }
-    for (key, value) in request.options.providerOptions {
+    for (key, value) in request.options.providerOptions where key != "samplingParams" {
+      body[key] = value
+    }
+    for (key, value) in ProviderSamplingParameters.resolve(request: request, context: context) {
       body[key] = value
     }
     return body
@@ -385,10 +389,9 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     let target = ProviderMessageSource(
       api: protocolID, providerID: context.provider.id, modelID: context.model.id)
     let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
-    let toolsByName = Dictionary(uniqueKeysWithValues: tools.map { ($0.name, $0) })
-    var loadedToolNames = Set<String>()
     var result: [JSONValue] = []
-    for message in messages {
+    var pendingToolImages: [ProviderImage] = []
+    for (messageIndex, message) in messages.enumerated() {
       switch message {
       case .system(let text):
         let supportsDeveloper = compat.bool("supportsDeveloperRole") != false
@@ -498,13 +501,22 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           "role": .string("tool"),
           "tool_call_id": .string(toolResult.toolCallID),
           "content": .string(
-            !text.isEmpty ? text : (images.isEmpty ? "(no tool output)" : "(see attached image)")),
+            !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+              ? text : (images.isEmpty ? "(no tool output)" : "(see attached image)")),
         ]
         if compat.bool("requiresToolResultName") == true, !toolResult.toolName.isEmpty {
           toolMessage["name"] = .string(toolResult.toolName)
         }
         result.append(.object(toolMessage))
-        if !images.isEmpty, context.model.capabilities.imageInput {
+        pendingToolImages.append(contentsOf: images)
+        let followedByToolResult =
+          messageIndex + 1 < messages.count
+          && {
+            if case .toolResult = messages[messageIndex + 1] { return true }
+            return false
+          }()
+        if !followedByToolResult, !pendingToolImages.isEmpty, context.model.capabilities.imageInput
+        {
           if compat.bool("requiresAssistantAfterToolResult") == true {
             result.append(
               .object([
@@ -518,7 +530,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
               "text": .string("Attached image(s) from tool result:"),
             ])
           ]
-          for image in images {
+          for image in pendingToolImages {
             switch image {
             case .data(let data, let mimeType):
               imageContent.append(
@@ -543,24 +555,8 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
               "content": .array(imageContent),
             ]))
         }
-        if compat.string("deferredToolsMode") == "kimi" {
-          let added = (toolResult.addedToolNames ?? []).compactMap {
-            name -> ProviderToolDefinition? in
-            guard !loadedToolNames.contains(name), let tool = toolsByName[name] else { return nil }
-            loadedToolNames.insert(name)
-            return tool
-          }
-          if !added.isEmpty {
-            result.append(
-              .object([
-                "role": .string("system"),
-                "tools": .array(
-                  try added.map {
-                    try completionTool($0, compat: compat, providerID: context.provider.id)
-                  }),
-              ]))
-          }
-        }
+        if !followedByToolResult { pendingToolImages.removeAll() }
+
       }
     }
     return result
@@ -739,6 +735,7 @@ private struct OpenAICompletionsReducer {
   private var usage: ProviderUsage?
   private var reasoningSignature: String?
   private var reasoningDetails: [[String: JSONValue]] = []
+  private let isOpenRouter: Bool
   private enum ContentBlock: Equatable {
     case text, reasoning
     case tool(Int)
@@ -754,13 +751,15 @@ private struct OpenAICompletionsReducer {
     requestedModelID: String,
     supportsFinishReason: Bool,
     grammarInputProperties: [String: String],
-    pricing: ProviderUsagePricing?
+    pricing: ProviderUsagePricing?,
+    isOpenRouter: Bool = false
   ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
     self.supportsFinishReason = supportsFinishReason
     self.grammarInputProperties = grammarInputProperties
     self.pricing = pricing
+    self.isOpenRouter = isOpenRouter
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
@@ -811,11 +810,6 @@ private struct OpenAICompletionsReducer {
         try updateUsage(choiceUsage)
       }
       guard let delta = choice.object("delta") else { continue }
-      if let text = delta.string("content"), !text.isEmpty {
-        retainBlock(.text)
-        self.text += text
-        events.append(.textDelta(text))
-      }
       for key in ["reasoning_content", "reasoning", "reasoning_text"] {
         if let text = delta.string(key), !text.isEmpty {
           retainBlock(.reasoning)
@@ -825,15 +819,25 @@ private struct OpenAICompletionsReducer {
           break
         }
       }
+      for detail in delta.array("reasoning_details") ?? [] {
+        guard let object = validReasoningDetail(detail) else { continue }
+        retainBlock(.reasoning)
+        appendReasoningDetail(object)
+      }
+      if let text = delta.string("content"), !text.isEmpty {
+        retainBlock(.text)
+        self.text += text
+        events.append(.textDelta(text))
+      }
       for toolValue in delta.array("tool_calls") ?? [] {
         guard let tool = toolValue.objectValue, let index = tool.int("index") else {
           throw invalid("tool call delta is malformed")
         }
         retainBlock(.tool(index))
-        var state = toolCalls[index] ?? ToolCallState()
+        let state = toolCalls[index] ?? ToolCallState()
         if let id = tool.string("id") { state.id = id }
         if let function = tool.object("function") {
-          if let name = function.string("name") { state.name = name }
+          if let name = function.string("name"), !name.isEmpty { state.name = name }
           if let arguments = function.string("arguments") {
             state.arguments += arguments
             if let id = state.id, let name = state.name, !state.started {
@@ -859,11 +863,6 @@ private struct OpenAICompletionsReducer {
           }
         }
         toolCalls[index] = state
-      }
-      for detail in delta.array("reasoning_details") ?? [] {
-        guard let object = validReasoningDetail(detail) else { continue }
-        retainBlock(.reasoning)
-        appendReasoningDetail(object)
       }
     }
     return events
@@ -891,24 +890,14 @@ private struct OpenAICompletionsReducer {
       guard let state = toolCalls[index], let id = state.id, let name = state.name else {
         throw invalid("tool call ended without id or name")
       }
-      let arguments: JSONValue
+      let call: ProviderToolCall
       if let property = state.customInputProperty {
-        arguments = .object([property: .string(state.arguments)])
+        call = ProviderToolCall(
+          id: id, name: name, arguments: .object([property: .string(state.arguments)]))
       } else {
-        do {
-          arguments = try JSONDecoder().decode(
-            JSONValue.self,
-            from: Data(state.arguments.utf8)
-          )
-        } catch {
-          throw invalid("tool call arguments are malformed")
-        }
+        call = .parsing(id: id, name: name, input: state.arguments)
       }
-      events.append(
-        .toolCallCompleted(
-          ProviderToolCall(id: id, name: name, arguments: arguments)
-        )
-      )
+      events.append(.toolCallCompleted(call))
     }
     if let usage { events.append(.usage(usage)) }
     if finishReason == nil, !supportsFinishReason {
@@ -1024,7 +1013,7 @@ private struct OpenAICompletionsReducer {
     reasoningDetails[reasoningDetails.count - 1] = last
   }
 
-  private struct ToolCallState {
+  private final class ToolCallState {
     var id: String?
     var name: String?
     var arguments = ""
@@ -1054,6 +1043,7 @@ private struct OpenAICompletionsReducer {
       providerMetadata: usage,
       cost: pricing.cost(
         input: input, output: output, cacheRead: cached ?? 0,
-        cacheWrite: cacheWrite ?? 0))
+        cacheWrite: cacheWrite ?? 0)
+    ).applyingOpenRouterCost(usage, enabled: isOpenRouter)
   }
 }

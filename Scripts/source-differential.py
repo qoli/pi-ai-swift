@@ -190,6 +190,18 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-auth-url-oracle.mjs',
+             'Fixtures/Differential/Cases/auth-verification-urls.json',
+             'Fixtures/Differential/Oracle/auth-verification-urls.json', 'OAuth verification URL acceptance'),
+            ('pi-ai-provider-intent-oracle.mjs',
+             'Fixtures/Differential/Cases/provider-intent.json',
+             'Fixtures/Differential/Oracle/provider-intent.json', 'provider-owned October request intent'),
+            ('pi-ai-strict-fallback-oracle.mjs',
+             'Fixtures/Differential/Cases/strict-fallback.json',
+             'Fixtures/Differential/Oracle/strict-fallback.json', 'preferred strict retry boundaries'),
+            ('pi-ai-tool-arguments-oracle.mjs',
+             'Fixtures/Differential/Cases/tool-arguments.json',
+             'Fixtures/Differential/Oracle/tool-arguments.json', 'completed tool argument acceptance'),
             ('google-response-identity-oracle.mjs', None,
              'Fixtures/GoogleResponseIdentity/identity.json', 'Google emission identity lifecycle'),
             ('candidate-completions-oracle.mjs', None,

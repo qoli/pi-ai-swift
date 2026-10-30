@@ -1,0 +1,21 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "https",
+      "url": "https://fixture.invalid/device?code=fixture-code"
+    },
+    {
+      "id": "http",
+      "url": "http://fixture.invalid/device?code=fixture-code"
+    },
+    {
+      "id": "custom-protocol",
+      "url": "fixture-app://device"
+    },
+    {
+      "id": "file",
+      "url": "file:///tmp/fixture"
+    }
+  ]
+}

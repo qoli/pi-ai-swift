@@ -171,7 +171,7 @@ struct SourceDerivedRequestDifferentialTests {
     let model = ProviderModel(
       id: protocolCase.modelID,
       providerID: protocolCase.providerID,
-      name: protocolCase.modelID,
+      name: scenario.modelNameOverride ?? protocolCase.modelID,
       protocolID: protocolCase.protocolID,
       capabilities: ProviderCapabilities(
         textInput: true,
@@ -274,8 +274,11 @@ struct SourceDerivedRequestDifferentialTests {
             toolCallID: signatures.toolID,
             toolName: "weather",
             content: scenario.toolResultImage == true
-              ? [.text("sunny"), .image(.data(Data([1, 2]), mimeType: "image/png"))]
-              : [.text("sunny")],
+              ? [
+                .text(scenario.toolResultText ?? "sunny"),
+                .image(.data(Data([1, 2]), mimeType: "image/png")),
+              ]
+              : [.text(scenario.toolResultText ?? "sunny")],
             isError: scenario.toolResultError == true,
             addedToolNames: scenario.addedToolNames,
             timestampMilliseconds: 2
@@ -522,6 +525,7 @@ private struct ReplayRequestCase: Decodable {
 private struct ReplayScenario: Decodable {
   let caseID: String
   let sameSource: Bool
+  let modelNameOverride: String?
   let assistantStopReason: String?
   let redactedReasoning: Bool?
   let omitToolResult: Bool?
@@ -533,6 +537,7 @@ private struct ReplayScenario: Decodable {
   let imageInput: Bool?
   let toolResultImage: Bool?
   let toolResultError: Bool?
+  let toolResultText: String?
   let consecutiveToolResults: Bool?
   let addedToolNames: [String]?
   let constrainedSampling: String?
@@ -566,7 +571,7 @@ private func pinnedRevision(repository: URL) throws -> String {
   return try decode(Lock.self, at: repository.appending(path: "Upstream.lock.json")).revision
 }
 
-private func firstRequestDifference(
+func firstRequestDifference(
   _ actual: JSONValue,
   _ expected: JSONValue,
   path: String = "$"

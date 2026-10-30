@@ -135,51 +135,57 @@ struct OpenAIRequestBranchClosureTests {
   }
 
   @Test
-  func deferredToolsMatchPinnedAdditionalSearchCodexAndKimiShapes() async throws {
-    let additional = try await captureDeferred(
-      protocolID: "openai-responses", providerID: "openai",
-      metadata: ["compat": .object(["supportsAdditionalTools": .bool(true)])])
-    #expect(responseToolNames(additional) == ["sample_tool"])
-    let additionalItem = additional.array("input")?.first {
-      $0.objectValue?.string("type") == "additional_tools"
-    }?.objectValue
-    #expect(additionalItem?.string("role") == "developer")
-    #expect(additionalItem?.array("tools")?.first?.objectValue?.string("name") == "lookup")
-
-    let search = try await captureDeferred(
-      protocolID: "openai-responses", providerID: "openai",
-      metadata: ["compat": .object(["supportsToolSearch": .bool(true)])])
-    #expect(responseToolNames(search) == ["sample_tool"])
-    let searchCall = search.array("input")?.first {
-      $0.objectValue?.string("type") == "tool_search_call"
-    }?.objectValue
-    let searchOutput = search.array("input")?.first {
-      $0.objectValue?.string("type") == "tool_search_output"
-    }?.objectValue
-    #expect(searchCall?.string("call_id") == "pi_tool_load_2mixmbicdzth")
-    #expect(searchCall?.object("arguments")?.string("query") == "lookup")
-    #expect(searchOutput?.array("tools")?.first?.objectValue?.bool("defer_loading") == true)
-
-    let codex = try await captureDeferred(
-      protocolID: "openai-codex-responses", providerID: "openai-codex",
-      metadata: ["compat": .object(["supportsAdditionalTools": .bool(true)])])
-    #expect(responseToolNames(codex) == ["sample_tool"])
-    let codexAdded = codex.array("input")?.first {
-      $0.objectValue?.string("type") == "additional_tools"
-    }?.objectValue
-    #expect(codexAdded?.array("tools")?.first?.objectValue?["strict"] == JSONValue.null)
-
-    let kimi = try await captureDeferred(
-      protocolID: "openai-completions", providerID: "kimi",
-      metadata: ["compat": .object(["deferredToolsMode": .string("kimi")])])
-    let topLevelNames = kimi.array("tools")?.compactMap {
-      $0.objectValue?.object("function")?.string("name")
+  func currentToolsIgnoreObsoleteToolResultAnnotationsLikePinnedSource() async throws {
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: repositoryRoot().appending(
+          path:
+            "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json")),
+      providerID: "fixture", operation: "tool-placement.fixture")
+    let cases = try #require(oracle.object("cases"))
+    for (caseID, api, provider, compat) in [
+      (
+        "responses.deferred-additional-tools", "openai-responses", "openai",
+        ["supportsAdditionalTools": JSONValue.bool(true)]
+      ),
+      (
+        "responses.deferred-tool-search", "openai-responses", "openai",
+        ["supportsToolSearch": JSONValue.bool(true)]
+      ),
+      (
+        "codex.deferred-additional-tools", "openai-codex-responses", "openai-codex",
+        ["supportsAdditionalTools": JSONValue.bool(true)]
+      ),
+      (
+        "completions.deferred-kimi", "openai-completions", "kimi",
+        ["deferredToolsMode": JSONValue.string("kimi")]
+      ),
+    ] {
+      let body = try await captureDeferred(
+        protocolID: api, providerID: provider,
+        metadata: ["compat": .object(compat)])
+      var actual: [String: JSONValue] = [
+        "topLevelToolNames": .array(
+          (body.array("tools") ?? []).compactMap {
+            ($0.objectValue?.string("name") ?? $0.objectValue?.object("function")?.string("name"))
+              .map(JSONValue.string)
+          })
+      ]
+      let input = body.array("input") ?? []
+      if caseID == "responses.deferred-tool-search" {
+        actual["calls"] = .array(
+          input.filter { $0.objectValue?.string("type") == "tool_search_call" })
+        actual["outputs"] = .array(
+          input.filter { $0.objectValue?.string("type") == "tool_search_output" })
+      } else if api == "openai-completions" {
+        actual["systemTools"] = .array(
+          (body.array("messages") ?? []).compactMap { $0.objectValue?["tools"] })
+      } else {
+        actual["added"] = .array(
+          input.filter { $0.objectValue?.string("type") == "additional_tools" })
+      }
+      #expect(.object(actual) == cases.object(caseID)?["requestBody"], Comment(rawValue: caseID))
     }
-    #expect(topLevelNames == ["sample_tool"])
-    let systemTools = kimi.array("messages")?.first {
-      $0.objectValue?.string("role") == "system" && $0.objectValue?.array("tools") != nil
-    }?.objectValue?.array("tools")
-    #expect(systemTools?.first?.objectValue?.object("function")?.string("name") == "lookup")
   }
 
   @Test
@@ -1165,7 +1171,7 @@ private func makeFixture(
   switch protocolID {
   case "azure-openai-responses":
     adapter = OpenAIResponsesAdapter(protocolID: protocolID, flavor: .azure)
-    credential = .apiKey(APIKeyCredential(key: "fixture", metadata: credentialMetadata))
+    credential = .apiKey(APIKeyCredential(key: "sk-fixture", metadata: credentialMetadata))
   case "openai-codex-responses":
     adapter = OpenAIResponsesAdapter(protocolID: protocolID, flavor: .codex)
     credential = .oauth(
@@ -1174,10 +1180,10 @@ private func makeFixture(
         metadata: credentialMetadata))
   case "openai-responses":
     adapter = OpenAIResponsesAdapter()
-    credential = .apiKey(APIKeyCredential(key: "fixture", metadata: credentialMetadata))
+    credential = .apiKey(APIKeyCredential(key: "sk-fixture", metadata: credentialMetadata))
   default:
     adapter = OpenAICompletionsAdapter()
-    credential = .apiKey(APIKeyCredential(key: "fixture", metadata: credentialMetadata))
+    credential = .apiKey(APIKeyCredential(key: "sk-fixture", metadata: credentialMetadata))
   }
   let request = ProviderRequest(
     id: "branch", providerID: providerID, modelID: modelID,

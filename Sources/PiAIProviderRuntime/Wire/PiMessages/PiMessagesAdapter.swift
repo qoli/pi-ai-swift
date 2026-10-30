@@ -448,6 +448,14 @@ private struct PiMessagesEventReducer {
     guard let type = object.string("type") else {
       throw invalid("pi-messages event is missing type")
     }
+    if object["contentIndex"] != nil {
+      let count =
+        completedContent.count + textStates.count + reasoningStates.count + toolStates.count
+      let limit = type.hasSuffix("_start") ? count : count - 1
+      guard let index = object.int("contentIndex"), index >= 0, index <= limit else {
+        throw invalid("pi-messages event has an invalid contentIndex")
+      }
+    }
     switch type {
     case "start":
       guard !started else { throw invalid("pi-messages emitted duplicate start") }
@@ -558,26 +566,13 @@ private struct PiMessagesEventReducer {
       guard case .object = arguments else {
         throw invalid("pi-messages tool-call arguments are not an object")
       }
-      if !state.arguments.isEmpty {
-        let assembled: JSONValue
-        do {
-          assembled = try JSONDecoder().decode(
-            JSONValue.self,
-            from: Data(state.arguments.utf8)
-          )
-        } catch {
-          throw invalid("pi-messages partial tool arguments are malformed")
-        }
-        guard assembled == arguments else {
-          throw invalid("pi-messages final tool arguments differ from streamed input")
-        }
-      }
       let completed = ProviderToolCall(
         id: id,
         name: name,
         arguments: arguments,
         thoughtSignature: call.string("thoughtSignature"),
-        namespace: call.string("namespace")
+        namespace: call.string("namespace"),
+        argumentsError: call.string("argumentsError")
       )
       completedContent[index] = .toolCall(completed)
       return [

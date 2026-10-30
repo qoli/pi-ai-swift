@@ -240,13 +240,8 @@ extension ProviderAssistantMessage {
         return item
       case .signedText(let text):
         return .text(text.text)
-      case .reasoning(let reasoning):
-        if reasoning.isRedacted == true
-          || reasoning.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        {
-          return nil
-        }
-        return .text(reasoning.text)
+      case .reasoning:
+        return nil
       case .toolCall(let call):
         return .toolCall(
           ProviderToolCall(
@@ -255,7 +250,8 @@ extension ProviderAssistantMessage {
             arguments: call.arguments,
             thoughtSignature: nil,
             namespace: call.namespace,
-            providerMetadata: call.providerMetadata
+            providerMetadata: call.providerMetadata,
+            argumentsError: call.argumentsError
           ))
       }
     }
@@ -391,6 +387,9 @@ public struct ProviderToolCall: Sendable, Equatable, Codable {
   public let thoughtSignature: String?
   public let namespace: String?
   public let providerMetadata: [String: JSONValue]?
+  /// A completed argument parse failed. Callers must fail tool validation;
+  /// the empty arguments object is not a successful zero-argument call.
+  public let argumentsError: String?
 
   public init(
     id: String,
@@ -398,7 +397,8 @@ public struct ProviderToolCall: Sendable, Equatable, Codable {
     arguments: JSONValue,
     thoughtSignature: String? = nil,
     namespace: String? = nil,
-    providerMetadata: [String: JSONValue]? = nil
+    providerMetadata: [String: JSONValue]? = nil,
+    argumentsError: String? = nil
   ) {
     self.id = id
     self.name = name
@@ -406,6 +406,7 @@ public struct ProviderToolCall: Sendable, Equatable, Codable {
     self.thoughtSignature = thoughtSignature
     self.namespace = namespace
     self.providerMetadata = providerMetadata
+    self.argumentsError = argumentsError
   }
 }
 

@@ -105,27 +105,44 @@ struct OpenAIResponseEventBranchTests {
       )] = [
         (
           "openai-responses", "gpt-model", "flex", nil,
-          ProviderUsageCost(input: 2.5, output: 4, cacheRead: 3, cacheWrite: 6, total: 15.5)
+          ProviderUsageCost(
+            input: 2.5, output: 4, cacheRead: 3, cacheWrite: 6, total: 15.5,
+            totalFromProvider: false)
         ),
         (
           "openai-responses", "gpt-model", "flex", "priority",
-          ProviderUsageCost(input: 10, output: 16, cacheRead: 12, cacheWrite: 24, total: 62)
+          ProviderUsageCost(
+            input: 10, output: 16, cacheRead: 12, cacheWrite: 24, total: 62,
+            totalFromProvider: false)
+        ),
+        (
+          "openai-responses", "gpt-model", nil, "fast",
+          ProviderUsageCost(
+            input: 10, output: 16, cacheRead: 12, cacheWrite: 24, total: 62,
+            totalFromProvider: false)
         ),
         (
           "openai-responses", "gpt-5.5", nil, "priority",
-          ProviderUsageCost(input: 12.5, output: 20, cacheRead: 15, cacheWrite: 30, total: 77.5)
+          ProviderUsageCost(
+            input: 12.5, output: 20, cacheRead: 15, cacheWrite: 30, total: 77.5,
+            totalFromProvider: false)
         ),
         (
           "azure-openai-responses", "gpt-model", nil, "priority",
-          ProviderUsageCost(input: 5, output: 8, cacheRead: 6, cacheWrite: 12, total: 31)
+          ProviderUsageCost(
+            input: 5, output: 8, cacheRead: 6, cacheWrite: 12, total: 31, totalFromProvider: false)
         ),
         (
           "openai-codex-responses", "gpt-model", "flex", "default",
-          ProviderUsageCost(input: 2.5, output: 4, cacheRead: 3, cacheWrite: 6, total: 15.5)
+          ProviderUsageCost(
+            input: 2.5, output: 4, cacheRead: 3, cacheWrite: 6, total: 15.5,
+            totalFromProvider: false)
         ),
         (
           "openai-codex-responses", "gpt-model", "flex", "priority",
-          ProviderUsageCost(input: 10, output: 16, cacheRead: 12, cacheWrite: 24, total: 62)
+          ProviderUsageCost(
+            input: 10, output: 16, cacheRead: 12, cacheWrite: 24, total: 62,
+            totalFromProvider: false)
         ),
       ]
 
@@ -267,6 +284,31 @@ struct OpenAIResponseEventBranchTests {
           #expect(failure.code == .transportFailed)
           #expect(failure.causeDescription == cause)
         }
+      }
+    }
+  }
+
+  @Test
+  func unfinishedResponseToolsFailAtTerminalAcrossAllFlavors() async throws {
+    let fixture = try responseEventFixture()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path:
+            "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "unfinished-tool.oracle")
+    #expect(
+      oracle.object("cases")?.object("responses.failure-branches")?.object("unfinishedTool")?
+        .string("thrown")?.contains("unfinished tool call") == true)
+    let events = try #require(fixture.object("responsesFailureEvents")?.array("unfinishedTool"))
+    for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
+      do {
+        _ = try await responseEvents(
+          protocolID: api, modelID: "gpt-model", events: events, tools: [], metadata: [:])
+        Issue.record("unfinished tool call completed for \(api)")
+      } catch let failure as ProviderRuntimeFailure {
+        #expect(failure.code == .invalidResponse)
+        #expect(failure.message.contains("unfinished tool call"))
       }
     }
   }

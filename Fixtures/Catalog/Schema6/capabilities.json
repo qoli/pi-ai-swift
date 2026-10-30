@@ -1,39 +1,147 @@
 {
-  "revision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
-  "scope": "candidate-only; no accepted provider support promotion",
+  "revision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "scope": "Exact catalog inventory; classifier operations remain missing and are not advertised by ProviderRuntime.",
   "areas": [
     {
-      "id": "typesafe-classifier",
-      "providerID": "typesafe",
-      "status": "missing",
-      "modelIDs": ["jev-latest"],
-      "protocolID": "typesafe-system-one",
-      "authentication": "apiKey (TYPESAFE_API_KEY)",
-      "source": "packages/ai/src/providers/typesafe.ts",
-      "upstreamTest": "packages/ai/test/typesafe-system-one.test.ts",
-      "plannedSwiftOwnership": "provider catalog, authorization and classifier wire adapter; separate request/result seam design"
-    },
-    {
-      "id": "openrouter-classifier",
-      "providerID": "openrouter",
-      "status": "missing",
-      "modelIDs": ["typesafe/jev-1.13", "~typesafe/jev-latest"],
-      "protocolID": "typesafe-system-one",
-      "authentication": "existing OpenRouter apiKey/oauth provider auth",
-      "source": "packages/ai/src/providers/openrouter.ts",
-      "upstreamTest": "packages/ai/test/typesafe-system-one.test.ts",
-      "plannedSwiftOwnership": "classifier wire adapter; existing provider authentication; separate request/result seam design"
-    },
-    {
-      "id": "cloudflare-classifier",
+      "id": "cloudflare-workers-ai-cloudflare-workers-ai-system-one",
       "providerID": "cloudflare-workers-ai",
       "status": "missing",
-      "modelIDs": ["typesafe/jev"],
+      "modelIDs": [
+        "@cf/cloudflare/clef",
+        "@cf/cloudflare/clef-flash",
+        "@cf/cloudflare/clef-omni",
+        "typesafe/jev",
+        "typesafe/jev-1.14.0"
+      ],
       "protocolID": "cloudflare-workers-ai-system-one",
-      "authentication": "existing Cloudflare Workers AI apiKey/account configuration",
+      "authentication": [
+        "apiKey"
+      ],
       "source": "packages/ai/src/providers/cloudflare-workers-ai.ts",
-      "upstreamTest": "packages/ai/test/cloudflare-workers-ai-system-one.test.ts",
-      "plannedSwiftOwnership": "classifier wire adapter; existing provider authentication; separate request/result seam design"
+      "upstreamTest": "packages/ai/test/classifier-models.test.ts",
+      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+    },
+    {
+      "id": "openai-openai-decisions",
+      "providerID": "openai",
+      "status": "missing",
+      "modelIDs": [
+        "gpt-6-luna"
+      ],
+      "protocolID": "openai-decisions",
+      "authentication": [
+        "apiKey",
+        "oauth"
+      ],
+      "source": "packages/ai/src/providers/openai.ts",
+      "upstreamTest": "packages/ai/test/classifier-models.test.ts",
+      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+    },
+    {
+      "id": "opencode-typesafe-system-one",
+      "providerID": "opencode",
+      "status": "missing",
+      "modelIDs": [
+        "jev-1.13",
+        "jev-1.13-free"
+      ],
+      "protocolID": "typesafe-system-one",
+      "authentication": [
+        "apiKey"
+      ],
+      "source": "packages/ai/src/providers/opencode.ts",
+      "upstreamTest": "packages/ai/test/classifier-models.test.ts",
+      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+    },
+    {
+      "id": "openrouter-typesafe-system-one",
+      "providerID": "openrouter",
+      "status": "missing",
+      "modelIDs": [
+        "~liquid/d1-latest",
+        "~liquid/d1-ultra-latest",
+        "~perplexity/pplx-decider-flash-latest",
+        "~perplexity/pplx-decider-latest",
+        "~typesafe/jev-latest",
+        "baseten/elephant-1",
+        "baseten/mammoth-1",
+        "cloudflare/clef",
+        "cloudflare/clef-flash",
+        "cloudflare/clef-omni",
+        "inception/mercury-decide",
+        "jaredpalmer/kev-4b",
+        "liquid/d1",
+        "liquid/d1-ultra",
+        "liquid/d1.1",
+        "microsoft/microsoft-decision-1",
+        "nace-ai/drex-max",
+        "nace-ai/drex-v1.5",
+        "nace-ai/drex-v2.0",
+        "openai/gpt-6-luna-decisions",
+        "perplexity/pplx-decider-flash-v1.2",
+        "perplexity/pplx-decider-v1.2",
+        "respan/span-01",
+        "respan/span-01-lite",
+        "respan/span-01-lite:free",
+        "respan/span-02",
+        "scaledown/classify-1",
+        "togethercomputer/tev1-4b-experimental",
+        "typesafe/jev-1.13",
+        "typesafe/jev-1.14",
+        "upstage/solar-decide",
+        "upstage/solar-decide-flash"
+      ],
+      "protocolID": "typesafe-system-one",
+      "authentication": [
+        "apiKey",
+        "oauth"
+      ],
+      "source": "packages/ai/src/providers/openrouter.ts",
+      "upstreamTest": "packages/ai/test/classifier-models.test.ts",
+      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+    },
+    {
+      "id": "typesafe-typesafe-system-one",
+      "providerID": "typesafe",
+      "status": "missing",
+      "modelIDs": [
+        "jev-latest"
+      ],
+      "protocolID": "typesafe-system-one",
+      "authentication": [
+        "apiKey"
+      ],
+      "source": "packages/ai/src/providers/typesafe.ts",
+      "upstreamTest": "packages/ai/test/classifier-models.test.ts",
+      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+    },
+    {
+      "id": "vercel-ai-gateway-typesafe-system-one",
+      "providerID": "vercel-ai-gateway",
+      "status": "missing",
+      "modelIDs": [
+        "baseten/elephant-1",
+        "baseten/mammoth-1",
+        "convaiinnovations/laya",
+        "convaiinnovations/laya-free",
+        "liquid/d1",
+        "liquid/d1-ultra",
+        "microsoft/microsoft-decision-1",
+        "openai/gpt-6-luna-decisions",
+        "perplexity/pplx-decider-flash-v1.2",
+        "perplexity/pplx-decider-v1.2",
+        "scaledown/scaledown-classify-1",
+        "typesafe-ai/jev",
+        "typesafe-ai/jev-1.13.0",
+        "typesafe-ai/jev-1.14.0"
+      ],
+      "protocolID": "typesafe-system-one",
+      "authentication": [
+        "apiKey"
+      ],
+      "source": "packages/ai/src/providers/vercel-ai-gateway.ts",
+      "upstreamTest": "packages/ai/test/classifier-models.test.ts",
+      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
     }
   ]
 }

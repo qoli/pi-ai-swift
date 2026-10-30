@@ -162,13 +162,19 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
       effort != .off,
       context.model.capabilities.reasoning
     {
-      if Self.usesReasoningEffort(modelID: context.model.id) {
+      if context.modelConfiguration.metadata.object("thinkingLevelMap") != nil {
         body["reasoning_effort"] = .string(
           mappedReasoningEffort(effort, context: context)
         )
       } else {
         body["prompt_mode"] = .string("reasoning")
       }
+    }
+    if context.model.capabilities.reasoning,
+      request.options.reasoningEffort == nil || request.options.reasoningEffort == .off,
+      let off = context.modelConfiguration.metadata.object("thinkingLevelMap")?.string("off")
+    {
+      body["reasoning_effort"] = .string(off)
     }
     if !request.tools.isEmpty {
       body["tools"] = .array(
@@ -486,6 +492,7 @@ private struct MistralEventReducer {
   private var toolOrder: [String] = []
   private var usage: ProviderUsage?
   private var content: [ProviderResponseContent] = []
+  private var activeContentIsReasoning: Bool?
 
   init(
     providerID: String,
@@ -594,20 +601,7 @@ private struct MistralEventReducer {
     var events: [ProviderEvent] = []
     for key in toolOrder {
       guard let tool = toolStates[key] else { continue }
-      let arguments: JSONValue
-      if tool.arguments.isEmpty {
-        arguments = .object([:])
-      } else {
-        do {
-          arguments = try JSONDecoder().decode(
-            JSONValue.self,
-            from: Data(tool.arguments.utf8)
-          )
-        } catch {
-          throw invalid("Mistral tool arguments are malformed")
-        }
-      }
-      let call = ProviderToolCall(id: tool.id, name: tool.name, arguments: arguments)
+      let call = ProviderToolCall.parsing(id: tool.id, name: tool.name, input: tool.arguments)
       content.append(.toolCall(call))
       events.append(.toolCallCompleted(call))
     }
@@ -648,7 +642,7 @@ private struct MistralEventReducer {
     switch content {
     case .string(let text):
       if !text.isEmpty {
-        self.content.append(.text(ProviderTextContent(text: text, signature: nil)))
+        appendVisibleContent(text, reasoning: false)
       }
       return text.isEmpty ? [] : [.textDelta(text)]
     case .array(let items):
@@ -660,7 +654,7 @@ private struct MistralEventReducer {
         switch type {
         case "text":
           if let text = item.string("text"), !text.isEmpty {
-            self.content.append(.text(ProviderTextContent(text: text, signature: nil)))
+            appendVisibleContent(text, reasoning: false)
             events.append(.textDelta(text))
           }
         case "thinking":
@@ -670,9 +664,7 @@ private struct MistralEventReducer {
           for part in thinking {
             guard let text = part.objectValue?.string("text") else { continue }
             if !text.isEmpty {
-              self.content.append(
-                .reasoning(
-                  ProviderReasoningContent(text: text, signature: nil, providerMetadata: [:])))
+              appendVisibleContent(text, reasoning: true)
               events.append(.reasoningDelta(text))
             }
           }
@@ -688,9 +680,30 @@ private struct MistralEventReducer {
     }
   }
 
+  private mutating func appendVisibleContent(_ text: String, reasoning: Bool) {
+    if activeContentIsReasoning == reasoning, let last = content.indices.last {
+      switch content[last] {
+      case .text(let previous) where !reasoning:
+        content[last] = .text(.init(text: previous.text + text, signature: nil))
+        return
+      case .reasoning(let previous) where reasoning:
+        content[last] = .reasoning(
+          .init(text: previous.text + text, signature: nil, providerMetadata: [:]))
+        return
+      default: break
+      }
+    }
+    activeContentIsReasoning = reasoning
+    content.append(
+      reasoning
+        ? .reasoning(.init(text: text, signature: nil, providerMetadata: [:]))
+        : .text(.init(text: text, signature: nil)))
+  }
+
   private mutating func reduceToolCall(_ call: [String: JSONValue]) throws
     -> [ProviderEvent]
   {
+    activeContentIsReasoning = nil
     let index = call.int("index")
     let id = call.string("id")
     guard index != nil || id != nil else {
@@ -715,7 +728,7 @@ private struct MistralEventReducer {
     }
 
     var events: [ProviderEvent] = []
-    if var state = toolStates[key] {
+    if let state = toolStates[key] {
       if let id, id != "null", id != state.id {
         throw invalid("Mistral tool call identity changed during streaming")
       }
@@ -724,9 +737,7 @@ private struct MistralEventReducer {
       }
       state.arguments += delta
       toolStates[key] = state
-      if !delta.isEmpty {
-        events.append(.toolInputDelta(id: state.id, delta: delta))
-      }
+      events.append(.toolInputDelta(id: state.id, delta: delta))
     } else {
       guard let name, !name.isEmpty else {
         throw invalid("Mistral tool call start is missing name")
@@ -739,9 +750,7 @@ private struct MistralEventReducer {
       )
       toolOrder.append(key)
       events.append(.toolCallStarted(id: resolvedID, name: name))
-      if !delta.isEmpty {
-        events.append(.toolInputDelta(id: resolvedID, delta: delta))
-      }
+      events.append(.toolInputDelta(id: resolvedID, delta: delta))
     }
     return events
   }
@@ -800,9 +809,14 @@ private struct MistralEventReducer {
     )
   }
 
-  private struct ToolState {
+  private final class ToolState {
     let id: String
     let name: String
     var arguments: String
+    init(id: String, name: String, arguments: String) {
+      self.id = id
+      self.name = name
+      self.arguments = arguments
+    }
   }
 }

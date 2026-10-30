@@ -107,6 +107,7 @@ async function runProtocol(protocol, modelCost) {
     transport: "sse",
     azureDeploymentName: protocol.modelID,
     azureApiVersion: "v1",
+    ...(protocol.options ?? {}),
     env: { GOOGLE_CLOUD_PROJECT: "fixture-project", GOOGLE_CLOUD_LOCATION: "us-central1" },
   };
   if (protocol.driver.startsWith("http-")) options.fetch = fakeFetch(decoderInput);
@@ -123,7 +124,7 @@ async function runProtocol(protocol, modelCost) {
 }
 
 async function runBedrock(protocol, modelCost) {
-  const decoderInput = decoderInputFor(protocol.protocolID);
+  const decoderInput = protocol.decoderInput ?? decoderInputFor(protocol.protocolID);
   const chunks = decoderInput.chunksBase64.map((value) => Buffer.from(value, "base64"));
   const server = http.createServer((request, response) => {
     request.resume();
@@ -246,7 +247,7 @@ async function projectAssistantStream(sourceStream, protocol) {
   if (startSeen) events.unshift({
     type: "responseStarted",
     responseID: protocol.protocolID === "bedrock-converse-stream"
-        ? "bedrock-response"
+        ? (protocol.decoderInput ?? decoderInputFor(protocol.protocolID)).headers["x-amzn-requestid"] ?? null
         : startResponseID,
     ...startIdentity,
   });
@@ -414,14 +415,23 @@ function encodeAWSEvent(eventType, payload) {
 }
 
 function baseContext() { return { systemPrompt: "Be concise", messages: [{ role: "user", content: "Use the weather tool", timestamp: 0 }], tools: [{ name: "weather", description: "Read weather", parameters: { type: "object", properties: { city: { type: "string" } }, required: ["city"] } }] }; }
-function textModel(protocol, cost) { return { id: protocol.modelID, name: protocol.modelID, api: protocol.protocolID, provider: protocol.providerID, baseUrl: protocol.baseURL, reasoning: true, input: ["text", "image"], cost, contextWindow: 262144, maxTokens: 4096 }; }
+function textModel(protocol, cost) { return { id: protocol.modelID, name: protocol.modelID, api: protocol.protocolID, provider: protocol.providerID, baseUrl: protocol.baseURL, reasoning: true, input: ["text", "image"], cost, contextWindow: 262144, maxTokens: 4096, ...(protocol.modelMetadata ?? {}) }; }
 function imageModel(protocol, cost) { return { id: protocol.modelID, name: protocol.modelID, api: protocol.protocolID, provider: protocol.providerID, baseUrl: protocol.baseURL, input: ["text", "image"], output: ["text", "image"], cost }; }
 function credential(protocolID) { if (protocolID !== "openai-codex-responses") return "fixture-key"; const payload = Buffer.from(JSON.stringify({ "https://api.openai.com/auth": { chatgpt_account_id: "fixture-account" } })).toString("base64url"); return `aaa.${payload}.bbb`; }
 function fixtureCost() { return { input: 1_000_000, output: 2_000_000, cacheRead: 3_000_000, cacheWrite: 4_000_000 }; }
 function tieredFixtureCost() { return { ...fixtureCost(), tiers: [{ inputTokensAbove: 0, input: 5_000_000, output: 6_000_000, cacheRead: 7_000_000, cacheWrite: 8_000_000 }] }; }
 function mapReason(reason) { return reason === "toolUse" ? "toolCalls" : reason; }
-function canonicalToolCall(call) { return { id: call?.id ?? "", name: call?.name ?? "", arguments: canonicalize(call?.arguments ?? {}) }; }
+function canonicalArgumentError(value) {
+  if (value === undefined) return undefined;
+  // JSON engines choose different diagnostic prefixes; retain the error's
+  // presence and the complete original input, including malformed text.
+  const marker = "Received arguments:\n";
+  const index = value.indexOf(marker);
+  if (index < 0) throw Error("argument error lost original input");
+  return value.slice(index);
+}
+function canonicalToolCall(call) { return { id: call?.id ?? "", name: call?.name ?? "", arguments: canonicalize(call?.arguments ?? {}), ...(call?.argumentsError !== undefined ? {argumentsError:canonicalArgumentError(call.argumentsError)} : {}) }; }
 function usageEvent(usage) { return { type: "usage", inputTokens: usage.input ?? null, outputTokens: usage.output ?? null, reasoningTokens: usage.reasoning ?? null, cachedInputTokens: usage.cacheRead ?? null, cost: usage.cost }; }
-function canonicalTerminalMessage(message) { return canonicalize({ responseID: message.responseId ?? null, responseModel: message.responseModel ?? null, providerID: message.provider, modelID: message.model, stopReason: mapReason(message.stopReason), rawStopReason: message.rawStopReason ?? null, content: (message.content ?? []).map((block) => ({ ...block, ...(typeof block.thinkingSignature === "string" ? { thinkingSignature: canonicalSignature(block.thinkingSignature) } : {}), ...(typeof block.thoughtSignature === "string" ? { thoughtSignature: canonicalSignature(block.thoughtSignature) } : {}) })), usage: message.usage ? { input: message.usage.input, output: message.usage.output, reasoning: message.usage.reasoning ?? null, cacheRead: message.usage.cacheRead, cacheWrite: message.usage.cacheWrite, totalTokens: message.usage.totalTokens, cost: message.usage.cost } : null }); }
+function canonicalTerminalMessage(message) { return canonicalize({ responseID: message.responseId ?? null, responseModel: message.responseModel ?? null, providerID: message.provider, modelID: message.model, stopReason: mapReason(message.stopReason), rawStopReason: message.rawStopReason ?? null, content: (message.content ?? []).map((block) => ({ ...block, ...(block.argumentsError !== undefined ? {argumentsError:canonicalArgumentError(block.argumentsError)} : {}), ...(typeof block.thinkingSignature === "string" ? { thinkingSignature: canonicalSignature(block.thinkingSignature) } : {}), ...(typeof block.thoughtSignature === "string" ? { thoughtSignature: canonicalSignature(block.thoughtSignature) } : {}) })), usage: message.usage ? { input: message.usage.input, output: message.usage.output, reasoning: message.usage.reasoning ?? null, cacheRead: message.usage.cacheRead, cacheWrite: message.usage.cacheWrite, totalTokens: message.usage.totalTokens, cost: message.usage.cost } : null }); }
 function canonicalTerminalImages(output) { return canonicalize({ responseID: output.responseId ?? null, providerID: output.provider, modelID: output.model, stopReason: output.stopReason, output: output.output, usage: output.usage ? { input: output.usage.input, output: output.usage.output, cacheRead: output.usage.cacheRead, cacheWrite: output.usage.cacheWrite, totalTokens: output.usage.totalTokens, cost: output.usage.cost } : null }); }
 function canonicalize(value) { if (Array.isArray(value)) return value.map(canonicalize); if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, canonicalize(item)])); return value; }

@@ -52,7 +52,8 @@ struct OpenRouterImagesAdapterTests {
                 "cache_write_tokens": .integer(1),
               ]),
             ],
-            cost: ProviderUsageCost(input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0)
+            cost: ProviderUsageCost(
+              input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0, totalFromProvider: false)
           )
         )
     )

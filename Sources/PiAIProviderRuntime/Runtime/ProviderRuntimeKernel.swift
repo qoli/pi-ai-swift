@@ -242,7 +242,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       )
     }
     if request.connectionOptions.azureOpenAIResponses != nil,
-      modelConfiguration.protocolID != "azure-openai-responses"
+      modelConfiguration.protocolID != "azure-openai-responses",
+      !(request.providerID == "azure" && modelConfiguration.protocolID == "openai-completions")
     {
       throw failure(
         .invalidRequest,
@@ -259,7 +260,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     }
     let declaredModelBaseURL = modelConfiguration.baseURL ?? provider.baseURL
     let baseURLTemplate: String
-    if modelConfiguration.protocolID == "azure-openai-responses" {
+    if modelConfiguration.protocolID == "azure-openai-responses" || request.providerID == "azure" {
       baseURLTemplate = try ResolvedAzureOpenAIResponsesConfiguration.resolve(
         request: request,
         modelBaseURL: declaredModelBaseURL

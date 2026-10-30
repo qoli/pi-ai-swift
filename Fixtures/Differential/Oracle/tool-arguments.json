@@ -1,0 +1,88 @@
+{
+  "cases": [
+    {
+      "arguments": {
+        "content": "ok",
+        "path": "fixture"
+      },
+      "hasError": false,
+      "id": "valid",
+      "preservesReceivedInput": false
+    },
+    {
+      "arguments": {},
+      "hasError": true,
+      "id": "bad-final",
+      "preservesReceivedInput": true
+    },
+    {
+      "arguments": {},
+      "hasError": true,
+      "id": "array",
+      "preservesReceivedInput": true
+    },
+    {
+      "arguments": {},
+      "hasError": true,
+      "id": "null",
+      "preservesReceivedInput": true
+    },
+    {
+      "arguments": {},
+      "hasError": true,
+      "id": "scalar",
+      "preservesReceivedInput": true
+    },
+    {
+      "arguments": {},
+      "hasError": false,
+      "id": "blank",
+      "preservesReceivedInput": false
+    },
+    {
+      "arguments": {},
+      "hasError": true,
+      "id": "unfinished",
+      "preservesReceivedInput": true
+    },
+    {
+      "arguments": {},
+      "hasError": true,
+      "id": "trailing-junk",
+      "preservesReceivedInput": true
+    },
+    {
+      "arguments": {
+        "text": "a\nb"
+      },
+      "hasError": false,
+      "id": "raw-control",
+      "preservesReceivedInput": false
+    },
+    {
+      "arguments": {
+        "text": "\\usepackage"
+      },
+      "hasError": false,
+      "id": "invalid-unicode-escape",
+      "preservesReceivedInput": false
+    },
+    {
+      "arguments": {
+        "text": "\\d+"
+      },
+      "hasError": false,
+      "id": "invalid-escape",
+      "preservesReceivedInput": false
+    },
+    {
+      "arguments": {
+        "text": "A"
+      },
+      "hasError": false,
+      "id": "valid-unicode",
+      "preservesReceivedInput": false
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

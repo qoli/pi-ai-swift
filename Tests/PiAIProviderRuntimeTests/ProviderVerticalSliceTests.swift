@@ -48,7 +48,7 @@ struct ProviderVerticalSliceTests {
           responseSchema: nil,
           providerOptions: [:]
         ),
-        connectionOptions: providerID == "azure-openai-responses"
+        connectionOptions: providerID == "azure"
           ? ProviderConnectionOptions(
             azureOpenAIResponses: AzureOpenAIResponsesConnectionOptions(
               azureBaseURL: "https://fixture.openai.azure.com/openai/v1",

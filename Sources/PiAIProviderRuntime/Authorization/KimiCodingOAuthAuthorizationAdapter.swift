@@ -106,7 +106,7 @@ struct KimiCodingOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       let userCode = body.string("user_code"), !userCode.isEmpty,
       let verification = body.string("verification_uri_complete"),
       let verificationURL = URL(string: verification),
-      verificationURL.scheme == "https",
+      ["http", "https"].contains(verificationURL.scheme?.lowercased() ?? ""),
       let interval = body.int("interval"), interval > 0,
       let expiresIn = body.int("expires_in"), expiresIn > 0
     else {

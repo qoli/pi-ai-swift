@@ -1,5 +1,6 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import "./pi-ai-source-runtime.mjs";
 
 /**
  * Adapt the repository's provider-neutral fixture input to the exact

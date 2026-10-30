@@ -8,7 +8,7 @@ struct ProviderOptionsDifferentialTests {
   @Test
   func sessionHeadersAndCompatibilityOptionsMatchPinnedSource() async throws {
     let oracle = try decodeOracle()
-    #expect(oracle.upstreamRevision == "d5629e20489ccf770ed90b5a33941cb3b7ef24d0")
+    #expect(oracle.upstreamRevision == "86dc686cf2fd795b2b24af3d614bb0e1307bcd76")
 
     let openRouterCompletions = try await capture(
       protocolID: "openai-completions", providerID: "openrouter",

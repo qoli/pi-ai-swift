@@ -1,5 +1,35 @@
 import Foundation
 
+private func rewriteGoogleConst(_ value: JSONValue, nameMap: Bool = false) -> JSONValue {
+  if case .array(let values) = value { return .array(values.map { rewriteGoogleConst($0) }) }
+  guard case .object(let schema) = value else { return value }
+  let nameMaps: Set<String> = [
+    "properties", "patternProperties", "$defs", "definitions", "dependentSchemas", "dependencies",
+  ]
+  let subschemas: Set<String> = [
+    "additionalProperties", "unevaluatedProperties", "propertyNames", "items", "prefixItems",
+    "additionalItems", "unevaluatedItems", "contains", "allOf", "anyOf", "oneOf", "not",
+    "if", "then", "else", "contentSchema",
+  ]
+  var result = schema.mapValues { $0 }
+  for (key, child) in schema {
+    if nameMap || subschemas.contains(key) {
+      result[key] = rewriteGoogleConst(child)
+    } else if nameMaps.contains(key) {
+      result[key] = rewriteGoogleConst(child, nameMap: true)
+    }
+  }
+  if !nameMap, result["enum"] == nil, let constant = result["const"] {
+    switch constant {
+    case .string, .integer, .number:
+      result["const"] = nil
+      result["enum"] = .array([constant])
+    default: break
+    }
+  }
+  return .object(result)
+}
+
 enum GoogleVertexConfiguration {
   static func resolveBaseURLTemplate(
     _ template: String,
@@ -308,7 +338,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
               return .object([
                 "name": .string(tool.name),
                 "description": .string(tool.description),
-                "parametersJsonSchema": resolved.schema,
+                "parametersJsonSchema": rewriteGoogleConst(resolved.schema),
               ])
             }
           )
@@ -481,10 +511,12 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       return text
     }
     let responseKey = result.isError ? "error" : "output"
+    let text = texts.joined(separator: "\n")
+    let hasText = !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     var functionResponse: [String: JSONValue] = [
       "name": .string(result.toolName),
       "response": .object([
-        responseKey: .string(texts.joined(separator: "\n"))
+        responseKey: .string(hasText ? text : "")
       ]),
     ]
     if requiresToolCallID(modelID) {
@@ -496,7 +528,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         guard case .image(let image) = content else { return nil }
         return image
       } : []
-    if texts.isEmpty, !images.isEmpty {
+    if !hasText, !images.isEmpty {
       functionResponse["response"] = .object([
         responseKey: .string("(see attached image)")
       ])
@@ -570,6 +602,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       )
     }
     if isGemini3Pro(lower) || isGemini3Flash(lower)
+      || lower.range(of: "gemini-(?:[4-9]|[1-9][0-9])", options: .regularExpression) != nil
       || (flavor == .generativeAI && isGemma4(lower))
     {
       let level: String

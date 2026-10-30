@@ -916,6 +916,117 @@
         }
       }
     },
+    "mistral-empty-text-preserves-thinking": {
+      "mistral-conversations": {
+        "decoderInput": {
+          "events": [
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "content": [
+                      {
+                        "thinking": [
+                          {
+                            "text": "first"
+                          }
+                        ],
+                        "type": "thinking"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "id": "empty"
+            },
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "content": ""
+                  }
+                }
+              ],
+              "id": "empty"
+            },
+            {
+              "choices": [
+                {
+                  "delta": {
+                    "content": [
+                      {
+                        "thinking": [
+                          {
+                            "text": "second"
+                          }
+                        ],
+                        "type": "thinking"
+                      }
+                    ]
+                  },
+                  "finish_reason": "stop"
+                }
+              ],
+              "id": "empty"
+            }
+          ],
+          "kind": "http-sse",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "mistral-fixture",
+              "providerID": "fixture-mistral",
+              "responseID": null,
+              "type": "responseStarted"
+            },
+            {
+              "delta": "first",
+              "type": "reasoningDelta"
+            },
+            {
+              "delta": "second",
+              "type": "reasoningDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 0,
+              "outputTokens": 0,
+              "reasoningTokens": null,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "thinking": "firstsecond",
+                "type": "thinking"
+              }
+            ],
+            "modelID": "mistral-fixture",
+            "providerID": "fixture-mistral",
+            "rawStopReason": "stop",
+            "responseID": "empty",
+            "responseModel": null,
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 0,
+              "output": 0,
+              "reasoning": null,
+              "totalTokens": 0
+            }
+          }
+        }
+      }
+    },
     "mistral-error-stop": {
       "mistral-conversations": {
         "decoderInput": {
@@ -934,7 +1045,7 @@
           "status": 200
         },
         "sourceOutcome": {
-          "errorMessage": "Provider stopped with: error",
+          "errorMessage": "Provider stopped with: error (server error)",
           "kind": "failure",
           "rawStopReason": "error",
           "stopReason": "error"
@@ -1898,5 +2009,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
 }

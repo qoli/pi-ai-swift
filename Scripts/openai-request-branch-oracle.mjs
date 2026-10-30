@@ -441,7 +441,7 @@ function compatTranscript(testCase, tool, usage) {
 }
 
 function credential(protocolID) {
-  if (protocolID !== "openai-codex-responses") return "fixture-key";
+  if (protocolID !== "openai-codex-responses") return "sk-fixture";
   const header = Buffer.from(JSON.stringify({ alg: "none" })).toString("base64url");
   const body = Buffer.from(JSON.stringify({
     "https://api.openai.com/auth": { chatgpt_account_id: "fixture-account" },

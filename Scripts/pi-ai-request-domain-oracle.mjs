@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import "./pi-ai-source-runtime.mjs";
 
 const [upstreamRoot, casePath] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) {

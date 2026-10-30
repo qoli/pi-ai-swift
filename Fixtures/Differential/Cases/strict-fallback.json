@@ -1,0 +1,357 @@
+{
+  "cases": [
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.limit-0",
+      "preferences": [
+        "prefer",
+        "require",
+        null
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [
+        {
+          "message": "Too many strict tools (32).",
+          "status": 400,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.limit-1",
+      "preferences": [
+        "prefer",
+        "require",
+        null
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [
+        {
+          "message": "Schemas contains too many parameters with union types (20).",
+          "status": 400,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.limit-2",
+      "preferences": [
+        "prefer",
+        "require",
+        null
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.required-only",
+      "preferences": [
+        "require"
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.ordinary-only",
+      "preferences": [
+        null
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [
+        {
+          "message": "messages field required",
+          "status": 400,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.unrelated",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "other_error"
+        }
+      ],
+      "id": "anthropic-messages.wrong-type",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "invalid_request_error"
+        },
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.second-rejection",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "cancelAfterFirst": true,
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.cancel-before-retry",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "calls": 2,
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "invalid_request_error"
+        },
+        null,
+        null
+      ],
+      "id": "anthropic-messages.later-request-restores-strict",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "ValidationException"
+        }
+      ],
+      "id": "bedrock-converse-stream.limit-0",
+      "preferences": [
+        "prefer",
+        "require",
+        null
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "failures": [
+        {
+          "message": "Too many strict tools (32).",
+          "status": 400,
+          "type": "ValidationException"
+        }
+      ],
+      "id": "bedrock-converse-stream.limit-1",
+      "preferences": [
+        "prefer",
+        "require",
+        null
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "failures": [
+        {
+          "message": "Schemas contains too many parameters with union types (20).",
+          "status": 400,
+          "type": "ValidationException"
+        }
+      ],
+      "id": "bedrock-converse-stream.limit-2",
+      "preferences": [
+        "prefer",
+        "require",
+        null
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "ValidationException"
+        }
+      ],
+      "id": "bedrock-converse-stream.required-only",
+      "preferences": [
+        "require"
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "ValidationException"
+        }
+      ],
+      "id": "bedrock-converse-stream.ordinary-only",
+      "preferences": [
+        null
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "failures": [
+        {
+          "message": "messages field required",
+          "status": 400,
+          "type": "ValidationException"
+        }
+      ],
+      "id": "bedrock-converse-stream.unrelated",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "other_error"
+        }
+      ],
+      "id": "bedrock-converse-stream.wrong-type",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "ValidationException"
+        },
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "ValidationException"
+        }
+      ],
+      "id": "bedrock-converse-stream.second-rejection",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "cancelAfterFirst": true,
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "ValidationException"
+        }
+      ],
+      "id": "bedrock-converse-stream.cancel-before-retry",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "calls": 2,
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 400,
+          "type": "ValidationException"
+        },
+        null,
+        null
+      ],
+      "id": "bedrock-converse-stream.later-request-restores-strict",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "bedrock-converse-stream"
+    },
+    {
+      "failures": [
+        {
+          "message": "The compiled grammar is too large",
+          "status": 403,
+          "type": "invalid_request_error"
+        }
+      ],
+      "id": "anthropic-messages.wrong-status",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "anthropic-messages"
+    },
+    {
+      "failures": [],
+      "id": "anthropic-messages.stream-error",
+      "preferences": [
+        "prefer"
+      ],
+      "protocolID": "anthropic-messages",
+      "streamError": true
+    }
+  ],
+  "limitMessages": [
+    "The compiled grammar is too large",
+    "Too many strict tools (32).",
+    "Schemas contains too many parameters with union types (20)."
+  ],
+  "schema": {
+    "properties": {
+      "optional": {
+        "type": "number"
+      },
+      "value": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "value"
+    ],
+    "type": "object"
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

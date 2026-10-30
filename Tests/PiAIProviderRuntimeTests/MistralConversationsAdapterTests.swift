@@ -108,7 +108,8 @@ struct MistralConversationsAdapterTests {
               "prompt_tokens_details": .object(["cached_tokens": .integer(3)]),
               "completion_tokens_details": .object(["reasoning_tokens": .integer(2)]),
             ],
-            cost: ProviderUsageCost(input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0)
+            cost: ProviderUsageCost(
+              input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0, totalFromProvider: false)
           )))
     )
     guard case .responseSnapshot(let snapshot) = events[events.count - 2] else {

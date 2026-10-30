@@ -258,7 +258,11 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       descriptor: ProviderDescriptor(
         id: record.id,
         name: record.name,
-        authorizationMethods: methods,
+        authorizationMethods: methods.filter {
+          // The exact catalog inventories this optional login; its native flow
+          // is still an explicit gate, not a supported authorization method.
+          !(record.id == "openai" && $0.id == "oauth")
+        },
         models: record.models
       ),
       baseURL: record.baseURL,

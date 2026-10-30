@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "scenarios": [
     {
       "caseID": "same-source-replay",
@@ -192,6 +192,29 @@
       "caseID": "maximum-output-omitted-request",
       "sameSource": true,
       "omitMaximumOutputTokens": true
+    },
+    {
+      "caseID": "error-tool-images-after-results",
+      "sameSource": true,
+      "toolResultError": true,
+      "toolResultImage": true,
+      "consecutiveToolResults": true
+    },
+    {
+      "caseID": "whitespace-tool-output",
+      "sameSource": true,
+      "toolResultText": " \r\n\t "
+    },
+    {
+      "caseID": "bedrock-claude-error-images",
+      "sameSource": true,
+      "modelNameOverride": "Claude Fixture",
+      "toolResultError": true,
+      "toolResultImage": true,
+      "consecutiveToolResults": true,
+      "protocolIDs": [
+        "bedrock-converse-stream"
+      ]
     }
   ]
 }

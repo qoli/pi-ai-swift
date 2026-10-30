@@ -166,7 +166,7 @@ function replayMessages(protocol, scenario) {
       toolCallId: signatures.toolID,
       toolName: "weather",
       content: [
-        { type: "text", text: "sunny" },
+        { type: "text", text: scenario.toolResultText ?? "sunny" },
         ...(scenario.toolResultImage ? [{ type: "image", data: "AQI=", mimeType: "image/png" }] : []),
       ],
       isError: scenario.toolResultError === true,
@@ -210,7 +210,7 @@ function protocolSignatures(protocolID) {
 function textModel(protocol, scenario) {
   return {
     id: protocol.modelID,
-    name: protocol.modelID,
+    name: scenario.modelNameOverride ?? protocol.modelID,
     api: protocol.protocolID,
     provider: protocol.providerID,
     baseUrl: protocol.baseURL,

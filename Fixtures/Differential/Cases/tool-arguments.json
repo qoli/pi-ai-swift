@@ -1,0 +1,53 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "valid",
+      "input": "{\"path\":\"fixture\",\"content\":\"ok\"}"
+    },
+    {
+      "id": "bad-final",
+      "input": "{\"path\":\"fixture\",\"content\": invalid}"
+    },
+    {
+      "id": "array",
+      "input": "[1,2]"
+    },
+    {
+      "id": "null",
+      "input": "null"
+    },
+    {
+      "id": "scalar",
+      "input": "42"
+    },
+    {
+      "id": "blank",
+      "input": " \r\n "
+    },
+    {
+      "id": "unfinished",
+      "input": "{\"a\":\"prefix"
+    },
+    {
+      "id": "trailing-junk",
+      "input": "{\"a\":1}junk"
+    },
+    {
+      "id": "raw-control",
+      "input": "{\"text\":\"a\nb\"}"
+    },
+    {
+      "id": "invalid-unicode-escape",
+      "input": "{\"text\":\"\\usepackage\"}"
+    },
+    {
+      "id": "invalid-escape",
+      "input": "{\"text\":\"\\d+\"}"
+    },
+    {
+      "id": "valid-unicode",
+      "input": "{\"text\":\"\\u0041\"}"
+    }
+  ]
+}

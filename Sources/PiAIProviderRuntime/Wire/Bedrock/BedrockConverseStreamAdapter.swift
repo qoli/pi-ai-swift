@@ -16,19 +16,9 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
-          let response = try await transport.stream(
-            try makeURLRequest(request, context: context)
-          )
-          guard (200..<300).contains(response.statusCode) else {
-            let body = try await collectErrorBody(from: response.body)
-            throw failure(
-              .transportFailed,
-              request,
-              "bedrock.response",
-              "Bedrock ConverseStream request failed (HTTP \(response.statusCode))",
-              cause: body
-            )
-          }
+          let response = try await PreferredStrictToolFallback.response(
+            request: request, api: .bedrock, transport: transport,
+            makeRequest: { try makeURLRequest($0, context: context) })
           let responseID = try requireResponseID(response.headers, request: request)
           var decoder = AWSEventStreamDecoder()
           var reducer = BedrockEventReducer(
@@ -242,14 +232,19 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     if !request.tools.isEmpty, request.options.toolChoice?.stringValue != "none" {
       var toolConfiguration: [String: JSONValue] = [
         "tools": .array(
-          request.tools.map { tool in
-            .object([
-              "toolSpec": .object([
-                "name": .string(tool.name),
-                "description": .string(tool.description),
-                "inputSchema": .object(["json": tool.inputSchema]),
-              ])
-            ])
+          try request.tools.map { tool in
+            let resolved = try ProviderConstrainedSamplingResolver.jsonSchema(
+              for: tool,
+              supportsStrictMode: context.modelConfiguration.metadata.object("compat")?.bool(
+                "supportsStrictMode") == true,
+              providerID: request.providerID, operation: "bedrock.request.tool-schema")
+            var spec: [String: JSONValue] = [
+              "name": .string(tool.name),
+              "description": .string(tool.description),
+              "inputSchema": .object(["json": resolved.schema]),
+            ]
+            if resolved.strict == true { spec["strict"] = .bool(true) }
+            return .object(["toolSpec": .object(spec)])
           }
         )
       ]
@@ -352,20 +347,44 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         name: context.model.name
       )
     else {
-      // The pinned upstream forwards the reasoning option for non-Claude Bedrock
-      // models but does not encode provider-specific request fields for it.
+      if candidates.contains(where: { $0.contains("gpt-oss") }) {
+        let effort =
+          requested == .minimal || requested == .low
+          ? "low"
+          : (requested == .medium ? "medium" : "high")
+        return ["reasoning_effort": .string(effort)]
+      }
+      if candidates.contains(where: { $0.contains("gpt-") }) {
+        let effort =
+          context.modelConfiguration.metadata.object("thinkingLevelMap")?.string(requested.rawValue)
+          ?? (requested == .minimal ? "low" : requested.rawValue)
+        return ["reasoning": .object(["effort": .string(effort)])]
+      }
       return [:]
     }
     let adaptive = candidates.contains { value in
-      ["opus-4-6", "opus-4-7", "opus-4-8", "opus-5", "sonnet-4-6", "sonnet-5", "fable-5"]
-        .contains { value.contains($0) }
+      [
+        "opus-4-6", "opus-4-7", "opus-4-8", "opus-5", "sonnet-4-6", "sonnet-5", "haiku-5",
+        "fable-5",
+      ]
+      .contains { value.contains($0) }
     }
     let display = request.options.providerOptions["thinkingDisplay"]?.stringValue ?? "summarized"
     let omitDisplay = isGovCloudTarget(request: request, context: context)
     if adaptive {
       var thinking: [String: JSONValue] = ["type": .string("adaptive")]
       if !omitDisplay { thinking["display"] = .string(display) }
-      return [
+      let binding =
+        !omitDisplay
+        && candidates.contains { value in
+          ["opus-4-7", "opus-4-8", "opus-5", "sonnet-5", "haiku-5", "fable-5"].contains {
+            value.contains($0)
+          }
+        }
+      if binding {
+        thinking["block_binding"] = .object(["prefix_mismatch_behavior": .string("drop_block")])
+      }
+      var fields: [String: JSONValue] = [
         "thinking": .object(thinking),
         "output_config": .object([
           "effort": .string(
@@ -378,6 +397,10 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           )
         ]),
       ]
+      if binding {
+        fields["anthropic_beta"] = .array([.string("thinking-binding-controls-2026-08-01")])
+      }
+      return fields
     }
 
     let defaults = [
@@ -438,16 +461,16 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     context: WireProtocolContext,
     request: ProviderRequest
   ) throws -> String {
+    let supportsXHigh = candidates.contains { value in
+      ["opus-4-7", "opus-4-8", "opus-5", "sonnet-5", "haiku-5", "fable-5"]
+        .contains { value.contains($0) }
+    }
+    if requested == .xhigh, supportsXHigh { return "xhigh" }
     if let mapped = context.modelConfiguration.metadata
       .object("thinkingLevelMap")?.string(requested.rawValue)
     {
       return mapped
     }
-    let supportsXHigh = candidates.contains { value in
-      ["opus-4-7", "opus-4-8", "opus-5", "sonnet-5", "fable-5"]
-        .contains { value.contains($0) }
-    }
-    if requested == .xhigh, supportsXHigh { return "xhigh" }
     switch requested {
     case .minimal, .low: return "low"
     case .medium: return "medium"
@@ -499,18 +522,23 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         guard !values.isEmpty else { return nil }
         return .object(["role": .string("assistant"), "content": .array(values)])
       case .toolResult(let result):
-        return .object([
-          "role": .string("user"),
-          "content": .array([
-            .object([
-              "toolResult": .object([
-                "toolUseId": .string(normalizeToolID(result.toolCallID)),
-                "status": .string(result.isError ? "error" : "success"),
-                "content": .array(try result.content.map(toolResultContent)),
-              ])
+        let split =
+          ProviderBedrockModel.isAnthropicClaude(id: context.model.id, name: context.model.name)
+          ? ErrorToolResultImages(result) : nil
+        var blocks: [JSONValue] = [
+          .object([
+            "toolResult": .object([
+              "toolUseId": .string(normalizeToolID(result.toolCallID)),
+              "status": .string(result.isError ? "error" : "success"),
+              "content": .array(try (split?.content ?? result.content).map(toolResultContent)),
             ])
-          ]),
-        ])
+          ])
+        ]
+        if let split {
+          blocks.append(.object(["text": .string(split.caption)]))
+          blocks.append(contentsOf: try split.images.map { try userContent(.image($0)) })
+        }
+        return .object(["role": .string("user"), "content": .array(blocks)])
       }
     }
     result = groupingConsecutiveToolResults(result)
@@ -531,17 +559,21 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       guard case .object(let message) = value,
         message.string("role") == "user",
         case .array(let content)? = message["content"],
-        content.allSatisfy({ $0.objectValue?["toolResult"] != nil }),
+        content.first?.objectValue?["toolResult"] != nil,
         let last = grouped.indices.last,
         case .object(var previous) = grouped[last],
         previous.string("role") == "user",
         case .array(let previousContent)? = previous["content"],
-        previousContent.allSatisfy({ $0.objectValue?["toolResult"] != nil })
+        previousContent.first?.objectValue?["toolResult"] != nil
       else {
         grouped.append(value)
         continue
       }
-      previous["content"] = .array(previousContent + content)
+      let previousResults = previousContent.prefix { $0.objectValue?["toolResult"] != nil }
+      let nextResults = content.prefix { $0.objectValue?["toolResult"] != nil }
+      previous["content"] = .array(
+        Array(previousResults) + Array(nextResults)
+          + previousContent.dropFirst(previousResults.count) + content.dropFirst(nextResults.count))
       grouped[last] = .object(previous)
     }
     return grouped
@@ -632,8 +664,11 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         of: #"[\s_.:]+"#, with: "-", options: .regularExpression)
     }
     let adaptive = candidates.contains { value in
-      ["opus-4-6", "opus-4-7", "opus-4-8", "opus-5", "sonnet-4-6", "sonnet-5", "fable-5"]
-        .contains { value.contains($0) }
+      [
+        "opus-4-6", "opus-4-7", "opus-4-8", "opus-5", "sonnet-4-6", "sonnet-5", "haiku-5",
+        "fable-5",
+      ]
+      .contains { value.contains($0) }
     }
     guard !adaptive else { return requested }
     let level: ProviderReasoningEffort = effort == .xhigh || effort == .max ? .high : effort
@@ -954,17 +989,7 @@ private struct BedrockEventReducer {
         return [.reasoningSignatureDelta(reasoning.redactedBytes.base64EncodedString())]
       }
       guard let tool = tools.removeValue(forKey: index) else { return [] }
-      let arguments: JSONValue
-      if tool.input.isEmpty {
-        arguments = .object([:])
-      } else {
-        do {
-          arguments = try JSONDecoder().decode(JSONValue.self, from: Data(tool.input.utf8))
-        } catch {
-          throw invalid("Bedrock tool input is malformed JSON")
-        }
-      }
-      let call = ProviderToolCall(id: tool.id, name: tool.name, arguments: arguments)
+      let call = ProviderToolCall.parsing(id: tool.id, name: tool.name, input: tool.input)
       completedTools[index] = call
       return [.toolCallCompleted(call)]
     case "messageStop":
@@ -1091,10 +1116,15 @@ private struct BedrockEventReducer {
     )
   }
 
-  private struct ToolState {
+  private final class ToolState {
     let id: String
     let name: String
     var input: String
+    init(id: String, name: String, input: String) {
+      self.id = id
+      self.name = name
+      self.input = input
+    }
   }
 
   private struct ReasoningState {

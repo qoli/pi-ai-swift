@@ -17,8 +17,7 @@ struct AnthropicBedrockRequestBranchDifferentialTests {
     #expect(Set(fixture.scenarios.map(\.caseID)) == Set(oracle.scenarios.keys))
 
     for scenario in fixture.scenarios
-    where !["anthropic-server-fallback-source", "anthropic-missing-auth"].contains(scenario.caseID)
-    {
+    where scenario.caseID != "anthropic-missing-auth" {
       let expected = try #require(oracle.scenarios[scenario.caseID])
       let expectedBody = try #require(expected.requestBody)
       let actual = try await captureScenario(scenario.caseID)
@@ -43,22 +42,6 @@ struct AnthropicBedrockRequestBranchDifferentialTests {
     } catch let error as ProviderRuntimeFailure {
       #expect(error.code == .missingCredential)
       #expect(error.operation == "anthropic.request.auth")
-    }
-  }
-
-  @Test
-  func sourceFallbackBranchIsRejectedWithTypedFailure() async throws {
-    let root = repositoryRootForAnthropicBedrock()
-    let oracle = try decodeAnthropicBedrockOracle(
-      root.appending(path: "Fixtures/Differential/Oracle/request-anthropic-bedrock.json"))
-    let source = try #require(oracle.scenarios["anthropic-server-fallback-source"])
-    #expect(source.requestBody?.objectValue?["fallbacks"] != nil)
-    do {
-      _ = try await captureScenario("anthropic-server-fallback-source")
-      Issue.record("server-side model fallback unexpectedly reached transport")
-    } catch let error as ProviderRuntimeFailure {
-      #expect(error.code == .unsupportedCapability)
-      #expect(error.operation == "anthropic.request.server-fallback")
     }
   }
 

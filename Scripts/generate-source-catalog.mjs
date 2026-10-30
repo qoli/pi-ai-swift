@@ -5,6 +5,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
+import "./pi-ai-source-runtime.mjs";
 
 const [sourceRoot, evidencePath, outputPath] = process.argv.slice(2);
 if (!sourceRoot || !evidencePath || !outputPath) {

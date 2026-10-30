@@ -28,9 +28,11 @@ struct SourceDerivedResponseDifferentialTests {
       {
         events.append(event)
       }
-      #expect(
-        events.compactMap(canonicalResponseEvent) == expected.normalizedEvents,
-        Comment(rawValue: identityCase.caseID))
+      if events.compactMap(canonicalResponseEvent) != expected.normalizedEvents {
+        let difference = firstRequestDifference(
+          .array(events.compactMap(canonicalResponseEvent)), .array(expected.normalizedEvents))
+        Issue.record("\(identityCase.caseID): \(difference)")
+      }
       let starts = events.compactMap { event -> ProviderResponseMetadata? in
         guard case .responseStarted(let metadata) = event else { return nil }
         return metadata
@@ -45,10 +47,12 @@ struct SourceDerivedResponseDifferentialTests {
       let snapshot = try #require(snapshots.count == 1 ? snapshots.first : nil)
       #expect(snapshot.providerID == start.providerID)
       #expect(snapshot.modelID == start.modelID)
-      #expect(
-        canonicalResponseSnapshot(snapshot, images: protocolCase.protocolID == "openrouter-images")
-          == expected.terminalReplay,
-        Comment(rawValue: identityCase.caseID))
+      let terminal = canonicalResponseSnapshot(
+        snapshot, images: protocolCase.protocolID == "openrouter-images")
+      if terminal != expected.terminalReplay {
+        let difference = firstRequestDifference(terminal, expected.terminalReplay)
+        Issue.record("\(identityCase.caseID) terminal: \(difference)")
+      }
       if protocolCase.protocolID != "openrouter-images" {
         let replay = try snapshot.replayAssistantMessage()
         #expect(replay.source.modelID == input.request.modelID)
@@ -219,7 +223,7 @@ private func responseInput(
     contextWindow: 262_144,
     maximumOutputTokens: 4096
   )
-  var metadata: [String: JSONValue] = [:]
+  var metadata: [String: JSONValue] = protocolCase.modelMetadata ?? [:]
   if protocolCase.protocolID != "pi-messages" {
     metadata["cost"] =
       costMetadata
@@ -317,13 +321,15 @@ private func canonicalResponseEvent(_ event: ProviderEvent) -> JSONValue? {
       "delta": .string(delta),
     ])
   case .toolCallCompleted(let call):
+    var tool: [String: JSONValue] = [
+      "id": .string(call.id), "name": .string(call.name), "arguments": call.arguments,
+    ]
+    if let error = call.argumentsError {
+      tool["argumentsError"] = .string(canonicalArgumentError(error))
+    }
     return .object([
       "type": .string("toolCallCompleted"),
-      "toolCall": .object([
-        "id": .string(call.id),
-        "name": .string(call.name),
-        "arguments": call.arguments,
-      ]),
+      "toolCall": .object(tool),
     ])
   case .asset(let asset):
     return .object([
@@ -395,13 +401,15 @@ private func canonicalResponseSnapshot(
 }
 
 private func canonicalUsageCost(_ cost: ProviderUsageCost) -> JSONValue {
-  .object([
+  var object: [String: JSONValue] = [
     "input": canonicalNumber(cost.input),
     "output": canonicalNumber(cost.output),
     "cacheRead": canonicalNumber(cost.cacheRead),
     "cacheWrite": canonicalNumber(cost.cacheWrite),
     "total": canonicalNumber(cost.total),
-  ])
+  ]
+  if let flag = cost.totalFromProvider { object["totalFromProvider"] = .bool(flag) }
+  return .object(object)
 }
 
 private func canonicalNumber(_ value: Double) -> JSONValue {
@@ -432,6 +440,9 @@ private func canonicalAssistantContent(_ content: ProviderResponseContent) -> JS
     ]
     if let signature = call.thoughtSignature { object["thoughtSignature"] = .string(signature) }
     if let namespace = call.namespace { object["namespace"] = .string(namespace) }
+    if let error = call.argumentsError {
+      object["argumentsError"] = .string(canonicalArgumentError(error))
+    }
     return .object(object)
   case .asset(let asset):
     return .object([
@@ -440,6 +451,14 @@ private func canonicalAssistantContent(_ content: ProviderResponseContent) -> JS
       "mimeType": .string(asset.mimeType),
     ])
   }
+}
+
+private func canonicalArgumentError(_ error: String) -> String {
+  guard let range = error.range(of: "Received arguments:\n") else {
+    Issue.record("tool argument error lost its original input")
+    return error
+  }
+  return String(error[range.lowerBound...])
 }
 
 private func canonicalImageOutput(_ content: ProviderResponseContent) -> JSONValue {
@@ -459,10 +478,12 @@ private struct ResponseIdentityCase: Decodable {
   let providerID: String
   let modelID: String
   let baseURL: String
+  let modelMetadata: [String: JSONValue]?
 
   var protocolCase: ResponseProtocolCase {
     ResponseProtocolCase(
-      protocolID: protocolID, providerID: providerID, modelID: modelID, baseURL: baseURL)
+      protocolID: protocolID, providerID: providerID, modelID: modelID, baseURL: baseURL,
+      modelMetadata: modelMetadata)
   }
 }
 
@@ -471,6 +492,7 @@ private struct ResponseProtocolCase: Decodable {
   let providerID: String
   let modelID: String
   let baseURL: String
+  var modelMetadata: [String: JSONValue]? = nil
 }
 
 private struct ResponseOracle: Decodable {

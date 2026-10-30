@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {
+      "id": "https",
+      "normalized": "https://fixture.invalid/device?code=fixture-code",
+      "url": "https://fixture.invalid/device?code=fixture-code"
+    },
+    {
+      "id": "http",
+      "normalized": "http://fixture.invalid/device?code=fixture-code",
+      "url": "http://fixture.invalid/device?code=fixture-code"
+    },
+    {
+      "id": "custom-protocol",
+      "normalized": null,
+      "url": "fixture-app://device"
+    },
+    {
+      "id": "file",
+      "normalized": null,
+      "url": "file:///tmp/fixture"
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

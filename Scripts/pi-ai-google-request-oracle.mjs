@@ -175,7 +175,7 @@ function context(protocolID, providerID, testCase) {
     tools: usesTools ? [{
       name: "weather",
       description: "Read weather",
-      parameters: {
+      parameters: testCase.toolParameters ?? {
         type: "object",
         properties: {
           city: { type: "string" },

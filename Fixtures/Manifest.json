@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "repository": "https://github.com/earendil-works/pi.git",
-  "revision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
-  "packageVersion": "0.87.1",
+  "revision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "packageVersion": "1.4.0",
   "entries": [
     {
       "protocolID": "anthropic-messages",
@@ -17,7 +17,11 @@
         "packages/ai/test/anthropic-mid-conversation-effort.test.ts",
         "packages/ai/test/anthropic-sse-parsing.test.ts",
         "packages/ai/test/anthropic-tool-name-normalization.test.ts",
-        "packages/ai/test/anthropic-cache-write-1h-cost.test.ts"
+        "packages/ai/test/anthropic-cache-write-1h-cost.test.ts",
+        "packages/ai/test/anthropic-strict-tool-fallback.test.ts",
+        "packages/ai/test/anthropic-error-tool-result-images.test.ts",
+        "packages/ai/test/anthropic-strict-tool-schema.test.ts",
+        "packages/ai/test/openrouter-cost.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/AnthropicMessagesAdapterTests.swift#encodesKimiRequestAndNormalizesTextToolUsageAndTerminalEvents",
@@ -34,31 +38,59 @@
         "Scripts/pi-ai-anthropic-candidate-usage-oracle.mjs",
         "Fixtures/Differential/Cases/anthropic-candidate-cache-ttl.json",
         "Fixtures/Differential/Oracle/anthropic-candidate-cache-ttl.json",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift",
+        "Scripts/pi-ai-strict-fallback-oracle.mjs",
+        "Fixtures/Differential/Cases/strict-fallback.json",
+        "Fixtures/Differential/Oracle/strict-fallback.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "5558c3f8219e5319759b42b000d915e856b53b6b0c599690ba9f20d150b95fdf",
-      "upstreamTestSHA256": "2a6343638127f05492dd7aa227f750e40e3fe843ded1df97b89c9d10cede0bab",
-      "swiftEvidenceSHA256": "19ea0e55521fee9ac6eaf6d7b4fea4c88101e911e2e6415607735fd1265a30e8"
+      "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
+      "upstreamTestSHA256": "61500ad104627c7eee294ac48727ffb969caf0e9064a981b4eefdcb88268cd8b",
+      "swiftEvidenceSHA256": "9ca0d5958c5ff20de23ebe823d4d371e8cf1d2fdb6fa83ab74aab6027e351760"
     },
     {
       "protocolID": "azure-openai-responses",
       "areaID": "wire-azure-openai-responses",
       "upstreamSources": [
         "packages/ai/src/api/azure-openai-responses.ts",
-        "packages/ai/src/api/azure-openai-responses.lazy.ts"
+        "packages/ai/src/api/azure-openai-responses.lazy.ts",
+        "packages/ai/src/api/azure-openai-config.ts"
       ],
       "upstreamTests": [
         "packages/ai/test/bedrock-cache-write-1h-cost.test.ts",
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/azure-openai-base-url.test.ts",
+        "packages/ai/test/azure-openai-tool-choice.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "92aaa04679bf29d692d6cc8f881fcc4006964fbed2e68fc9b2edd2a908a897ab",
-      "upstreamTestSHA256": "6d39b9a625c354398ea493012243c794639379723e7edd0fd52c4265820f34a3",
-      "swiftEvidenceSHA256": "85a3daca7b4fb9973c9f86d501f9aff645a4ee0092d5ef8137b7bd688989ed1e"
+      "upstreamSourceSHA256": "44f1ffc77bf9899c2e7067280720c0fc5a0b458c0fccd650d3f5739182c2c33f",
+      "upstreamTestSHA256": "32bd02c09ad074cb1b498bc752d2e91160d998c39cb5a4e0e07c598ef32a8f4c",
+      "swiftEvidenceSHA256": "bf4390b4f623ed86cd7f81c519435f364bdcdb6c44bf6b5420ce4fb36ac7a9a8"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -68,7 +100,9 @@
         "packages/ai/src/api/bedrock-converse-stream.lazy.ts"
       ],
       "upstreamTests": [
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/bedrock-strict-tool-fallback.test.ts",
+        "packages/ai/test/anthropic-error-tool-result-images.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bearerRequestAndAWSEventStreamNormalizeTextToolsUsageAndStop",
@@ -77,11 +111,27 @@
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport",
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningContext",
         "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#bedrockReasoningFrames",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift",
+        "Scripts/pi-ai-strict-fallback-oracle.mjs",
+        "Fixtures/Differential/Cases/strict-fallback.json",
+        "Fixtures/Differential/Oracle/strict-fallback.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "812e5cc2730a425cfdd8b2dfd6cb9a69d9317bfcf5285b57a78b9d10416b5796",
-      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
-      "swiftEvidenceSHA256": "3e59961ecc48a9a02adf8bf1393615aa2f7967224e86e5ce970cff5812e0267f"
+      "upstreamSourceSHA256": "fcd722758fa9205f6f2633c0445fa6ef36e82c3c5eca2ea959c8af6b2dd6d9f7",
+      "upstreamTestSHA256": "5450a06fff18c24ee731bed4905c4d8a203c8ba4e68d71752a38aa7918d0d93d",
+      "swiftEvidenceSHA256": "c934cabb1c3bc88a71648836432312c5daab8527a900df0f665b00842e50c664"
     },
     {
       "protocolID": "google-generative-ai",
@@ -101,11 +151,19 @@
         "Scripts/pi-ai-emission-snapshots.mjs",
         "Scripts/google-response-identity-oracle.mjs",
         "Fixtures/GoogleResponseIdentity/identity.json",
-        "Tests/PiAIProviderRuntimeTests/GoogleResponseIdentityTests.swift"
+        "Tests/PiAIProviderRuntimeTests/GoogleResponseIdentityTests.swift",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "558e3fe7f12c348a12a88b090a1a322984463409874505de6dc4f3a7ab36ddeb",
-      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
-      "swiftEvidenceSHA256": "27ede9998217655af7f73efbb4a7e327dd5af8404af2a9e882dd15f927a44927"
+      "upstreamSourceSHA256": "20f47dd4749034075eb61695802c2a9587eaa5307442802243b6834d893b3ff0",
+      "upstreamTestSHA256": "f8eabb92338a98392533e98f98e409cc94f6ea685405d048e6d3016906c23f5c",
+      "swiftEvidenceSHA256": "6bb447ed6d9b4377fa1712945bd9026a94a1493f035b5a39561b23c152852e16"
     },
     {
       "protocolID": "google-vertex",
@@ -126,11 +184,19 @@
         "Scripts/pi-ai-emission-snapshots.mjs",
         "Scripts/google-response-identity-oracle.mjs",
         "Fixtures/GoogleResponseIdentity/identity.json",
-        "Tests/PiAIProviderRuntimeTests/GoogleResponseIdentityTests.swift"
+        "Tests/PiAIProviderRuntimeTests/GoogleResponseIdentityTests.swift",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "1c1319c8585c18c5b8426ec261570b5f1694ed99dd97355a83a040dbfc6db902",
-      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
-      "swiftEvidenceSHA256": "27ede9998217655af7f73efbb4a7e327dd5af8404af2a9e882dd15f927a44927"
+      "upstreamSourceSHA256": "ab23a583792c46d1da02c82fa55f2a794f92074ca5afcea8839b129ce58818f0",
+      "upstreamTestSHA256": "f8eabb92338a98392533e98f98e409cc94f6ea685405d048e6d3016906c23f5c",
+      "swiftEvidenceSHA256": "6bb447ed6d9b4377fa1712945bd9026a94a1493f035b5a39561b23c152852e16"
     },
     {
       "protocolID": "mistral-conversations",
@@ -147,11 +213,23 @@
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#nativeEffortModelsEncodeMappedValuesAndExplicitOff",
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitlyUnsupportedMapFailsBeforeTransport",
         "Tests/PiAIProviderRuntimeTests/MistralConversationsAdapterTests.swift#explicitOffRejectsReasoningModelBeforeTransport",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "32b5abdb6bf6fe0804dc3b734cf3df23785475d42de20a126ed669acc48ae483",
-      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
-      "swiftEvidenceSHA256": "2db39058e0ba37b17259702591dd0c7c24d3fd08281ec93ea3acf04f5add0104"
+      "upstreamSourceSHA256": "b97550a0d4905aeecaafe60e6e13bb6cc69cf4dc0bc1c5999ae63dea64cf2a75",
+      "upstreamTestSHA256": "f8eabb92338a98392533e98f98e409cc94f6ea685405d048e6d3016906c23f5c",
+      "swiftEvidenceSHA256": "94db40077add874a785fec5906a08398044d24c31f8b80991149b6e91d97032e"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -175,11 +253,19 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#azureAndCodexFlavorsKeepEndpointAndCredentialSemanticsSeparate",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#codexSSEPreservesCacheAffinityAndNormalizesDoneAlias",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "5feb68c84d30af3987cc08ef31bd1b47e49d1df7b2cfd41aa2bff58ff1eb0424",
-      "upstreamTestSHA256": "2afbbc148511589e741bec84a23160b6987aeaf333ce7bffbd2c64eaf82b981e",
-      "swiftEvidenceSHA256": "85a3daca7b4fb9973c9f86d501f9aff645a4ee0092d5ef8137b7bd688989ed1e"
+      "upstreamSourceSHA256": "805ed5c861052c125e0f1fc34b3630b832d615624536f86db4571e88dc3f760d",
+      "upstreamTestSHA256": "ad9cce3e861f84c8fec0aa144728a72bf3c56155046187ccfb136a86f7ce1b27",
+      "swiftEvidenceSHA256": "bc4f95562e806826e39d922aa680efbd8871db4c3b70fb3ab6e892082acee841"
     },
     {
       "protocolID": "openai-completions",
@@ -197,7 +283,10 @@
         "packages/ai/test/openai-completions-retry.test.ts",
         "packages/ai/test/openai-completions-tool-choice.test.ts",
         "packages/ai/test/openai-completions-tool-result-images.test.ts",
-        "packages/ai/test/openai-completions-vllm-priority.test.ts"
+        "packages/ai/test/openai-completions-vllm-priority.test.ts",
+        "packages/ai/test/azure-openai-completions.test.ts",
+        "packages/ai/test/sampling-options.test.ts",
+        "packages/ai/test/openrouter-cost.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream",
@@ -211,11 +300,20 @@
         "Tests/PiAIProviderRuntimeTests/CandidateCompletionsTests.swift",
         "Scripts/candidate-completions-oracle.mjs",
         "Fixtures/CandidateCompletions/request.json",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "5fb118d5a1ca6f723d4a9a96d1e2489f387fddffdb086225f1a3c24d06a8a533",
-      "upstreamTestSHA256": "c651cb265032af007b91da2d6a773460ce801cbeed522a25e4efd52d7de093df",
-      "swiftEvidenceSHA256": "a05060ec8293f8c22810d76e755a307f018d47f3c370454dcd0eb466c7e0ccb9"
+      "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
+      "upstreamTestSHA256": "2fae7858d588b6251eae92806fc7bbd094917af6d57829ce6ea0faea590bbf20",
+      "swiftEvidenceSHA256": "371bb0b597fb709c80791e9a12b5ab3de4e623cdb04e48cc7bcdf18b226a062f"
     },
     {
       "protocolID": "openai-responses",
@@ -229,16 +327,30 @@
         "packages/ai/test/openai-responses-compat.test.ts",
         "packages/ai/test/openai-responses-partial-json-cleanup.test.ts",
         "packages/ai/test/openai-responses-terminal-event.test.ts",
-        "packages/ai/test/openai-responses-tool-result-images.test.ts"
+        "packages/ai/test/openai-responses-tool-result-images.test.ts",
+        "packages/ai/test/openai-responses-mid-convo-effort.test.ts",
+        "packages/ai/test/sampling-options.test.ts"
       ],
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift",
+        "Scripts/pi-ai-provider-intent-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-intent.json",
+        "Fixtures/Differential/Oracle/provider-intent.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "e66c9381aaa7b86105392ef4f69cf6be75dda0aa0ed536e1301a59e33d5c5a42",
-      "upstreamTestSHA256": "815a81690b15919ab13cf8bf3ea825f895c73881a4a4ce2fb4bcde53bf0c200f",
-      "swiftEvidenceSHA256": "85a3daca7b4fb9973c9f86d501f9aff645a4ee0092d5ef8137b7bd688989ed1e"
+      "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
+      "upstreamTestSHA256": "5e7d8f898b64f1d7de086b83d2ed1ce1a31fe997cae5d591b3653fee823a51ce",
+      "swiftEvidenceSHA256": "bf4390b4f623ed86cd7f81c519435f364bdcdb6c44bf6b5420ce4fb36ac7a9a8"
     },
     {
       "protocolID": "openrouter-images",
@@ -259,11 +371,16 @@
         "Scripts/pi-ai-response-oracle.mjs",
         "Scripts/check-differential-coverage.py",
         "Scripts/tests/test_identity_coverage.py",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "08955ff39d7d96b15a94f0536c446bd43462de0e0a83423d1f7c258c06c0e395",
-      "upstreamTestSHA256": "de7cfc56c6dc0d8dffb707babe5fcb254541abb87b6dc0fb718e9c557585bbc5",
-      "swiftEvidenceSHA256": "f97ad4401ca1e48eb5718ebb7064658dd789f1c5f370aa451d72874c4ce695a1"
+      "upstreamSourceSHA256": "73a586ef871054564f846db11331117924fd117d78e9bcbc186e42474dd6b056",
+      "upstreamTestSHA256": "8ffcd43832a9d069045bdd31d401b702f91f02dfae08240a681193d59f39351f",
+      "swiftEvidenceSHA256": "729cf2a009d323f26f5d0a168e63eee93973efbe560a3128ad206604251fb746"
     },
     {
       "protocolID": "pi-messages",
@@ -278,11 +395,19 @@
       "swiftEvidence": [
         "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#encodesContextAndNormalizesTextReasoningToolUsageAndTerminal",
         "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#explicitOffIsForwardedAndNilOmitsReasoning",
-        "Scripts/pi-ai-emission-snapshots.mjs"
+        "Scripts/pi-ai-emission-snapshots.mjs",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
+        "Scripts/pi-ai-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-rich.json",
+        "Fixtures/Differential/Oracle/response-rich.json",
+        "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
+        "Fixtures/Differential/Cases/tool-arguments.json",
+        "Fixtures/Differential/Oracle/tool-arguments.json",
+        "Scripts/pi-ai-tool-arguments-oracle.mjs"
       ],
-      "upstreamSourceSHA256": "c91df1f82a791e13600dcac041db8c018cfc2ad6fdf1b3834e9d5a96069a447a",
-      "upstreamTestSHA256": "95df44ac2ff5e43582f446412a1091ac7b6e83827c9f68eda433c7202459f7c2",
-      "swiftEvidenceSHA256": "80ef1fe775551601c0e02b71e4c3dcce793a4927d5f1dd693d8d9abb0e7405cc"
+      "upstreamSourceSHA256": "46d587ce7304d9d5f462da7483c2d7786a08a642ba6fc856a93fb979b864bbb4",
+      "upstreamTestSHA256": "f8eabb92338a98392533e98f98e409cc94f6ea685405d048e6d3016906c23f5c",
+      "swiftEvidenceSHA256": "5ea7a9005e8938fa37f6b3dabfbad3f776ce4332d9ba8f958129c68efebb8f66"
     }
   ]
 }

@@ -5,7 +5,7 @@ import Testing
 
 @Suite
 struct CandidateModelStoreTests {
-  private let revision = "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
+  private let revision = "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
   private var root: URL {
     URL(fileURLWithPath: #filePath)
       .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()

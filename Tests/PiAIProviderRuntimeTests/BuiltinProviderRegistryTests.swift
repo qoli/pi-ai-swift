@@ -8,16 +8,16 @@ struct BuiltinProviderRegistryTests {
   @Test
   func bundledCatalogPreservesPinnedProviderAndModelInventory() throws {
     let registry = try BuiltinProviderRegistry.load()
-    #expect(registry.upstreamRevision == "d5629e20489ccf770ed90b5a33941cb3b7ef24d0")
+    #expect(registry.upstreamRevision == "86dc686cf2fd795b2b24af3d614bb0e1307bcd76")
     #expect(registry.providers.count == 42)
-    #expect(registry.providers.flatMap(\.models).count == 1_572)
+    #expect(registry.providers.flatMap(\.models).count == 1_656)
 
     let kimi = try #require(
       registry.providers.first { $0.id == "kimi-coding" }
     )
     #expect(kimi.authorizationMethodIDs == ["apiKey", "oauth"])
-    #expect(kimi.models.count == 4)
-    #expect(Set(kimi.models.map(\.protocolID)) == ["anthropic-messages"])
+    #expect(kimi.models.count == 6)
+    #expect(Set(kimi.models.map(\.protocolID)) == ["openai-completions"])
     let k3 = try #require(kimi.models.first { $0.id == "k3-256k" })
     #expect(k3.contextWindow == 262_144)
     #expect(k3.capabilities.imageInput)
@@ -29,19 +29,19 @@ struct BuiltinProviderRegistryTests {
     #expect(fable.promptCache?.longLifetimeSeconds == 3_600)
 
     let radius = try #require(registry.providers.first { $0.id == "radius" })
-    #expect(radius.models.count == 30)
+    #expect(radius.models.count == 28)
     #expect(Set(radius.models.map(\.protocolID)) == ["pi-messages"])
 
     let meta = try #require(registry.providers.first { $0.id == "meta" })
     #expect(meta.authorizationMethodIDs == ["apiKey", "oauth"])
-    #expect(meta.models.count == 5)
+    #expect(meta.models.count == 6)
     #expect(Set(meta.models.map(\.protocolID)) == ["openai-responses"])
 
     let openRouter = try #require(
       registry.providers.first { $0.id == "openrouter" }
     )
-    #expect(openRouter.models.count == 446)
-    #expect(openRouter.modelConfigurations.count == 449)
+    #expect(openRouter.models.count == 452)
+    #expect(openRouter.modelConfigurations.count == 456)
     let overlapping = try #require(
       openRouter.models.first { $0.id == "google/gemini-3-pro-image" }
     )
@@ -65,7 +65,7 @@ struct BuiltinProviderRegistryTests {
     let data = try Data(contentsOf: root.appending(path: "Fixtures/Catalog/Schema6/routing.json"))
     let fixture = try JSONDecoder().decode(Schema6RoutingFixture.self, from: data)
     let registry = try BuiltinProviderRegistry.load(data: data)
-    #expect(registry.upstreamRevision == "d5629e20489ccf770ed90b5a33941cb3b7ef24d0")
+    #expect(registry.upstreamRevision == "86dc686cf2fd795b2b24af3d614bb0e1307bcd76")
 
     for source in fixture.providers {
       let provider = try #require(registry.providers.first { $0.id == source.id })
@@ -84,11 +84,14 @@ struct BuiltinProviderRegistryTests {
         let configuration = try #require(provider.modelConfigurations[route])
         #expect(configuration.metadata == object)
         #expect(configuration.protocolID == object.string("api"))
-        #expect(configuration.baseURL == object.string("baseUrl"))
+        #expect(configuration.baseURL == object.string("baseUrl").flatMap { $0.isEmpty ? nil : $0 })
         let model = try #require(provider.models.first { $0.id == id })
-        #expect(model.capabilities.imageGeneration)
-        #expect(model.capabilities.toolCalling)
-        #expect(model.protocolID == "openai-completions")
+        let sameID = supported.filter { $0.string("id") == id }
+        let chat = sameID.first { $0.string("type") == "chat" }
+        #expect(
+          model.capabilities.imageGeneration == sameID.contains { $0.string("type") == "image" })
+        #expect(model.capabilities.toolCalling == (chat != nil))
+        #expect(model.protocolID == (chat ?? object).string("api"))
 
         // Project each original record alone as well: merging equal IDs must
         // not conceal image records accidentally acquiring chat capabilities.

@@ -407,7 +407,7 @@ struct ContractTests {
     #expect(lock.schemaVersion == 4)
     #expect(lock.revision.count == 40)
     #expect(lock.package.name == "@earendil-works/pi-ai")
-    #expect(lock.package.version == "0.87.1")
+    #expect(lock.package.version == "1.4.0")
     #expect(lock.trackedBuiltinProviders.count == 42)
     #expect(lock.trackedBuiltinProviders.contains("github-copilot"))
     #expect(lock.trackedBuiltinProviders.contains("xai"))
@@ -420,7 +420,8 @@ struct ContractTests {
       from: Data(contentsOf: mappingURL)
     )
     #expect(mapping.schemaVersion == 3)
-    #expect(mapping.areas.count == 65)
+    #expect(mapping.areas.count == 66)
+    #expect(mapping.areas.contains { $0.id == "optional-client-identity-and-login" })
     #expect(mapping.areas.allSatisfy { !$0.dependsOn.contains($0.id) })
   }
 }

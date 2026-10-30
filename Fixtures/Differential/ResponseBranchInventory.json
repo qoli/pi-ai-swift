@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "responseCoverageStatus": "complete",
   "evidenceSources": [
     {
@@ -33,12 +33,32 @@
       "test": "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift",
       "shape": "declared-case-map",
       "caseProtocols": {
-        "completions.reasoning-details-response-model": ["openai-completions"],
-        "completions.stop-reason-response-branches": ["openai-completions"],
-        "responses.custom-namespace-usage": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
-        "responses.incomplete-raw-total": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
-        "responses.reasoning-signature-backfill-phase": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
-        "responses.service-tier-cost-matrix": ["openai-responses", "azure-openai-responses", "openai-codex-responses"]
+        "completions.reasoning-details-response-model": [
+          "openai-completions"
+        ],
+        "completions.stop-reason-response-branches": [
+          "openai-completions"
+        ],
+        "responses.custom-namespace-usage": [
+          "openai-responses",
+          "azure-openai-responses",
+          "openai-codex-responses"
+        ],
+        "responses.incomplete-raw-total": [
+          "openai-responses",
+          "azure-openai-responses",
+          "openai-codex-responses"
+        ],
+        "responses.reasoning-signature-backfill-phase": [
+          "openai-responses",
+          "azure-openai-responses",
+          "openai-codex-responses"
+        ],
+        "responses.service-tier-cost-matrix": [
+          "openai-responses",
+          "azure-openai-responses",
+          "openai-codex-responses"
+        ]
       }
     }
   ],
@@ -46,245 +66,995 @@
     {
       "id": "common.stream-lifecycle",
       "required": true,
-      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
-      "variants": ["response-started", "terminal-replay", "completed"],
-      "sourceSymbols": ["AssistantMessageEventStream", "stream", "done"],
+      "protocols": [
+        "anthropic-messages",
+        "azure-openai-responses",
+        "bedrock-converse-stream",
+        "google-generative-ai",
+        "google-vertex",
+        "mistral-conversations",
+        "openai-codex-responses",
+        "openai-completions",
+        "openai-responses",
+        "openrouter-images",
+        "pi-messages"
+      ],
+      "variants": [
+        "response-started",
+        "terminal-replay",
+        "completed"
+      ],
+      "sourceSymbols": [
+        "AssistantMessageEventStream",
+        "stream",
+        "done"
+      ],
       "expected": "A successful source stream starts once, yields a reconstructable terminal response, and completes exactly once.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["response-started", "terminal-replay", "completed"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "anthropic-messages",
+            "azure-openai-responses",
+            "bedrock-converse-stream",
+            "google-generative-ai",
+            "google-vertex",
+            "mistral-conversations",
+            "openai-codex-responses",
+            "openai-completions",
+            "openai-responses",
+            "openrouter-images",
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "response-started",
+            "terminal-replay",
+            "completed"
+          ]
+        }
       ]
     },
     {
       "id": "common.streaming-content",
       "required": true,
-      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
-      "variants": ["text", "reasoning", "reasoning-signature", "tool-start", "tool-input-delta", "tool-completed"],
-      "sourceSymbols": ["text_delta", "thinking_delta", "toolcall_delta", "toolcall_end"],
+      "protocols": [
+        "anthropic-messages",
+        "azure-openai-responses",
+        "bedrock-converse-stream",
+        "google-generative-ai",
+        "google-vertex",
+        "mistral-conversations",
+        "openai-codex-responses",
+        "openai-completions",
+        "openai-responses",
+        "pi-messages"
+      ],
+      "variants": [
+        "text",
+        "reasoning",
+        "reasoning-signature",
+        "tool-start",
+        "tool-input-delta",
+        "tool-completed"
+      ],
+      "sourceSymbols": [
+        "text_delta",
+        "thinking_delta",
+        "toolcall_delta",
+        "toolcall_end"
+      ],
       "expected": "All source content block types and fragmented tool inputs normalize to ordered events and replayable terminal blocks.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["text", "reasoning", "reasoning-signature", "tool-start", "tool-input-delta", "tool-completed"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "anthropic-messages",
+            "azure-openai-responses",
+            "bedrock-converse-stream",
+            "google-generative-ai",
+            "google-vertex",
+            "mistral-conversations",
+            "openai-codex-responses",
+            "openai-completions",
+            "openai-responses",
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "text",
+            "reasoning",
+            "reasoning-signature",
+            "tool-start",
+            "tool-input-delta",
+            "tool-completed"
+          ]
+        }
       ]
     },
     {
       "id": "common.usage-normalization",
       "required": true,
-      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"],
-      "variants": ["input", "output", "reasoning", "cache-read", "cache-write", "total"],
-      "sourceSymbols": ["usage", "parseUsage", "calculateCost"],
+      "protocols": [
+        "anthropic-messages",
+        "azure-openai-responses",
+        "bedrock-converse-stream",
+        "google-generative-ai",
+        "google-vertex",
+        "mistral-conversations",
+        "openai-codex-responses",
+        "openai-completions",
+        "openai-responses",
+        "openrouter-images",
+        "pi-messages"
+      ],
+      "variants": [
+        "input",
+        "output",
+        "reasoning",
+        "cache-read",
+        "cache-write",
+        "total"
+      ],
+      "sourceSymbols": [
+        "usage",
+        "parseUsage",
+        "calculateCost"
+      ],
       "expected": "Provider counters normalize without double counting cache or reasoning tokens and preserve provider totals.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images", "pi-messages"], "coversVariants": ["input", "output", "reasoning", "cache-read", "cache-write", "total"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "anthropic-messages",
+            "azure-openai-responses",
+            "bedrock-converse-stream",
+            "google-generative-ai",
+            "google-vertex",
+            "mistral-conversations",
+            "openai-codex-responses",
+            "openai-completions",
+            "openai-responses",
+            "openrouter-images",
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "input",
+            "output",
+            "reasoning",
+            "cache-read",
+            "cache-write",
+            "total"
+          ]
+        }
       ]
     },
     {
       "id": "common.monetary-cost-base",
       "required": true,
-      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images"],
-      "variants": ["base-rates", "total"],
-      "sourceSymbols": ["Usage.cost", "calculateCost", "parseUsage"],
+      "protocols": [
+        "anthropic-messages",
+        "azure-openai-responses",
+        "bedrock-converse-stream",
+        "google-generative-ai",
+        "google-vertex",
+        "mistral-conversations",
+        "openai-codex-responses",
+        "openai-completions",
+        "openai-responses",
+        "openrouter-images"
+      ],
+      "variants": [
+        "base-rates",
+        "total"
+      ],
+      "sourceSymbols": [
+        "Usage.cost",
+        "calculateCost",
+        "parseUsage"
+      ],
       "expected": "Every rate-priced protocol preserves exact input, output, cache-read, cache-write, and total monetary cost.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "openrouter-images"], "coversVariants": ["base-rates", "total"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "anthropic-messages",
+            "azure-openai-responses",
+            "bedrock-converse-stream",
+            "google-generative-ai",
+            "google-vertex",
+            "mistral-conversations",
+            "openai-codex-responses",
+            "openai-completions",
+            "openai-responses",
+            "openrouter-images"
+          ],
+          "coversVariants": [
+            "base-rates",
+            "total"
+          ]
+        }
       ]
     },
     {
       "id": "common.monetary-cost-tier",
       "required": true,
-      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses"],
-      "variants": ["tier-rates"],
-      "sourceSymbols": ["ModelCost.tiers", "calculateCost"],
+      "protocols": [
+        "anthropic-messages",
+        "azure-openai-responses",
+        "bedrock-converse-stream",
+        "google-generative-ai",
+        "google-vertex",
+        "mistral-conversations",
+        "openai-codex-responses",
+        "openai-completions",
+        "openai-responses"
+      ],
+      "variants": [
+        "tier-rates"
+      ],
+      "sourceSymbols": [
+        "ModelCost.tiers",
+        "calculateCost"
+      ],
       "expected": "Every calculateCost protocol selects the highest applicable full-request input threshold.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses"], "coversVariants": ["tier-rates"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "anthropic-messages",
+            "azure-openai-responses",
+            "bedrock-converse-stream",
+            "google-generative-ai",
+            "google-vertex",
+            "mistral-conversations",
+            "openai-codex-responses",
+            "openai-completions",
+            "openai-responses"
+          ],
+          "coversVariants": [
+            "tier-rates"
+          ]
+        }
       ]
     },
     {
       "id": "anthropic.monetary-cost-1h-cache-write",
       "required": true,
-      "protocols": ["anthropic-messages"],
-      "variants": ["one-hour-cache-write"],
-      "sourceSymbols": ["cacheWrite1h", "ephemeral_1h_input_tokens", "calculateCost"],
+      "protocols": [
+        "anthropic-messages"
+      ],
+      "variants": [
+        "one-hour-cache-write"
+      ],
+      "sourceSymbols": [
+        "cacheWrite1h",
+        "ephemeral_1h_input_tokens",
+        "calculateCost"
+      ],
       "expected": "Anthropic 1h cache writes use twice the selected base input rate while 5m writes use cache-write pricing.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages"], "coversVariants": ["one-hour-cache-write"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "one-hour-cache-write"
+          ]
+        }
       ]
     },
     {
       "id": "pi.monetary-cost-direct",
       "required": true,
-      "protocols": ["pi-messages"],
-      "variants": ["direct-provider-cost", "total"],
-      "sourceSymbols": ["PiMessagesUsage", "event.usage"],
+      "protocols": [
+        "pi-messages"
+      ],
+      "variants": [
+        "direct-provider-cost",
+        "total"
+      ],
+      "sourceSymbols": [
+        "PiMessagesUsage",
+        "event.usage"
+      ],
       "expected": "Pi Messages preserves the five monetary values supplied by the upstream event without recalculation.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["pi-messages"], "coversVariants": ["direct-provider-cost", "total"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "direct-provider-cost",
+            "total"
+          ]
+        }
       ]
     },
     {
       "id": "openai-responses.monetary-cost-service-tier",
       "required": true,
-      "protocols": ["openai-responses", "openai-codex-responses"],
-      "variants": ["flex", "priority", "response-precedence", "codex-default-resolution"],
-      "sourceSymbols": ["resolveCodexServiceTier", "applyServiceTierPricing"],
+      "protocols": [
+        "openai-responses",
+        "openai-codex-responses"
+      ],
+      "variants": [
+        "flex",
+        "priority",
+        "response-precedence",
+        "codex-default-resolution"
+      ],
+      "sourceSymbols": [
+        "resolveCodexServiceTier",
+        "applyServiceTierPricing"
+      ],
       "expected": "Standard and Codex Responses apply exact flex and priority multipliers with source request/response precedence.",
       "status": "covered",
       "cases": [
-        {"caseID": "responses.service-tier-cost-matrix", "protocols": ["openai-responses", "openai-codex-responses"], "coversVariants": ["flex", "priority", "response-precedence", "codex-default-resolution"]}
+        {
+          "caseID": "responses.service-tier-cost-matrix",
+          "protocols": [
+            "openai-responses",
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "flex",
+            "priority",
+            "response-precedence",
+            "codex-default-resolution"
+          ]
+        }
       ]
     },
     {
       "id": "azure-openai-responses.monetary-cost-service-tier",
       "required": true,
-      "protocols": ["azure-openai-responses"],
-      "variants": ["unadjusted"],
-      "sourceSymbols": ["processResponsesStream"],
+      "protocols": [
+        "azure-openai-responses"
+      ],
+      "variants": [
+        "unadjusted"
+      ],
+      "sourceSymbols": [
+        "processResponsesStream"
+      ],
       "expected": "Azure Responses preserves base model pricing because pinned source does not install service-tier adjustment.",
       "status": "covered",
       "cases": [
-        {"caseID": "responses.service-tier-cost-matrix", "protocols": ["azure-openai-responses"], "coversVariants": ["unadjusted"]}
+        {
+          "caseID": "responses.service-tier-cost-matrix",
+          "protocols": [
+            "azure-openai-responses"
+          ],
+          "coversVariants": [
+            "unadjusted"
+          ]
+        }
       ]
     },
     {
       "id": "common.stop-reason-matrix",
       "required": true,
-      "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"],
-      "variants": ["stop", "length", "tool-use"],
-      "sourceSymbols": ["mapStopReason", "finishReason", "finish_reason", "stop_reason"],
+      "protocols": [
+        "anthropic-messages",
+        "azure-openai-responses",
+        "bedrock-converse-stream",
+        "google-generative-ai",
+        "google-vertex",
+        "mistral-conversations",
+        "openai-codex-responses",
+        "openai-completions",
+        "openai-responses",
+        "pi-messages"
+      ],
+      "variants": [
+        "stop",
+        "length",
+        "tool-use"
+      ],
+      "sourceSymbols": [
+        "mapStopReason",
+        "finishReason",
+        "finish_reason",
+        "stop_reason"
+      ],
       "expected": "Every successful terminal source reason maps explicitly to stop, length, or tool use for every applicable protocol.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["anthropic-messages", "azure-openai-responses", "bedrock-converse-stream", "google-generative-ai", "google-vertex", "mistral-conversations", "openai-codex-responses", "openai-completions", "openai-responses", "pi-messages"], "coversVariants": ["tool-use"]},
-        {"caseID": "anthropic-signed-length", "protocols": ["anthropic-messages"], "coversVariants": ["length"]},
-        {"caseID": "anthropic-redacted-pause-usage", "protocols": ["anthropic-messages"], "coversVariants": ["stop"]},
-        {"caseID": "anthropic-tool-use", "protocols": ["anthropic-messages"], "coversVariants": ["tool-use"]},
-        {"caseID": "bedrock-redacted-length-usage", "protocols": ["bedrock-converse-stream"], "coversVariants": ["length"]},
-        {"caseID": "bedrock-stop", "protocols": ["bedrock-converse-stream"], "coversVariants": ["stop"]},
-        {"caseID": "bedrock-tool-use", "protocols": ["bedrock-converse-stream"], "coversVariants": ["tool-use"]},
-        {"caseID": "pi-signatures-namespace-length", "protocols": ["pi-messages"], "coversVariants": ["length"]},
-        {"caseID": "pi-stop", "protocols": ["pi-messages"], "coversVariants": ["stop"]},
-        {"caseID": "pi-tool-use", "protocols": ["pi-messages"], "coversVariants": ["tool-use"]},
-        {"caseID": "google-max-tokens", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["length"]},
-        {"caseID": "google-stop", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["stop"]},
-        {"caseID": "mistral-model-length", "protocols": ["mistral-conversations"], "coversVariants": ["length"]},
-        {"caseID": "mistral-stop", "protocols": ["mistral-conversations"], "coversVariants": ["stop"]},
-        {"caseID": "completions.stop-reason-response-branches", "protocols": ["openai-completions"], "coversVariants": ["stop", "length", "tool-use"]},
-        {"caseID": "responses.reasoning-signature-backfill-phase", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["stop"]},
-        {"caseID": "responses.incomplete-raw-total", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["length"]},
-        {"caseID": "responses.custom-namespace-usage", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["tool-use"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "anthropic-messages",
+            "azure-openai-responses",
+            "bedrock-converse-stream",
+            "google-generative-ai",
+            "google-vertex",
+            "mistral-conversations",
+            "openai-codex-responses",
+            "openai-completions",
+            "openai-responses",
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "tool-use"
+          ]
+        },
+        {
+          "caseID": "anthropic-signed-length",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "length"
+          ]
+        },
+        {
+          "caseID": "anthropic-redacted-pause-usage",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "stop"
+          ]
+        },
+        {
+          "caseID": "anthropic-tool-use",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "tool-use"
+          ]
+        },
+        {
+          "caseID": "bedrock-redacted-length-usage",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "length"
+          ]
+        },
+        {
+          "caseID": "bedrock-stop",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "stop"
+          ]
+        },
+        {
+          "caseID": "bedrock-tool-use",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "tool-use"
+          ]
+        },
+        {
+          "caseID": "pi-signatures-namespace-length",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "length"
+          ]
+        },
+        {
+          "caseID": "pi-stop",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "stop"
+          ]
+        },
+        {
+          "caseID": "pi-tool-use",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "tool-use"
+          ]
+        },
+        {
+          "caseID": "google-max-tokens",
+          "protocols": [
+            "google-generative-ai",
+            "google-vertex"
+          ],
+          "coversVariants": [
+            "length"
+          ]
+        },
+        {
+          "caseID": "google-stop",
+          "protocols": [
+            "google-generative-ai",
+            "google-vertex"
+          ],
+          "coversVariants": [
+            "stop"
+          ]
+        },
+        {
+          "caseID": "mistral-model-length",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "length"
+          ]
+        },
+        {
+          "caseID": "mistral-stop",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "stop"
+          ]
+        },
+        {
+          "caseID": "completions.stop-reason-response-branches",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "stop",
+            "length",
+            "tool-use"
+          ]
+        },
+        {
+          "caseID": "responses.reasoning-signature-backfill-phase",
+          "protocols": [
+            "openai-responses",
+            "azure-openai-responses",
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "stop"
+          ]
+        },
+        {
+          "caseID": "responses.incomplete-raw-total",
+          "protocols": [
+            "openai-responses",
+            "azure-openai-responses",
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "length"
+          ]
+        },
+        {
+          "caseID": "responses.custom-namespace-usage",
+          "protocols": [
+            "openai-responses",
+            "azure-openai-responses",
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "tool-use"
+          ]
+        }
       ]
     },
     {
       "id": "anthropic.response-specials",
       "required": true,
-      "protocols": ["anthropic-messages"],
-      "variants": ["redacted-thinking", "signed-thinking", "pause-turn", "reasoning-usage", "cache-usage"],
-      "sourceSymbols": ["redacted_thinking", "signature_delta", "pause_turn", "output_tokens_details"],
+      "protocols": [
+        "anthropic-messages"
+      ],
+      "variants": [
+        "redacted-thinking",
+        "signed-thinking",
+        "pause-turn",
+        "reasoning-usage",
+        "cache-usage"
+      ],
+      "sourceSymbols": [
+        "redacted_thinking",
+        "signature_delta",
+        "pause_turn",
+        "output_tokens_details"
+      ],
       "expected": "Anthropic redaction, signatures, pause semantics, and extended usage remain replayable.",
       "status": "covered",
       "cases": [
-        {"caseID": "anthropic-redacted-pause-usage", "protocols": ["anthropic-messages"], "coversVariants": ["redacted-thinking", "pause-turn", "reasoning-usage", "cache-usage"]},
-        {"caseID": "anthropic-signed-length", "protocols": ["anthropic-messages"], "coversVariants": ["signed-thinking"]}
+        {
+          "caseID": "anthropic-redacted-pause-usage",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "redacted-thinking",
+            "pause-turn",
+            "reasoning-usage",
+            "cache-usage"
+          ]
+        },
+        {
+          "caseID": "anthropic-signed-length",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "signed-thinking"
+          ]
+        }
       ]
     },
     {
       "id": "bedrock.response-specials",
       "required": true,
-      "protocols": ["bedrock-converse-stream"],
-      "variants": ["redacted-thinking", "signed-thinking", "reasoning-usage", "cache-usage"],
-      "sourceSymbols": ["reasoningContent", "redactedContent", "metadata", "metrics"],
+      "protocols": [
+        "bedrock-converse-stream"
+      ],
+      "variants": [
+        "redacted-thinking",
+        "signed-thinking",
+        "reasoning-usage",
+        "cache-usage"
+      ],
+      "sourceSymbols": [
+        "reasoningContent",
+        "redactedContent",
+        "metadata",
+        "metrics"
+      ],
       "expected": "Bedrock reasoning content and metadata usage preserve all source fields.",
       "status": "covered",
       "cases": [
-        {"caseID": "bedrock-redacted-length-usage", "protocols": ["bedrock-converse-stream"], "coversVariants": ["redacted-thinking", "signed-thinking", "reasoning-usage", "cache-usage"]}
+        {
+          "caseID": "bedrock-redacted-length-usage",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "redacted-thinking",
+            "signed-thinking",
+            "reasoning-usage",
+            "cache-usage"
+          ]
+        }
       ]
     },
     {
       "id": "pi.response-specials",
       "required": true,
-      "protocols": ["pi-messages"],
-      "variants": ["text-signature", "reasoning-signature", "tool-thought-signature", "namespace"],
-      "sourceSymbols": ["textSignature", "thinkingSignature", "thoughtSignature", "namespace"],
+      "protocols": [
+        "pi-messages"
+      ],
+      "variants": [
+        "text-signature",
+        "reasoning-signature",
+        "tool-thought-signature",
+        "namespace"
+      ],
+      "sourceSymbols": [
+        "textSignature",
+        "thinkingSignature",
+        "thoughtSignature",
+        "namespace"
+      ],
       "expected": "Pi-native opaque replay metadata is preserved in its exact content block.",
       "status": "covered",
       "cases": [
-        {"caseID": "pi-signatures-namespace-length", "protocols": ["pi-messages"], "coversVariants": ["text-signature", "reasoning-signature", "tool-thought-signature", "namespace"]}
+        {
+          "caseID": "pi-signatures-namespace-length",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "text-signature",
+            "reasoning-signature",
+            "tool-thought-signature",
+            "namespace"
+          ]
+        }
       ]
     },
     {
       "id": "google.response-specials",
       "required": true,
-      "protocols": ["google-generative-ai", "google-vertex"],
-      "variants": ["thought-signature", "text-signature", "tool-signature", "tool-arguments", "reasoning-usage", "cache-usage"],
-      "sourceSymbols": ["thoughtSignature", "functionCall", "usageMetadata"],
+      "protocols": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "variants": [
+        "thought-signature",
+        "text-signature",
+        "tool-signature",
+        "tool-arguments",
+        "reasoning-usage",
+        "cache-usage"
+      ],
+      "sourceSymbols": [
+        "thoughtSignature",
+        "functionCall",
+        "usageMetadata"
+      ],
       "expected": "Google thought signatures attach to the correct text, reasoning, or tool block and usage excludes cached input.",
       "status": "covered",
       "cases": [
-        {"caseID": "google-mixed-tool-signatures-usage", "protocols": ["google-generative-ai", "google-vertex"], "coversVariants": ["thought-signature", "text-signature", "tool-signature", "tool-arguments", "reasoning-usage", "cache-usage"]}
+        {
+          "caseID": "google-mixed-tool-signatures-usage",
+          "protocols": [
+            "google-generative-ai",
+            "google-vertex"
+          ],
+          "coversVariants": [
+            "thought-signature",
+            "text-signature",
+            "tool-signature",
+            "tool-arguments",
+            "reasoning-usage",
+            "cache-usage"
+          ]
+        }
       ]
     },
     {
       "id": "mistral.response-specials",
       "required": true,
-      "protocols": ["mistral-conversations"],
-      "variants": ["string-content", "typed-content", "fragmented-tool", "null-tool-id", "reasoning-content", "cache-usage"],
-      "sourceSymbols": ["content", "thinking", "tool_calls", "cached_tokens"],
+      "protocols": [
+        "mistral-conversations"
+      ],
+      "variants": [
+        "string-content",
+        "typed-content",
+        "fragmented-tool",
+        "null-tool-id",
+        "reasoning-content",
+        "cache-usage"
+      ],
+      "sourceSymbols": [
+        "content",
+        "thinking",
+        "tool_calls",
+        "cached_tokens"
+      ],
       "expected": "Mistral content unions, reasoning blocks, tool fragments, null IDs, and cache usage normalize deterministically.",
       "status": "covered",
       "cases": [
-        {"caseID": "response-rich-v1", "protocols": ["mistral-conversations"], "coversVariants": ["string-content", "typed-content"]},
-        {"caseID": "mistral-mixed-reasoning-tool-usage", "protocols": ["mistral-conversations"], "coversVariants": ["fragmented-tool", "reasoning-content", "cache-usage"]},
-        {"caseID": "mistral-null-tool-id", "protocols": ["mistral-conversations"], "coversVariants": ["null-tool-id"]}
+        {
+          "caseID": "response-rich-v1",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "string-content",
+            "typed-content"
+          ]
+        },
+        {
+          "caseID": "mistral-mixed-reasoning-tool-usage",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "fragmented-tool",
+            "reasoning-content",
+            "cache-usage"
+          ]
+        },
+        {
+          "caseID": "mistral-null-tool-id",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "null-tool-id"
+          ]
+        }
       ]
     },
     {
       "id": "openrouter-images.response-specials",
       "required": true,
-      "protocols": ["openrouter-images"],
-      "variants": ["image-only", "image-and-text", "empty-output", "remote-image-skipped", "malformed-data-url-skipped", "usage"],
-      "sourceSymbols": ["image_url", "parseDataUrl", "parseUsage"],
+      "protocols": [
+        "openrouter-images"
+      ],
+      "variants": [
+        "image-only",
+        "image-and-text",
+        "empty-output",
+        "remote-image-skipped",
+        "malformed-data-url-skipped",
+        "usage"
+      ],
+      "sourceSymbols": [
+        "image_url",
+        "parseDataUrl",
+        "parseUsage"
+      ],
       "expected": "Image responses preserve supported data URLs, text, empty output, and usage while deterministically skipping unsupported URLs.",
       "status": "covered",
       "cases": [
-        {"caseID": "openrouter-image-only", "protocols": ["openrouter-images"], "coversVariants": ["image-only", "usage"]},
-        {"caseID": "openrouter-image-and-text", "protocols": ["openrouter-images"], "coversVariants": ["image-and-text"]},
-        {"caseID": "openrouter-empty-output", "protocols": ["openrouter-images"], "coversVariants": ["empty-output"]},
-        {"caseID": "openrouter-remote-image-skipped", "protocols": ["openrouter-images"], "coversVariants": ["remote-image-skipped"]},
-        {"caseID": "openrouter-malformed-data-url-skipped", "protocols": ["openrouter-images"], "coversVariants": ["malformed-data-url-skipped"]}
+        {
+          "caseID": "openrouter-image-only",
+          "protocols": [
+            "openrouter-images"
+          ],
+          "coversVariants": [
+            "image-only",
+            "usage"
+          ]
+        },
+        {
+          "caseID": "openrouter-image-and-text",
+          "protocols": [
+            "openrouter-images"
+          ],
+          "coversVariants": [
+            "image-and-text"
+          ]
+        },
+        {
+          "caseID": "openrouter-empty-output",
+          "protocols": [
+            "openrouter-images"
+          ],
+          "coversVariants": [
+            "empty-output"
+          ]
+        },
+        {
+          "caseID": "openrouter-remote-image-skipped",
+          "protocols": [
+            "openrouter-images"
+          ],
+          "coversVariants": [
+            "remote-image-skipped"
+          ]
+        },
+        {
+          "caseID": "openrouter-malformed-data-url-skipped",
+          "protocols": [
+            "openrouter-images"
+          ],
+          "coversVariants": [
+            "malformed-data-url-skipped"
+          ]
+        }
       ]
     },
     {
       "id": "openai-completions.response-branches",
       "required": true,
-      "protocols": ["openai-completions"],
-      "variants": ["response-model", "reasoning-field-precedence", "reasoning-details", "choice-usage", "custom-tool", "missing-finish-compat"],
-      "sourceSymbols": ["reasoning_content", "reasoning_details", "choice.usage", "custom", "supportsFinishReason"],
+      "protocols": [
+        "openai-completions"
+      ],
+      "variants": [
+        "response-model",
+        "reasoning-field-precedence",
+        "reasoning-details",
+        "choice-usage",
+        "custom-tool",
+        "missing-finish-compat"
+      ],
+      "sourceSymbols": [
+        "reasoning_content",
+        "reasoning_details",
+        "choice.usage",
+        "custom",
+        "supportsFinishReason"
+      ],
       "expected": "OpenAI-compatible completion extensions and compatibility branches are independently source-derived.",
       "status": "covered",
       "cases": [
-        {"caseID": "completions.reasoning-details-response-model", "protocols": ["openai-completions"], "coversVariants": ["response-model", "reasoning-details"]},
-        {"caseID": "completions.stop-reason-response-branches", "protocols": ["openai-completions"], "coversVariants": ["reasoning-field-precedence", "choice-usage", "custom-tool", "missing-finish-compat"]}
+        {
+          "caseID": "completions.reasoning-details-response-model",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "response-model",
+            "reasoning-details"
+          ]
+        },
+        {
+          "caseID": "completions.stop-reason-response-branches",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "reasoning-field-precedence",
+            "choice-usage",
+            "custom-tool",
+            "missing-finish-compat"
+          ]
+        }
       ]
     },
     {
       "id": "openai-responses.response-branches",
       "required": true,
-      "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"],
-      "variants": ["reasoning-summary", "reasoning-text", "signature-backfill", "message-phase", "namespace", "custom-tool", "incomplete-max-output", "service-tier-usage"],
-      "sourceSymbols": ["processResponsesStream", "backfillReasoningSignatures", "custom_tool_call", "incomplete_details", "service_tier"],
+      "protocols": [
+        "openai-responses",
+        "azure-openai-responses",
+        "openai-codex-responses"
+      ],
+      "variants": [
+        "reasoning-summary",
+        "reasoning-text",
+        "signature-backfill",
+        "message-phase",
+        "namespace",
+        "custom-tool",
+        "incomplete-max-output",
+        "service-tier-usage"
+      ],
+      "sourceSymbols": [
+        "processResponsesStream",
+        "backfillReasoningSignatures",
+        "custom_tool_call",
+        "incomplete_details",
+        "service_tier"
+      ],
       "expected": "Responses API item variants, replay signatures, terminal status details, and service-tier usage are independently source-derived for standard, Azure, and Codex.",
       "status": "covered",
       "cases": [
-        {"caseID": "responses.custom-namespace-usage", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["namespace", "custom-tool"]},
-        {"caseID": "responses.incomplete-raw-total", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["incomplete-max-output"]},
-        {"caseID": "responses.reasoning-signature-backfill-phase", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["reasoning-summary", "reasoning-text", "signature-backfill", "message-phase"]},
-        {"caseID": "responses.service-tier-cost-matrix", "protocols": ["openai-responses", "azure-openai-responses", "openai-codex-responses"], "coversVariants": ["service-tier-usage"]}
+        {
+          "caseID": "responses.custom-namespace-usage",
+          "protocols": [
+            "openai-responses",
+            "azure-openai-responses",
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "namespace",
+            "custom-tool"
+          ]
+        },
+        {
+          "caseID": "responses.incomplete-raw-total",
+          "protocols": [
+            "openai-responses",
+            "azure-openai-responses",
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "incomplete-max-output"
+          ]
+        },
+        {
+          "caseID": "responses.reasoning-signature-backfill-phase",
+          "protocols": [
+            "openai-responses",
+            "azure-openai-responses",
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "reasoning-summary",
+            "reasoning-text",
+            "signature-backfill",
+            "message-phase"
+          ]
+        },
+        {
+          "caseID": "responses.service-tier-cost-matrix",
+          "protocols": [
+            "openai-responses",
+            "azure-openai-responses",
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "service-tier-usage"
+          ]
+        }
       ]
     },
     {
@@ -397,6 +1167,759 @@
           ],
           "coversVariants": [
             "first-late-nonempty-different-model"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.arguments.anthropic-messages",
+      "required": true,
+      "protocols": [
+        "anthropic-messages"
+      ],
+      "variants": [
+        "args.anthropic-messages.valid",
+        "args.anthropic-messages.bad-final",
+        "args.anthropic-messages.array",
+        "args.anthropic-messages.blank",
+        "args.anthropic-messages.invalid-escape"
+      ],
+      "sourceSymbols": [
+        "ToolCallArgumentsStream",
+        "parseToolCallArguments"
+      ],
+      "expected": "Final tool arguments preserve object-or-empty-plus-error results and the received input, including blank and invalid escapes; requested identity and delta ordering remain stable.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "args.anthropic-messages.valid",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "args.anthropic-messages.valid"
+          ]
+        },
+        {
+          "caseID": "args.anthropic-messages.bad-final",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "args.anthropic-messages.bad-final"
+          ]
+        },
+        {
+          "caseID": "args.anthropic-messages.array",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "args.anthropic-messages.array"
+          ]
+        },
+        {
+          "caseID": "args.anthropic-messages.blank",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "args.anthropic-messages.blank"
+          ]
+        },
+        {
+          "caseID": "args.anthropic-messages.invalid-escape",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "args.anthropic-messages.invalid-escape"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.arguments.azure-openai-responses",
+      "required": true,
+      "protocols": [
+        "azure-openai-responses"
+      ],
+      "variants": [
+        "args.azure-openai-responses.valid",
+        "args.azure-openai-responses.bad-final",
+        "args.azure-openai-responses.array",
+        "args.azure-openai-responses.blank",
+        "args.azure-openai-responses.invalid-escape"
+      ],
+      "sourceSymbols": [
+        "ToolCallArgumentsStream",
+        "parseToolCallArguments"
+      ],
+      "expected": "Final tool arguments preserve object-or-empty-plus-error results and the received input, including blank and invalid escapes; requested identity and delta ordering remain stable.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "args.azure-openai-responses.valid",
+          "protocols": [
+            "azure-openai-responses"
+          ],
+          "coversVariants": [
+            "args.azure-openai-responses.valid"
+          ]
+        },
+        {
+          "caseID": "args.azure-openai-responses.bad-final",
+          "protocols": [
+            "azure-openai-responses"
+          ],
+          "coversVariants": [
+            "args.azure-openai-responses.bad-final"
+          ]
+        },
+        {
+          "caseID": "args.azure-openai-responses.array",
+          "protocols": [
+            "azure-openai-responses"
+          ],
+          "coversVariants": [
+            "args.azure-openai-responses.array"
+          ]
+        },
+        {
+          "caseID": "args.azure-openai-responses.blank",
+          "protocols": [
+            "azure-openai-responses"
+          ],
+          "coversVariants": [
+            "args.azure-openai-responses.blank"
+          ]
+        },
+        {
+          "caseID": "args.azure-openai-responses.invalid-escape",
+          "protocols": [
+            "azure-openai-responses"
+          ],
+          "coversVariants": [
+            "args.azure-openai-responses.invalid-escape"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.arguments.bedrock-converse-stream",
+      "required": true,
+      "protocols": [
+        "bedrock-converse-stream"
+      ],
+      "variants": [
+        "args.bedrock-converse-stream.valid",
+        "args.bedrock-converse-stream.bad-final",
+        "args.bedrock-converse-stream.array",
+        "args.bedrock-converse-stream.blank",
+        "args.bedrock-converse-stream.invalid-escape"
+      ],
+      "sourceSymbols": [
+        "ToolCallArgumentsStream",
+        "parseToolCallArguments"
+      ],
+      "expected": "Final tool arguments preserve object-or-empty-plus-error results and the received input, including blank and invalid escapes; requested identity and delta ordering remain stable.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "args.bedrock-converse-stream.valid",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "args.bedrock-converse-stream.valid"
+          ]
+        },
+        {
+          "caseID": "args.bedrock-converse-stream.bad-final",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "args.bedrock-converse-stream.bad-final"
+          ]
+        },
+        {
+          "caseID": "args.bedrock-converse-stream.array",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "args.bedrock-converse-stream.array"
+          ]
+        },
+        {
+          "caseID": "args.bedrock-converse-stream.blank",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "args.bedrock-converse-stream.blank"
+          ]
+        },
+        {
+          "caseID": "args.bedrock-converse-stream.invalid-escape",
+          "protocols": [
+            "bedrock-converse-stream"
+          ],
+          "coversVariants": [
+            "args.bedrock-converse-stream.invalid-escape"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.arguments.mistral-conversations",
+      "required": true,
+      "protocols": [
+        "mistral-conversations"
+      ],
+      "variants": [
+        "args.mistral-conversations.valid",
+        "args.mistral-conversations.bad-final",
+        "args.mistral-conversations.array",
+        "args.mistral-conversations.blank",
+        "args.mistral-conversations.invalid-escape"
+      ],
+      "sourceSymbols": [
+        "ToolCallArgumentsStream",
+        "parseToolCallArguments"
+      ],
+      "expected": "Final tool arguments preserve object-or-empty-plus-error results and the received input, including blank and invalid escapes; requested identity and delta ordering remain stable.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "args.mistral-conversations.valid",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "args.mistral-conversations.valid"
+          ]
+        },
+        {
+          "caseID": "args.mistral-conversations.bad-final",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "args.mistral-conversations.bad-final"
+          ]
+        },
+        {
+          "caseID": "args.mistral-conversations.array",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "args.mistral-conversations.array"
+          ]
+        },
+        {
+          "caseID": "args.mistral-conversations.blank",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "args.mistral-conversations.blank"
+          ]
+        },
+        {
+          "caseID": "args.mistral-conversations.invalid-escape",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "args.mistral-conversations.invalid-escape"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.arguments.openai-codex-responses",
+      "required": true,
+      "protocols": [
+        "openai-codex-responses"
+      ],
+      "variants": [
+        "args.openai-codex-responses.valid",
+        "args.openai-codex-responses.bad-final",
+        "args.openai-codex-responses.array",
+        "args.openai-codex-responses.blank",
+        "args.openai-codex-responses.invalid-escape"
+      ],
+      "sourceSymbols": [
+        "ToolCallArgumentsStream",
+        "parseToolCallArguments"
+      ],
+      "expected": "Final tool arguments preserve object-or-empty-plus-error results and the received input, including blank and invalid escapes; requested identity and delta ordering remain stable.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "args.openai-codex-responses.valid",
+          "protocols": [
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "args.openai-codex-responses.valid"
+          ]
+        },
+        {
+          "caseID": "args.openai-codex-responses.bad-final",
+          "protocols": [
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "args.openai-codex-responses.bad-final"
+          ]
+        },
+        {
+          "caseID": "args.openai-codex-responses.array",
+          "protocols": [
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "args.openai-codex-responses.array"
+          ]
+        },
+        {
+          "caseID": "args.openai-codex-responses.blank",
+          "protocols": [
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "args.openai-codex-responses.blank"
+          ]
+        },
+        {
+          "caseID": "args.openai-codex-responses.invalid-escape",
+          "protocols": [
+            "openai-codex-responses"
+          ],
+          "coversVariants": [
+            "args.openai-codex-responses.invalid-escape"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.arguments.openai-completions",
+      "required": true,
+      "protocols": [
+        "openai-completions"
+      ],
+      "variants": [
+        "args.openai-completions.valid",
+        "args.openai-completions.bad-final",
+        "args.openai-completions.array",
+        "args.openai-completions.blank",
+        "args.openai-completions.invalid-escape"
+      ],
+      "sourceSymbols": [
+        "ToolCallArgumentsStream",
+        "parseToolCallArguments"
+      ],
+      "expected": "Final tool arguments preserve object-or-empty-plus-error results and the received input, including blank and invalid escapes; requested identity and delta ordering remain stable.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "args.openai-completions.valid",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "args.openai-completions.valid"
+          ]
+        },
+        {
+          "caseID": "args.openai-completions.bad-final",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "args.openai-completions.bad-final"
+          ]
+        },
+        {
+          "caseID": "args.openai-completions.array",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "args.openai-completions.array"
+          ]
+        },
+        {
+          "caseID": "args.openai-completions.blank",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "args.openai-completions.blank"
+          ]
+        },
+        {
+          "caseID": "args.openai-completions.invalid-escape",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "args.openai-completions.invalid-escape"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.arguments.openai-responses",
+      "required": true,
+      "protocols": [
+        "openai-responses"
+      ],
+      "variants": [
+        "args.openai-responses.valid",
+        "args.openai-responses.bad-final",
+        "args.openai-responses.array",
+        "args.openai-responses.blank",
+        "args.openai-responses.invalid-escape"
+      ],
+      "sourceSymbols": [
+        "ToolCallArgumentsStream",
+        "parseToolCallArguments"
+      ],
+      "expected": "Final tool arguments preserve object-or-empty-plus-error results and the received input, including blank and invalid escapes; requested identity and delta ordering remain stable.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "args.openai-responses.valid",
+          "protocols": [
+            "openai-responses"
+          ],
+          "coversVariants": [
+            "args.openai-responses.valid"
+          ]
+        },
+        {
+          "caseID": "args.openai-responses.bad-final",
+          "protocols": [
+            "openai-responses"
+          ],
+          "coversVariants": [
+            "args.openai-responses.bad-final"
+          ]
+        },
+        {
+          "caseID": "args.openai-responses.array",
+          "protocols": [
+            "openai-responses"
+          ],
+          "coversVariants": [
+            "args.openai-responses.array"
+          ]
+        },
+        {
+          "caseID": "args.openai-responses.blank",
+          "protocols": [
+            "openai-responses"
+          ],
+          "coversVariants": [
+            "args.openai-responses.blank"
+          ]
+        },
+        {
+          "caseID": "args.openai-responses.invalid-escape",
+          "protocols": [
+            "openai-responses"
+          ],
+          "coversVariants": [
+            "args.openai-responses.invalid-escape"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.arguments.pi-messages",
+      "required": true,
+      "protocols": [
+        "pi-messages"
+      ],
+      "variants": [
+        "args.pi-messages.valid",
+        "args.pi-messages.bad-final",
+        "args.pi-messages.array",
+        "args.pi-messages.blank",
+        "args.pi-messages.invalid-escape"
+      ],
+      "sourceSymbols": [
+        "ToolCallArgumentsStream",
+        "parseToolCallArguments"
+      ],
+      "expected": "Final tool arguments preserve object-or-empty-plus-error results and the received input, including blank and invalid escapes; requested identity and delta ordering remain stable.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "args.pi-messages.valid",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "args.pi-messages.valid"
+          ]
+        },
+        {
+          "caseID": "args.pi-messages.bad-final",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "args.pi-messages.bad-final"
+          ]
+        },
+        {
+          "caseID": "args.pi-messages.array",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "args.pi-messages.array"
+          ]
+        },
+        {
+          "caseID": "args.pi-messages.blank",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "args.pi-messages.blank"
+          ]
+        },
+        {
+          "caseID": "args.pi-messages.invalid-escape",
+          "protocols": [
+            "pi-messages"
+          ],
+          "coversVariants": [
+            "args.pi-messages.invalid-escape"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.reported-cost.anthropic-messages",
+      "required": true,
+      "protocols": [
+        "anthropic-messages"
+      ],
+      "variants": [
+        "cost.anthropic-messages.account",
+        "cost.anthropic-messages.byok",
+        "cost.anthropic-messages.components",
+        "cost.anthropic-messages.incomplete",
+        "cost.anthropic-messages.negative",
+        "cost.anthropic-messages.missing-byok"
+      ],
+      "sourceSymbols": [
+        "applyOpenRouterReportedCost",
+        "calculateCost"
+      ],
+      "expected": "OpenRouter valid complete accounting replaces only total and sets totalFromProvider; invalid or incomplete accounting retains calculated buckets and provenance.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "cost.anthropic-messages.account",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "cost.anthropic-messages.account"
+          ]
+        },
+        {
+          "caseID": "cost.anthropic-messages.byok",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "cost.anthropic-messages.byok"
+          ]
+        },
+        {
+          "caseID": "cost.anthropic-messages.components",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "cost.anthropic-messages.components"
+          ]
+        },
+        {
+          "caseID": "cost.anthropic-messages.incomplete",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "cost.anthropic-messages.incomplete"
+          ]
+        },
+        {
+          "caseID": "cost.anthropic-messages.negative",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "cost.anthropic-messages.negative"
+          ]
+        },
+        {
+          "caseID": "cost.anthropic-messages.missing-byok",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "cost.anthropic-messages.missing-byok"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.reported-cost.openai-completions",
+      "required": true,
+      "protocols": [
+        "openai-completions"
+      ],
+      "variants": [
+        "cost.openai-completions.account",
+        "cost.openai-completions.byok",
+        "cost.openai-completions.components",
+        "cost.openai-completions.incomplete",
+        "cost.openai-completions.negative",
+        "cost.openai-completions.missing-byok"
+      ],
+      "sourceSymbols": [
+        "applyOpenRouterReportedCost",
+        "calculateCost"
+      ],
+      "expected": "OpenRouter valid complete accounting replaces only total and sets totalFromProvider; invalid or incomplete accounting retains calculated buckets and provenance.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "cost.openai-completions.account",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "cost.openai-completions.account"
+          ]
+        },
+        {
+          "caseID": "cost.openai-completions.byok",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "cost.openai-completions.byok"
+          ]
+        },
+        {
+          "caseID": "cost.openai-completions.components",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "cost.openai-completions.components"
+          ]
+        },
+        {
+          "caseID": "cost.openai-completions.incomplete",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "cost.openai-completions.incomplete"
+          ]
+        },
+        {
+          "caseID": "cost.openai-completions.negative",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "cost.openai-completions.negative"
+          ]
+        },
+        {
+          "caseID": "cost.openai-completions.missing-byok",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "cost.openai-completions.missing-byok"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.fallback-pricing",
+      "required": true,
+      "protocols": [
+        "anthropic-messages"
+      ],
+      "variants": [
+        "fallback.anthropic.matching",
+        "fallback.anthropic.other-provider"
+      ],
+      "sourceSymbols": [
+        "usageModel",
+        "allowedFallbackModels"
+      ],
+      "expected": "Anthropic initial server fallback preserves requested identity and chooses cost only on exact provider/reported model match.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "fallback.anthropic.matching",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "fallback.anthropic.matching"
+          ]
+        },
+        {
+          "caseID": "fallback.anthropic.other-provider",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "fallback.anthropic.other-provider"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "october.mistral-empty",
+      "required": true,
+      "protocols": [
+        "mistral-conversations"
+      ],
+      "variants": [
+        "mistral-empty-text-preserves-thinking"
+      ],
+      "sourceSymbols": [
+        "appendThinking"
+      ],
+      "expected": "Empty text deltas do not split a live Mistral thinking block.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "mistral-empty-text-preserves-thinking",
+          "protocols": [
+            "mistral-conversations"
+          ],
+          "coversVariants": [
+            "mistral-empty-text-preserves-thinking"
           ]
         }
       ]

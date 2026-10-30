@@ -144,7 +144,7 @@
           }
         ],
         "model": "mistral-medium-2606",
-        "reasoning_effort": "high",
+        "prompt_mode": "reasoning",
         "stream": true,
         "tools": [
           {
@@ -226,7 +226,7 @@
           }
         ],
         "model": "mistral-small-2603",
-        "reasoning_effort": "high",
+        "prompt_mode": "reasoning",
         "stream": true,
         "tools": [
           {
@@ -461,7 +461,7 @@
           }
         ],
         "model": "zai-glm-5-2",
-        "reasoning_effort": "high",
+        "prompt_mode": "reasoning",
         "stream": true,
         "tools": [
           {
@@ -810,5 +810,5 @@
   },
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/earendil-works/pi.git",
-  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
 }

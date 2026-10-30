@@ -172,6 +172,32 @@ def executable_request_cases(repo: pathlib.Path) -> dict[str, set[str]]:
         if not isinstance(case_id, str):
             raise SystemExit("Azure configuration oracle has malformed case coverage")
         result.setdefault("azure-openai-responses", set()).add(case_id)
+    # Source-derived additions bind the complete input/observation set and the
+    # actual Swift replay, so deleting a case cannot be hidden by a rich fixture.
+    for stem, test in [
+        ("provider-intent", "ProviderIntentDifferentialTests.swift"),
+        ("strict-fallback", "StrictFallbackDifferentialTests.swift"),
+    ]:
+        fixture = load_json(repo / f"Fixtures/Differential/Cases/{stem}.json")
+        oracle = load_json(repo / f"Fixtures/Differential/Oracle/{stem}.json")
+        replay = repo / "Tests/PiAIProviderRuntimeTests" / test
+        revision = load_json(repo / "Upstream.lock.json")["revision"]
+        if (fixture.get("upstreamRevision") != revision
+                or oracle.get("upstreamRevision") != revision
+                or not replay.is_file() or stem not in replay.read_text()):
+            raise SystemExit(f"{stem} request evidence identity/test drift")
+        identifiers = set()
+        for case in fixture.get("cases", []):
+            case_id = case.get("id")
+            protocol = case.get("protocolID") or case.get("model", {}).get("api")
+            if (not isinstance(case_id, str) or case_id in identifiers
+                    or not isinstance(protocol, str)
+                    or not isinstance(oracle.get("cases", {}).get(case_id), dict)):
+                raise SystemExit(f"{stem} request case drift: {case_id}")
+            identifiers.add(case_id)
+            result.setdefault(protocol, set()).add(case_id)
+        if not identifiers or identifiers != set(oracle.get("cases", {})):
+            raise SystemExit(f"{stem} request case set drift")
     return result
 
 

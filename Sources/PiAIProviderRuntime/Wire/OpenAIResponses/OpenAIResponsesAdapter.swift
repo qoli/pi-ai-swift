@@ -178,7 +178,8 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               providerID: request.providerID,
               operation: "openai-responses.usage.pricing"),
             requestedServiceTier: request.options.serviceTier,
-            flavor: flavor
+            flavor: flavor,
+            providerThinkingLevel: configurationUpdateEffort(request, context: context)
           )
           for try await chunk in response.body {
             try Task.checkCancellation()
@@ -366,20 +367,19 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       }
     }
     let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    let omitUnsupportedFields = isChatGPTSignIn(context)
+    let configurationEffort = configurationUpdateEffort(request, context: context)
     let supportsStrictMode: Bool = {
       if let configured = compat.bool("supportsStrictMode") { return configured }
       return flavor != .standard
     }()
     let supportsGrammarTools = compat.bool("supportsOpenAIGrammarTools") == true
-    let deferredToolsMode: String? =
-      compat.bool("supportsAdditionalTools") == true
-      ? "additional-tools"
-      : (compat.bool("supportsToolSearch") == true ? "tool-search" : nil)
-    let toolPlacement = responseToolPlacement(
-      tools: request.tools,
-      messages: request.messages,
-      enabled: deferredToolsMode != nil
-    )
+    let usesInitialToolItem =
+      compat.bool("supportsMidConvoSystemMessages") == true
+      && compat.bool("supportsAdditionalTools") == true
+    let toolPlacement:
+      (immediate: [ProviderToolDefinition], deferred: [String: ProviderToolDefinition]) =
+        (usesInitialToolItem ? [] : request.tools, [:])
     var grammarTools: [String: ProviderConstrainedSamplingResolver.Grammar] = [:]
     for tool in request.tools {
       if let grammar = try ProviderConstrainedSamplingResolver.grammar(
@@ -416,12 +416,28 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           context: context,
           grammarTools: grammarTools,
           deferredTools: toolPlacement.deferred,
-          deferredToolsMode: deferredToolsMode,
-          supportsStrictMode: supportsStrictMode
+          deferredToolsMode: nil,
+          supportsStrictMode: supportsStrictMode,
+          configurationEffort: configurationEffort
         )),
       "stream": .bool(true),
       "store": .bool(false),
     ]
+    if usesInitialToolItem, !request.tools.isEmpty,
+      case .array(var input)? = body["input"]
+    {
+      input.insert(
+        .object([
+          "type": .string("additional_tools"), "role": .string("developer"),
+          "tools": .array(
+            try request.tools.map {
+              try responseTool(
+                $0, grammarTools: grammarTools, supportsStrictMode: supportsStrictMode,
+                providerID: request.providerID, deferLoading: false)
+            }),
+        ]), at: 0)
+      body["input"] = .array(input)
+    }
     let instructions = request.messages.compactMap { message -> String? in
       guard case .system(let text) = message else { return nil }
       return text
@@ -429,13 +445,13 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     if flavor == .codex, !instructions.isEmpty {
       body["instructions"] = .string(instructions.joined(separator: "\n\n"))
     }
-    if flavor != .codex, compat.bool("supportsMaxOutputTokens") != false,
+    if flavor != .codex, !omitUnsupportedFields, compat.bool("supportsMaxOutputTokens") != false,
       let maximum = request.options.maximumOutputTokens
         ?? context.model.maximumOutputTokens
     {
       body["max_output_tokens"] = .integer(Int64(max(16, maximum)))
     }
-    if let temperature = request.options.temperature {
+    if let temperature = request.options.temperature, !omitUnsupportedFields {
       body["temperature"] = .number(temperature)
     }
     let cacheRetention: ProviderCacheRetention =
@@ -446,15 +462,20 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     {
       body["prompt_cache_key"] = .string(String(sessionID.prefix(64)))
     }
-    if flavor == .standard, cacheRetention == .long,
-      compat.bool("supportsLongCacheRetention") != false
+    if flavor == .standard, !omitUnsupportedFields, cacheRetention == .long,
+      compat.bool("supportsLongCacheRetention") != false,
+      compat.bool("supportsExplicitPromptCacheMode") != true
     {
       body["prompt_cache_retention"] = .string("24h")
     }
-    if flavor == .standard, cacheRetention == .none,
+    if flavor == .standard, !omitUnsupportedFields,
       compat.bool("supportsExplicitPromptCacheMode") == true
     {
-      body["prompt_cache_options"] = .object(["mode": .string("explicit")])
+      if cacheRetention == .none {
+        body["prompt_cache_options"] = .object(["mode": .string("explicit")])
+      } else if cacheRetention == .long, compat.bool("supportsLongCacheRetention") != false {
+        body["prompt_cache_options"] = .object(["ttl": .string("30m")])
+      }
     }
     if request.options.reasoningEffort != nil || request.options.reasoningSummary != nil,
       context.model.capabilities.reasoning
@@ -470,7 +491,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         }
       } else {
         body["reasoning"] = .object([
-          "effort": .string(mapped ?? effort.rawValue),
+          "effort": .string(configurationEffort == nil ? (mapped ?? effort.rawValue) : "medium"),
           "summary": .string(request.options.reasoningSummary ?? "auto"),
         ])
         body["include"] = .array([.string("reasoning.encrypted_content")])
@@ -545,10 +566,42 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         body["prompt_cache_key"] = .string(sessionID)
       }
     }
-    for (key, value) in request.options.providerOptions {
+    for (key, value) in request.options.providerOptions where key != "samplingParams" {
+      body[key] = value
+    }
+    for (key, value) in ProviderSamplingParameters.resolve(request: request, context: context) {
       body[key] = value
     }
     return body
+  }
+
+  private func isChatGPTSignIn(_ context: WireProtocolContext) -> Bool {
+    guard flavor == .standard, context.provider.id == "openai",
+      context.baseURL.absoluteString == "https://api.openai.com/v1"
+    else { return false }
+    switch context.credential {
+    case .apiKey(let credential): return !credential.key.hasPrefix("sk-")
+    case .oauth(let credential): return !credential.accessToken.hasPrefix("sk-")
+    case nil: return false
+    }
+  }
+
+  private func configurationUpdateEffort(_ request: ProviderRequest, context: WireProtocolContext)
+    -> String?
+  {
+    guard flavor == .standard,
+      context.modelConfiguration.metadata.object("compat")?.bool("supportsMidConvoEffort") == true,
+      let effort = request.options.reasoningEffort, effort != .off,
+      !isChatGPTSignIn(context)
+    else { return nil }
+    return context.modelConfiguration.metadata.object("thinkingLevelMap")?.string(effort.rawValue)
+      ?? effort.rawValue
+  }
+
+  private func configurationUpdate(_ effort: String) -> JSONValue {
+    .object([
+      "type": .string("configuration_update"), "reasoning": .object(["effort": .string(effort)]),
+    ])
   }
 
   private func codexSessionID(
@@ -579,14 +632,14 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     grammarTools: [String: ProviderConstrainedSamplingResolver.Grammar],
     deferredTools: [String: ProviderToolDefinition],
     deferredToolsMode: String?,
-    supportsStrictMode: Bool
+    supportsStrictMode: Bool,
+    configurationEffort: String? = nil
   ) throws -> [JSONValue] {
     let target = ProviderMessageSource(
       api: protocolID, providerID: context.provider.id, modelID: context.model.id)
     var result: [JSONValue] = []
     var replayMessageIndex = 0
     var normalizedToolIDs: [String: String] = [:]
-    var loadedToolNames = Set<String>()
     for message in messages {
       let messageIndex = replayMessageIndex
       switch message {
@@ -627,6 +680,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           ]))
       case .assistantMessage(let assistant):
         guard let content = assistant.replayContent(for: target) else { continue }
+        let outputStart = result.count
         var textIndex = 0
         for item in content {
           switch item {
@@ -678,7 +732,8 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               && assistant.source.api == target.api
             let differentModel = sameProviderAndAPI && assistant.source.modelID != target.modelID
             var itemID = ids.count == 2 ? ids[1] : nil
-            if differentModel && itemID?.hasPrefix("fc_") == true {
+            let expectedPrefix = grammarTools[call.name] == nil ? "fc_" : "ctc_"
+            if differentModel || itemID?.hasPrefix(expectedPrefix) == false {
               itemID = nil
             }
             var object: [String: JSONValue]
@@ -717,6 +772,12 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
             result.append(.object(object))
           }
         }
+        if configurationEffort != nil, assistant.source == target,
+          result.count > outputStart,
+          let previous = assistant.providerMetadata["providerThinkingLevel"]?.stringValue
+        {
+          result.insert(configurationUpdate(previous), at: outputStart)
+        }
       case .toolResult(let toolResult):
         let normalizedID = normalizedToolIDs[toolResult.toolCallID] ?? toolResult.toolCallID
         let callID =
@@ -730,98 +791,12 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
             "call_id": .string(callID),
             "output": try makeToolResultOutput(toolResult, context: context),
           ]))
-        let loaded = (toolResult.addedToolNames ?? []).compactMap {
-          name -> ProviderToolDefinition? in
-          guard !loadedToolNames.contains(name), let tool = deferredTools[name] else { return nil }
-          loadedToolNames.insert(name)
-          return tool
-        }
-        if !loaded.isEmpty, deferredToolsMode == "additional-tools" {
-          result.append(
-            .object([
-              "type": .string("additional_tools"),
-              "role": .string("developer"),
-              "tools": .array(
-                try loaded.map {
-                  try responseTool(
-                    $0, grammarTools: grammarTools, supportsStrictMode: supportsStrictMode,
-                    providerID: context.provider.id, deferLoading: false)
-                }),
-            ]))
-        } else if !loaded.isEmpty, deferredToolsMode == "tool-search" {
-          let names = loaded.map(\.name)
-          let searchCallID =
-            "pi_tool_load_\(responsesShortHash("\(toolResult.toolCallID):\(names.joined(separator: ","))"))"
-          result.append(
-            .object([
-              "type": .string("tool_search_call"),
-              "call_id": .string(searchCallID),
-              "execution": .string("client"),
-              "status": .string("completed"),
-              "arguments": .object([
-                "query": .string(names.joined(separator: " ")),
-                "limit": .integer(Int64(names.count)),
-              ]),
-            ]))
-          result.append(
-            .object([
-              "type": .string("tool_search_output"),
-              "call_id": .string(searchCallID),
-              "execution": .string("client"),
-              "status": .string("completed"),
-              "tools": .array(
-                try loaded.map {
-                  try responseTool(
-                    $0, grammarTools: grammarTools, supportsStrictMode: supportsStrictMode,
-                    providerID: context.provider.id, deferLoading: true)
-                }),
-            ]))
-        }
+
       }
       replayMessageIndex += 1
     }
+    if let configurationEffort { result.append(configurationUpdate(configurationEffort)) }
     return result
-  }
-
-  private func responseToolPlacement(
-    tools: [ProviderToolDefinition],
-    messages: [ProviderMessage],
-    enabled: Bool
-  ) -> (immediate: [ProviderToolDefinition], deferred: [String: ProviderToolDefinition]) {
-    guard enabled else { return (tools, [:]) }
-    var usedNames = Set<String>()
-    var deferredNames = Set<String>()
-    for message in messages {
-      switch message {
-      case .assistant(let content):
-        usedNames.formUnion(
-          content.compactMap { item in
-            guard case .toolCall(let call) = item else { return nil }
-            return call.name
-          })
-      case .assistantMessage(let assistant):
-        usedNames.formUnion(
-          assistant.content.compactMap { item in
-            guard case .toolCall(let call) = item else { return nil }
-            return call.name
-          })
-      case .toolResult(let result):
-        for name in result.addedToolNames ?? [] where !usedNames.contains(name) {
-          deferredNames.insert(name)
-        }
-      default: break
-      }
-    }
-    var deferred: [String: ProviderToolDefinition] = [:]
-    var immediate: [ProviderToolDefinition] = []
-    for tool in tools {
-      if deferredNames.contains(tool.name) {
-        deferred[tool.name] = tool
-      } else {
-        immediate.append(tool)
-      }
-    }
-    return (immediate, deferred)
   }
 
   private func responseTool(
@@ -927,7 +902,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     let allowedProviders: Set<String>
     switch flavor {
     case .azure:
-      allowedProviders = ["openai", "openai-codex", "opencode", "azure-openai-responses"]
+      allowedProviders = ["openai", "openai-codex", "opencode", "azure"]
     case .standard, .codex:
       allowedProviders = ["openai", "openai-codex", "opencode"]
     }
@@ -996,12 +971,13 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       guard case .image(let image) = item else { return nil }
       return image
     }
+    let hasText = !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     guard !images.isEmpty, context.model.capabilities.imageInput else {
-      if !text.isEmpty { return .string(text) }
+      if hasText { return .string(text) }
       return .string(images.isEmpty ? "(no tool output)" : "(see attached image)")
     }
     var output: [JSONValue] = []
-    if !text.isEmpty {
+    if hasText {
       output.append(.object(["type": .string("input_text"), "text": .string(text)]))
     }
     for image in images {
@@ -1055,7 +1031,9 @@ private struct OpenAIResponsesReducer {
   private var terminal = false
   private var responseID: String?
   private var tools: [String: ToolState] = [:]
+  let providerThinkingLevel: String?
   private var toolIDsByItemID: [String: String] = [:]
+  private var toolIDsByOutputIndex: [Int: String] = [:]
   private var completedToolCall = false
   private var textByIndex: [Int: ProviderTextContent] = [:]
   private var reasoningByIndex: [Int: ProviderReasoningContent] = [:]
@@ -1071,7 +1049,8 @@ private struct OpenAIResponsesReducer {
     grammarInputProperties: [String: String],
     pricing: ProviderUsagePricing?,
     requestedServiceTier: String?,
-    flavor: OpenAIResponsesAdapter.Flavor
+    flavor: OpenAIResponsesAdapter.Flavor,
+    providerThinkingLevel: String? = nil
   ) {
     self.providerID = providerID
     self.protocolID = protocolID
@@ -1081,6 +1060,7 @@ private struct OpenAIResponsesReducer {
     self.pricing = pricing
     self.requestedServiceTier = requestedServiceTier
     self.flavor = flavor
+    self.providerThinkingLevel = providerThinkingLevel
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
@@ -1147,6 +1127,7 @@ private struct OpenAIResponsesReducer {
         let name = item.string("name")
       else { throw invalid("function call item is missing id or name") }
       if let itemID = item.string("id") { toolIDsByItemID[itemID] = id }
+      if let index = object.int("output_index") { toolIDsByOutputIndex[index] = id }
       let customProperty =
         item.string("type") == "custom_tool_call"
         ? (grammarInputProperties[name] ?? "input") : nil
@@ -1156,27 +1137,36 @@ private struct OpenAIResponsesReducer {
         customInputProperty: customProperty)
       return [.toolCallStarted(id: id, name: name)]
     case "response.function_call_arguments.delta":
-      guard let rawID = object.string("item_id") ?? object.string("call_id"),
-        let id = toolIDsByItemID[rawID] ?? (tools[rawID] == nil ? nil : rawID),
+      guard
+        let id = object.int("output_index").flatMap({ toolIDsByOutputIndex[$0] })
+          ?? (object.string("item_id") ?? object.string("call_id")).flatMap({
+            toolIDsByItemID[$0] ?? (tools[$0] == nil ? nil : $0)
+          }),
         let delta = object.string("delta"),
-        var state = tools[id]
+        let state = tools[id]
       else { throw invalid("function call delta has no matching item") }
       state.arguments += delta
       tools[id] = state
       return [.toolInputDelta(id: id, delta: delta)]
     case "response.custom_tool_call_input.delta":
-      guard let rawID = object.string("item_id") ?? object.string("call_id"),
-        let id = toolIDsByItemID[rawID] ?? (tools[rawID] == nil ? nil : rawID),
+      guard
+        let id = object.int("output_index").flatMap({ toolIDsByOutputIndex[$0] })
+          ?? (object.string("item_id") ?? object.string("call_id")).flatMap({
+            toolIDsByItemID[$0] ?? (tools[$0] == nil ? nil : $0)
+          }),
         let delta = object.string("delta"),
-        var state = tools[id], state.customInputProperty != nil
+        let state = tools[id], state.customInputProperty != nil
       else { throw invalid("custom tool call delta has no matching item") }
       state.arguments += delta
       tools[id] = state
       return [.toolInputDelta(id: id, delta: delta)]
     case "response.custom_tool_call_input.done":
-      guard let rawID = object.string("item_id") ?? object.string("call_id"),
-        let id = toolIDsByItemID[rawID] ?? (tools[rawID] == nil ? nil : rawID),
-        let input = object.string("input"), var state = tools[id], state.customInputProperty != nil
+      guard
+        let id = object.int("output_index").flatMap({ toolIDsByOutputIndex[$0] })
+          ?? (object.string("item_id") ?? object.string("call_id")).flatMap({
+            toolIDsByItemID[$0] ?? (tools[$0] == nil ? nil : $0)
+          }),
+        let input = object.string("input"), let state = tools[id], state.customInputProperty != nil
       else { throw invalid("custom tool call completion has no matching item") }
       state.arguments = input
       tools[id] = state
@@ -1229,24 +1219,17 @@ private struct OpenAIResponsesReducer {
       guard let id = responseToolID(item),
         let state = tools.removeValue(forKey: id)
       else { throw invalid("completed function call has no matching item") }
-      let arguments: JSONValue
+      let call: ProviderToolCall
       if let property = state.customInputProperty {
-        arguments = .object([property: .string(item.string("input") ?? state.arguments)])
+        call = ProviderToolCall(
+          id: id, name: state.name,
+          arguments: .object([property: .string(item.string("input") ?? state.arguments)]),
+          namespace: item.string("namespace"))
       } else {
         let raw = item.string("arguments") ?? state.arguments
-        do {
-          arguments = try JSONDecoder().decode(JSONValue.self, from: Data(raw.utf8))
-        } catch {
-          throw invalid("function call arguments are malformed")
-        }
+        call = .parsing(id: id, name: state.name, input: raw, namespace: item.string("namespace"))
       }
       completedToolCall = true
-      let call = ProviderToolCall(
-        id: id,
-        name: state.name,
-        arguments: arguments,
-        namespace: item.string("namespace")
-      )
       toolsByIndex[object.int("output_index") ?? toolsByIndex.count] = call
       return [
         .toolCallCompleted(call)
@@ -1256,6 +1239,9 @@ private struct OpenAIResponsesReducer {
     where type == "response.completed" || acceptsCodexTerminalAliases:
       guard let response = object.object("response") else {
         throw invalid("completed event is missing response")
+      }
+      guard tools.isEmpty else {
+        throw invalid("OpenAI Responses stream completed with an unfinished tool call")
       }
       terminal = true
       try backfillReasoningSignatures(from: response)
@@ -1395,7 +1381,7 @@ private struct OpenAIResponsesReducer {
     }
     switch effectiveTier {
     case "flex": return 0.5
-    case "priority": return requestedModelID == "gpt-5.5" ? 2.5 : 2
+    case "priority", "fast": return requestedModelID == "gpt-5.5" ? 2.5 : 2
     default: return 1
     }
   }
@@ -1430,7 +1416,9 @@ private struct OpenAIResponsesReducer {
         usage: usage,
         finishReason: reason,
         rawFinishReason: rawFinishReason,
-        timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000)
+        timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000),
+        providerMetadata: providerThinkingLevel.map { ["providerThinkingLevel": .string($0)] }
+          ?? [:]
       ))
   }
 
@@ -1459,9 +1447,14 @@ private struct OpenAIResponsesReducer {
     }
   }
 
-  private struct ToolState {
+  private final class ToolState {
     let name: String
     var arguments: String
     let customInputProperty: String?
+    init(name: String, arguments: String, customInputProperty: String?) {
+      self.name = name
+      self.arguments = arguments
+      self.customInputProperty = customInputProperty
+    }
   }
 }

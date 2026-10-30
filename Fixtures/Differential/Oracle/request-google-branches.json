@@ -473,6 +473,156 @@
         }
       }
     },
+    "const-schema-literals-preserved": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "properties": {
+                      "both": {
+                        "const": "keep-const",
+                        "enum": [
+                          "existing"
+                        ],
+                        "type": "string"
+                      },
+                      "const": {
+                        "enum": [
+                          "literal-property-name"
+                        ],
+                        "type": "string"
+                      },
+                      "count": {
+                        "enum": [
+                          2
+                        ],
+                        "type": "integer"
+                      },
+                      "enabled": {
+                        "const": true,
+                        "type": "boolean"
+                      },
+                      "literal": {
+                        "default": {
+                          "const": "must-stay-data"
+                        },
+                        "enum": [
+                          {
+                            "const": "must-stay-enum-data"
+                          }
+                        ]
+                      },
+                      "mode": {
+                        "enum": [
+                          "lookup"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "mode"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64
+          },
+          "tools": [
+            {
+              "functionDeclarations": [
+                {
+                  "description": "Read weather",
+                  "name": "weather",
+                  "parametersJsonSchema": {
+                    "properties": {
+                      "both": {
+                        "const": "keep-const",
+                        "enum": [
+                          "existing"
+                        ],
+                        "type": "string"
+                      },
+                      "const": {
+                        "enum": [
+                          "literal-property-name"
+                        ],
+                        "type": "string"
+                      },
+                      "count": {
+                        "enum": [
+                          2
+                        ],
+                        "type": "integer"
+                      },
+                      "enabled": {
+                        "const": true,
+                        "type": "boolean"
+                      },
+                      "literal": {
+                        "default": {
+                          "const": "must-stay-data"
+                        },
+                        "enum": [
+                          {
+                            "const": "must-stay-enum-data"
+                          }
+                        ]
+                      },
+                      "mode": {
+                        "enum": [
+                          "lookup"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "mode"
+                    ],
+                    "type": "object"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
     "cross-model-signatures-dropped": {
       "google-generative-ai": {
         "requestBody": {
@@ -489,9 +639,6 @@
               "parts": [
                 {
                   "text": "answer"
-                },
-                {
-                  "text": "analysis"
                 },
                 {
                   "functionCall": {
@@ -542,9 +689,6 @@
                   "text": "answer"
                 },
                 {
-                  "text": "analysis"
-                },
-                {
                   "functionCall": {
                     "args": {
                       "city": "Taipei"
@@ -582,7 +726,7 @@
         "wireRequest": {
           "headers": {
             "content-type": "application/json",
-            "user-agent": "pi (darwin 27.0.0; arm64)",
+            "user-agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
             "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
             "x-goog-api-key": "fixture-key"
           },
@@ -595,7 +739,7 @@
         "wireRequest": {
           "headers": {
             "content-type": "application/json",
-            "user-agent": "pi (darwin 27.0.0; arm64)",
+            "user-agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
             "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
             "x-goog-api-key": "fixture-key"
           },
@@ -971,6 +1115,50 @@
           ],
           "generationConfig": {
             "maxOutputTokens": 64
+          }
+        }
+      }
+    },
+    "gemini-4-thinking-level": {
+      "google-generative-ai": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingLevel": "MEDIUM"
+            }
+          }
+        }
+      },
+      "google-vertex": {
+        "requestBody": {
+          "contents": [
+            {
+              "parts": [
+                {
+                  "text": "hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "generationConfig": {
+            "maxOutputTokens": 64,
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingLevel": "MEDIUM"
+            }
           }
         }
       }
@@ -1388,7 +1576,7 @@
         "wireRequest": {
           "headers": {
             "content-type": "application/json",
-            "user-agent": "pi (darwin 27.0.0; arm64)",
+            "user-agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
             "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
             "x-goog-api-key": "fixture-key"
           },
@@ -1821,5 +2009,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
 }

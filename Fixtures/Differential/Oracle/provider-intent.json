@@ -1,0 +1,705 @@
+{
+  "cases": {
+    "anthropic.managed-off": {
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-haiku-5",
+        "stream": true,
+        "thinking": {
+          "type": "disabled"
+        }
+      }
+    },
+    "azure-openai-responses.sampling-low": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "input": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 4096,
+        "model": "fixture-model",
+        "presence_penalty": 0.2,
+        "reasoning": {
+          "effort": "low",
+          "summary": "auto"
+        },
+        "seed": 7,
+        "store": false,
+        "stream": true,
+        "temperature": 0.9,
+        "top_p": 0.8
+      }
+    },
+    "azure-openai-responses.sampling-off": {
+      "requestBody": {
+        "input": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 4096,
+        "model": "fixture-model",
+        "presence_penalty": 0.2,
+        "reasoning": {
+          "effort": "none"
+        },
+        "seed": 7,
+        "store": false,
+        "stream": true,
+        "temperature": 0.2,
+        "top_p": 0.8
+      }
+    },
+    "azure.completions-deployment": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "deployment-name",
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      }
+    },
+    "bedrock.anthropic.claude-haiku-5.high": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "high"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock.anthropic.claude-haiku-5.minimal": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "low"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock.anthropic.claude-haiku-5.xhigh": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "xhigh"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock.openai.gpt-5.4.high": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "high"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock.openai.gpt-5.4.minimal": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "low"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock.openai.gpt-5.4.xhigh": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "xhigh"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock.openai.gpt-oss-120b-1:0.high": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "high"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock.openai.gpt-oss-120b-1:0.minimal": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "low"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock.openai.gpt-oss-120b-1:0.xhigh": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "high"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        },
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "mistral.map": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "renamed-model",
+        "reasoning_effort": "high",
+        "stream": true
+      }
+    },
+    "mistral.no-map": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "renamed-model",
+        "prompt_mode": "reasoning",
+        "stream": true
+      }
+    },
+    "mistral.off": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "renamed-model",
+        "reasoning_effort": "none",
+        "stream": true
+      }
+    },
+    "openai-completions.sampling-low": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "fixture-model",
+        "presence_penalty": 0.2,
+        "reasoning_effort": "low",
+        "seed": 7,
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "temperature": 0.9,
+        "top_p": 0.8
+      }
+    },
+    "openai-completions.sampling-off": {
+      "requestBody": {
+        "max_completion_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "fixture-model",
+        "presence_penalty": 0.2,
+        "seed": 7,
+        "store": false,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "temperature": 0.2,
+        "top_p": 0.8
+      }
+    },
+    "openai-responses.sampling-low": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "input": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 4096,
+        "model": "fixture-model",
+        "presence_penalty": 0.2,
+        "reasoning": {
+          "effort": "low",
+          "summary": "auto"
+        },
+        "seed": 7,
+        "store": false,
+        "stream": true,
+        "temperature": 0.9,
+        "top_p": 0.8
+      }
+    },
+    "openai-responses.sampling-off": {
+      "requestBody": {
+        "input": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 4096,
+        "model": "fixture-model",
+        "presence_penalty": 0.2,
+        "reasoning": {
+          "effort": "none"
+        },
+        "seed": 7,
+        "store": false,
+        "stream": true,
+        "temperature": 0.2,
+        "top_p": 0.8
+      }
+    },
+    "responses.configuration-false": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "input": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "reasoning": {
+              "effort": "low"
+            },
+            "type": "configuration_update"
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "text": "answer",
+                "type": "output_text"
+              }
+            ],
+            "id": "msg_pi_1",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message"
+          },
+          {
+            "content": [
+              {
+                "text": "again",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "reasoning": {
+              "effort": "xhigh"
+            },
+            "type": "configuration_update"
+          }
+        ],
+        "max_output_tokens": 4096,
+        "model": "gpt-6",
+        "prompt_cache_key": "fixture",
+        "prompt_cache_options": {
+          "ttl": "30m"
+        },
+        "reasoning": {
+          "effort": "medium",
+          "summary": "auto"
+        },
+        "store": false,
+        "stream": true,
+        "temperature": 0.7
+      }
+    },
+    "responses.configuration-true": {
+      "requestBody": {
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "input": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "text": "answer",
+                "type": "output_text"
+              }
+            ],
+            "id": "msg_pi_1",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message"
+          },
+          {
+            "content": [
+              {
+                "text": "again",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "model": "gpt-6",
+        "prompt_cache_key": "fixture",
+        "reasoning": {
+          "effort": "xhigh",
+          "summary": "auto"
+        },
+        "store": false,
+        "stream": true
+      }
+    },
+    "responses.current-tools-additional-native": {
+      "requestBody": {
+        "input": [
+          {
+            "role": "developer",
+            "tools": [
+              {
+                "description": "alpha",
+                "name": "alpha",
+                "parameters": {
+                  "properties": {},
+                  "type": "object"
+                },
+                "type": "function"
+              },
+              {
+                "description": "beta",
+                "name": "beta",
+                "parameters": {
+                  "properties": {},
+                  "type": "object"
+                },
+                "type": "function"
+              }
+            ],
+            "type": "additional_tools"
+          },
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 4096,
+        "model": "fixture-model",
+        "reasoning": {
+          "effort": "none"
+        },
+        "store": false,
+        "stream": true
+      }
+    },
+    "responses.current-tools-additional-no-history": {
+      "requestBody": {
+        "input": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 4096,
+        "model": "fixture-model",
+        "reasoning": {
+          "effort": "none"
+        },
+        "store": false,
+        "stream": true,
+        "tools": [
+          {
+            "description": "alpha",
+            "name": "alpha",
+            "parameters": {
+              "properties": {},
+              "type": "object"
+            },
+            "type": "function"
+          },
+          {
+            "description": "beta",
+            "name": "beta",
+            "parameters": {
+              "properties": {},
+              "type": "object"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "responses.current-tools-search": {
+      "requestBody": {
+        "input": [
+          {
+            "content": [
+              {
+                "text": "hello",
+                "type": "input_text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "max_output_tokens": 4096,
+        "model": "fixture-model",
+        "reasoning": {
+          "effort": "none"
+        },
+        "store": false,
+        "stream": true,
+        "tools": [
+          {
+            "description": "alpha",
+            "name": "alpha",
+            "parameters": {
+              "properties": {},
+              "type": "object"
+            },
+            "type": "function"
+          },
+          {
+            "description": "beta",
+            "name": "beta",
+            "parameters": {
+              "properties": {},
+              "type": "object"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

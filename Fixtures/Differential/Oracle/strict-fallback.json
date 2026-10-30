@@ -1,0 +1,2356 @@
+{
+  "cases": {
+    "anthropic-messages.cancel-before-retry": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "aborted"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.later-request-restores-strict": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        },
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        },
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0"
+            }
+          ]
+        },
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.limit-0": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_1",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_2"
+            }
+          ]
+        },
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0"
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_1",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_2"
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.limit-1": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_1",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_2"
+            }
+          ]
+        },
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0"
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_1",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_2"
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.limit-2": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_1",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_2"
+            }
+          ]
+        },
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0"
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_1",
+              "strict": true
+            },
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_2"
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.ordinary-only": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0"
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.required-only": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.second-rejection": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        },
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0"
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.stream-error": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.unrelated": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.wrong-status": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        }
+      ]
+    },
+    "anthropic-messages.wrong-type": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "tool_0",
+              "strict": true
+            }
+          ]
+        }
+      ]
+    },
+    "bedrock-converse-stream.cancel-before-retry": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "aborted"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.later-request-restores-strict": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        },
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.limit-0": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_1",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0"
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_1",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_2"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.limit-1": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_1",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0"
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_1",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_2"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.limit-2": {
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_1",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0"
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_1",
+                  "strict": true
+                }
+              },
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_2"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.ordinary-only": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.required-only": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.second-rejection": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "properties": {
+                        "optional": {
+                          "type": "number"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.unrelated": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "bedrock-converse-stream.wrong-type": {
+      "outcomes": [
+        {
+          "events": [
+            "error"
+          ],
+          "stopReason": "error"
+        }
+      ],
+      "requests": [
+        {
+          "inferenceConfig": {
+            "maxTokens": 100
+          },
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "Hello"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "toolConfig": {
+            "tools": [
+              {
+                "toolSpec": {
+                  "description": "Fixture lookup",
+                  "inputSchema": {
+                    "json": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "optional": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "optional",
+                        "value"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "name": "tool_0",
+                  "strict": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

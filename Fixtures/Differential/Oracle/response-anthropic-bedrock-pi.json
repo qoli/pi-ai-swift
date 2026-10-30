@@ -33,6 +33,43 @@
         }
       }
     },
+    "anthropic-mid-output-fallback": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJmYWxsYmFjayIsIm1vZGVsIjoiZml4dHVyZS1tb2RlbCIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MCwib3V0cHV0X3Rva2VucyI6MH19fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdGFydCIsImluZGV4IjowLCJjb250ZW50X2Jsb2NrIjp7InR5cGUiOiJ0ZXh0IiwidGV4dCI6IiJ9fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfc3RhcnQKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdGFydCIsImluZGV4IjoxLCJjb250ZW50X2Jsb2NrIjp7InR5cGUiOiJmYWxsYmFjayJ9fQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [
+          {
+            "text": "",
+            "type": "text"
+          }
+        ],
+        "errorMessage": "Anthropic performed an unsupported mid-output model fallback",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": null,
+        "responseID": "fallback",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
     "anthropic-missing-terminal": {
       "decoderInput": {
         "chunksBase64": [
@@ -568,6 +605,38 @@
         }
       }
     },
+    "pi-future-content-index": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoidGV4dF9zdGFydCIsImNvbnRlbnRJbmRleCI6MX0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "Invalid contentIndex 1 in pi-messages text_start event",
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
     "pi-invalid-tool-end": {
       "decoderInput": {
         "chunksBase64": [
@@ -631,6 +700,38 @@
       "terminal": {
         "content": [],
         "errorMessage": "fixture-pi stream ended without a terminal event",
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "pi-negative-content-index": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoidGV4dF9zdGFydCIsImNvbnRlbnRJbmRleCI6LTF9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "Invalid contentIndex -1 in pi-messages text_start event",
         "modelID": "fixture-model",
         "providerID": "fixture-pi",
         "rawStopReason": null,
@@ -779,6 +880,38 @@
         }
       }
     },
+    "pi-string-content-index": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoic3RhcnQifQoKZGF0YTogeyJ0eXBlIjoidGV4dF9zdGFydCIsImNvbnRlbnRJbmRleCI6Il9fcHJvdG9fXyJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "Invalid contentIndex \"__proto__\" in pi-messages text_start event",
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
     "pi-tool-use": {
       "decoderInput": {
         "chunksBase64": [
@@ -844,5 +977,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
 }

@@ -471,7 +471,7 @@
       "strict": true
     }
   ],
-  "revision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0",
+  "revision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "sourcePath": "packages/ai/src/api/openai-completions.ts",
-  "sourceSHA256": "d778b641ddd8006e5ec57c314f7b2d2b6d5c0c04723ef3f257659e99f7804d55"
+  "sourceSHA256": "e765179e356b4828a38954cda4cec762a851bb1d3a8fa28cdaf05edd12ca5c8a"
 }

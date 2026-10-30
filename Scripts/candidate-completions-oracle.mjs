@@ -6,7 +6,7 @@ import { providerStreams } from './pi-ai-provider-context.mjs';
 const [root] = process.argv.slice(2);
 const sourcePath = 'packages/ai/src/api/openai-completions.ts';
 const sourceSHA256 = createHash('sha256').update(readFileSync(path.join(root,sourcePath))).digest('hex');
-if (sourceSHA256 !== 'd778b641ddd8006e5ec57c314f7b2d2b6d5c0c04723ef3f257659e99f7804d55') throw Error('candidate source hash mismatch');
+if (sourceSHA256 !== 'e765179e356b4828a38954cda4cec762a851bb1d3a8fa28cdaf05edd12ca5c8a') throw Error('candidate source hash mismatch');
 const implementation = await providerStreams(root, await import(pathToFileURL(path.resolve(root, sourcePath)).href));
 const cases = [];
 for (const strict of [null, false, true]) {
@@ -21,4 +21,4 @@ for (const test of cases) {
   if (!payload) throw Error(result.errorMessage);
   test.expected = {messages:payload.messages,tools:payload.tools};
 }
-console.log(JSON.stringify({revision:'d5629e20489ccf770ed90b5a33941cb3b7ef24d0',sourcePath,sourceSHA256:createHash('sha256').update(readFileSync(path.join(root,sourcePath))).digest('hex'),cases},null,2));
+console.log(JSON.stringify({revision:'86dc686cf2fd795b2b24af3d614bb0e1307bcd76',sourcePath,sourceSHA256:createHash('sha256').update(readFileSync(path.join(root,sourcePath))).digest('hex'),cases},null,2));

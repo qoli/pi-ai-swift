@@ -248,7 +248,8 @@
           "cacheWrite": 0,
           "input": 0,
           "output": 0,
-          "total": 0
+          "total": 0,
+          "totalFromProvider": false
         },
         "input": 15,
         "output": 7,
@@ -271,6 +272,9 @@
       "streamError": {
         "thrown": "Error Code bad_event: bad stream"
       },
+      "unfinishedTool": {
+        "thrown": "OpenAI Responses stream completed with an unfinished tool call: weather (call_unfinished|fc_unfinished)"
+      },
       "unknownStatus": {
         "thrown": "Unhandled stop reason: mystery"
       }
@@ -288,7 +292,8 @@
           "cacheWrite": 0,
           "input": 0,
           "output": 0,
-          "total": 0
+          "total": 0,
+          "totalFromProvider": false
         },
         "input": 25,
         "output": 12,
@@ -334,7 +339,8 @@
           "cacheWrite": 0,
           "input": 0,
           "output": 0,
-          "total": 0
+          "total": 0,
+          "totalFromProvider": false
         },
         "input": 1,
         "output": 1,
@@ -356,7 +362,8 @@
             "cacheWrite": 12,
             "input": 5,
             "output": 8,
-            "total": 31
+            "total": 31,
+            "totalFromProvider": false
           },
           "input": 5,
           "output": 4,
@@ -377,7 +384,8 @@
             "cacheWrite": 6,
             "input": 2.5,
             "output": 4,
-            "total": 15.5
+            "total": 15.5,
+            "totalFromProvider": false
           },
           "input": 5,
           "output": 4,
@@ -398,7 +406,8 @@
             "cacheWrite": 24,
             "input": 10,
             "output": 16,
-            "total": 62
+            "total": 62,
+            "totalFromProvider": false
           },
           "input": 5,
           "output": 4,
@@ -419,7 +428,8 @@
             "cacheWrite": 30,
             "input": 12.5,
             "output": 20,
-            "total": 77.5
+            "total": 77.5,
+            "totalFromProvider": false
           },
           "input": 5,
           "output": 4,
@@ -440,7 +450,30 @@
             "cacheWrite": 6,
             "input": 2.5,
             "output": 4,
-            "total": 15.5
+            "total": 15.5,
+            "totalFromProvider": false
+          },
+          "input": 5,
+          "output": 4,
+          "reasoning": 1,
+          "totalTokens": 14
+        }
+      },
+      "standard-response-fast": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-standard-response-fast",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 12,
+            "cacheWrite": 24,
+            "input": 10,
+            "output": 16,
+            "total": 62,
+            "totalFromProvider": false
           },
           "input": 5,
           "output": 4,
@@ -461,7 +494,8 @@
             "cacheWrite": 24,
             "input": 10,
             "output": 16,
-            "total": 62
+            "total": 62,
+            "totalFromProvider": false
           },
           "input": 5,
           "output": 4,
@@ -472,5 +506,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "d5629e20489ccf770ed90b5a33941cb3b7ef24d0"
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
 }

@@ -15,8 +15,20 @@ struct BuiltinProviderRuntimeTests {
     )
     let catalog = try await runtime.catalog()
     #expect(catalog.providers.count == 40)
-    #expect(catalog.providers.flatMap(\.models).count == 1_567)
+    #expect(catalog.providers.flatMap(\.models).count == 1_650)
     #expect(!catalog.providers.contains { $0.id == "meta" })
+    #expect(
+      catalog.providers.first { $0.id == "openai" }?.authorizationMethods.map(\.id) == ["api-key"])
+
+    do {
+      _ = try await runtime.authorize(.login(providerID: "openai", methodID: "oauth")) { _ in
+        Issue.record("unsupported OpenAI login presented a challenge")
+        return .acknowledged
+      }
+      Issue.record("unsupported OpenAI login succeeded")
+    } catch let error as ProviderRuntimeFailure {
+      #expect(error.code == .unsupportedCapability)
+    }
 
     let state = try await runtime.authorize(
       .login(providerID: "kimi-coding", methodID: "api-key")

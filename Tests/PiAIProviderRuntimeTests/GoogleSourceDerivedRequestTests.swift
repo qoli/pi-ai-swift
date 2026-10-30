@@ -265,14 +265,15 @@ private func googleRequest(
       ProviderToolDefinition(
         name: "weather",
         description: "Read weather",
-        inputSchema: .object([
-          "type": .string("object"),
-          "properties": .object([
-            "city": .object(["type": .string("string")]),
-            "units": .object(["type": .string("string")]),
+        inputSchema: testCase.toolParameters
+          ?? .object([
+            "type": .string("object"),
+            "properties": .object([
+              "city": .object(["type": .string("string")]),
+              "units": .object(["type": .string("string")]),
+            ]),
+            "required": .array([.string("city")]),
           ]),
-          "required": .array([.string("city")]),
-        ]),
         constrainedSampling: testCase.variant == "strict-tools"
           ? .jsonSchema(strict: .prefer) : nil
       )
@@ -395,6 +396,7 @@ private struct GoogleBranchCase: Decodable {
   let envProject: String?
   let envLocation: String?
   let baseURL: String?
+  let toolParameters: JSONValue?
 }
 
 private struct GoogleBranchOracle: Decodable {

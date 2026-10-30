@@ -6,6 +6,50 @@ import Testing
 @Suite
 struct KimiCodingOAuthAuthorizationAdapterTests {
   @Test
+  func verificationURLsMatchExactSourceHTTPAndExplicitFailureSemantics() async throws {
+    let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: root.appending(
+          path:
+            "Fixtures/Differential/Oracle/auth-verification-urls.json")),
+      providerID: "kimi-coding", operation: "auth-url.fixture")
+    for value in oracle.array("cases") ?? [] {
+      let spec = try #require(value.objectValue)
+      let url = try #require(spec.string("url"))
+      let normalized = spec.string("normalized")
+      let transport = KimiOAuthFixtureTransport(responses: [
+        response(
+          200,
+          [
+            "device_code": "fixture-device", "user_code": "fixture-code",
+            "verification_uri_complete": url, "interval": 1, "expires_in": 600,
+          ])
+      ])
+      let adapter = KimiCodingOAuthAuthorizationAdapter(
+        transport: transport,
+        oauthBaseURL: URL(string: "https://fixture.invalid")!)
+      do {
+        _ = try await adapter.authorize(
+          .login(providerID: "kimi-coding", methodID: "oauth"),
+          interaction: { challenge in
+            guard case .deviceCode(_, _, let url, _, _) = challenge else {
+              Issue.record("unexpected challenge")
+              return .value("not-acknowledged")
+            }
+            #expect(url.absoluteString == normalized)
+            return .value("not-acknowledged")
+          }, credentialStore: InMemoryProviderCredentialStore())
+        Issue.record("fixture login unexpectedly completed")
+      } catch let failure as ProviderRuntimeFailure {
+        #expect(failure.code == (normalized == nil ? .invalidResponse : .authorizationFailed))
+      }
+      #expect(await transport.requestCount() == 1)
+    }
+  }
+
+  @Test
   func deviceFlowPreservesPendingSlowDownAndStoresCredential() async throws {
     let now = Date(timeIntervalSince1970: 1_000)
     let transport = KimiOAuthFixtureTransport(responses: [

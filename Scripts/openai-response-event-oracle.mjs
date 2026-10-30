@@ -30,6 +30,7 @@ const responseServiceTierCosts = {};
 for (const testCase of [
   { name: "standard-request-flex", api: "openai-responses", provider: "openai", model: "gpt-model", request: "flex" },
   { name: "standard-response-priority", api: "openai-responses", provider: "openai", model: "gpt-model", request: "flex", response: "priority" },
+  { name: "standard-response-fast", api: "openai-responses", provider: "openai", model: "gpt-model", response: "fast" },
   { name: "standard-gpt-5.5-priority", api: "openai-responses", provider: "openai", model: "gpt-5.5", response: "priority" },
   { name: "azure-response-priority-unadjusted", api: "azure-openai-responses", provider: "azure-openai-responses", model: "gpt-model", response: "priority" },
   { name: "codex-default-resolves-request-flex", api: "openai-codex-responses", provider: "openai-codex", model: "gpt-model", request: "flex", response: "default" },

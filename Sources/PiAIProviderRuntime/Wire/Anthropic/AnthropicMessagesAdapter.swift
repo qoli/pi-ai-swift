@@ -11,18 +11,9 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
-          let urlRequest = try makeRequest(request, context: context)
-          let response = try await transport.stream(urlRequest)
-          guard (200..<300).contains(response.statusCode) else {
-            let body = try await collectErrorBody(from: response.body)
-            throw failure(
-              .transportFailed,
-              providerID: request.providerID,
-              operation: "anthropic.response",
-              message: "Anthropic Messages request failed (HTTP \(response.statusCode))",
-              cause: body
-            )
-          }
+          let response = try await PreferredStrictToolFallback.response(
+            request: request, api: .anthropic, transport: transport,
+            makeRequest: { try makeRequest($0, context: context) })
           var reducer = AnthropicEventReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
@@ -30,7 +21,11 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
             pricing: try ProviderUsagePricing.parse(
               metadata: context.modelConfiguration.metadata,
               providerID: request.providerID,
-              operation: "anthropic.usage.pricing")
+              operation: "anthropic.usage.pricing"),
+            isOpenRouter: request.providerID == "openrouter"
+              || context.baseURL.absoluteString.contains("openrouter.ai"),
+            fallbackModels: context.modelConfiguration.metadata.object("compat")?.array(
+              "allowedFallbackModels") ?? []
           )
           var decoder = ServerSentEventDecoder()
           for try await chunk in response.body {
@@ -62,14 +57,6 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
   ) throws -> URLRequest {
     try request.validateSingleSystemMessage(operation: "anthropic.request.system")
     let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
-    if let fallbacks = compat["allowedFallbackModels"]?.arrayValue, !fallbacks.isEmpty {
-      throw failure(
-        .unsupportedCapability,
-        providerID: request.providerID,
-        operation: "anthropic.request.server-fallback",
-        message: "Anthropic server-side model fallback is forbidden by runtime policy"
-      )
-    }
     let endpoint = context.baseURL.appending(path: "v1/messages")
     var urlRequest = URLRequest(url: endpoint)
     urlRequest.httpMethod = "POST"
@@ -140,6 +127,9 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     if compat.bool("supportsMidConvoEffort") == true {
       features.append("mid-conversation-output-config-2026-07-01")
       features.append("thinking-binding-controls-2026-08-01")
+    }
+    if let fallbacks = compat.array("allowedFallbackModels"), !fallbacks.isEmpty {
+      features.append("server-side-fallback-2026-07-01")
     }
     var seen = Set<String>()
     return features.filter { seen.insert($0).inserted }
@@ -242,14 +232,14 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     {
       body["temperature"] = .number(temperature)
     }
-    if let managedEffort {
+    if managedEffort != nil {
       let display = request.options.providerOptions["thinkingDisplay"]?.stringValue ?? "summarized"
       body["thinking"] = .object([
         "type": .string("adaptive"),
         "display": .string(display),
         "block_binding": .object(["prefix_mismatch_behavior": .string("drop_block")]),
       ])
-      body["output_config"] = .object(["effort": .string("high")])
+      body["output_config"] = .object(["effort": .string("low")])
     } else if let effort = request.options.reasoningEffort, context.model.capabilities.reasoning {
       let metadata = context.modelConfiguration.metadata
       if effort == .off {
@@ -297,6 +287,12 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       context.modelConfiguration.metadata.object("thinkingLevelMap")?["off"] != .null
     {
       body["thinking"] = .object(["type": .string("disabled")])
+    }
+    if let fallbacks = compat.array("allowedFallbackModels"), !fallbacks.isEmpty {
+      body["fallbacks"] = .array(
+        fallbacks.compactMap {
+          $0.objectValue?.string("model").map { .object(["model": .string($0)]) }
+        })
     }
     if !request.tools.isEmpty {
       body["tools"] = .array(
@@ -491,32 +487,36 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
           "content": .array(content.map(makeAssistantContent(_:))),
         ])
       case .toolResult(let result):
-        let hasImage = result.content.contains { item in
+        let split = ErrorToolResultImages(result)
+        let content = split?.content ?? result.content
+        let hasImage = content.contains { item in
           if case .image = item { return true }
           return false
         }
         let resultContent: JSONValue
         if !hasImage {
           resultContent = .string(
-            result.content.compactMap { item -> String? in
+            content.compactMap { item -> String? in
               guard case .text(let text) = item else { return nil }
               return text
             }.joined(separator: "\n")
           )
         } else {
-          resultContent = .array(try result.content.map(makeToolResultContent(_:)))
+          resultContent = .array(try content.map(makeToolResultContent(_:)))
         }
-        return .object([
-          "role": .string("user"),
-          "content": .array([
-            .object([
-              "type": .string("tool_result"),
-              "tool_use_id": .string(result.toolCallID),
-              "is_error": .bool(result.isError),
-              "content": resultContent,
-            ])
-          ]),
-        ])
+        var blocks: [JSONValue] = [
+          .object([
+            "type": .string("tool_result"),
+            "tool_use_id": .string(result.toolCallID),
+            "is_error": .bool(result.isError),
+            "content": resultContent,
+          ])
+        ]
+        if let split {
+          blocks.append(.object(["type": .string("text"), "text": .string(split.caption)]))
+          blocks.append(contentsOf: try split.images.map { try makeUserContent(.image($0)) })
+        }
+        return .object(["role": .string("user"), "content": .array(blocks)])
       }
     }
     return groupingConsecutiveToolResults(converted)
@@ -592,17 +592,23 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       guard case .object(let message) = value,
         message.string("role") == "user",
         case .array(let content)? = message["content"],
-        content.allSatisfy({ $0.objectValue?.string("type") == "tool_result" }),
+        content.first?.objectValue?.string("type") == "tool_result",
         let last = grouped.indices.last,
         case .object(var previous) = grouped[last],
         previous.string("role") == "user",
         case .array(let previousContent)? = previous["content"],
-        previousContent.allSatisfy({ $0.objectValue?.string("type") == "tool_result" })
+        previousContent.first?.objectValue?.string("type") == "tool_result"
       else {
         grouped.append(value)
         continue
       }
-      previous["content"] = .array(previousContent + content)
+      let previousResults = previousContent.prefix {
+        $0.objectValue?.string("type") == "tool_result"
+      }
+      let nextResults = content.prefix { $0.objectValue?.string("type") == "tool_result" }
+      previous["content"] = .array(
+        Array(previousResults) + Array(nextResults)
+          + previousContent.dropFirst(previousResults.count) + content.dropFirst(nextResults.count))
       grouped[last] = .object(previous)
     }
     return grouped
@@ -696,7 +702,10 @@ private struct AnthropicEventReducer {
   let providerID: String
   let requestedModelID: String
   let providerThinkingLevel: String?
-  let pricing: ProviderUsagePricing?
+  var pricing: ProviderUsagePricing?
+  let fallbackModels: [JSONValue]
+  let isOpenRouter: Bool
+  private var reportedAccounting: [String: JSONValue] = [:]
   private var responseID: String?
   private var responseModelID: String?
   private var inputTokens: Int? = 0
@@ -717,12 +726,16 @@ private struct AnthropicEventReducer {
     providerID: String,
     requestedModelID: String,
     providerThinkingLevel: String?,
-    pricing: ProviderUsagePricing?
+    pricing: ProviderUsagePricing?,
+    isOpenRouter: Bool = false,
+    fallbackModels: [JSONValue] = []
   ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
     self.providerThinkingLevel = providerThinkingLevel
     self.pricing = pricing
+    self.isOpenRouter = isOpenRouter
+    self.fallbackModels = fallbackModels
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
@@ -743,6 +756,15 @@ private struct AnthropicEventReducer {
       else { throw invalid("message_start is missing identity") }
       responseID = id
       responseModelID = model
+      if model != requestedModelID,
+        let fallback = fallbackModels.compactMap(\.objectValue).first(where: {
+          $0.string("provider") == providerID && $0.string("model") == model
+        }), let cost = fallback["cost"]
+      {
+        pricing = try ProviderUsagePricing.parse(
+          metadata: ["cost": cost], providerID: providerID,
+          operation: "anthropic.usage.fallback-pricing")
+      }
       if let usage = message.object("usage") {
         if let input = usage.int("input_tokens") { inputTokens = input }
         if let output = usage.int("output_tokens") { outputTokens = output }
@@ -768,6 +790,14 @@ private struct AnthropicEventReducer {
         let block = object.object("content_block"),
         let blockType = block.string("type")
       else { throw invalid("content_block_start is malformed") }
+      if blockType == "fallback" {
+        guard textBlocks.isEmpty, reasoningBlocks.isEmpty, toolBlocks.isEmpty,
+          completedTools.isEmpty
+        else {
+          throw invalid("Anthropic performed an unsupported mid-output model fallback")
+        }
+        return []
+      }
       if blockType == "tool_use" {
         guard let id = block.string("id"), let name = block.string("name") else {
           throw invalid("tool_use block is missing id or name")
@@ -839,20 +869,11 @@ private struct AnthropicEventReducer {
         return [.reasoningSignatureDelta(reasoning.signature)]
       }
       guard let block = toolBlocks.removeValue(forKey: index) else { return [] }
-      let arguments: JSONValue
-      if block.partialJSON.isEmpty {
-        arguments = .object([:])
-      } else {
-        do {
-          arguments = try JSONDecoder().decode(JSONValue.self, from: Data(block.partialJSON.utf8))
-        } catch {
-          throw invalid("tool input JSON is malformed")
-        }
-      }
-      let call = ProviderToolCall(id: block.id, name: block.name, arguments: arguments)
+      let call = ProviderToolCall.parsing(id: block.id, name: block.name, input: block.partialJSON)
       completedTools[index] = call
       return [.toolCallCompleted(call)]
     case "message_delta":
+      reportedAccounting = object.object("usage") ?? [:]
       if let delta = object.object("delta"), let reason = delta.string("stop_reason") {
         rawFinishReason = reason
         if reason == "refusal" || reason == "sensitive" {
@@ -904,7 +925,7 @@ private struct AnthropicEventReducer {
             cost: pricing.cost(
               input: input, output: output, cacheRead: cacheRead,
               cacheWrite: cacheWrite, cacheWrite1h: cacheWrite1hTokens)
-          )
+          ).applyingOpenRouterCost(reportedAccounting, enabled: isOpenRouter)
         )
       ]
     case "message_stop":
@@ -998,7 +1019,7 @@ private struct AnthropicEventReducer {
           cost: pricing?.cost(
             input: input, output: output, cacheRead: cacheRead,
             cacheWrite: cacheWrite, cacheWrite1h: cacheWrite1hTokens)
-        ),
+        ).applyingOpenRouterCost(reportedAccounting, enabled: isOpenRouter),
         finishReason: reason,
         rawFinishReason: rawFinishReason,
         timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000),
@@ -1008,10 +1029,15 @@ private struct AnthropicEventReducer {
       ))
   }
 
-  private struct ToolBlock {
+  private final class ToolBlock {
     let id: String
     let name: String
     var partialJSON: String
+    init(id: String, name: String, partialJSON: String) {
+      self.id = id
+      self.name = name
+      self.partialJSON = partialJSON
+    }
   }
 
   private struct ReasoningBlock {
