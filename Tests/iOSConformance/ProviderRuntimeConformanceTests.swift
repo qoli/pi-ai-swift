@@ -150,6 +150,40 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testResponsesToolSlotsMatchPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    let cases = try XCTUnwrap(fixture.object("responseToolSlotEvents"))
+    let expectedCases = try XCTUnwrap(
+      oracle.object("cases")?.object("responses.tool-slot-lifecycle"))
+    for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
+      for name in cases.keys.sorted() {
+        let expected = try XCTUnwrap(expectedCases[name]?.objectValue)
+        let events = try XCTUnwrap(cases[name]?.arrayValue)
+        let chunks = try events.map { value in
+          let data = try JSONEncoder().encode(value)
+          return Data(("data: " + String(decoding: data, as: UTF8.self) + "\n\n").utf8)
+        }
+        let (request, context) = inputs(api: api)
+        let adapter = OpenAIResponsesAdapter(
+          protocolID: api,
+          flavor: api == "azure-openai-responses"
+            ? .azure : (api == "openai-codex-responses" ? .codex : .standard))
+        let result = try await replay(
+          adapter, request: request, context: context, chunks: chunks)
+        if let thrown = expected.string("thrown") {
+          XCTAssertEqual(result.failure?.message, thrown, "\(api):\(name)")
+          XCTAssertNil(result.snapshot, "\(api):\(name)")
+        } else {
+          XCTAssertNil(result.failure, "\(api):\(name)")
+          XCTAssertEqual(
+            content(try XCTUnwrap(result.snapshot, "\(api):\(name)")),
+            expected.array("content"), "\(api):\(name)")
+        }
+      }
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
@@ -179,10 +213,16 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
   ) -> (
     ProviderRequest, WireProtocolContext
   ) {
+    let isCodex = api == "openai-codex-responses"
+    let isAzure = api == "azure-openai-responses"
     let providerID =
-      api == "anthropic-messages"
-      ? "anthropic"
-      : (api == "mistral-conversations" ? "mistral" : "openai")
+      isCodex
+      ? "openai-codex"
+      : isAzure
+        ? "azure-openai-responses"
+        : api == "anthropic-messages"
+          ? "anthropic"
+          : (api == "mistral-conversations" ? "mistral" : "openai")
     let modelID = api == "openai-completions" ? "requested-model" : "fixture-model"
     let model = ProviderModel(
       id: modelID, providerID: providerID, name: modelID, protocolID: api,
@@ -208,7 +248,14 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
         provider: .init(
           id: providerID, name: providerID, authorizationMethods: [], models: [model]),
         model: model, baseURL: URL(string: "https://fixture.invalid")!, headers: headers,
-        credential: .apiKey(.init(key: "synthetic-fixture-key", metadata: [:])),
+        credential: isCodex
+          ? .oauth(
+            .init(
+              accessToken: "synthetic-fixture-token", refreshToken: "synthetic-fixture-refresh",
+              expiresAt: .distantFuture, metadata: ["accountID": "fixture-account"]))
+          : .apiKey(
+            .init(
+              key: "synthetic-fixture-key", metadata: isAzure ? ["deploymentName": modelID] : [:])),
         modelConfiguration: .init(protocolID: api, baseURL: nil, headers: [:], metadata: metadata))
     )
   }

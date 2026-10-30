@@ -365,6 +365,75 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors() async throws {
+    let fixture = try responseEventFixture()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "responses.tool-slots.oracle")
+    let cases = try #require(fixture.object("responseToolSlotEvents"))
+    let expectedCases = try #require(
+      oracle.object("cases")?.object("responses.tool-slot-lifecycle"))
+    for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
+      for name in cases.keys.sorted() {
+        let expected = try #require(expectedCases[name]?.objectValue)
+        let transport = EventBranchTransport(
+          chunks: responsesSSE(try #require(cases[name]?.arrayValue)))
+        let (request, context) = eventRequestContext(
+          protocolID: api, modelID: "gpt-model", tools: [], metadata: [:])
+        let adapter = OpenAIResponsesAdapter(
+          protocolID: api,
+          flavor: api == "azure-openai-responses"
+            ? .azure
+            : (api == "openai-codex-responses" ? .codex : .standard))
+        var observed: [JSONValue] = []
+        var snapshot: ProviderResponseSnapshot?
+        var failure: ProviderRuntimeFailure?
+        do {
+          for try await event in adapter.stream(request, context: context, transport: transport) {
+            switch event {
+            case .toolCallStarted(let id, let name):
+              observed.append(
+                .object([
+                  "type": .string("toolCallStarted"), "id": .string(id), "name": .string(name),
+                ]))
+            case .toolInputDelta(let id, let delta):
+              observed.append(
+                .object([
+                  "type": .string("toolInputDelta"), "id": .string(id), "delta": .string(delta),
+                ]))
+            case .toolCallCompleted(let call):
+              observed.append(
+                .object([
+                  "type": .string("toolCallCompleted"), "id": .string(call.id),
+                  "name": .string(call.name), "arguments": call.arguments,
+                ]))
+            case .responseSnapshot(let value): snapshot = value
+            default: break
+            }
+          }
+        } catch let error as ProviderRuntimeFailure { failure = error }
+        #expect(observed == expected.array("events"), Comment(rawValue: "\(api):\(name)"))
+        if let thrown = expected.string("thrown") {
+          #expect(failure?.message == thrown, Comment(rawValue: "\(api):\(name)"))
+          #expect(snapshot == nil)
+        } else {
+          #expect(failure == nil, Comment(rawValue: "\(api):\(name)"))
+          let calls = try #require(snapshot).content.compactMap { content -> JSONValue? in
+            guard case .toolCall(let call) = content else { return nil }
+            return .object([
+              "type": .string("toolCall"), "id": .string(call.id), "name": .string(call.name),
+              "arguments": call.arguments,
+            ])
+          }
+          #expect(calls == expected.array("content"), Comment(rawValue: "\(api):\(name)"))
+        }
+      }
+    }
+  }
+
+  @Test
   func completionsStructuredReasoningResponseModelAndUsageMatchSource() async throws {
     let fixture = try responseEventFixture()
     let chunks = try #require(fixture.array("completionChunks"))

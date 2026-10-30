@@ -562,5 +562,278 @@
       "supportsFinishReason": true,
       "sse": "data: {\"choices\":[{\"delta\":{\"content\":\"partial\"},\"finish_reason\":null}]}\n\n"
     }
+  },
+  "responseToolSlotEvents": {
+    "indexedParallel": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.function_call_arguments.delta",
+        "output_index": 0,
+        "item_id": "fc_a",
+        "delta": "{\"command\":\"echo a\"}"
+      },
+      {
+        "type": "response.output_item.added",
+        "output_index": 1,
+        "item": {
+          "type": "function_call",
+          "id": "fc_b",
+          "call_id": "call_b",
+          "name": "bash",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.function_call_arguments.delta",
+        "output_index": 1,
+        "item_id": "fc_b",
+        "delta": "{\"command\":\"echo b\"}"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": "{\"command\":\"echo a\"}"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 1,
+        "item": {
+          "type": "function_call",
+          "id": "fc_b",
+          "call_id": "call_b",
+          "name": "bash",
+          "arguments": "{\"command\":\"echo b\"}"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-slots",
+          "status": "completed"
+        }
+      }
+    ],
+    "singleUnindexed": [
+      {
+        "type": "response.output_item.added",
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.function_call_arguments.delta",
+        "item_id": "fc_a",
+        "delta": "{\"command\":\"echo a\"}"
+      },
+      {
+        "type": "response.output_item.done",
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": "{\"command\":\"echo a\"}"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-slots",
+          "status": "completed"
+        }
+      }
+    ],
+    "parallelUnindexed": [
+      {
+        "type": "response.output_item.added",
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.function_call_arguments.delta",
+        "item_id": "fc_a",
+        "delta": "{\"command\":\"echo a\"}"
+      },
+      {
+        "type": "response.output_item.added",
+        "item": {
+          "type": "function_call",
+          "id": "fc_b",
+          "call_id": "call_b",
+          "name": "bash",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.function_call_arguments.delta",
+        "item_id": "fc_b",
+        "delta": "{\"command\":\"echo b\"}"
+      },
+      {
+        "type": "response.output_item.done",
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": "{\"command\":\"echo a\"}"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "item": {
+          "type": "function_call",
+          "id": "fc_b",
+          "call_id": "call_b",
+          "name": "bash",
+          "arguments": "{\"command\":\"echo b\"}"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-slots",
+          "status": "completed"
+        }
+      }
+    ],
+    "functionDoneOnly": [
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": "{\"command\":\"echo a\"}"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-slots",
+          "status": "completed"
+        }
+      }
+    ],
+    "emptyFinalFunction": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.function_call_arguments.delta",
+        "output_index": 0,
+        "item_id": "fc_a",
+        "delta": "{\"command\":\"echo a\"}"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "function_call",
+          "id": "fc_a",
+          "call_id": "call_a",
+          "name": "bash",
+          "arguments": ""
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-slots",
+          "status": "completed"
+        }
+      }
+    ],
+    "customDoneOnly": [
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_c",
+          "call_id": "call_c",
+          "name": "custom",
+          "input": "hello"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-custom",
+          "status": "completed"
+        }
+      }
+    ],
+    "emptyFinalCustom": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_c",
+          "call_id": "call_c",
+          "name": "custom",
+          "input": ""
+        }
+      },
+      {
+        "type": "response.custom_tool_call_input.delta",
+        "output_index": 0,
+        "delta": "hello"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "custom_tool_call",
+          "id": "ctc_c",
+          "call_id": "call_c",
+          "name": "custom",
+          "input": ""
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-custom",
+          "status": "completed"
+        }
+      }
+    ]
   }
 }

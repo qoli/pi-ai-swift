@@ -44,6 +44,10 @@ const responseFailures = {};
 for (const [name, events] of Object.entries(fixture.responsesFailureEvents)) {
   responseFailures[name] = await runResponsesOutcome(events);
 }
+const toolSlots = {};
+for (const [name, events] of Object.entries(fixture.responseToolSlotEvents)) {
+  toolSlots[name] = await runToolSlots(events);
+}
 const terminalWithoutStart = {};
 for (const [name, events] of Object.entries(fixture.responsesTerminalWithoutStartEvents)) {
   terminalWithoutStart[name] = projectResponses(await runResponses(events, {}));
@@ -75,6 +79,7 @@ process.stdout.write(`${JSON.stringify({
     "responses.reasoning-signature-backfill-phase": projectResponsesWithSignatures(responsesReasoning),
     "responses.service-tier-cost-matrix": responseServiceTierCosts,
     "responses.failure-branches": responseFailures,
+    "responses.tool-slot-lifecycle": toolSlots,
     "responses.terminal-without-start": terminalWithoutStart,
     "completions.reasoning-details-response-model": projectCompletions(completions),
     "completions.stop-reason-response-branches": completionBranches,
@@ -143,6 +148,29 @@ async function runResponsesOutcome(events) {
   } catch (error) {
     return { thrown: error instanceof Error ? error.message : String(error) };
   }
+}
+
+async function runToolSlots(events) {
+  const model = modelFor("openai-responses", "openai", "gpt-model");
+  const output = outputFor(model);
+  const stream = new eventStreamModule.AssistantMessageEventStream();
+  const observed = [];
+  const push = stream.push.bind(stream);
+  stream.push = event => {
+    observed.push(structuredClone(event));
+    return push(event);
+  };
+  let thrown = null;
+  try { await shared.processResponsesStream(iterate(events), output, stream, model, {}); }
+  catch (error) { thrown = error.message; }
+  const projected = observed.flatMap(event => {
+    const call = event.toolCall ?? event.partial?.content?.[event.contentIndex];
+    if (event.type === "toolcall_start") return [{ type: "toolCallStarted", id: call.id, name: call.name }];
+    if (event.type === "toolcall_delta") return [{ type: "toolInputDelta", id: call.id, delta: event.delta }];
+    if (event.type === "toolcall_end") return [{ type: "toolCallCompleted", id: call.id, name: call.name, arguments: call.arguments }];
+    return [];
+  });
+  return { thrown, events: projected, content: output.content, stopReason: output.stopReason };
 }
 
 async function runCompletions(chunks, options = {}) {

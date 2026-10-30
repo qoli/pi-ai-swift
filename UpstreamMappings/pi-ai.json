@@ -2057,7 +2057,9 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2138,7 +2140,8 @@
         "Sources/PiAIProviderRuntime/Wire/Common/CompletedToolArguments.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/PreferredStrictToolFallback.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ErrorToolResultImages.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/ProviderSamplingParameters.swift"
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderSamplingParameters.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/GrammarToolInputJSONBuffer.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2199,7 +2202,12 @@
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly",
         "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
         "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
-        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json"
+        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2426,7 +2434,9 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2574,7 +2584,9 @@
         "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
         "Fixtures/Differential/Cases/cloudflare-auth.json",
-        "Fixtures/Differential/Oracle/cloudflare-auth.json"
+        "Fixtures/Differential/Oracle/cloudflare-auth.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

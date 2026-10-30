@@ -65,7 +65,7 @@
       ],
       "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "0a5c0e50317b3021300806eec8436793a3fe40f5bee8b2d09bd3c8a78e7e6a98"
+      "swiftEvidenceSHA256": "2b8242c1ea4a3e5935b09373fefb5918ee69f3e044390cb8bd9f16caec205a00"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -103,11 +103,13 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
       ],
       "upstreamSourceSHA256": "44f1ffc77bf9899c2e7067280720c0fc5a0b458c0fccd650d3f5739182c2c33f",
       "upstreamTestSHA256": "32bd02c09ad074cb1b498bc752d2e91160d998c39cb5a4e0e07c598ef32a8f4c",
-      "swiftEvidenceSHA256": "892dcecb5bb97679260edee8c849113f02ddd79ff2f4d28e347e0603c6c5b60a"
+      "swiftEvidenceSHA256": "672b73febdbade7fecdf4bb523cef0d1be5e0834423fc480d39ba1019ad1f3e3"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -284,7 +286,7 @@
       ],
       "upstreamSourceSHA256": "2ea02438b2f7ac650434868b43feee9e07ab32480c01da9587245dd14cece8d5",
       "upstreamTestSHA256": "4b860d483b44bc3489f5be721e71fbf96b8a952288fde35c3c53096419f23dfa",
-      "swiftEvidenceSHA256": "89c8bd6a4f778493f5324f379846eaf31e08de49dbfef858074583337cdd70ce"
+      "swiftEvidenceSHA256": "23dd8126231a0992c4e7663ecb062aba451bb733f20a745bf4ffcfcdb0f9764f"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -323,11 +325,13 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
       ],
       "upstreamSourceSHA256": "805ed5c861052c125e0f1fc34b3630b832d615624536f86db4571e88dc3f760d",
       "upstreamTestSHA256": "ad9cce3e861f84c8fec0aa144728a72bf3c56155046187ccfb136a86f7ce1b27",
-      "swiftEvidenceSHA256": "5ef55ec77fd81fa2385dc208902ac356bfa9605fde6a00f5eb813eedb67f5108"
+      "swiftEvidenceSHA256": "c237610eb2ff103ff7c0e31cbe2578138512b949b85af58c1dd0dea40872e30c"
     },
     {
       "protocolID": "openai-completions",
@@ -390,7 +394,7 @@
       ],
       "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "8f93901af2e7fac5beeef0c9f43ff1dcc2cb90855221208276c2ac614d76aacc"
+      "swiftEvidenceSHA256": "12a5ac86e149ce50886a2b65d0d066d4cd7cd643c7add6273fa3a6e165dd13d1"
     },
     {
       "protocolID": "openai-responses",
@@ -441,11 +445,13 @@
         "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
         "Fixtures/Differential/Cases/cloudflare-auth.json",
-        "Fixtures/Differential/Oracle/cloudflare-auth.json"
+        "Fixtures/Differential/Oracle/cloudflare-auth.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource"
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "22402ee3eeef150a6dc84a75e35b3a23ea468408706e3d646233cc5d430a524a"
+      "swiftEvidenceSHA256": "e54475f220bd91fe6ea6cf8da7b7fcba60edf0d27f0ae6d4163d97595102176b"
     },
     {
       "protocolID": "openrouter-images",

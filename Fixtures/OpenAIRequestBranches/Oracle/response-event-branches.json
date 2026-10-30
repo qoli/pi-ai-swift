@@ -729,6 +729,298 @@
           "totalTokens": 42
         }
       }
+    },
+    "responses.tool-slot-lifecycle": {
+      "customDoneOnly": {
+        "content": [
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_c|ctc_c",
+            "name": "custom",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_c|ctc_c",
+            "name": "custom",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"input\":\"hello\"}",
+            "id": "call_c|ctc_c",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_c|ctc_c",
+            "name": "custom",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "emptyFinalCustom": {
+        "content": [
+          {
+            "arguments": {
+              "input": "hello"
+            },
+            "id": "call_c|ctc_c",
+            "name": "custom",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_c|ctc_c",
+            "name": "custom",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"input\":\"hello",
+            "id": "call_c|ctc_c",
+            "type": "toolInputDelta"
+          }
+        ],
+        "stopReason": "pending",
+        "thrown": "grammar tool input for property \"input\" changed non-monotonically"
+      },
+      "emptyFinalFunction": {
+        "content": [
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"command\":\"echo a\"}",
+            "id": "call_a|fc_a",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "functionDoneOnly": {
+        "content": [
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallStarted"
+          },
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "indexedParallel": {
+        "content": [
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCall"
+          },
+          {
+            "arguments": {
+              "command": "echo b"
+            },
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"command\":\"echo a\"}",
+            "id": "call_a|fc_a",
+            "type": "toolInputDelta"
+          },
+          {
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"command\":\"echo b\"}",
+            "id": "call_b|fc_b",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallCompleted"
+          },
+          {
+            "arguments": {
+              "command": "echo b"
+            },
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      },
+      "parallelUnindexed": {
+        "content": [
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCall"
+          },
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCall"
+          },
+          {
+            "arguments": {
+              "command": "echo b"
+            },
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"command\":\"echo a\"}",
+            "id": "call_a|fc_a",
+            "type": "toolInputDelta"
+          },
+          {
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"command\":\"echo b\"}",
+            "id": "call_b|fc_b",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCallCompleted"
+          },
+          {
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCallStarted"
+          },
+          {
+            "arguments": {
+              "command": "echo b"
+            },
+            "id": "call_b|fc_b",
+            "name": "bash",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": "OpenAI Responses stream completed with an unfinished tool call: bash (call_a|fc_a)"
+      },
+      "singleUnindexed": {
+        "content": [
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCall"
+          }
+        ],
+        "events": [
+          {
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallStarted"
+          },
+          {
+            "delta": "{\"command\":\"echo a\"}",
+            "id": "call_a|fc_a",
+            "type": "toolInputDelta"
+          },
+          {
+            "arguments": {
+              "command": "echo a"
+            },
+            "id": "call_a|fc_a",
+            "name": "bash",
+            "type": "toolCallCompleted"
+          }
+        ],
+        "stopReason": "toolUse",
+        "thrown": null
+      }
     }
   },
   "schemaVersion": 1,
