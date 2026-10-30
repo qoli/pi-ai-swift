@@ -10,6 +10,7 @@ import { GoogleGenAI } from "@google/genai";
 import { BedrockRuntimeClient, ConverseStreamCommand } from "@aws-sdk/client-bedrock-runtime";
 import { EventStreamCodec } from "@smithy/core/event-streams";
 import { mistralSDKPayload, mistralWirePayload } from "./mistral-payload.mjs";
+import { bedrockSDKPayload } from "./bedrock-payload.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
@@ -198,7 +199,7 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
       let body = request.body;
       const google = model.api === "google-generative-ai" || model.api === "google-vertex";
       const mistral = model.api === "mistral-conversations";
-      const payload = model.api === "bedrock-converse-stream" ? { modelId: bedrockModelID(request.url), ...body } : google ? {
+      const payload = model.api === "bedrock-converse-stream" ? { modelId: bedrockModelID(request.url), ...bedrockSDKPayload(body) } : google ? {
         model: model.id, contents: body.contents,
         config: { ...body.generationConfig,
           ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
@@ -283,7 +284,7 @@ async function mockResponse(model, request, body, options, connection) {
     });
     let response;
     try {
-      response = await client.send(new ConverseStreamCommand({ modelId: bedrockModelID(request.url), ...body }),
+      response = await client.send(new ConverseStreamCommand({ modelId: bedrockModelID(request.url), ...bedrockSDKPayload(body) }),
         { abortSignal: options.signal });
     } catch (error) {
       const status = error.$metadata?.httpStatusCode ?? (error.name === "ValidationException" ? 400 : undefined);
