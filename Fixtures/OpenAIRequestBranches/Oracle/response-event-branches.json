@@ -12,6 +12,206 @@
         "totalTokens": 0
       }
     },
+    "completions.block-lifecycle": {
+      "interleaved-signature-stays-with-first-field": {
+        "content": [
+          {
+            "signature": "reasoning_content",
+            "text": "plan step",
+            "type": "thinking"
+          },
+          {
+            "text": "AB",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "signature": "reasoning_content",
+            "stopReason": "pending",
+            "text": "",
+            "type": "thinking_start"
+          },
+          {
+            "contentIndex": 0,
+            "delta": "plan",
+            "signature": "reasoning_content",
+            "stopReason": "pending",
+            "text": "plan",
+            "type": "thinking_delta"
+          },
+          {
+            "contentIndex": 1,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 1,
+            "delta": "A",
+            "stopReason": "pending",
+            "text": "A",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 0,
+            "delta": " step",
+            "signature": "reasoning_content",
+            "stopReason": "pending",
+            "text": "plan step",
+            "type": "thinking_delta"
+          },
+          {
+            "contentIndex": 1,
+            "delta": "B",
+            "stopReason": "pending",
+            "text": "AB",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 0,
+            "signature": "reasoning_content",
+            "stopReason": "stop",
+            "text": "plan step",
+            "type": "thinking_end"
+          },
+          {
+            "contentIndex": 1,
+            "stopReason": "stop",
+            "text": "AB",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "no-finish-compatible": {
+        "content": [
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "delta": "answer",
+            "stopReason": "pending",
+            "text": "answer",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 0,
+            "stopReason": "pending",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "reasoning-details-only": {
+        "content": [
+          {
+            "signature": [
+              {
+                "text": "opaque",
+                "type": "reasoning.text"
+              }
+            ],
+            "text": "",
+            "type": "thinking"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "signature": "",
+            "stopReason": "pending",
+            "text": "",
+            "type": "thinking_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": [
+              {
+                "text": "opaque",
+                "type": "reasoning.text"
+              }
+            ],
+            "stopReason": "stop",
+            "text": "",
+            "type": "thinking_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "text-only": {
+        "content": [
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "delta": "answer",
+            "stopReason": "pending",
+            "text": "answer",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "tool-before-text": {
+        "content": [
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 1,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 1,
+            "delta": "answer",
+            "stopReason": "pending",
+            "text": "answer",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 1,
+            "stopReason": "toolUse",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "toolUse"
+      }
+    },
     "completions.http-raw-metadata": {
       "content": [],
       "errorMessage": "400: {\"message\":\"bad request\",\"type\":\"invalid_request_error\",\"metadata\":{\"raw\":\"provider raw detail\"}}",

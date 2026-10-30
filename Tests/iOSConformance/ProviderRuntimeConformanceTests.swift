@@ -1552,20 +1552,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
         var snapshot: ProviderResponseSnapshot?
         for try await event in adapter.stream(request, context: context, transport: transport) {
           if case .contentBlock(let block) = event {
-            var fields = try blockFields(block.content)
-            let kind = fields.string("type") == "text" ? "text" : "thinking"
-            let stage: String
-            switch block.update {
-            case .started: stage = "start"
-            case .delta(let delta):
-              stage = "delta"
-              fields["delta"] = .string(delta)
-            case .completed: stage = "end"
-            }
-            fields["type"] = .string(kind + "_" + stage)
-            fields["contentIndex"] = .integer(Int64(block.index))
-            fields["stopReason"] = .string(block.provisionalFinishReason?.rawValue ?? "pending")
-            observed.append(.object(fields))
+            observed.append(try blockObservation(block))
           }
           if case .responseSnapshot(let value) = event { snapshot = value }
         }
@@ -1576,6 +1563,71 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
           try final.content.map { .object(try blockFields($0)) }, expected.array("content"), name)
       }
     }
+  }
+
+  func testCompletionsBlockLifecycleMatchesPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    let cases = try XCTUnwrap(fixture.object("completionBlockLifecycleCases"))
+    XCTAssertEqual(cases.count, 5)
+    for (name, value) in cases {
+      let spec = try XCTUnwrap(value.objectValue)
+      let expected = try XCTUnwrap(
+        oracle.object("cases")?.object("completions.block-lifecycle")?.object(name))
+      let chunks =
+        try XCTUnwrap(spec.array("chunks")).map {
+          Data(
+            ("data: " + String(decoding: try JSONEncoder().encode($0), as: UTF8.self) + "\n\n").utf8
+          )
+        } + [Data("data: [DONE]\n\n".utf8)]
+      let (request, context) = inputs(
+        api: "openai-completions",
+        metadata: [
+          "compat": .object([
+            "supportsFinishReason": .bool(spec.bool("supportsFinishReason") ?? true)
+          ])
+        ])
+      var observed: [JSONValue] = []
+      var snapshot: ProviderResponseSnapshot?
+      for try await event in OpenAICompletionsAdapter().stream(
+        request, context: context,
+        transport: IOSFixtureTransport(chunks: chunks))
+      {
+        if case .contentBlock(let block) = event { observed.append(try blockObservation(block)) }
+        if case .responseSnapshot(let value) = event { snapshot = value }
+      }
+      XCTAssertEqual(observed, expected.array("events"), name)
+      let final = try XCTUnwrap(snapshot)
+      XCTAssertEqual(
+        final.finishReason == .toolCalls ? "toolUse" : final.finishReason.rawValue,
+        expected.string("stopReason"), name)
+      let projected = try final.content.compactMap { content -> JSONValue? in
+        switch content {
+        case .text, .reasoning: .object(try blockFields(content))
+        default: nil
+        }
+      }
+      XCTAssertEqual(projected, expected.array("content"), name)
+    }
+  }
+
+  private func blockObservation(_ block: ProviderContentBlock) throws -> JSONValue {
+    var fields = try blockFields(block.content)
+    let kind = fields.string("type") == "text" ? "text" : "thinking"
+    let stage: String
+    switch block.update {
+    case .started: stage = "start"
+    case .delta(let delta):
+      stage = "delta"
+      fields["delta"] = .string(delta)
+    case .completed: stage = "end"
+    }
+    fields["type"] = .string(kind + "_" + stage)
+    fields["contentIndex"] = .integer(Int64(block.index))
+    fields["stopReason"] = .string(
+      block.provisionalFinishReason == .toolCalls
+        ? "toolUse" : block.provisionalFinishReason?.rawValue ?? "pending")
+    return .object(fields)
   }
 
   private func blockFields(_ content: ProviderResponseContent) throws -> [String: JSONValue] {
@@ -1595,7 +1647,9 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
     var fields: [String: JSONValue] = ["type": .string(kind), "text": .string(text)]
     if let signature {
-      fields["signature"] = try JSONDecoder().decode(JSONValue.self, from: Data(signature.utf8))
+      fields["signature"] =
+        (try? JSONDecoder().decode(JSONValue.self, from: Data(signature.utf8)))
+        ?? .string(signature)
     }
     return fields
   }

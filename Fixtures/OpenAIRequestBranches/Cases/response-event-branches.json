@@ -2727,5 +2727,158 @@
         }
       }
     ]
+  },
+  "completionBlockLifecycleCases": {
+    "text-only": {
+      "chunks": [
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": "answer"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {},
+              "finish_reason": "stop"
+            }
+          ]
+        }
+      ]
+    },
+    "interleaved-signature-stays-with-first-field": {
+      "chunks": [
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "reasoning_content": "plan",
+                "content": "A"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "reasoning_text": " step",
+                "content": "B"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {},
+              "finish_reason": "stop"
+            }
+          ]
+        }
+      ]
+    },
+    "reasoning-details-only": {
+      "chunks": [
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "reasoning_details": [
+                  {
+                    "type": "reasoning.text",
+                    "text": "opaque"
+                  }
+                ]
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {},
+              "finish_reason": "stop"
+            }
+          ]
+        }
+      ]
+    },
+    "tool-before-text": {
+      "chunks": [
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "tool_calls": [
+                  {
+                    "index": 4,
+                    "id": "call_lifecycle",
+                    "type": "function",
+                    "function": {
+                      "name": "sample_tool",
+                      "arguments": "{}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": "answer"
+              },
+              "finish_reason": null
+            }
+          ]
+        },
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {},
+              "finish_reason": "tool_calls"
+            }
+          ]
+        }
+      ]
+    },
+    "no-finish-compatible": {
+      "supportsFinishReason": false,
+      "chunks": [
+        {
+          "choices": [
+            {
+              "index": 0,
+              "delta": {
+                "content": "answer"
+              },
+              "finish_reason": null
+            }
+          ]
+        }
+      ]
+    }
   }
 }

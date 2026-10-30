@@ -429,7 +429,7 @@ function emit(event, partial, output) {
         ...(block.signature !== undefined ? { thinkingSignature: block.signature } : {}),
         ...(block.isRedacted !== undefined ? { redacted: block.isRedacted } : {}) };
     partial.content[value.index] = normalized;
-    partial.stopReason = value.provisionalFinishReason ?? "pending";
+    partial.stopReason = { toolCalls: "toolUse", contentFilter: "error", cancelled: "aborted" }[value.provisionalFinishReason] ?? value.provisionalFinishReason ?? "pending";
     const [stage, update] = Object.entries(value.update)[0];
     output.push({ type: `${category}_${stage === "started" ? "start" : stage === "completed" ? "end" : "delta"}`,
       contentIndex: value.index,

@@ -454,6 +454,52 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func completionBlockLifecycleMatchesSource() async throws {
+    let fixture = try responseEventFixture()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path:
+            "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "completions.blocks.oracle")
+    let cases = try #require(fixture.object("completionBlockLifecycleCases"))
+    let expectedCases = try #require(oracle.object("cases")?.object("completions.block-lifecycle"))
+    #expect(cases.count == 5)
+    for (name, raw) in cases {
+      let spec = try #require(raw.objectValue)
+      let expected = try #require(expectedCases[name]?.objectValue)
+      let (request, context) = eventRequestContext(
+        protocolID: "openai-completions", modelID: "requested-model", tools: [],
+        metadata: [
+          "compat": .object([
+            "supportsFinishReason": .bool(spec.bool("supportsFinishReason") ?? true)
+          ])
+        ])
+      var observed: [JSONValue] = []
+      var snapshot: ProviderResponseSnapshot?
+      for try await event in OpenAICompletionsAdapter().stream(
+        request, context: context,
+        transport: EventBranchTransport(chunks: completionSSE(try #require(spec.array("chunks")))))
+      {
+        if let block = try responseBlockObservation(event) { observed.append(block) }
+        if case .responseSnapshot(let value) = event { snapshot = value }
+      }
+      #expect(observed == expected.array("events"), Comment(rawValue: name))
+      let final = try #require(snapshot)
+      #expect(
+        (final.finishReason == .toolCalls ? "toolUse" : final.finishReason.rawValue)
+          == expected.string("stopReason"))
+      let content = try final.content.compactMap { item -> JSONValue? in
+        switch item {
+        case .text, .reasoning: try responseBlockContent(item)
+        default: nil
+        }
+      }
+      #expect(content == expected.array("content"), Comment(rawValue: name))
+    }
+  }
+
+  @Test
   func responseBlockLifecycleAndProvisionalPhasesMatchSource() async throws {
     let fixture = try responseEventFixture()
     let oracle = try decodeJSONObject(
@@ -1105,7 +1151,8 @@ private func responseBlockObservation(_ event: ProviderEvent) throws -> JSONValu
   result["type"] = .string(
     kind + "_" + (stage == "completed" ? "end" : stage == "started" ? "start" : "delta"))
   result["contentIndex"] = block["index"]
-  result["stopReason"] = block["provisionalFinishReason"] ?? .string("pending")
+  let reason = block.string("provisionalFinishReason") ?? "pending"
+  result["stopReason"] = .string(reason == "toolCalls" ? "toolUse" : reason)
   if stage == "delta" { result["delta"] = update.object("delta")?["_0"] }
   return .object(result)
 }
@@ -1127,7 +1174,8 @@ private func responseBlockContent(_ content: ProviderResponseContent) throws -> 
   }
   var result: [String: JSONValue] = ["type": .string(kind), "text": .string(text)]
   if let signature {
-    result["signature"] = try JSONDecoder().decode(JSONValue.self, from: Data(signature.utf8))
+    result["signature"] =
+      (try? JSONDecoder().decode(JSONValue.self, from: Data(signature.utf8))) ?? .string(signature)
   }
   return .object(result)
 }

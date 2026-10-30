@@ -135,6 +135,12 @@ for (const [name, chunks] of Object.entries(fixture.completionBranchChunks)) {
     tools: name === "customTool" ? [grammarTool()] : [],
   }));
 }
+const completionBlockLifecycle = {};
+for (const [name, spec] of Object.entries(fixture.completionBlockLifecycleCases)) {
+  completionBlockLifecycle[name] = await runCompletions(spec.chunks, {
+    supportsFinishReason: spec.supportsFinishReason, collectBlockEvents: true,
+  });
+}
 const completionTransport = {};
 for (const [name, spec] of Object.entries(fixture.completionTransportCases)) {
   completionTransport[name] = await runCompletions([], {
@@ -162,6 +168,7 @@ process.stdout.write(`${JSON.stringify({
     "completions.reasoning-detail-signatures": completionReasoningDetails,
     "completions.stop-reason-response-branches": completionBranches,
     "completions.transport-termination": completionTransport,
+    "completions.block-lifecycle": completionBlockLifecycle,
     "completions.http-raw-metadata": projectCompletions(completionHTTPRawMetadata),
     "completions.abort": projectCompletions(completionAbort),
   },
@@ -298,6 +305,29 @@ async function runCompletions(chunks, options = {}) {
       headers: { "content-type": "text/event-stream" },
     }),
   });
+  if (options.collectBlockEvents) {
+    const events = [];
+    const push = stream.push.bind(stream);
+    stream.push = event => {
+      if (!/^(text|thinking)_(start|delta|end)$/.test(event.type)) return push(event);
+      const block = event.partial.content[event.contentIndex];
+      const signature = block.textSignature ?? block.thinkingSignature;
+      events.push({ type: event.type, contentIndex: event.contentIndex,
+        text: block.text ?? block.thinking, stopReason: event.partial.stopReason,
+        ...(event.delta !== undefined ? { delta: event.delta } : {}),
+        ...(signature !== undefined ? { signature: parsedSignature(signature) } : {}),
+      });
+      return push(event);
+    };
+    const output = await stream.result();
+    return { events, stopReason: output.stopReason, content: output.content
+      .filter(block => block.type === "text" || block.type === "thinking")
+      .map(block => ({ type: block.type, text: block.text ?? block.thinking,
+        ...((block.textSignature ?? block.thinkingSignature) !== undefined
+          ? { signature: parsedSignature(block.textSignature ?? block.thinkingSignature) } : {}),
+      })),
+    };
+  }
   if (options.collectEvents) {
     const eventTypes = [];
     for await (const event of stream) eventTypes.push(event.type);
@@ -451,4 +481,8 @@ function outputFor(model) {
 
 async function* iterate(values) {
   for (const value of values) yield value;
+}
+
+function parsedSignature(signature) {
+  try { return JSON.parse(signature); } catch { return signature; }
 }
