@@ -70,13 +70,15 @@ function fixtureInput(model, context, options, responses, credential, requestSou
       key.startsWith("AZURE_OPENAI_") || ["GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_LOCATION"].includes(key))),
     responses,
     aborted: options.signal?.aborted ?? false,
+    ...(model.api === "openai-completions" && (options.onPayload || options.onResponse || options.onProviderStreamEvent)
+      ? { wireObserver: { payload: !!options.onPayload, response: !!options.onResponse, event: !!options.onProviderStreamEvent } } : {}),
   };
 }
 
 function capabilities(options, model) {
   return [
-    ...(options.onProviderStreamEvent ? ["raw-provider-stream-event-hook"] : []),
-    ...(options.onResponse ? ["raw-response-hook"] : []),
+    ...(options.onProviderStreamEvent && model.api !== "openai-completions" ? ["raw-provider-stream-event-hook"] : []),
+    ...(options.onResponse && model.api !== "openai-completions" ? ["raw-response-hook"] : []),
     ...(options.timeoutMs !== undefined && model.api !== "mistral-conversations" ? ["request-timeout-option"] : []),
   ];
 }
@@ -205,7 +207,7 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
           ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
           ...(body.tools ? { tools: body.tools } : {}), ...(body.toolConfig ? { toolConfig: body.toolConfig } : {}) },
       } : mistral ? mistralSDKPayload(body) : body;
-      const replacement = await options.onPayload?.(payload, model);
+      const replacement = model.api === "openai-completions" ? undefined : await options.onPayload?.(payload, model);
       if (replacement !== undefined) body = google ? googleWireBody(replacement) : mistral ? mistralWirePayload(replacement) : replacement;
       if (options.signal?.aborted) { cancel(); return; }
       if (controller.signal.aborted) return;
@@ -228,6 +230,23 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
       const frame = JSON.parse(line);
       if (frame.kind === "request") {
         void serve(frame.payload).catch(error => send({ kind: "failure", message: error.message }));
+      } else if (frame.kind === "observer") {
+        void (async () => {
+          const { stage, value, context: observedContext } = frame.payload;
+          expect(observedContext.model.id).toBe(model.id);
+          expect(observedContext.model.providerID).toBe(model.provider);
+          expect(observedContext.model.protocolID).toBe(model.api);
+          if (stage === "payload") {
+            const replacement = await options.onPayload(value, model);
+            send({ kind: "observerReply", payload: replacement === undefined ? value : replacement, replaced: replacement !== undefined });
+          } else if (stage === "response") {
+            await options.onResponse(value, model);
+            send({ kind: "observerReply" });
+          } else if (stage === "event") {
+            await options.onProviderStreamEvent(value, model);
+            send({ kind: "observerReply" });
+          } else throw new Error(`Unknown native observer stage: ${stage}`);
+        })().catch(error => send({ kind: "observerReply", error: error.message }));
       } else if (frame.kind === "cancelRequest") {
         requestController?.abort();
       } else if (frame.kind === "event") {
@@ -370,7 +389,7 @@ async function mockResponse(model, request, body, options, connection) {
   }
   const frames = (async function* () {
     for await (const event of reply.data) {
-      await options.onProviderStreamEvent?.(event, model);
+      if (model.api !== "openai-completions") await options.onProviderStreamEvent?.(event, model);
       const label = model.api === "anthropic-messages" ? `event: ${event.type}\n` : "";
       yield Buffer.from(`${label}data: ${JSON.stringify(event)}\n\n`).toString("base64");
     }

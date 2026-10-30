@@ -454,6 +454,115 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func completionsWireCallbacksAreNativeAndMatchSourceRawEvents() async throws {
+    let fixture = try responseEventFixture()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path:
+            "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "wire-observer.oracle")
+    for (inputKey, oracleKey) in [
+      ("completionObserverChunks", "completions.provider-stream-observer"),
+      ("completionObserverNonObjectChunks", "completions.non-object-provider-events"),
+    ] {
+      let chunks = try #require(fixture.array(inputKey))
+      let expected = try #require(
+        oracle.object("cases")?.object(oracleKey))
+      let capture = WireObserverCapture()
+      let observer = ProviderWireObserver(
+        onPayload: { payload, context in
+          await capture.payload(context)
+          payload["temperature"] = .number(0.75)
+          return nil
+        },
+        onResponse: { response, context in await capture.response(response, context) },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      let transport = EventBranchTransport(chunks: completionSSE(chunks))
+      let (request, wire) = eventRequestContext(
+        protocolID: "openai-completions", providerID: "fixture",
+        modelID: "requested-model", tools: [], metadata: [:])
+      let runtime = try CustomProviderRuntime(
+        providers: [
+          .init(
+            id: "fixture", baseURL: wire.baseURL,
+            api: "openai-completions",
+            models: [
+              .init(
+                id: wire.model.id, capabilities: wire.model.capabilities,
+                metadata: wire.modelConfiguration.metadata)
+            ])
+        ],
+        credentialStore: InMemoryProviderCredentialStore(credentials: [
+          "fixture": .apiKey(.init(key: "fixture", metadata: [:]))
+        ]),
+        streamingTransport: transport, wireObserver: observer)
+      var snapshot: ProviderResponseSnapshot?
+      for try await event in runtime.stream(request) {
+        if case .responseSnapshot(let value) = event { snapshot = value }
+      }
+      #expect(await capture.events == expected.array("events"))
+      #expect(await capture.models == expected.array("models"))
+      #expect(
+        await capture.stages == ["payload", "response"]
+          + Array(repeating: "event", count: chunks.count))
+      #expect(await capture.requestIDs == Array(repeating: request.id, count: chunks.count + 2))
+      #expect(await capture.status == 200)
+      let sent = try #require(await transport.sent)
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture", operation: "wire-observer.sent")
+      #expect(body["temperature"] == .number(0.75))
+      #expect(snapshot?.content == [.text(.init(text: "hello", signature: nil))])
+    }
+  }
+
+  @Test
+  func completionsAwaitObserverFailuresBeforeNormalizingContent() async throws {
+    let fixture = try responseEventFixture()
+    let chunks = try #require(fixture.array("completionObserverChunks"))
+    for failingStage in ["payload", "response", "event"] {
+      let (request, base) = eventRequestContext(
+        protocolID: "openai-completions", modelID: "requested-model", tools: [], metadata: [:])
+      var context = base
+      context.wireObserver = .init(
+        onPayload: { _, _ in
+          if failingStage == "payload" {
+            await Task.yield()
+            throw ObserverFixtureError.expected
+          }
+          return nil
+        },
+        onResponse: { _, _ in
+          if failingStage == "response" {
+            await Task.yield()
+            throw ObserverFixtureError.expected
+          }
+        },
+        onProviderStreamEvent: { _, _ in
+          if failingStage == "event" {
+            await Task.yield()
+            throw ObserverFixtureError.expected
+          }
+        })
+      let transport = EventBranchTransport(chunks: completionSSE(chunks))
+      var normalized: [ProviderEvent] = []
+      do {
+        for try await event in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: transport)
+        {
+          normalized.append(event)
+        }
+        Issue.record("Observer failure was swallowed: \(failingStage)")
+      } catch ObserverFixtureError.expected {}
+      #expect(normalized.allSatisfy { if case .responseStarted = $0 { true } else { false } })
+      #expect((await transport.sent == nil) == (failingStage == "payload"))
+    }
+  }
+
+  @Test
   func indexedDeltaPayloadBytesScaleWithIncomingFragments() async throws {
     for api in ["openai-responses", "openai-completions"] {
       for reasoning in [false, true] {
@@ -1271,3 +1380,33 @@ private func indexedDeltaPayloadBytes(api: String, reasoning: Bool, count: Int) 
   #expect(deltas == count)
   return bytes
 }
+
+private actor WireObserverCapture {
+  var events: [JSONValue] = []
+  var models: [JSONValue] = []
+  var stages: [String] = []
+  var requestIDs: [String] = []
+  var status: Int?
+  func payload(_ context: ProviderWireObserver.Context) {
+    stages.append("payload")
+    requestIDs.append(context.requestID)
+  }
+  func response(_ response: ProviderWireObserver.Response, _ context: ProviderWireObserver.Context)
+  {
+    stages.append("response")
+    requestIDs.append(context.requestID)
+    status = response.status
+  }
+  func event(_ event: JSONValue, _ context: ProviderWireObserver.Context) {
+    stages.append("event")
+    requestIDs.append(context.requestID)
+    events.append(event)
+    models.append(
+      .object([
+        "id": .string(context.model.id), "provider": .string(context.model.providerID),
+        "api": .string(context.model.protocolID),
+      ]))
+  }
+}
+
+private enum ObserverFixtureError: Error { case expected }

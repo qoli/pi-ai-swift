@@ -2880,5 +2880,81 @@
         }
       ]
     }
-  }
+  },
+  "completionObserverChunks": [
+    {
+      "id": "chatcmpl-1",
+      "model": "anthropic/claude-sonnet-4.6",
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": "hello"
+          }
+        }
+      ]
+    },
+    {
+      "id": "chatcmpl-1",
+      "model": "anthropic/claude-sonnet-4.6",
+      "choices": [
+        {
+          "index": 0,
+          "delta": {},
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 10,
+        "completion_tokens": 2,
+        "total_tokens": 12,
+        "cost": 0.0012,
+        "is_byok": false
+      },
+      "openrouter_metadata": {
+        "strategy": "direct",
+        "region": "iad"
+      }
+    }
+  ],
+  "completionObserverNonObjectChunks": [
+    null,
+    [],
+    17,
+    "ignored",
+    {
+      "id": "chatcmpl-1",
+      "model": "anthropic/claude-sonnet-4.6",
+      "choices": [
+        {
+          "index": 0,
+          "delta": {
+            "content": "hello"
+          }
+        }
+      ]
+    },
+    {
+      "id": "chatcmpl-1",
+      "model": "anthropic/claude-sonnet-4.6",
+      "choices": [
+        {
+          "index": 0,
+          "delta": {},
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 10,
+        "completion_tokens": 2,
+        "total_tokens": 12,
+        "cost": 0.0012,
+        "is_byok": false
+      },
+      "openrouter_metadata": {
+        "strategy": "direct",
+        "region": "iad"
+      }
+    }
+  ]
 }

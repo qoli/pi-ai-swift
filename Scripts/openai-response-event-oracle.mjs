@@ -141,6 +141,21 @@ for (const [name, spec] of Object.entries(fixture.completionBlockLifecycleCases)
     supportsFinishReason: spec.supportsFinishReason, collectBlockEvents: true,
   });
 }
+const completionObserved = { events: [], models: [] };
+completionObserved.output = projectCompletions(await runCompletions(fixture.completionObserverChunks, {
+  onProviderStreamEvent: async (event, model) => {
+    await Promise.resolve();
+    completionObserved.events.push(structuredClone(event));
+    completionObserved.models.push({ id: model.id, provider: model.provider, api: model.api });
+  },
+}));
+const completionNonObjectObserved = { events: [], models: [] };
+completionNonObjectObserved.output = projectCompletions(await runCompletions(fixture.completionObserverNonObjectChunks, {
+  onProviderStreamEvent: async (event, model) => {
+    completionNonObjectObserved.events.push(structuredClone(event));
+    completionNonObjectObserved.models.push({ id: model.id, provider: model.provider, api: model.api });
+  },
+}));
 const completionTransport = {};
 for (const [name, spec] of Object.entries(fixture.completionTransportCases)) {
   completionTransport[name] = await runCompletions([], {
@@ -169,6 +184,8 @@ process.stdout.write(`${JSON.stringify({
     "completions.stop-reason-response-branches": completionBranches,
     "completions.transport-termination": completionTransport,
     "completions.block-lifecycle": completionBlockLifecycle,
+    "completions.provider-stream-observer": completionObserved,
+    "completions.non-object-provider-events": completionNonObjectObserved,
     "completions.http-raw-metadata": projectCompletions(completionHTTPRawMetadata),
     "completions.abort": projectCompletions(completionAbort),
   },
@@ -300,6 +317,7 @@ async function runCompletions(chunks, options = {}) {
   }, {
     apiKey: "fixture",
     maxRetries: 0,
+    onProviderStreamEvent: options.onProviderStreamEvent,
     fetch: async () => new Response(sse, {
       status: 200,
       headers: { "content-type": "text/event-stream" },

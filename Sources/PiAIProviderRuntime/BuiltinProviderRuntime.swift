@@ -7,6 +7,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
   private let credentialStore: any ProviderCredentialStore
   private let streamingTransport: any ProviderHTTPStreamingTransport
   private let authorizationTransport: any ProviderHTTPTransport
+  private let wireObserver: ProviderWireObserver?
   private let radiusAuthorization: RadiusOAuthAuthorizationAdapter
   private let radiusRefreshCoordinator: CredentialRefreshCoordinator
 
@@ -15,13 +16,15 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     streamingTransport: any ProviderHTTPStreamingTransport =
       URLSessionProviderHTTPStreamingTransport(),
     authorizationTransport: any ProviderHTTPTransport = URLSessionProviderHTTPTransport(),
-    radiusCatalogPersistenceURL: URL? = nil
+    radiusCatalogPersistenceURL: URL? = nil,
+    wireObserver: ProviderWireObserver? = nil
   ) throws {
     let registry = try BuiltinProviderRegistry.load()
     self.registry = registry
     self.credentialStore = credentialStore
     self.streamingTransport = streamingTransport
     self.authorizationTransport = authorizationTransport
+    self.wireObserver = wireObserver
     radiusAuthorization = RadiusOAuthAuthorizationAdapter(
       transport: authorizationTransport
     )
@@ -36,7 +39,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       registry: registry,
       credentialStore: credentialStore,
       streamingTransport: streamingTransport,
-      authorizationTransport: authorizationTransport
+      authorizationTransport: authorizationTransport,
+      wireObserver: wireObserver
     )
   }
 
@@ -129,7 +133,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       ),
       credentialStore: credentialStore,
       streamingTransport: streamingTransport,
-      authorizationTransport: authorizationTransport
+      authorizationTransport: authorizationTransport,
+      wireObserver: wireObserver
     )
   }
 
@@ -162,7 +167,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     registry: BuiltinProviderRegistry,
     credentialStore: any ProviderCredentialStore,
     streamingTransport: any ProviderHTTPStreamingTransport,
-    authorizationTransport: any ProviderHTTPTransport
+    authorizationTransport: any ProviderHTTPTransport,
+    wireObserver: ProviderWireObserver?
   ) throws -> ProviderRuntimeKernel {
     // Keep newly inventoried providers out of the runtime until their complete
     // authorization and vertical-slice evidence is landed.
@@ -180,7 +186,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       providers: definitions,
       wireProtocols: StandardWireProtocols.make(),
       credentialStore: credentialStore,
-      transport: streamingTransport
+      transport: streamingTransport,
+      wireObserver: wireObserver
     )
   }
 

@@ -91,7 +91,8 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/JSONValue.swift",
         "Sources/PiAIProviderRuntime/ProviderRequest.swift",
-        "Sources/PiAIProviderRuntime/ProviderEvent.swift"
+        "Sources/PiAIProviderRuntime/ProviderEvent.swift",
+        "Sources/PiAIProviderRuntime/ProviderWireObserver.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -121,7 +122,10 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionBlockLifecycleMatchesSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsBlockLifecycleMatchesPinnedSource",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsWireCallbacksAreNativeAndMatchSourceRawEvents",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsAwaitObserverFailuresBeforeNormalizingContent",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -1905,7 +1909,10 @@
         "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
         "Fixtures/Differential/Cases/cloudflare-auth.json",
-        "Fixtures/Differential/Oracle/cloudflare-auth.json"
+        "Fixtures/Differential/Oracle/cloudflare-auth.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsWireCallbacksAreNativeAndMatchSourceRawEvents",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsAwaitObserverFailuresBeforeNormalizingContent",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -1946,7 +1953,10 @@
         "Fixtures/Differential/Cases/custom-provider-endpoints.json",
         "Fixtures/Differential/Oracle/custom-provider-endpoints.json",
         "Scripts/pi-ai-custom-endpoint-oracle.mjs",
-        "Docs/CUSTOM_PROVIDER_HTTP_REPAIR.md"
+        "Docs/CUSTOM_PROVIDER_HTTP_REPAIR.md",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsWireCallbacksAreNativeAndMatchSourceRawEvents",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsAwaitObserverFailuresBeforeNormalizingContent",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
@@ -2659,7 +2669,10 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsStructuredReasoningReplayMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionBlockLifecycleMatchesSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsBlockLifecycleMatchesPinnedSource",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsWireCallbacksAreNativeAndMatchSourceRawEvents",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsAwaitObserverFailuresBeforeNormalizingContent",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test",

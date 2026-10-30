@@ -104,6 +104,7 @@ struct WireProtocolContext: Sendable {
   let credential: ProviderCredential?
   let modelConfiguration: ProviderModelConfiguration
   var usesHeaderAuthentication = false
+  var wireObserver: ProviderWireObserver? = nil
 }
 
 protocol WireProtocolAdapter: Sendable {
@@ -123,13 +124,15 @@ struct ProviderRuntimeKernel: ProviderRuntime {
   private let credentialStore: any ProviderCredentialStore
   private let refreshCoordinator: CredentialRefreshCoordinator
   private let transport: any ProviderHTTPStreamingTransport
+  private let wireObserver: ProviderWireObserver?
 
   init(
     catalogRevision: String,
     providers: [ProviderDefinition],
     wireProtocols: [any WireProtocolAdapter],
     credentialStore: any ProviderCredentialStore,
-    transport: any ProviderHTTPStreamingTransport
+    transport: any ProviderHTTPStreamingTransport,
+    wireObserver: ProviderWireObserver? = nil
   ) throws {
     self.catalogRevision = catalogRevision
     self.providers = try Self.uniqueProviders(providers)
@@ -139,6 +142,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       credentialStore: credentialStore
     )
     self.transport = transport
+    self.wireObserver = wireObserver
   }
 
   func catalog() async throws -> ProviderCatalog {
@@ -329,7 +333,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         headers: headers,
         credential: requestAuthorization.credential,
         modelConfiguration: modelConfiguration,
-        usesHeaderAuthentication: requestAuthorization.usesHeaderAuthentication
+        usesHeaderAuthentication: requestAuthorization.usesHeaderAuthentication,
+        wireObserver: wireObserver
       ),
       transport: transport
     )

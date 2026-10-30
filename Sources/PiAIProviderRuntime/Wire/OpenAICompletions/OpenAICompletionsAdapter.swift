@@ -11,8 +11,9 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
+          let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await transport.stream(
-            try makeURLRequest(request, context: context)
+            try await observation.payload(makeURLRequest(request, context: context))
           )
           guard (200..<300).contains(response.statusCode) else {
             let body = try await collectErrorBody(from: response.body)
@@ -24,6 +25,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
               cause: body
             )
           }
+          try await observation.response(response)
           var decoder = ServerSentEventDecoder()
           var reducer = OpenAICompletionsReducer(
             providerID: request.providerID,
@@ -42,7 +44,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           readStream: for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
-              for normalized in try reducer.reduce(event) {
+              for normalized in try await reducer.reduce(event, observation: observation) {
                 continuation.yield(normalized)
               }
               if reducer.terminal { break readStream }
@@ -50,7 +52,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           }
           if !reducer.terminal {
             for event in try decoder.finish() {
-              for normalized in try reducer.reduce(event) {
+              for normalized in try await reducer.reduce(event, observation: observation) {
                 continuation.yield(normalized)
               }
             }
@@ -831,17 +833,22 @@ private struct OpenAICompletionsReducer {
         responseID: nil, providerID: providerID, modelID: requestedModelID, providerMetadata: [:]))
   }
 
-  mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
+  mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
+    -> [ProviderEvent]
+  {
     if event.data == "[DONE]" {
       terminal = true
       return []
     }
-    if event.data.trimmingCharacters(in: .whitespacesAndNewlines) == "null" { return [] }
-    let object = try decodeJSONObject(
-      Data(event.data.utf8),
-      providerID: providerID,
-      operation: "openai-completions.event.decode"
-    )
+    let value: JSONValue
+    do { value = try JSONDecoder().decode(JSONValue.self, from: Data(event.data.utf8)) } catch {
+      throw ProviderRuntimeFailure(
+        code: .invalidResponse, message: "provider response contains malformed JSON",
+        providerID: providerID, operation: "openai-completions.event.decode",
+        causeDescription: String(describing: error))
+    }
+    try await observation.streamEvent(value)
+    guard let object = value.objectValue else { return [] }
     var events: [ProviderEvent] = []
     if responseID == nil, let id = object.string("id"), !id.isEmpty {
       responseID = id

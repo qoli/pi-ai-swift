@@ -1666,6 +1666,74 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     return fields
   }
 
+  func testCompletionsNativeWireObserverMatchesPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    for (inputKey, oracleKey) in [
+      ("completionObserverChunks", "completions.provider-stream-observer"),
+      ("completionObserverNonObjectChunks", "completions.non-object-provider-events"),
+    ] {
+      let chunks = try XCTUnwrap(fixture.array(inputKey))
+      let expected = try XCTUnwrap(
+        oracle.object("cases")?.object(oracleKey))
+      let capture = IOSWireObserverCapture()
+      let observer = ProviderWireObserver(
+        onPayload: { payload, context in
+          await capture.stage("payload", context)
+          payload["temperature"] = .number(0.75)
+          return nil
+        },
+        onResponse: { response, context in
+          await capture.stage("response", context)
+          XCTAssertEqual(response.status, 200)
+        },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      let (request, context) = inputs(
+        api: "openai-completions", providerID: "fixture", modelID: "requested-model")
+      let body =
+        try chunks.map {
+          "data: " + String(decoding: try JSONEncoder().encode($0), as: UTF8.self) + "\n\n"
+        }.joined() + "data: [DONE]\n\n"
+      let transport = IOSMistralHTTPFixture(status: 200, body: Data(body.utf8))
+      let runtime = try CustomProviderRuntime(
+        providers: [
+          .init(
+            id: "fixture", baseURL: context.baseURL,
+            api: "openai-completions",
+            models: [
+              .init(
+                id: context.model.id, capabilities: context.model.capabilities,
+                metadata: context.modelConfiguration.metadata)
+            ])
+        ],
+        credentialStore: InMemoryProviderCredentialStore(credentials: [
+          "fixture": .apiKey(.init(key: "fixture", metadata: [:]))
+        ]),
+        streamingTransport: transport, wireObserver: observer)
+      var snapshot: ProviderResponseSnapshot?
+      for try await event in runtime.stream(request) {
+        if case .responseSnapshot(let value) = event { snapshot = value }
+      }
+      let observed = await capture.events
+      let models = await capture.models
+      let stages = await capture.stages
+      let ids = await capture.requestIDs
+      XCTAssertEqual(observed, expected.array("events"))
+      XCTAssertEqual(models, expected.array("models"))
+      XCTAssertEqual(
+        stages, ["payload", "response"] + Array(repeating: "event", count: chunks.count))
+      XCTAssertEqual(ids, Array(repeating: request.id, count: chunks.count + 2))
+      let sent = await transport.sent
+      let encoded = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody), providerID: "fixture", operation: "ios.wire-observer")
+      XCTAssertEqual(encoded["temperature"], .number(0.75))
+      XCTAssertEqual(snapshot?.content, [.text(.init(text: "hello", signature: nil))])
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
@@ -1832,5 +1900,25 @@ private struct IOSFixtureTransport: ProviderHTTPStreamingTransport {
         for chunk in chunks { continuation.yield(chunk) }
         continuation.finish()
       })
+  }
+}
+
+private actor IOSWireObserverCapture {
+  var stages: [String] = []
+  var requestIDs: [String] = []
+  var events: [JSONValue] = []
+  var models: [JSONValue] = []
+  func stage(_ name: String, _ context: ProviderWireObserver.Context) {
+    stages.append(name)
+    requestIDs.append(context.requestID)
+  }
+  func event(_ value: JSONValue, _ context: ProviderWireObserver.Context) {
+    stage("event", context)
+    events.append(value)
+    models.append(
+      .object([
+        "id": .string(context.model.id), "provider": .string(context.model.providerID),
+        "api": .string(context.model.protocolID),
+      ]))
   }
 }

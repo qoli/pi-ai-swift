@@ -211,6 +211,36 @@ struct SwiftConformanceProbe {
     } else {
       authorization = FixtureAuthorization()
     }
+    let observerFlags = interactive ? envelope.object("wireObserver") ?? [:] : [:]
+    var onPayload: ProviderWireObserver.PayloadCallback?
+    if observerFlags.bool("payload") == true {
+      onPayload = { payload, context in
+        let reply = try await liveTransport.observe("payload", .object(payload), context: context)
+        guard let modified = reply.object("payload"), let replaced = reply.bool("replaced") else {
+          throw ProbeError.unsupported("observer payload reply")
+        }
+        payload = modified
+        return replaced ? modified : nil
+      }
+    }
+    var onResponse: ProviderWireObserver.ResponseCallback?
+    if observerFlags.bool("response") == true {
+      onResponse = { response, context in
+        let value = try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(response))
+        _ = try await liveTransport.observe("response", value, context: context)
+      }
+    }
+    var onEvent: ProviderWireObserver.StreamEventCallback?
+    if observerFlags.bool("event") == true {
+      onEvent = { event, context in
+        _ = try await liveTransport.observe("event", event, context: context)
+      }
+    }
+    let wireObserver: ProviderWireObserver? =
+      observerFlags.isEmpty
+      ? nil
+      : .init(
+        onPayload: onPayload, onResponse: onResponse, onProviderStreamEvent: onEvent)
     let runtime = try ProviderRuntimeKernel(
       catalogRevision: "upstream-conformance",
       providers: [
@@ -230,7 +260,7 @@ struct SwiftConformanceProbe {
       wireProtocols: StandardWireProtocols.make(),
       credentialStore: InMemoryProviderCredentialStore(
         credentials: credential.map { [provider: $0] } ?? [:]),
-      transport: transport)
+      transport: transport, wireObserver: wireObserver)
     let execution = Task {
       var events: [ProviderEvent] = []
       var failure: [String: JSONValue]?
@@ -469,6 +499,28 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
   let azureConfiguration: [String: JSONValue]?
   private var response: CheckedContinuation<ProviderHTTPStreamingResponse, any Error>?
   private var body: AsyncThrowingStream<Data, any Error>.Continuation?
+  private var observerReply: CheckedContinuation<[String: JSONValue], any Error>?
+
+  private struct Observation: Encodable {
+    let stage: String
+    let value: JSONValue
+    let context: ProviderWireObserver.Context
+  }
+
+  func observe(_ stage: String, _ value: JSONValue, context: ProviderWireObserver.Context)
+    async throws -> [String: JSONValue]
+  {
+    try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        observerReply = continuation
+        do {
+          try channel.write("observer", Observation(stage: stage, value: value, context: context))
+        } catch { fail(error) }
+      }
+    } onCancel: {
+      Task { await self.fail(CancellationError()) }
+    }
+  }
 
   init(channel: ProbeChannel, azureConfiguration: [String: JSONValue]?) {
     self.channel = channel
@@ -501,6 +553,16 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
 
   func receive(_ frame: [String: JSONValue]) throws {
     switch frame.string("kind") {
+    case "observerReply":
+      if let error = frame.string("error") {
+        observerReply?.resume(
+          throwing: ProviderRuntimeFailure(
+            code: .transportFailed, message: error,
+            providerID: nil, operation: "conformance.observer", causeDescription: nil))
+      } else {
+        observerReply?.resume(returning: frame)
+      }
+      observerReply = nil
     case "response":
       let (stream, continuation) = AsyncThrowingStream<Data, any Error>.makeStream()
       body = continuation
@@ -529,6 +591,8 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
   }
 
   func fail(_ error: any Error) {
+    observerReply?.resume(throwing: error)
+    observerReply = nil
     response?.resume(throwing: error)
     response = nil
     body?.finish(throwing: error)

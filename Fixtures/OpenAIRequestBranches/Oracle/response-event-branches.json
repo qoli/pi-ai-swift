@@ -224,6 +224,170 @@
         "totalTokens": 0
       }
     },
+    "completions.non-object-provider-events": {
+      "events": [
+        null,
+        [],
+        17,
+        "ignored",
+        {
+          "choices": [
+            {
+              "delta": {
+                "content": "hello"
+              },
+              "index": 0
+            }
+          ],
+          "id": "chatcmpl-1",
+          "model": "anthropic/claude-sonnet-4.6"
+        },
+        {
+          "choices": [
+            {
+              "delta": {},
+              "finish_reason": "stop",
+              "index": 0
+            }
+          ],
+          "id": "chatcmpl-1",
+          "model": "anthropic/claude-sonnet-4.6",
+          "openrouter_metadata": {
+            "region": "iad",
+            "strategy": "direct"
+          },
+          "usage": {
+            "completion_tokens": 2,
+            "cost": 0.0012,
+            "is_byok": false,
+            "prompt_tokens": 10,
+            "total_tokens": 12
+          }
+        }
+      ],
+      "models": [
+        {
+          "api": "openai-completions",
+          "id": "requested-model",
+          "provider": "fixture"
+        },
+        {
+          "api": "openai-completions",
+          "id": "requested-model",
+          "provider": "fixture"
+        },
+        {
+          "api": "openai-completions",
+          "id": "requested-model",
+          "provider": "fixture"
+        },
+        {
+          "api": "openai-completions",
+          "id": "requested-model",
+          "provider": "fixture"
+        },
+        {
+          "api": "openai-completions",
+          "id": "requested-model",
+          "provider": "fixture"
+        },
+        {
+          "api": "openai-completions",
+          "id": "requested-model",
+          "provider": "fixture"
+        }
+      ],
+      "output": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text"
+          }
+        ],
+        "rawStopReason": "stop",
+        "responseId": "chatcmpl-1",
+        "responseModel": "anthropic/claude-sonnet-4.6",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 10,
+          "output": 2,
+          "reasoning": 0,
+          "totalTokens": 12
+        }
+      }
+    },
+    "completions.provider-stream-observer": {
+      "events": [
+        {
+          "choices": [
+            {
+              "delta": {
+                "content": "hello"
+              },
+              "index": 0
+            }
+          ],
+          "id": "chatcmpl-1",
+          "model": "anthropic/claude-sonnet-4.6"
+        },
+        {
+          "choices": [
+            {
+              "delta": {},
+              "finish_reason": "stop",
+              "index": 0
+            }
+          ],
+          "id": "chatcmpl-1",
+          "model": "anthropic/claude-sonnet-4.6",
+          "openrouter_metadata": {
+            "region": "iad",
+            "strategy": "direct"
+          },
+          "usage": {
+            "completion_tokens": 2,
+            "cost": 0.0012,
+            "is_byok": false,
+            "prompt_tokens": 10,
+            "total_tokens": 12
+          }
+        }
+      ],
+      "models": [
+        {
+          "api": "openai-completions",
+          "id": "requested-model",
+          "provider": "fixture"
+        },
+        {
+          "api": "openai-completions",
+          "id": "requested-model",
+          "provider": "fixture"
+        }
+      ],
+      "output": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text"
+          }
+        ],
+        "rawStopReason": "stop",
+        "responseId": "chatcmpl-1",
+        "responseModel": "anthropic/claude-sonnet-4.6",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 10,
+          "output": 2,
+          "reasoning": 0,
+          "totalTokens": 12
+        }
+      }
+    },
     "completions.reasoning-detail-signatures": {
       "empty-backfill": {
         "content": [

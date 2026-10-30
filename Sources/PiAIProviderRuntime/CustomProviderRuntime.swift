@@ -70,7 +70,8 @@ public struct CustomProviderRuntime: ProviderRuntime {
     providers: [CustomProvider],
     credentialStore: any ProviderCredentialStore,
     streamingTransport: any ProviderHTTPStreamingTransport =
-      URLSessionProviderHTTPStreamingTransport()
+      URLSessionProviderHTTPStreamingTransport(),
+    wireObserver: ProviderWireObserver? = nil
   ) throws {
     let definitions = try providers.map(Self.makeDefinition)
     kernel = try ProviderRuntimeKernel(
@@ -78,7 +79,8 @@ public struct CustomProviderRuntime: ProviderRuntime {
       providers: definitions,
       wireProtocols: StandardWireProtocols.make(),
       credentialStore: credentialStore,
-      transport: streamingTransport
+      transport: streamingTransport,
+      wireObserver: wireObserver
     )
   }
 
