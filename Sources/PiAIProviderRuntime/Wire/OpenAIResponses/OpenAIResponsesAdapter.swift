@@ -153,9 +153,11 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
+          let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await transport.stream(
-            try makeURLRequest(request, context: context)
+            try await observation.payload(makeURLRequest(request, context: context))
           )
+          if flavor == .codex { try await observation.response(response) }
           guard (200..<300).contains(response.statusCode) else {
             let body = try await collectErrorBody(from: response.body)
             throw failure(
@@ -167,6 +169,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               cause: body
             )
           }
+          if flavor != .codex { try await observation.response(response) }
           var decoder = ServerSentEventDecoder()
           var reducer = OpenAIResponsesReducer(
             providerID: request.providerID,
@@ -185,13 +188,13 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
-              for normalized in try reducer.reduce(event) {
+              for normalized in try await reducer.reduce(event, observation: observation) {
                 continuation.yield(normalized)
               }
             }
           }
           for event in try decoder.finish() {
-            for normalized in try reducer.reduce(event) {
+            for normalized in try await reducer.reduce(event, observation: observation) {
               continuation.yield(normalized)
             }
           }
@@ -1165,13 +1168,19 @@ private struct OpenAIResponsesReducer {
     self.providerThinkingLevel = providerThinkingLevel
   }
 
-  mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
+  mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
+    -> [ProviderEvent]
+  {
     if event.data == "[DONE]" { return [] }
     let object = try decodeJSONObject(
       Data(event.data.utf8),
       providerID: providerID,
       operation: "openai-responses.event.decode"
     )
+    let sdkError =
+      event.event == "error"
+      || object["error"].map { ProviderOrderedJSON.scalar($0).isTruthy } == true
+    if flavor == .codex || !sdkError { try await observation.streamEvent(.object(object)) }
     do { return try reduceObject(object, eventName: event.event, eventData: event.data) } catch let
       error
       as GrammarToolInputJSONError

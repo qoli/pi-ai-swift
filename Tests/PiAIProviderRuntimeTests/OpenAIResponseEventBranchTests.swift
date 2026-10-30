@@ -454,6 +454,65 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func responsesWireCallbacksMatchPinnedSourceAcrossFlavors() async throws {
+    let fixture = try responseEventFixture()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "responses.observer.oracle")
+    for (name, value) in try #require(fixture.object("responsesWireObserverCases")) {
+      let spec = try #require(value.objectValue)
+      let api = try #require(spec.string("api"))
+      let expected = try #require(
+        oracle.object("cases")?.object("responses.wire-observers")?.object(name))
+      let capture = WireObserverCapture()
+      let (request, base) = eventRequestContext(
+        protocolID: api, providerID: try #require(spec.string("provider")),
+        modelID: try #require(spec.string("model")), tools: [], metadata: [:])
+      var context = base
+      context.wireObserver = .init(
+        onPayload: { payload, context in
+          await Task.yield()
+          await capture.payload(context)
+          payload["temperature"] = .number(0.75)
+          return nil
+        },
+        onResponse: { response, context in
+          await Task.yield()
+          await capture.response(response, context)
+        },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      let chunks =
+        try spec.string("body").map { [Data($0.utf8)] }
+        ?? responsesSSE(try #require(spec.array("events")))
+      let transport = EventBranchTransport(chunks: chunks, statusCode: spec.int("status") ?? 200)
+      let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
+      var outcome = "stop"
+      do {
+        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+      } catch { outcome = "error" }
+      #expect(outcome == expected.string("outcome"), Comment(rawValue: name))
+      #expect(await capture.events == expected.array("events"), Comment(rawValue: name))
+      #expect(await capture.models == expected.array("models"), Comment(rawValue: name))
+      #expect(
+        await capture.stages.map(JSONValue.string) == expected.array("stages"),
+        Comment(rawValue: name))
+      #expect(
+        await capture.status == expected.array("responses")?.first?.objectValue?.int("status"))
+      #expect(await capture.requestIDs.allSatisfy { $0 == request.id })
+      let sent = try #require(await transport.sent)
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: request.providerID,
+        operation: "responses.observer.sent")
+      #expect(body["temperature"] == .number(0.75))
+    }
+  }
+
+  @Test
   func completionsWireCallbacksAreNativeAndMatchSourceRawEvents() async throws {
     let fixture = try responseEventFixture()
     let oracle = try decodeJSONObject(

@@ -127,7 +127,9 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsAwaitObserverFailuresBeforeNormalizingContent",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#anthropicWireObservationsMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors"
       ],
       "requiredGates": [
         "swift-test"
@@ -2126,7 +2128,9 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesProviderErrorsMatchPinnedSourceAcrossFlavors",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesProviderErrorsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responseBlockLifecycleAndProvisionalPhasesMatchSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors"
       ],
       "requiredGates": [
         "swift-test"
@@ -2573,7 +2577,9 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesProviderErrorsMatchPinnedSourceAcrossFlavors",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesProviderErrorsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responseBlockLifecycleAndProvisionalPhasesMatchSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors"
       ],
       "requiredGates": [
         "swift-test"
@@ -2773,7 +2779,9 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesProviderErrorsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responseBlockLifecycleAndProvisionalPhasesMatchSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors"
       ],
       "requiredGates": [
         "swift-test"

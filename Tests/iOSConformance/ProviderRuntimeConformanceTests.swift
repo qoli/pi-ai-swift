@@ -1798,6 +1798,72 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors() async throws {
+    let specs = try XCTUnwrap(
+      load("OpenAIRequestBranches/Cases/response-event-branches.json").object(
+        "responsesWireObserverCases"))
+    let cases = try XCTUnwrap(
+      load("OpenAIRequestBranches/Oracle/response-event-branches.json").object("cases")?.object(
+        "responses.wire-observers"))
+    for (name, value) in specs {
+      let spec = try XCTUnwrap(value.objectValue)
+      let api = try XCTUnwrap(spec.string("api"))
+      let expected = try XCTUnwrap(cases.object(name))
+      let capture = IOSWireObserverCapture()
+      let (request, base) = inputs(
+        api: api, providerID: try XCTUnwrap(spec.string("provider")),
+        modelID: try XCTUnwrap(spec.string("model")))
+      var context = base
+      context.wireObserver = .init(
+        onPayload: { payload, context in
+          await Task.yield()
+          await capture.stage("payload", context)
+          payload["temperature"] = .number(0.75)
+          return nil
+        },
+        onResponse: { response, context in
+          await Task.yield()
+          await capture.response(response, context)
+        },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      let sse =
+        try spec.string("body")
+        ?? XCTUnwrap(spec.array("events")).map {
+          "data: " + String(decoding: try JSONEncoder().encode($0), as: UTF8.self) + "\n\n"
+        }.joined()
+      let transport = IOSMistralHTTPFixture(
+        status: spec.int("status") ?? 200, body: Data(sse.utf8),
+        headers: [
+          "content-type": (spec.int("status") ?? 200) >= 400
+            ? "application/json" : "text/event-stream"
+        ])
+      let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
+      var outcome = "stop"
+      do {
+        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+      } catch { outcome = "error" }
+      XCTAssertEqual(outcome, expected.string("outcome"), name)
+      let events = await capture.events
+      let models = await capture.models
+      let stages = await capture.stages
+      let responses = await capture.responses
+      let ids = await capture.requestIDs
+      XCTAssertEqual(events, expected.array("events"), name)
+      XCTAssertEqual(models, expected.array("models"), name)
+      XCTAssertEqual(stages.map(JSONValue.string), expected.array("stages"), name)
+      XCTAssertEqual(responses, expected.array("responses"), name)
+      XCTAssertEqual(ids, Array(repeating: request.id, count: stages.count), name)
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody), providerID: request.providerID,
+        operation: "ios.responses.observer")
+      XCTAssertEqual(body["temperature"], .number(0.75), name)
+    }
+  }
+
   func testPreferredStrictFallbackDiagnosticsMatchPinnedSource() async throws {
     let fixture = try load("Differential/Cases/strict-fallback.json")
     let expectedCases = try XCTUnwrap(

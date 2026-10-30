@@ -76,7 +76,7 @@ function fixtureInput(model, context, options, responses, credential, requestSou
 }
 
 function hasNativeWireObserver(model) {
-  return ["openai-completions", "anthropic-messages"].includes(model.api);
+  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses"].includes(model.api);
 }
 
 function capabilities(options, model) {
@@ -179,7 +179,7 @@ export function stream(model, context, options = {}, requestSource = "api", gene
 
 async function nativeStream(model, context, options, emitEvent, requestSource, generationMode) {
   const credential = fixtureCredential(model, options);
-  const connection = { credential };
+  const connection = { credential, providerEvents: [] };
   const child = spawn(process.env.PI_CONFORMANCE_PROBE, ["--stream"], { stdio: ["pipe", "pipe", "pipe"] });
   let stderr = "";
   child.stderr.on("data", data => { stderr += data; });
@@ -247,7 +247,9 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
             await options.onResponse(value, model);
             send({ kind: "observerReply" });
           } else if (stage === "event") {
-            await options.onProviderStreamEvent(value, model);
+            const original = connection.providerEvents.shift();
+            if (original) expect(value).toEqual(original.serialized);
+            await options.onProviderStreamEvent(original ? original.reference : value, model);
             send({ kind: "observerReply" });
           } else throw new Error(`Unknown native observer stage: ${stage}`);
         })().catch(error => send({ kind: "observerReply", error: error.message }));
@@ -393,7 +395,10 @@ async function mockResponse(model, request, body, options, connection) {
   }
   const frames = (async function* () {
     for await (const event of reply.data) {
-      if (!hasNativeWireObserver(model)) await options.onProviderStreamEvent?.(event, model);
+      if (hasNativeWireObserver(model) && options.onProviderStreamEvent) {
+        // Verify Native's parsed value before restoring the SDK reference identity.
+        connection.providerEvents.push({ reference: event, serialized: JSON.parse(JSON.stringify(event)) });
+      } else if (!hasNativeWireObserver(model)) await options.onProviderStreamEvent?.(event, model);
       const label = model.api === "anthropic-messages" ? `event: ${event.type}\n` : "";
       yield Buffer.from(`${label}data: ${JSON.stringify(event)}\n\n`).toString("base64");
     }

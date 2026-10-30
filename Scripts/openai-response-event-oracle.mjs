@@ -162,6 +162,10 @@ for (const [name, spec] of Object.entries(fixture.completionTransportCases)) {
     supportsFinishReason: spec.supportsFinishReason, rawSSE: spec.sse, collectEvents: true,
   });
 }
+const responsesWireObserved = {};
+for (const [name, spec] of Object.entries(fixture.responsesWireObserverCases)) {
+  responsesWireObserved[name] = await runResponsesFlavor({ ...spec, name, observeWire: true });
+}
 
 process.stdout.write(`${JSON.stringify({
   schemaVersion: 1,
@@ -179,6 +183,7 @@ process.stdout.write(`${JSON.stringify({
     "responses.grammar-history-replay": grammarReplay,
     "responses.terminal-without-start": terminalWithoutStart,
     "responses.terminal-status": terminalStatuses,
+    "responses.wire-observers": responsesWireObserved,
     "completions.reasoning-details-response-model": projectCompletions(completions),
     "completions.reasoning-detail-signatures": completionReasoningDetails,
     "completions.stop-reason-response-branches": completionBranches,
@@ -235,11 +240,11 @@ async function runResponsesFlavor(testCase, usage) {
     usage,
     ...(testCase.response ? { service_tier: testCase.response } : {}),
   };
-  const sse = [
+  const sse = testCase.body ?? (testCase.events ? testCase.events.map(event => `data: ${JSON.stringify(event)}\n\n`).join("") : [
     `data: ${JSON.stringify({ type: "response.created", response: { id: response.id, model: model.id } })}\n\n`,
     `data: ${JSON.stringify({ type: "response.completed", response })}\n\n`,
     "data: [DONE]\n\n",
-  ].join("");
+  ].join(""));
   const codexToken = `${Buffer.from("{}").toString("base64url")}.${Buffer.from(JSON.stringify({
     "https://api.openai.com/auth": { chatgpt_account_id: "fixture-account" },
   })).toString("base64url")}.signature`;
@@ -249,15 +254,36 @@ async function runResponsesFlavor(testCase, usage) {
     ...(testCase.request ? { serviceTier: testCase.request } : {}),
     ...(testCase.api === "azure-openai-responses" ? { azureBaseUrl: "https://fixture.invalid/openai/v1" } : {}),
     fetch: async () => new Response(sse, {
-      status: 200,
-      headers: { "content-type": "text/event-stream" },
+      status: testCase.status ?? 200,
+      headers: { "content-type": testCase.status >= 400 ? "application/json" : "text/event-stream" },
     }),
   };
+  const observed = { stages: [], events: [], models: [], responses: [] };
+  if (testCase.observeWire) Object.assign(options, {
+    onPayload: async payload => {
+      await Promise.resolve();
+      observed.stages.push("payload");
+      payload.temperature = 0.75;
+    },
+    onResponse: async response => {
+      await Promise.resolve();
+      observed.stages.push("response");
+      observed.responses.push(response);
+    },
+    onProviderStreamEvent: async (event, model) => {
+      await Promise.resolve();
+      observed.stages.push("event");
+      observed.events.push(structuredClone(event));
+      observed.models.push({ id: model.id, provider: model.provider, api: model.api });
+    },
+  });
   const stream = implementation.stream(model, {
     systemPrompt: "system",
     messages: [{ role: "user", content: "hello", timestamp: 0 }],
   }, options);
-  return stream.result();
+  const result = await stream.result();
+  if (testCase.observeWire) observed.outcome = result.stopReason;
+  return testCase.observeWire ? observed : result;
 }
 
 async function runResponsesOutcome(events) {

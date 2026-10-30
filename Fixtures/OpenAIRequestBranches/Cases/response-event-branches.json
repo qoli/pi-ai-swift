@@ -1254,7 +1254,7 @@
           "id": "ctc_state",
           "call_id": "call_state",
           "name": "query",
-          "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67"
+          "input": "quote \"\n👨‍👩‍👧"
         }
       },
       {
@@ -1265,7 +1265,7 @@
       {
         "type": "response.custom_tool_call_input.done",
         "output_index": 0,
-        "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67 /end"
+        "input": "quote \"\n👨‍👩‍👧 /end"
       },
       {
         "type": "response.output_item.done",
@@ -1275,7 +1275,7 @@
           "id": "ctc_state",
           "call_id": "call_state",
           "name": "query",
-          "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67 /end"
+          "input": "quote \"\n👨‍👩‍👧 /end"
         }
       },
       {
@@ -2956,5 +2956,217 @@
         "region": "iad"
       }
     }
-  ]
+  ],
+  "responsesWireObserverCases": {
+    "openai-responses": {
+      "api": "openai-responses",
+      "provider": "openai",
+      "model": "gpt-model",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ]
+    },
+    "azure-openai-responses": {
+      "api": "azure-openai-responses",
+      "provider": "azure",
+      "model": "gpt-model",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ]
+    },
+    "openai-codex-responses": {
+      "api": "openai-codex-responses",
+      "provider": "openai-codex",
+      "model": "gpt-5.1-codex",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ]
+    },
+    "openai-responses.http-error": {
+      "api": "openai-responses",
+      "provider": "openai",
+      "model": "gpt-model",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ],
+      "status": 400,
+      "body": "{\"error\":{\"message\":\"fixture rejected\"}}"
+    },
+    "openai-responses.stream-error": {
+      "api": "openai-responses",
+      "provider": "openai",
+      "model": "gpt-model",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ],
+      "status": 200,
+      "body": "event: error\ndata: {\"type\":\"error\",\"code\":\"fixture_code\",\"message\":\"fixture failure\"}\n\n"
+    },
+    "azure-openai-responses.http-error": {
+      "api": "azure-openai-responses",
+      "provider": "azure",
+      "model": "gpt-model",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ],
+      "status": 400,
+      "body": "{\"error\":{\"message\":\"fixture rejected\"}}"
+    },
+    "azure-openai-responses.stream-error": {
+      "api": "azure-openai-responses",
+      "provider": "azure",
+      "model": "gpt-model",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ],
+      "status": 200,
+      "body": "event: error\ndata: {\"type\":\"error\",\"code\":\"fixture_code\",\"message\":\"fixture failure\"}\n\n"
+    },
+    "openai-codex-responses.http-error": {
+      "api": "openai-codex-responses",
+      "provider": "openai-codex",
+      "model": "gpt-5.1-codex",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ],
+      "status": 400,
+      "body": "{\"error\":{\"message\":\"fixture rejected\"}}"
+    },
+    "openai-codex-responses.stream-error": {
+      "api": "openai-codex-responses",
+      "provider": "openai-codex",
+      "model": "gpt-5.1-codex",
+      "events": [
+        {
+          "type": "response.created",
+          "sequence_number": 0,
+          "response": {
+            "id": "resp_azure"
+          }
+        },
+        {
+          "type": "response.completed",
+          "sequence_number": 1,
+          "response": {
+            "id": "resp_azure",
+            "status": "completed"
+          }
+        }
+      ],
+      "status": 200,
+      "body": "event: error\ndata: {\"type\":\"error\",\"code\":\"fixture_code\",\"message\":\"fixture failure\"}\n\n"
+    }
+  }
 }

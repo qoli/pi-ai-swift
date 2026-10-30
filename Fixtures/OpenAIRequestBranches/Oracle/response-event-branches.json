@@ -2764,6 +2764,245 @@
         "stopReason": "toolUse",
         "thrown": null
       }
+    },
+    "responses.wire-observers": {
+      "azure-openai-responses": {
+        "events": [
+          {
+            "response": {
+              "id": "resp_azure"
+            },
+            "sequence_number": 0,
+            "type": "response.created"
+          },
+          {
+            "response": {
+              "id": "resp_azure",
+              "status": "completed"
+            },
+            "sequence_number": 1,
+            "type": "response.completed"
+          }
+        ],
+        "models": [
+          {
+            "api": "azure-openai-responses",
+            "id": "gpt-model",
+            "provider": "azure"
+          },
+          {
+            "api": "azure-openai-responses",
+            "id": "gpt-model",
+            "provider": "azure"
+          }
+        ],
+        "outcome": "stop",
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event"
+        ]
+      },
+      "azure-openai-responses.http-error": {
+        "events": [],
+        "models": [],
+        "outcome": "error",
+        "responses": [],
+        "stages": [
+          "payload"
+        ]
+      },
+      "azure-openai-responses.stream-error": {
+        "events": [],
+        "models": [],
+        "outcome": "error",
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response"
+        ]
+      },
+      "openai-codex-responses": {
+        "events": [
+          {
+            "response": {
+              "id": "resp_azure"
+            },
+            "sequence_number": 0,
+            "type": "response.created"
+          },
+          {
+            "response": {
+              "id": "resp_azure",
+              "status": "completed"
+            },
+            "sequence_number": 1,
+            "type": "response.completed"
+          }
+        ],
+        "models": [
+          {
+            "api": "openai-codex-responses",
+            "id": "gpt-5.1-codex",
+            "provider": "openai-codex"
+          },
+          {
+            "api": "openai-codex-responses",
+            "id": "gpt-5.1-codex",
+            "provider": "openai-codex"
+          }
+        ],
+        "outcome": "stop",
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event"
+        ]
+      },
+      "openai-codex-responses.http-error": {
+        "events": [],
+        "models": [],
+        "outcome": "error",
+        "responses": [
+          {
+            "headers": {
+              "content-type": "application/json"
+            },
+            "status": 400
+          }
+        ],
+        "stages": [
+          "payload",
+          "response"
+        ]
+      },
+      "openai-codex-responses.stream-error": {
+        "events": [
+          {
+            "code": "fixture_code",
+            "message": "fixture failure",
+            "type": "error"
+          }
+        ],
+        "models": [
+          {
+            "api": "openai-codex-responses",
+            "id": "gpt-5.1-codex",
+            "provider": "openai-codex"
+          }
+        ],
+        "outcome": "error",
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event"
+        ]
+      },
+      "openai-responses": {
+        "events": [
+          {
+            "response": {
+              "id": "resp_azure"
+            },
+            "sequence_number": 0,
+            "type": "response.created"
+          },
+          {
+            "response": {
+              "id": "resp_azure",
+              "status": "completed"
+            },
+            "sequence_number": 1,
+            "type": "response.completed"
+          }
+        ],
+        "models": [
+          {
+            "api": "openai-responses",
+            "id": "gpt-model",
+            "provider": "openai"
+          },
+          {
+            "api": "openai-responses",
+            "id": "gpt-model",
+            "provider": "openai"
+          }
+        ],
+        "outcome": "stop",
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event"
+        ]
+      },
+      "openai-responses.http-error": {
+        "events": [],
+        "models": [],
+        "outcome": "error",
+        "responses": [],
+        "stages": [
+          "payload"
+        ]
+      },
+      "openai-responses.stream-error": {
+        "events": [],
+        "models": [],
+        "outcome": "error",
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response"
+        ]
+      }
     }
   },
   "schemaVersion": 1,
