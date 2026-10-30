@@ -1645,6 +1645,145 @@
         }
       }
     },
+    "pi-terminal-no-start-error": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoiZXJyb3IiLCJyZWFzb24iOiJlcnJvciIsInVzYWdlIjp7ImlucHV0IjoyLCJvdXRwdXQiOjEsImNhY2hlUmVhZCI6MCwiY2FjaGVXcml0ZSI6MCwidG90YWxUb2tlbnMiOjMsImNvc3QiOnsiaW5wdXQiOjAsIm91dHB1dCI6MCwiY2FjaGVSZWFkIjowLCJjYWNoZVdyaXRlIjowLCJ0b3RhbCI6MH19LCJlcnJvck1lc3NhZ2UiOiJmaXh0dXJlIHBpIGZhaWx1cmUiLCJyZXNwb25zZUlkIjoicGktZXJyb3IifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "fixture pi failure",
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "rawStopReason": null,
+        "responseID": "pi-error",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 2,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "pi-terminal-no-start-length": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoiZG9uZSIsInJlYXNvbiI6Imxlbmd0aCIsInVzYWdlIjp7ImlucHV0IjoyLCJvdXRwdXQiOjEsImNhY2hlUmVhZCI6MCwiY2FjaGVXcml0ZSI6MCwidG90YWxUb2tlbnMiOjMsImNvc3QiOnsiaW5wdXQiOjAsIm91dHB1dCI6MCwiY2FjaGVSZWFkIjowLCJjYWNoZVdyaXRlIjowLCJ0b3RhbCI6MH19LCJyZXNwb25zZUlkIjoicGktdGVybWluYWwiLCJyZXNwb25zZU1vZGVsIjoicm91dGVkLW1vZGVsIiwicHJvdmlkZXJUaGlua2luZ0xldmVsIjoiaGlnaCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "providerThinkingLevel": "high",
+        "rawStopReason": null,
+        "responseID": "pi-terminal",
+        "responseModel": "routed-model",
+        "stopReason": "length",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 2,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "pi-terminal-no-start-stop": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoiZG9uZSIsInJlYXNvbiI6InN0b3AiLCJ1c2FnZSI6eyJpbnB1dCI6Miwib3V0cHV0IjoxLCJjYWNoZVJlYWQiOjAsImNhY2hlV3JpdGUiOjAsInRvdGFsVG9rZW5zIjozLCJjb3N0Ijp7ImlucHV0IjowLCJvdXRwdXQiOjAsImNhY2hlUmVhZCI6MCwiY2FjaGVXcml0ZSI6MCwidG90YWwiOjB9fSwicmVzcG9uc2VJZCI6InBpLXRlcm1pbmFsIiwicmVzcG9uc2VNb2RlbCI6InJvdXRlZC1tb2RlbCIsInByb3ZpZGVyVGhpbmtpbmdMZXZlbCI6ImhpZ2gifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "providerThinkingLevel": "high",
+        "rawStopReason": null,
+        "responseID": "pi-terminal",
+        "responseModel": "routed-model",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 2,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "pi-terminal-no-start-tool-use": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJ0eXBlIjoiZG9uZSIsInJlYXNvbiI6InRvb2xVc2UiLCJ1c2FnZSI6eyJpbnB1dCI6Miwib3V0cHV0IjoxLCJjYWNoZVJlYWQiOjAsImNhY2hlV3JpdGUiOjAsInRvdGFsVG9rZW5zIjozLCJjb3N0Ijp7ImlucHV0IjowLCJvdXRwdXQiOjAsImNhY2hlUmVhZCI6MCwiY2FjaGVXcml0ZSI6MCwidG90YWwiOjB9fSwicmVzcG9uc2VJZCI6InBpLXRlcm1pbmFsIiwicmVzcG9uc2VNb2RlbCI6InJvdXRlZC1tb2RlbCIsInByb3ZpZGVyVGhpbmtpbmdMZXZlbCI6ImhpZ2gifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "fixture-pi",
+        "providerThinkingLevel": "high",
+        "rawStopReason": null,
+        "responseID": "pi-terminal",
+        "responseModel": "routed-model",
+        "stopReason": "toolUse",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 2,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
     "pi-tool-use": {
       "decoderInput": {
         "chunksBase64": [

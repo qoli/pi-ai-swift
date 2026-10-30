@@ -2814,7 +2814,8 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPiTerminalEventsWithoutStartMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

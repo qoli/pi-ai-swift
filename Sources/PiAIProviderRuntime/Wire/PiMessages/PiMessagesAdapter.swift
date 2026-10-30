@@ -579,7 +579,6 @@ private struct PiMessagesEventReducer {
         .toolCallCompleted(completed)
       ]
     case "done":
-      try requireStarted(type)
       guard toolStates.isEmpty, textStates.isEmpty, reasoningStates.isEmpty else {
         throw invalid("pi-messages completed with unfinished content blocks")
       }
@@ -599,11 +598,12 @@ private struct PiMessagesEventReducer {
         usage: normalizedUsage,
         finishReason: finishReason,
         rawFinishReason: object.string("rawStopReason"),
-        timestampMilliseconds: timestampMilliseconds
+        timestampMilliseconds: timestampMilliseconds,
+        providerMetadata: object["providerThinkingLevel"].map { ["providerThinkingLevel": $0] }
+          ?? [:]
       )
       return [.usage(normalizedUsage), .responseSnapshot(snapshot), .completed(finishReason)]
     case "error":
-      try requireStarted(type)
       isTerminal = true
       throw ProviderRuntimeFailure(
         code: .transportFailed,

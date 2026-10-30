@@ -142,6 +142,7 @@ function canonicalTerminal(message) {
     rawStopReason: message.rawStopReason ?? null,
     errorMessage: message.errorMessage ?? null,
     content: message.content ?? [],
+    ...(message.api === "pi-messages" && message.providerThinkingLevel !== undefined ? { providerThinkingLevel: message.providerThinkingLevel } : {}),
     ...(message.diagnostics ? { diagnostics: message.diagnostics.map(({ timestamp, ...data }) => data) } : {}),
     usage: message.usage ? {
       input: message.usage.input ?? null,
@@ -315,6 +316,15 @@ function stimulus(caseID) {
       ["messageStart", { role: "assistant" }],
       ["contentBlockDelta", { contentBlockIndex: 0, delta: { text: "partial" } }],
     ]);
+    case "pi-terminal-no-start-stop":
+    case "pi-terminal-no-start-length":
+    case "pi-terminal-no-start-tool-use": return sse(piEvents([
+      { type: "done", reason: caseID.endsWith("tool-use") ? "toolUse" : caseID.endsWith("length") ? "length" : "stop",
+        usage: usage3(), responseId: "pi-terminal", responseModel: "routed-model", providerThinkingLevel: "high" },
+    ]));
+    case "pi-terminal-no-start-error": return sse(piEvents([
+      { type: "error", reason: "error", usage: usage3(), errorMessage: "fixture pi failure", responseId: "pi-error" },
+    ]));
     case "pi-signatures-namespace-length": return sse(piEvents([
       { type: "start" },
       { type: "text_start", contentIndex: 0 },

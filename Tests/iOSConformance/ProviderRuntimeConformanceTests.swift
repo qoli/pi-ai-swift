@@ -1443,6 +1443,45 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testPiTerminalEventsWithoutStartMatchPinnedSource() async throws {
+    let oracle = try load("Differential/Oracle/response-anthropic-bedrock-pi.json")
+    let cases = try XCTUnwrap(oracle.object("scenarios")).filter {
+      $0.key.hasPrefix("pi-terminal-no-start-")
+    }
+    XCTAssertEqual(cases.count, 4)
+    for (name, value) in cases {
+      let spec = try XCTUnwrap(value.objectValue)
+      let expected = try XCTUnwrap(spec.object("terminal"))
+      let chunks = try XCTUnwrap(spec.object("decoderInput")?.array("chunksBase64")).map {
+        try XCTUnwrap(Data(base64Encoded: try XCTUnwrap($0.stringValue)))
+      }
+      let (request, context) = inputs(
+        api: "pi-messages", providerID: "fixture-pi", modelID: "fixture-model")
+      let result = try await replay(
+        PiMessagesAdapter(), request: request, context: context, chunks: chunks)
+      XCTAssertEqual(result.starts, 0, name)
+      if spec.string("outcome") == "failure" {
+        XCTAssertEqual(result.failure?.code, .transportFailed, name)
+        XCTAssertEqual(result.failure?.message, expected.string("errorMessage"), name)
+        XCTAssertNil(result.snapshot, name)
+      } else {
+        XCTAssertNil(result.failure, name)
+        let snapshot = try XCTUnwrap(result.snapshot, name)
+        XCTAssertEqual(snapshot.responseID, expected.string("responseID"), name)
+        XCTAssertEqual(snapshot.responseModelID, expected.string("responseModel"), name)
+        XCTAssertEqual(
+          snapshot.providerMetadata["providerThinkingLevel"], expected["providerThinkingLevel"],
+          name)
+        XCTAssertTrue(snapshot.content.isEmpty, name)
+        let reason =
+          snapshot.finishReason == .toolCalls ? "toolUse" : snapshot.finishReason.rawValue
+        XCTAssertEqual(reason, expected.string("stopReason"), name)
+        XCTAssertEqual(
+          snapshot.usage?.totalTokens, expected.object("usage")?.int("totalTokens"), name)
+      }
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

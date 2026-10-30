@@ -210,6 +210,26 @@
       "caseID": "anthropic-transformations-after-stop",
       "protocolID": "anthropic-messages",
       "category": "success"
+    },
+    {
+      "caseID": "pi-terminal-no-start-stop",
+      "protocolID": "pi-messages",
+      "category": "success"
+    },
+    {
+      "caseID": "pi-terminal-no-start-length",
+      "protocolID": "pi-messages",
+      "category": "success"
+    },
+    {
+      "caseID": "pi-terminal-no-start-tool-use",
+      "protocolID": "pi-messages",
+      "category": "success"
+    },
+    {
+      "caseID": "pi-terminal-no-start-error",
+      "protocolID": "pi-messages",
+      "category": "providerError"
     }
   ]
 }

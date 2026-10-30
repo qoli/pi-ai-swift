@@ -36,7 +36,9 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
           scenario.category == "providerError" ? .transportFailed : .invalidResponse
         #expect(error.code == expectedCode, "typed failure drift for \(scenario.caseID)")
         #expect(error.operation?.contains("event") == true)
-        if ["anthropic-raw-error", "anthropic-error-event"].contains(scenario.caseID) {
+        if ["anthropic-raw-error", "anthropic-error-event"].contains(scenario.caseID)
+          || scenario.protocolID == "pi-messages" && scenario.category == "providerError"
+        {
           #expect(error.message == expected.terminal.objectValue?.string("errorMessage"))
         }
         if scenario.caseID == "bedrock-provider-stop-error"
@@ -211,6 +213,11 @@ private func canonicalBranchSnapshot(_ snapshot: ProviderResponseSnapshot) throw
     "content": .array(snapshot.content.map(canonicalBranchContent)),
     "usage": usage,
   ]
+  if snapshot.protocolID == "pi-messages",
+    let level = snapshot.providerMetadata["providerThinkingLevel"]
+  {
+    value["providerThinkingLevel"] = level
+  }
   if let diagnostics = snapshot.providerMetadata.array("diagnostics") {
     value["diagnostics"] = .array(
       try diagnostics.map { value in
