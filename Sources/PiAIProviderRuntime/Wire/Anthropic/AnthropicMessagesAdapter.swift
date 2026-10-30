@@ -411,7 +411,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     }
     let supportedProviderOptions: Set<String> = [
       "interleavedThinking", "metadata", "thinkingDisplay", "thinkingEnabled",
-      "thinkingBudgetTokens", "effort",
+      "thinkingBudgetTokens", "effort", "samplingParams",
     ]
     let unknown = Set(request.options.providerOptions.keys).subtracting(supportedProviderOptions)
     guard unknown.isEmpty else {

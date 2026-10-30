@@ -1,5 +1,58 @@
 {
   "cases": {
+    "anthropic-ignored-sampling.both": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "sampling-fixture",
+        "stream": true
+      }
+    },
+    "anthropic-ignored-sampling.model-defaults": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "sampling-fixture",
+        "stream": true
+      }
+    },
+    "anthropic-ignored-sampling.named-temperature": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "sampling-fixture",
+        "stream": true,
+        "temperature": 0.2
+      }
+    },
+    "anthropic-ignored-sampling.request": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "sampling-fixture",
+        "stream": true
+      }
+    },
     "anthropic-raw-options.adaptive-effort-without-thinking": {
       "requestBody": {
         "max_tokens": 4096,

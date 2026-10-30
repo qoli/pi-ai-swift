@@ -7882,6 +7882,131 @@
       "operation": "completionsMessages",
       "toolResultText": " \n\t",
       "omitFollowup": true
+    },
+    {
+      "id": "anthropic-ignored-sampling.model-defaults",
+      "model": {
+        "id": "sampling-fixture",
+        "name": "Sampling Fixture",
+        "api": "anthropic-messages",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 16384,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParams": {
+          "top_p": 0.9,
+          "top_k": 40
+        },
+        "samplingParamsByThinkingLevel": {
+          "off": {
+            "temperature": 0.7
+          }
+        }
+      },
+      "options": {}
+    },
+    {
+      "id": "anthropic-ignored-sampling.request",
+      "model": {
+        "id": "sampling-fixture",
+        "name": "Sampling Fixture",
+        "api": "anthropic-messages",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 16384,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "samplingParams": {
+          "top_p": 0.9,
+          "top_k": 40
+        }
+      }
+    },
+    {
+      "id": "anthropic-ignored-sampling.named-temperature",
+      "model": {
+        "id": "sampling-fixture",
+        "name": "Sampling Fixture",
+        "api": "anthropic-messages",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 16384,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "temperature": 0.2,
+        "samplingParams": {
+          "temperature": 0.9,
+          "top_k": 40
+        }
+      }
+    },
+    {
+      "id": "anthropic-ignored-sampling.both",
+      "model": {
+        "id": "sampling-fixture",
+        "name": "Sampling Fixture",
+        "api": "anthropic-messages",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 16384,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "samplingParams": {
+          "top_p": 0.9,
+          "top_k": 40
+        },
+        "samplingParamsByThinkingLevel": {
+          "off": {
+            "temperature": 0.7
+          }
+        }
+      },
+      "options": {
+        "samplingParams": {
+          "top_p": 0.7
+        }
+      }
     }
   ]
 }

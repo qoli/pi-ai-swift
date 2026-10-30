@@ -947,6 +947,47 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAnthropicIgnoresGenericSamplingParamsLikePinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("anthropic-ignored-sampling.") == true }
+    XCTAssertEqual(cases.count, 4)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let model = try XCTUnwrap(spec.object("model"))
+      let modelID = try XCTUnwrap(model.string("id"))
+      let sourceOptions = spec.object("options") ?? [:]
+      let temperature: Double?
+      switch sourceOptions["temperature"] {
+      case .number(let value): temperature = value
+      case .integer(let value): temperature = Double(value)
+      default: temperature = nil
+      }
+      let (_, context) = inputs(
+        api: "anthropic-messages", providerID: "fixture", modelID: modelID,
+        reasoning: false, metadata: model)
+      let request = ProviderRequest(
+        id: name, providerID: "fixture", modelID: modelID,
+        messages: [.user([.text("hello")])], tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: temperature, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: sourceOptions.filter { $0.key == "samplingParams" },
+          cacheRetention: .none))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in AnthropicMessagesAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+        operation: "ios.anthropic.sampling.body")
+      XCTAssertEqual(body, oracle.object("cases")?.object(name)?.object("requestBody"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
