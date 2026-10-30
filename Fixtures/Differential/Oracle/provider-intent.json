@@ -2190,6 +2190,395 @@
         }
       }
     },
+    "bedrock-blank-content.assistant-bom": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "assistant"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.assistant-nel": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": ""
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "assistant"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.tool-blank": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "toolUse": {
+                  "input": {},
+                  "name": "read",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "toolResult": {
+                  "content": [
+                    {
+                      "text": "<empty>"
+                    }
+                  ],
+                  "status": "success",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.tool-bom": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "toolUse": {
+                  "input": {},
+                  "name": "read",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "toolResult": {
+                  "content": [
+                    {
+                      "text": "<empty>"
+                    }
+                  ],
+                  "status": "success",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.tool-empty": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "toolUse": {
+                  "input": {},
+                  "name": "read",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "toolResult": {
+                  "content": [
+                    {
+                      "text": "<empty>"
+                    }
+                  ],
+                  "status": "success",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.tool-mixed": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "toolUse": {
+                  "input": {},
+                  "name": "read",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "toolResult": {
+                  "content": [
+                    {
+                      "text": "hello"
+                    }
+                  ],
+                  "status": "success",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.tool-nel": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "toolUse": {
+                  "input": {},
+                  "name": "read",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "toolResult": {
+                  "content": [
+                    {
+                      "text": ""
+                    }
+                  ],
+                  "status": "success",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.tool-visible": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "toolUse": {
+                  "input": {},
+                  "name": "read",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": [
+              {
+                "toolResult": {
+                  "content": [
+                    {
+                      "text": "hello"
+                    },
+                    {
+                      "text": " world "
+                    }
+                  ],
+                  "status": "success",
+                  "toolUseId": "call_1"
+                }
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.user-blank": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "<empty>"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.user-bom": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "<empty>"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.user-empty": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "<empty>"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.user-mixed": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.user-nel": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": ""
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "bedrock-blank-content.user-visible": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": [
+              {
+                "text": "hello"
+              },
+              {
+                "text": " world "
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
     "bedrock-raw-options.gpt-oss.high": {
       "requestBody": {
         "additionalModelRequestFields": {

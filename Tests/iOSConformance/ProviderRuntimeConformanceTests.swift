@@ -1294,6 +1294,78 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testBedrockBlankContentMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("bedrock-blank-content.") == true }
+    XCTAssertEqual(cases.count, 14)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let model = try XCTUnwrap(spec.object("model"))
+      let modelID = try XCTUnwrap(model.string("id"))
+      let (_, context) = inputs(
+        api: "bedrock-converse-stream", providerID: "amazon-bedrock", modelID: modelID,
+        baseURL: "https://bedrock-runtime.us-east-1.amazonaws.com", reasoning: false,
+        metadata: model)
+      let userContent = (spec.array("userContent") ?? [.object(["text": .string("hello")])]).map {
+        ProviderUserContent.text($0.objectValue?.string("text") ?? "")
+      }
+      var messages: [ProviderMessage] = [
+        .userMessage(.init(content: userContent, timestampMilliseconds: 0))
+      ]
+      if spec.bool("history") == true {
+        let assistantContent: [ProviderAssistantContent] = try XCTUnwrap(
+          spec.array("assistantContent")
+        ).map {
+          let block = try XCTUnwrap($0.objectValue)
+          if block.string("type") == "text" { return .text(block.string("text") ?? "") }
+          return .toolCall(
+            .init(
+              id: try XCTUnwrap(block.string("id")), name: try XCTUnwrap(block.string("name")),
+              arguments: try XCTUnwrap(block["arguments"])))
+        }
+        messages.append(
+          .assistantMessage(
+            .init(
+              content: assistantContent,
+              source: .init(
+                api: "bedrock-converse-stream", providerID: "amazon-bedrock", modelID: modelID),
+              usage: .init(
+                inputTokens: 0, outputTokens: 0, reasoningTokens: nil, cachedInputTokens: 0,
+                providerMetadata: [:]),
+              stopReason: .stop, timestampMilliseconds: 1)))
+        if let blocks = spec.array("toolResultContent") {
+          messages.append(
+            .toolResult(
+              .init(
+                toolCallID: "call_1", toolName: "read",
+                content: blocks.map {
+                  .text($0.objectValue?.string("text") ?? "")
+                }, isError: false, timestampMilliseconds: 2)))
+        }
+      }
+      let request = ProviderRequest(
+        id: name, providerID: "amazon-bedrock", modelID: modelID, messages: messages, tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil, responseSchema: nil,
+          providerOptions: [:], cacheRetention: .none))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in BedrockConverseStreamAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: "amazon-bedrock",
+        operation: "ios.bedrock.blank.body")
+      XCTAssertEqual(
+        body["messages"], oracle.object("cases")?.object(name)?.object("requestBody")?["messages"],
+        name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

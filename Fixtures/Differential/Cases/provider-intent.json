@@ -9456,6 +9456,548 @@
         "messages"
       ],
       "options": {}
+    },
+    {
+      "id": "bedrock-blank-content.user-empty",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "userContent": []
+    },
+    {
+      "id": "bedrock-blank-content.user-blank",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "userContent": [
+        {
+          "type": "text",
+          "text": ""
+        },
+        {
+          "type": "text",
+          "text": " \n"
+        }
+      ]
+    },
+    {
+      "id": "bedrock-blank-content.user-mixed",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "userContent": [
+        {
+          "type": "text",
+          "text": ""
+        },
+        {
+          "type": "text",
+          "text": "hello"
+        },
+        {
+          "type": "text",
+          "text": "\t"
+        }
+      ]
+    },
+    {
+      "id": "bedrock-blank-content.user-visible",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "userContent": [
+        {
+          "type": "text",
+          "text": "hello"
+        },
+        {
+          "type": "text",
+          "text": " world "
+        }
+      ]
+    },
+    {
+      "id": "bedrock-blank-content.tool-empty",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [],
+      "omitFollowup": true
+    },
+    {
+      "id": "bedrock-blank-content.tool-blank",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "text",
+          "text": ""
+        },
+        {
+          "type": "text",
+          "text": " \n"
+        }
+      ],
+      "omitFollowup": true
+    },
+    {
+      "id": "bedrock-blank-content.tool-mixed",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "text",
+          "text": ""
+        },
+        {
+          "type": "text",
+          "text": "hello"
+        },
+        {
+          "type": "text",
+          "text": "\t"
+        }
+      ],
+      "omitFollowup": true
+    },
+    {
+      "id": "bedrock-blank-content.tool-visible",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "text",
+          "text": "hello"
+        },
+        {
+          "type": "text",
+          "text": " world "
+        }
+      ],
+      "omitFollowup": true
+    },
+    {
+      "id": "bedrock-blank-content.user-bom",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "userContent": [
+        {
+          "type": "text",
+          "text": "\ufeff"
+        }
+      ]
+    },
+    {
+      "id": "bedrock-blank-content.user-nel",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "userContent": [
+        {
+          "type": "text",
+          "text": "\u0085"
+        }
+      ]
+    },
+    {
+      "id": "bedrock-blank-content.tool-bom",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "text",
+          "text": "\ufeff"
+        }
+      ],
+      "omitFollowup": true
+    },
+    {
+      "id": "bedrock-blank-content.tool-nel",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "projectFields": [
+        "messages"
+      ],
+      "options": {},
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "toolResultContent": [
+        {
+          "type": "text",
+          "text": "\u0085"
+        }
+      ],
+      "omitFollowup": true
+    },
+    {
+      "id": "bedrock-blank-content.assistant-bom",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "\ufeff"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
+    },
+    {
+      "id": "bedrock-blank-content.assistant-nel",
+      "model": {
+        "id": "fixture-claude",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "\u0085"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "omitFollowup": true,
+      "projectFields": [
+        "messages"
+      ],
+      "options": {}
     }
   ]
 }

@@ -511,12 +511,12 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       case .user(let content):
         return .object([
           "role": .string("user"),
-          "content": .array(try content.map(userContent)),
+          "content": .array(try userContents(content)),
         ])
       case .userMessage(let user):
         return .object([
           "role": .string("user"),
-          "content": .array(try user.content.map(userContent)),
+          "content": .array(try userContents(user.content)),
         ])
       case .assistant(let content):
         let values = content.compactMap {
@@ -540,7 +540,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
             "toolResult": .object([
               "toolUseId": .string(normalizeToolID(result.toolCallID)),
               "status": .string(result.isError ? "error" : "success"),
-              "content": .array(try (split?.content ?? result.content).map(toolResultContent)),
+              "content": .array(try toolResultContents(split?.content ?? result.content)),
             ])
           ])
         ]
@@ -589,6 +589,16 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     return grouped
   }
 
+  private func userContents(_ content: [ProviderUserContent]) throws -> [JSONValue] {
+    let values = try content.filter {
+      if case .text(let text) = $0 {
+        return !isBlankText(text)
+      }
+      return true
+    }.map(userContent)
+    return values.isEmpty ? [.object(["text": .string("<empty>")])] : values
+  }
+
   private func userContent(_ content: ProviderUserContent) throws -> JSONValue {
     switch content {
     case .text(let text):
@@ -612,10 +622,10 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
   ) -> JSONValue? {
     switch content {
     case .text(let text):
-      guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+      guard !isBlankText(text) else { return nil }
       return .object(["text": .string(text)])
     case .signedText(let text):
-      guard !text.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+      guard !isBlankText(text.text) else { return nil }
       return .object(["text": .string(text.text)])
     case .reasoning(let reasoning):
       if reasoning.isRedacted == true {
@@ -731,6 +741,16 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     return modelID.hasPrefix("us-gov.") || modelID.hasPrefix("arn:aws-us-gov:")
   }
 
+  private func toolResultContents(_ content: [ProviderToolResultContent]) throws -> [JSONValue] {
+    let values = try content.filter {
+      if case .text(let text) = $0 {
+        return !isBlankText(text)
+      }
+      return true
+    }.map(toolResultContent)
+    return values.isEmpty ? [.object(["text": .string("<empty>")])] : values
+  }
+
   private func toolResultContent(_ content: ProviderToolResultContent) throws -> JSONValue {
     switch content {
     case .text(let text): .object(["text": .string(nonBlank(text))])
@@ -784,8 +804,19 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     }
   }
 
+  private func isBlankText(_ text: String) -> Bool {
+    text.unicodeScalars.allSatisfy { scalar in
+      switch scalar.value {
+      case 0x0009...0x000D, 0x0020, 0x00A0, 0x1680, 0x2000...0x200A,
+        0x2028, 0x2029, 0x202F, 0x205F, 0x3000, 0xFEFF:
+        true
+      default: false
+      }
+    }
+  }
+
   private func nonBlank(_ text: String) -> String {
-    text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "<empty>" : text
+    isBlankText(text) ? "<empty>" : text
   }
 
   private func normalizeToolID(_ value: String) -> String {

@@ -2166,7 +2166,8 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockRawReasoningMatchesPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testProviderHTTPErrorMessagesMatchPinnedSource",
         "Scripts/Conformance/bedrock-payload.mjs",
-        "Scripts/tests/test_bedrock_payload.py"
+        "Scripts/tests/test_bedrock_payload.py",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockBlankContentMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

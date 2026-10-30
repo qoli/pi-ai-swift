@@ -62,7 +62,7 @@ for (const spec of fixture.cases) {
 process.stdout.write(JSON.stringify({ schemaVersion: 1, upstreamRevision: revision, cases }, null, 2) + "\n");
 
 function context(spec) {
-  const messages = [{ role: "user", content: "hello", timestamp: 0 }];
+  const messages = [{ role: "user", content: spec.userContent ?? "hello", timestamp: 0 }];
   if (spec.history) {
     messages.push({
     role: "assistant", api: spec.model.api, provider: spec.model.provider, model: spec.model.id,

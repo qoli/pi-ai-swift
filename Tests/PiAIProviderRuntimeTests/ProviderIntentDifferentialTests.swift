@@ -52,7 +52,16 @@ struct ProviderIntentDifferentialTests {
         model: model, baseURL: URL(string: try #require(raw.string("baseUrl")))!, headers: [:],
         credential: .apiKey(.init(key: spec.apiKey ?? "sk-fixture", metadata: [:])),
         modelConfiguration: .init(protocolID: api, baseURL: nil, headers: [:], metadata: raw))
-      var messages: [ProviderMessage] = [.user([.text("hello")])]
+      let initialContent: [ProviderUserContent] = try
+        (spec.userContent ?? [
+          ["type": .string("text"), "text": .string("hello")]
+        ]).map { block in
+          if block.string("type") == "text" { return .text(block.string("text") ?? "") }
+          let encoded = try #require(block.string("data"))
+          let data = try #require(Data(base64Encoded: encoded))
+          return .image(.data(data, mimeType: try #require(block.string("mimeType"))))
+        }
+      var messages: [ProviderMessage] = [.user(initialContent)]
       if spec.history == true {
         messages.append(
           .assistantMessage(
@@ -222,6 +231,7 @@ struct ProviderIntentDifferentialTests {
     let omitFollowup: Bool?
     let toolResultContent: [[String: JSONValue]]?
     let toolResultIsError: Bool?
+    let userContent: [[String: JSONValue]]?
   }
   private struct Oracle: Decodable {
     let upstreamRevision: String
