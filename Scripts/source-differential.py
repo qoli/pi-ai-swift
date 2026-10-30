@@ -123,6 +123,12 @@ def main() -> int:
             "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json",
             "detected Completions compatibility",
         ),
+        (
+            "openai-request-branch-oracle.mjs",
+            "Fixtures/OpenAIRequestBranches/Cases/mistral-request-options.json",
+            "Fixtures/OpenAIRequestBranches/Oracle/mistral-request-options.json",
+            "raw and logical Mistral request controls",
+        ),
     ]:
         verify_or_generate_exact(
             repo=repo,

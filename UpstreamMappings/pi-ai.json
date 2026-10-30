@@ -2393,7 +2393,14 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralHeaderTimeoutMatchesPinnedSource",
         "Scripts/pi-ai-mistral-timeout-oracle.mjs",
         "Fixtures/Differential/Cases/mistral-timeout.json",
-        "Fixtures/Differential/Oracle/mistral-timeout.json"
+        "Fixtures/Differential/Oracle/mistral-timeout.json",
+        "Tests/PiAIProviderRuntimeTests/MistralHTTPTests.swift#rawAndLogicalRequestControlsMatchPinnedSourceWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralRawAndLogicalOptionsMatchPinnedSource",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Scripts/openai-request-branch-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/mistral-request-options.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/mistral-request-options.json"
       ],
       "requiredGates": [
         "swift-test",

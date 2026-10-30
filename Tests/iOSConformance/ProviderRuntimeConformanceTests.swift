@@ -371,6 +371,49 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testMistralRawAndLogicalOptionsMatchPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/mistral-request-options.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/mistral-request-options.json")
+    for value in try XCTUnwrap(fixture.array("cases")) {
+      let spec = try XCTUnwrap(value.objectValue)
+      let name = try XCTUnwrap(spec.string("id"))
+      let raw = spec.string("entrypoint") == "stream"
+      let options = try XCTUnwrap(spec.object("options"))
+      var metadata: [String: JSONValue] = [:]
+      metadata["thinkingLevelMap"] = spec["thinkingLevelMap"]
+      var providerOptions: [String: JSONValue] =
+        raw ? ["reasoningEffort": options["reasoningEffort"] ?? .null] : [:]
+      if let promptMode = options["promptMode"] { providerOptions["promptMode"] = promptMode }
+      let (request, context) = inputs(
+        api: "mistral-conversations", reasoning: spec.bool("reasoning"),
+        metadata: metadata,
+        options: .init(
+          maximumOutputTokens: nil, temperature: nil,
+          reasoningEffort: raw
+            ? nil : options.string("reasoning").flatMap(ProviderReasoningEffort.init(rawValue:)),
+          responseSchema: nil, providerOptions: providerOptions))
+      let transport = IOSMistralHTTPFixture(status: 418, body: Data("fixture".utf8))
+      do {
+        for try await _ in MistralConversationsAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch let failure as ProviderRuntimeFailure {
+        XCTAssertEqual(failure.code, .transportFailed, name)
+      }
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name),
+        providerID: "fixture", operation: "ios.mistral.options.body")
+      let projected = Dictionary(
+        uniqueKeysWithValues:
+          try XCTUnwrap(spec.array("projectFields")).compactMap { value -> (String, JSONValue)? in
+            guard let key = value.stringValue, let value = body[key] else { return nil }
+            return (key, value)
+          })
+      XCTAssertEqual(projected, oracle.object("cases")?.object(name)?.object("requestBody"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
@@ -399,6 +442,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
   private func inputs(
     api: String, providerID: String? = nil, modelID: String? = nil,
     baseURL: String = "https://fixture.invalid",
+    reasoning: Bool? = nil,
     metadata: [String: JSONValue] = [:], headers: [String: String] = [:],
     options: ProviderGenerationOptions? = nil
   ) -> (
@@ -420,7 +464,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       id: modelID, providerID: providerID, name: modelID, protocolID: api,
       capabilities: .init(
         textInput: true, imageInput: false, toolCalling: true,
-        reasoning: api != "mistral-conversations",
+        reasoning: reasoning ?? (api != "mistral-conversations"),
         structuredOutput: true, imageGeneration: false),
       contextWindow: 32_768, maximumOutputTokens: 4_096)
     var metadata = metadata

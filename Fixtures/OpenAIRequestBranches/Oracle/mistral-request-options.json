@@ -1,0 +1,77 @@
+{
+  "cases": {
+    "mistral.options-raw-absent": {
+      "requestBody": {},
+      "requestHeaders": {}
+    },
+    "mistral.options-raw-empty": {
+      "requestBody": {},
+      "requestHeaders": {}
+    },
+    "mistral.options-raw-high": {
+      "requestBody": {
+        "reasoning_effort": "high"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-raw-none": {
+      "requestBody": {
+        "reasoning_effort": "none"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-raw-nonreasoning-controls": {
+      "requestBody": {
+        "prompt_mode": "reasoning",
+        "reasoning_effort": "high"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-raw-null": {
+      "requestBody": {},
+      "requestHeaders": {}
+    },
+    "mistral.options-raw-null-mapping": {
+      "requestBody": {
+        "reasoning_effort": "high"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-raw-prompt-only": {
+      "requestBody": {
+        "prompt_mode": "reasoning"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-simple-default": {
+      "requestBody": {
+        "reasoning_effort": "none"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-simple-mapped-high": {
+      "requestBody": {
+        "reasoning_effort": "balanced"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-simple-missing-level": {
+      "requestBody": {
+        "reasoning_effort": "high"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-simple-no-map": {
+      "requestBody": {
+        "prompt_mode": "reasoning"
+      },
+      "requestHeaders": {}
+    },
+    "mistral.options-simple-null-off-default": {
+      "requestBody": {},
+      "requestHeaders": {}
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

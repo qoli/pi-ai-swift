@@ -99,9 +99,12 @@ struct SwiftConformanceProbe {
         inputSchema: tool["parameters"] ?? .object([:]),
         constrainedSampling: try sampling(tool.object("constrainedSampling")))
     }
+    let usesRawMistralOptions = api == "mistral-conversations" && input.generationMode != .simple
     let effort =
-      options.string("reasoningEffort") ?? options.string("reasoning")
-      ?? (options.bool("thinkingEnabled") == false ? "off" : nil)
+      usesRawMistralOptions
+      ? nil
+      : (options.string("reasoningEffort") ?? options.string("reasoning")
+        ?? (options.bool("thinkingEnabled") == false ? "off" : nil))
     let mappedOptions: Set<String> = [
       "apiKey", "headers", "signal", "fetch", "client", "maxRetries", "maxRetryDelayMs", "timeout",
       "timeoutMs", "websocketConnectTimeoutMs", "identity", "telemetry", "transport", "project",
@@ -115,6 +118,9 @@ struct SwiftConformanceProbe {
     if api == "mistral-conversations" {
       for key in ["headers", "timeoutMs"] {
         if let value = options[key] { providerOptions[key] = value }
+      }
+      if usesRawMistralOptions {
+        providerOptions["reasoningEffort"] = options["reasoningEffort"] ?? .null
       }
     }
     let request = ProviderRequest(
@@ -373,9 +379,15 @@ struct SwiftConformanceProbe {
   }
 }
 
+private enum ProbeGenerationMode: String, Decodable {
+  case raw
+  case simple
+}
+
 private struct ProbeInput: Decodable {
   let model: [String: JSONValue]
   let requestSource: String?
+  let generationMode: ProbeGenerationMode?
   let context: Context
   let options: [String: JSONValue]
   let credential: Credential

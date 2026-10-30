@@ -206,23 +206,32 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     {
       body["prompt_cache_key"] = .string(sessionID)
     }
-    if let effort = request.options.reasoningEffort,
-      effort != .off,
-      context.model.capabilities.reasoning
-    {
-      if context.modelConfiguration.metadata.object("thinkingLevelMap") != nil {
-        body["reasoning_effort"] = .string(
-          mappedReasoningEffort(effort, context: context)
-        )
-      } else {
-        body["prompt_mode"] = .string("reasoning")
+    if let rawEffort = request.options.providerOptions["reasoningEffort"] {
+      if let effort = rawEffort.stringValue, !effort.isEmpty {
+        body["reasoning_effort"] = .string(effort)
+      }
+    } else {
+      if let effort = request.options.reasoningEffort,
+        effort != .off,
+        context.model.capabilities.reasoning
+      {
+        if context.modelConfiguration.metadata.object("thinkingLevelMap") != nil {
+          body["reasoning_effort"] = .string(
+            mappedReasoningEffort(effort, context: context)
+          )
+        } else {
+          body["prompt_mode"] = .string("reasoning")
+        }
+      }
+      if context.model.capabilities.reasoning,
+        request.options.reasoningEffort == nil || request.options.reasoningEffort == .off,
+        let off = context.modelConfiguration.metadata.object("thinkingLevelMap")?.string("off")
+      {
+        body["reasoning_effort"] = .string(off)
       }
     }
-    if context.model.capabilities.reasoning,
-      request.options.reasoningEffort == nil || request.options.reasoningEffort == .off,
-      let off = context.modelConfiguration.metadata.object("thinkingLevelMap")?.string("off")
-    {
-      body["reasoning_effort"] = .string(off)
+    if let promptMode = request.options.providerOptions.string("promptMode"), !promptMode.isEmpty {
+      body["prompt_mode"] = .string(promptMode)
     }
     if !request.tools.isEmpty {
       body["tools"] = .array(
@@ -242,7 +251,7 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
       )
     }
     for (key, value) in request.options.providerOptions
-    where !["headers", "timeoutMs"].contains(key) {
+    where !["headers", "timeoutMs", "reasoningEffort", "promptMode"].contains(key) {
       body[key] = value
     }
     return body

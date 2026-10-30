@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "mistral.options-raw-nonreasoning-controls",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "entrypoint": "stream",
+      "options": {
+        "reasoningEffort": "high",
+        "promptMode": "reasoning"
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {},
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-raw-high",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "stream",
+      "options": {
+        "reasoningEffort": "high"
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": "none",
+        "high": "balanced"
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-raw-none",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "stream",
+      "options": {
+        "reasoningEffort": "none"
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": "none"
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-raw-absent",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "stream",
+      "options": {},
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": "none"
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-raw-empty",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "stream",
+      "options": {
+        "reasoningEffort": "",
+        "promptMode": ""
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": "none"
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-raw-null",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "stream",
+      "options": {
+        "reasoningEffort": null,
+        "promptMode": null
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": "none"
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-raw-prompt-only",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": false,
+      "entrypoint": "stream",
+      "options": {
+        "promptMode": "reasoning"
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {},
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-raw-null-mapping",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "stream",
+      "options": {
+        "reasoningEffort": "high"
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "high": null
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-simple-default",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "streamSimple",
+      "options": {},
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": "none",
+        "high": "balanced"
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-simple-mapped-high",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "streamSimple",
+      "options": {
+        "reasoning": "high"
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": "none",
+        "high": "balanced"
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-simple-no-map",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "streamSimple",
+      "options": {
+        "reasoning": "high"
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-simple-missing-level",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "streamSimple",
+      "options": {
+        "reasoning": "low"
+      },
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": "none"
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    },
+    {
+      "id": "mistral.options-simple-null-off-default",
+      "protocolID": "mistral-conversations",
+      "providerID": "mistral",
+      "modelID": "fixture-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "entrypoint": "streamSimple",
+      "options": {},
+      "projectFields": [
+        "reasoning_effort",
+        "prompt_mode",
+        "reasoningEffort",
+        "promptMode"
+      ],
+      "thinkingLevelMap": {
+        "off": null
+      },
+      "captureWire": true,
+      "projectWire": true,
+      "headerKeys": []
+    }
+  ]
+}

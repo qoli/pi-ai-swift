@@ -137,6 +137,7 @@ async function capture(testCase) {
     testCase.providerFactory ? source[testCase.providerFactory]() : source,
   );
   let payload;
+  let wireBody;
   let requestHeaders;
   const schema = grammarSchema(testCase.grammarSchemaVariant, testCase);
   const tool = {
@@ -284,16 +285,17 @@ async function capture(testCase) {
     },
     async fetch(input, init) {
       if (!testCase.captureWire) throw new Error("unexpected network request");
+      if (testCase.projectWire) wireBody = JSON.parse(init.body);
       const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
       requestHeaders = Object.fromEntries(testCase.headerKeys.map(key => [key, headers.get(key)]));
       return new Response(`data: ${JSON.stringify({ choices: [{ index: 0, delta: {}, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`,
         { status: 200, headers: { "content-type": "text/event-stream" } });
     },
   };
-  const stream = implementation.stream(model, context, options);
+  const stream = implementation[testCase.entrypoint ?? "stream"](model, context, options);
   const result = await stream.result();
   if (payload !== undefined) return {
-    requestBody: canonicalize(project(testCase, payload)),
+    requestBody: canonicalize(project(testCase, testCase.projectWire ? wireBody : payload)),
     ...(testCase.captureWire ? { requestHeaders } : {}),
     ...(testCase.includeSupportedThinkingLevels
       ? { supportedThinkingLevels: getSupportedThinkingLevels(model) } : {}),
