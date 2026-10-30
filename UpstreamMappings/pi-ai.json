@@ -2093,7 +2093,9 @@
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseStatusesMatchSourceResultsAndPreserveUsage",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesTerminalStatusesMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesTerminalStatusesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#azureStrictCompatibilityMatchesSourceFieldPresenceAndRejection",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAzureStrictCompatibilityMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

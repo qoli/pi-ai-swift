@@ -782,6 +782,59 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAzureStrictCompatibilityMatchesPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/request-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/request-branches.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("azure.strict-compat-") == true }
+    XCTAssertEqual(cases.count, 9)
+    let schema: JSONValue = .object([
+      "type": .string("object"),
+      "properties": .object(["payload": .object(["type": .string("string")])]),
+      "required": .array([.string("payload")]),
+    ])
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let expected = try XCTUnwrap(oracle.object("cases")?.object(name))
+      let preference = spec.object("toolConstraint")?.string("strict").flatMap(
+        ProviderStrictPreference.init(rawValue:))
+      let (_, context) = inputs(
+        api: "azure-openai-responses", providerID: "azure-openai-responses",
+        modelID: "source-model",
+        baseURL: try XCTUnwrap(spec.string("baseURL")), reasoning: false,
+        metadata: ["compat": .object(spec.object("compat") ?? [:])])
+      let request = ProviderRequest(
+        id: name, providerID: "azure-openai-responses", modelID: "source-model",
+        messages: [.user([.text("hello")])],
+        tools: [
+          .init(
+            name: "sample_tool", description: "Sample tool",
+            inputSchema: schema, constrainedSampling: preference.map { .jsonSchema(strict: $0) })
+        ],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil, responseSchema: nil,
+          providerOptions: [:]))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      var failure: ProviderRuntimeFailure?
+      do {
+        for try await _ in OpenAIResponsesAdapter(
+          protocolID: "azure-openai-responses", flavor: .azure
+        )
+        .stream(request, context: context, transport: transport) {}
+      } catch let value as ProviderRuntimeFailure { failure = value }
+      let sent = await transport.sent
+      if let error = expected.string("errorMessage") {
+        XCTAssertEqual(failure?.message, error, name)
+        XCTAssertNil(sent, name)
+      } else {
+        let body = try decodeJSONObject(
+          try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+          operation: "ios.azure.strict.body")
+        XCTAssertEqual(body["tools"], expected.object("requestBody")?["tools"], name)
+      }
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

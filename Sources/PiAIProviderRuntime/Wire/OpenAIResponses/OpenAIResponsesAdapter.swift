@@ -857,7 +857,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     if deferLoading { tool["defer_loading"] = .bool(true) }
     if let strict = constrained.strict {
       tool["strict"] = .bool(strict)
-    } else if flavor == .azure {
+    } else if flavor == .azure, supportsStrictMode {
       tool["strict"] = .bool(false)
     } else if flavor == .codex {
       tool["strict"] = .null

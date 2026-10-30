@@ -263,6 +263,50 @@ struct OpenAIRequestBranchClosureTests {
   }
 
   @Test
+  func azureStrictCompatibilityMatchesSourceFieldPresenceAndRejection() async throws {
+    let fixture = try decodeJSONObject(
+      Data(
+        contentsOf: repositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Cases/request-branches.json")),
+      providerID: "fixture", operation: "azure.strict.cases")
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: repositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json")),
+      providerID: "fixture", operation: "azure.strict.oracle")
+    for spec in try #require(fixture.array("cases")).compactMap(\.objectValue)
+    where spec.string("id")?.hasPrefix("azure.strict-compat-") == true {
+      let id = try #require(spec.string("id"))
+      let expected = try #require(oracle.object("cases")?.object(id))
+      let preference = spec.object("toolConstraint")?.string("strict").flatMap(
+        ProviderStrictPreference.init(rawValue:))
+      let fixture = makeFixture(
+        protocolID: "azure-openai-responses", providerID: "azure-openai-responses",
+        modelID: "source-model", reasoning: false, baseURL: try #require(spec.string("baseURL")),
+        metadata: ["compat": .object(spec.object("compat") ?? [:])], options: options(),
+        tool: .init(
+          name: "sample_tool", description: "Sample tool", inputSchema: toolSchema(),
+          constrainedSampling: preference.map { .jsonSchema(strict: $0) }))
+      let transport = BranchCaptureTransport()
+      var failure: ProviderRuntimeFailure?
+      do {
+        for try await _ in fixture.adapter.stream(
+          fixture.request, context: fixture.context, transport: transport)
+        {}
+      } catch let value as ProviderRuntimeFailure { failure = value }
+      if let error = expected.string("errorMessage") {
+        #expect(failure?.message == error, Comment(rawValue: id))
+        #expect(await transport.request() == nil, Comment(rawValue: id))
+      } else {
+        let sent = try #require(await transport.request())
+        let actual = try decodeJSONObject(
+          try #require(sent.httpBody), providerID: "fixture", operation: "azure.strict.capture")
+        #expect(actual["tools"] == expected.object("requestBody")?["tools"], Comment(rawValue: id))
+      }
+    }
+  }
+
+  @Test
   func strictRequiredFailureIsTypedAndDoesNotSend() async {
     let transport = BranchCaptureTransport()
     let fixture = makeFixture(

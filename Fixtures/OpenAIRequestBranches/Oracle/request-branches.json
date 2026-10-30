@@ -270,6 +270,195 @@
         "temperature": 0.7
       }
     },
+    "azure.strict-compat-default-ordinary": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "strict": false,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "azure.strict-compat-default-prefer": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "azure.strict-compat-default-require": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "azure.strict-compat-false-ordinary": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "azure.strict-compat-false-prefer": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "azure.strict-compat-false-require": {
+      "errorMessage": "Tool \"sample_tool\" requires JSON-schema constrained sampling, but strict tools are unsupported."
+    },
+    "azure.strict-compat-true-ordinary": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "strict": false,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "azure.strict-compat-true-prefer": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "azure.strict-compat-true-require": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Sample tool",
+            "name": "sample_tool",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "payload": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "payload"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "function"
+          }
+        ]
+      }
+    },
     "codex.default-instructions": {
       "requestBody": {
         "instructions": "You are a helpful assistant.",

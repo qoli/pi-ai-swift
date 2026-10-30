@@ -1015,6 +1015,156 @@
         "reasoning_effort",
         "thinking_token_budget"
       ]
+    },
+    {
+      "id": "azure.strict-compat-default-ordinary",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "azure.strict-compat-default-prefer",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ],
+      "toolConstraint": {
+        "type": "json_schema",
+        "strict": "prefer"
+      }
+    },
+    {
+      "id": "azure.strict-compat-default-require",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ],
+      "toolConstraint": {
+        "type": "json_schema",
+        "strict": "require"
+      }
+    },
+    {
+      "id": "azure.strict-compat-true-ordinary",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ],
+      "compat": {
+        "supportsStrictMode": true
+      }
+    },
+    {
+      "id": "azure.strict-compat-true-prefer",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ],
+      "compat": {
+        "supportsStrictMode": true
+      },
+      "toolConstraint": {
+        "type": "json_schema",
+        "strict": "prefer"
+      }
+    },
+    {
+      "id": "azure.strict-compat-true-require",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ],
+      "compat": {
+        "supportsStrictMode": true
+      },
+      "toolConstraint": {
+        "type": "json_schema",
+        "strict": "require"
+      }
+    },
+    {
+      "id": "azure.strict-compat-false-ordinary",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ],
+      "compat": {
+        "supportsStrictMode": false
+      }
+    },
+    {
+      "id": "azure.strict-compat-false-prefer",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ],
+      "compat": {
+        "supportsStrictMode": false
+      },
+      "toolConstraint": {
+        "type": "json_schema",
+        "strict": "prefer"
+      }
+    },
+    {
+      "id": "azure.strict-compat-false-require",
+      "protocolID": "azure-openai-responses",
+      "providerID": "azure-openai-responses",
+      "modelID": "source-model",
+      "baseURL": "https://fixture.openai.azure.com/openai/v1",
+      "reasoning": false,
+      "options": {},
+      "projectFields": [
+        "tools"
+      ],
+      "compat": {
+        "supportsStrictMode": false
+      },
+      "toolConstraint": {
+        "type": "json_schema",
+        "strict": "require"
+      }
     }
   ],
   "matrices": {
