@@ -423,14 +423,15 @@ function emit(event, partial, output) {
     const [kind, payload] = Object.entries(value.content)[0];
     const block = payload._0;
     const category = kind === "text" ? "text" : "thinking";
+    const [stage, update] = Object.entries(value.update)[0];
     const normalized = kind === "text"
       ? { type: "text", text: block.text, ...(block.signature !== undefined ? { textSignature: block.signature } : {}) }
       : { type: "thinking", thinking: block.text,
         ...(block.signature !== undefined ? { thinkingSignature: block.signature } : {}),
         ...(block.isRedacted !== undefined ? { redacted: block.isRedacted } : {}) };
+    if (stage === "delta") normalized[category] = (partial.content[value.index]?.[category] ?? "") + update._0;
     partial.content[value.index] = normalized;
     partial.stopReason = { toolCalls: "toolUse", contentFilter: "error", cancelled: "aborted" }[value.provisionalFinishReason] ?? value.provisionalFinishReason ?? "pending";
-    const [stage, update] = Object.entries(value.update)[0];
     output.push({ type: `${category}_${stage === "started" ? "start" : stage === "completed" ? "end" : "delta"}`,
       contentIndex: value.index,
       ...(stage === "delta" ? { delta: update._0 } : stage === "completed" ? { content: block.text } : {}),

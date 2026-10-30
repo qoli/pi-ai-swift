@@ -793,12 +793,14 @@ private struct OpenAICompletionsReducer {
   private func blockEvent(_ block: ContentBlock, _ update: ProviderContentBlock.Update)
     -> ProviderEvent
   {
+    let fragment: String?
+    if case .delta(let delta) = update { fragment = delta } else { fragment = nil }
     let content: ProviderResponseContent
     switch block {
-    case .text: content = .text(.init(text: text, signature: nil))
+    case .text: content = .text(.init(text: fragment ?? text, signature: nil))
     case .reasoning:
       content = .reasoning(
-        .init(text: reasoning, signature: reasoningSignature, providerMetadata: [:]))
+        .init(text: fragment ?? reasoning, signature: reasoningSignature, providerMetadata: [:]))
     case .tool: preconditionFailure("tool calls use their existing lifecycle events")
     }
     return .contentBlock(

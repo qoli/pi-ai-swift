@@ -16,7 +16,7 @@ public enum ProviderEvent: Sendable, Equatable, Codable {
 }
 
 /// Indexed block updates supplement the legacy text/reasoning deltas. Consumers
-/// using these snapshots must ignore the corresponding legacy delta events.
+/// using these updates must ignore the corresponding legacy delta events.
 public struct ProviderContentBlock: Sendable, Equatable, Codable {
   public enum Update: Sendable, Equatable, Codable {
     case started
@@ -25,6 +25,7 @@ public struct ProviderContentBlock: Sendable, Equatable, Codable {
   }
 
   public let index: Int
+  /// Delta updates contain the incoming fragment; completed updates contain the full block.
   public let content: ProviderResponseContent
   public let update: Update
   /// `nil` denotes a pending response; the terminal snapshot remains authoritative.

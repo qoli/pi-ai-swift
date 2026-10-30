@@ -1549,10 +1549,11 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
         let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
         let transport = IOSFixtureTransport(chunks: chunks)
         var observed: [JSONValue] = []
+        var blockText: [Int: String] = [:]
         var snapshot: ProviderResponseSnapshot?
         for try await event in adapter.stream(request, context: context, transport: transport) {
           if case .contentBlock(let block) = event {
-            observed.append(try blockObservation(block))
+            observed.append(try blockObservation(block, textByIndex: &blockText))
           }
           if case .responseSnapshot(let value) = event { snapshot = value }
         }
@@ -1588,12 +1589,15 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
           ])
         ])
       var observed: [JSONValue] = []
+      var blockText: [Int: String] = [:]
       var snapshot: ProviderResponseSnapshot?
       for try await event in OpenAICompletionsAdapter().stream(
         request, context: context,
         transport: IOSFixtureTransport(chunks: chunks))
       {
-        if case .contentBlock(let block) = event { observed.append(try blockObservation(block)) }
+        if case .contentBlock(let block) = event {
+          observed.append(try blockObservation(block, textByIndex: &blockText))
+        }
         if case .responseSnapshot(let value) = event { snapshot = value }
       }
       XCTAssertEqual(observed, expected.array("events"), name)
@@ -1611,7 +1615,9 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
-  private func blockObservation(_ block: ProviderContentBlock) throws -> JSONValue {
+  private func blockObservation(_ block: ProviderContentBlock, textByIndex: inout [Int: String])
+    throws -> JSONValue
+  {
     var fields = try blockFields(block.content)
     let kind = fields.string("type") == "text" ? "text" : "thinking"
     let stage: String
@@ -1624,6 +1630,12 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
     fields["type"] = .string(kind + "_" + stage)
     fields["contentIndex"] = .integer(Int64(block.index))
+    if case .delta(let delta) = block.update {
+      textByIndex[block.index, default: ""] += delta
+    } else {
+      textByIndex[block.index] = fields.string("text") ?? ""
+    }
+    fields["text"] = .string(textByIndex[block.index] ?? "")
     fields["stopReason"] = .string(
       block.provisionalFinishReason == .toolCalls
         ? "toolUse" : block.provisionalFinishReason?.rawValue ?? "pending")

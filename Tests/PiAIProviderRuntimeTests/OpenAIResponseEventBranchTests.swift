@@ -454,6 +454,19 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func indexedDeltaPayloadBytesScaleWithIncomingFragments() async throws {
+    for api in ["openai-responses", "openai-completions"] {
+      for reasoning in [false, true] {
+        let small = try await indexedDeltaPayloadBytes(api: api, reasoning: reasoning, count: 128)
+        let large = try await indexedDeltaPayloadBytes(api: api, reasoning: reasoning, count: 1280)
+        #expect(
+          large == small * 10,
+          Comment(rawValue: "\(api):reasoning=\(reasoning); bytes=\(small),\(large)"))
+      }
+    }
+  }
+
+  @Test
   func completionBlockLifecycleMatchesSource() async throws {
     let fixture = try responseEventFixture()
     let oracle = try decodeJSONObject(
@@ -476,12 +489,15 @@ struct OpenAIResponseEventBranchTests {
           ])
         ])
       var observed: [JSONValue] = []
+      var blockText: [Int: String] = [:]
       var snapshot: ProviderResponseSnapshot?
       for try await event in OpenAICompletionsAdapter().stream(
         request, context: context,
         transport: EventBranchTransport(chunks: completionSSE(try #require(spec.array("chunks")))))
       {
-        if let block = try responseBlockObservation(event) { observed.append(block) }
+        if let block = try responseBlockObservation(event, textByIndex: &blockText) {
+          observed.append(block)
+        }
         if case .responseSnapshot(let value) = event { snapshot = value }
       }
       #expect(observed == expected.array("events"), Comment(rawValue: name))
@@ -517,13 +533,16 @@ struct OpenAIResponseEventBranchTests {
           protocolID: api, modelID: "gpt-model", tools: [], metadata: [:])
         let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
         var observed: [JSONValue] = []
+        var blockText: [Int: String] = [:]
         var snapshot: ProviderResponseSnapshot?
         for try await event in adapter.stream(
           request, context: context,
           transport: EventBranchTransport(
             chunks: responsesSSE(try #require(cases[name]?.arrayValue))))
         {
-          if let block = try responseBlockObservation(event) { observed.append(block) }
+          if let block = try responseBlockObservation(event, textByIndex: &blockText) {
+            observed.append(block)
+          }
           if case .responseSnapshot(let value) = event { snapshot = value }
         }
         #expect(observed == expected.array("events"), Comment(rawValue: "\(api):\(name)"))
@@ -1138,7 +1157,9 @@ private func responseEventRepositoryRoot() -> URL {
     .deletingLastPathComponent()
 }
 
-private func responseBlockObservation(_ event: ProviderEvent) throws -> JSONValue? {
+private func responseBlockObservation(_ event: ProviderEvent, textByIndex: inout [Int: String])
+  throws -> JSONValue?
+{
   let raw = try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(event))
   guard let block = raw.objectValue?.object("contentBlock")?.object("_0"),
     let content = block["content"], let update = block.object("update"),
@@ -1151,6 +1172,13 @@ private func responseBlockObservation(_ event: ProviderEvent) throws -> JSONValu
   result["type"] = .string(
     kind + "_" + (stage == "completed" ? "end" : stage == "started" ? "start" : "delta"))
   result["contentIndex"] = block["index"]
+  let index = try #require(block.int("index"))
+  if stage == "delta" {
+    textByIndex[index, default: ""] += try #require(update.object("delta")?.string("_0"))
+  } else {
+    textByIndex[index] = result.string("text") ?? ""
+  }
+  result["text"] = .string(textByIndex[index] ?? "")
   let reason = block.string("provisionalFinishReason") ?? "pending"
   result["stopReason"] = .string(reason == "toolCalls" ? "toolUse" : reason)
   if stage == "delta" { result["delta"] = update.object("delta")?["_0"] }
@@ -1181,3 +1209,65 @@ private func responseBlockContent(_ content: ProviderResponseContent) throws -> 
 }
 
 private enum TestBlockFailure: Error { case unexpectedContent }
+
+private func indexedDeltaPayloadBytes(api: String, reasoning: Bool, count: Int) async throws -> Int
+{
+  let delta = String(repeating: "x", count: 32)
+  let frames: [JSONValue]
+  if api == "openai-completions" {
+    let chunk: JSONValue = .object([
+      "choices": .array([
+        .object([
+          "delta": .object([
+            reasoning ? "reasoning_content" : "content": .string(delta)
+          ])
+        ])
+      ])
+    ])
+    frames =
+      Array(repeating: chunk, count: count) + [
+        .object([
+          "choices": .array([
+            .object([
+              "delta": .object([:]), "finish_reason": .string("stop"),
+            ])
+          ])
+        ])
+      ]
+  } else {
+    let chunk: JSONValue = .object([
+      "type": .string(reasoning ? "response.reasoning_text.delta" : "response.output_text.delta"),
+      "output_index": .integer(0), "delta": .string(delta),
+    ])
+    frames =
+      [
+        .object([
+          "type": .string("response.output_item.added"), "output_index": .integer(0),
+          "item": .object([
+            "type": .string(reasoning ? "reasoning" : "message"), "id": .string("block_size"),
+          ]),
+        ])
+      ]
+      + Array(repeating: chunk, count: count)
+      + [
+        .object([
+          "type": .string("response.completed"),
+          "response": .object(["status": .string("completed")]),
+        ])
+      ]
+  }
+  let (request, context) = eventRequestContext(
+    protocolID: api, modelID: "requested-model", tools: [], metadata: [:])
+  let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
+  var bytes = 0
+  var deltas = 0
+  for try await event in adapter.stream(
+    request, context: context, transport: EventBranchTransport(chunks: completionSSE(frames)))
+  {
+    guard case .contentBlock(let block) = event, case .delta = block.update else { continue }
+    bytes += try JSONEncoder().encode(event).count
+    deltas += 1
+  }
+  #expect(deltas == count)
+  return bytes
+}

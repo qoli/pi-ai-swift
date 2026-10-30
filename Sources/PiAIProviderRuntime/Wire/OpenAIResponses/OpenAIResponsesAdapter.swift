@@ -1628,7 +1628,23 @@ private struct OpenAIResponsesReducer {
     _ index: Int, _ content: ProviderResponseContent,
     _ update: ProviderContentBlock.Update
   ) -> ProviderEvent {
-    .contentBlock(
+    var content = content
+    if case .delta(let delta) = update {
+      switch content {
+      case .text(let value):
+        content = .text(
+          .init(
+            text: delta, signature: value.signature, phase: value.phase,
+            providerMetadata: value.providerMetadata))
+      case .reasoning(let value):
+        content = .reasoning(
+          .init(
+            text: delta, signature: value.signature,
+            isRedacted: value.isRedacted, providerMetadata: value.providerMetadata))
+      case .toolCall, .asset: break
+      }
+    }
+    return .contentBlock(
       .init(
         index: index, content: content, update: update,
         provisionalFinishReason: provisionalFinishReason))

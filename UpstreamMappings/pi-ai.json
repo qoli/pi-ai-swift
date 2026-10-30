@@ -120,7 +120,8 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responseBlockLifecycleAndProvisionalPhasesMatchSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionBlockLifecycleMatchesSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsBlockLifecycleMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsBlockLifecycleMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments"
       ],
       "requiredGates": [
         "swift-test"
@@ -2657,7 +2658,8 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsReasoningDetailSignaturesMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsStructuredReasoningReplayMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionBlockLifecycleMatchesSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsBlockLifecycleMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsBlockLifecycleMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments"
       ],
       "requiredGates": [
         "swift-test",
@@ -2745,7 +2747,8 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesProviderErrorsMatchPinnedSourceAcrossFlavors",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesProviderErrorsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responseBlockLifecycleAndProvisionalPhasesMatchSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments"
       ],
       "requiredGates": [
         "swift-test"
