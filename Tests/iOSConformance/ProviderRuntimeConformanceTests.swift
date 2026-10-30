@@ -1401,6 +1401,48 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testResponsesProviderErrorsMatchPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    var cases = try XCTUnwrap(fixture.array("responsesProviderErrorCases"))
+    XCTAssertEqual(cases.count, 23)
+    var observations = try XCTUnwrap(oracle.object("cases")?.object("responses.provider-errors"))
+    let codexBranches = try XCTUnwrap(
+      oracle.object("cases")?.object("responses.codex-failure-branches"))
+    XCTAssertEqual(codexBranches.count, 3)
+    for (name, value) in codexBranches {
+      let id = "codex-branch." + name
+      observations[id] = value
+      cases.append(
+        .object([
+          "id": .string(id), "api": .string("openai-codex-responses"),
+          "provider": .string("openai-codex"), "status": .integer(200),
+          "body": .string(try XCTUnwrap(value.objectValue?.string("body"))),
+        ]))
+    }
+    for value in cases {
+      let spec = try XCTUnwrap(value.objectValue)
+      let name = try XCTUnwrap(spec.string("id"))
+      let api = try XCTUnwrap(spec.string("api"))
+      let provider = try XCTUnwrap(spec.string("provider"))
+      let expected = try XCTUnwrap(observations[name]?.objectValue)
+      let (request, context) = inputs(api: api, providerID: provider, modelID: "gpt-model")
+      let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
+      let transport = IOSMistralHTTPFixture(
+        status: try XCTUnwrap(spec.int("status")),
+        body: Data(try XCTUnwrap(spec.string("body")).utf8))
+      var observed: ProviderRuntimeFailure?
+      do {
+        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+      } catch let failure as ProviderRuntimeFailure { observed = failure }
+      let failure = try XCTUnwrap(observed, name)
+      XCTAssertEqual(failure.code, .transportFailed, name)
+      XCTAssertEqual(failure.message, expected.string("errorMessage"), name)
+      XCTAssertEqual(
+        failure.providerMetadata?.string("rawStopReason"), expected.string("rawStopReason"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

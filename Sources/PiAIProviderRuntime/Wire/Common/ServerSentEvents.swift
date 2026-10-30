@@ -97,13 +97,11 @@ struct ServerSentEventDecoder: Sendable {
 }
 
 func collectErrorBody(
-  from stream: AsyncThrowingStream<Data, any Error>,
-  limit: Int = 16_384
+  from stream: AsyncThrowingStream<Data, any Error>
 ) async throws -> String? {
   var body = Data()
   for try await chunk in stream {
-    guard body.count < limit else { break }
-    body.append(chunk.prefix(limit - body.count))
+    body.append(chunk)
   }
   guard !body.isEmpty else { return nil }
   return String(data: body, encoding: .utf8)

@@ -530,6 +530,20 @@
         }
       }
     },
+    "responses.codex-failure-branches": {
+      "failedDetails": {
+        "body": "data: {\"type\":\"response.failed\",\"response\":{\"status\":\"failed\",\"incomplete_details\":{\"reason\":\"policy\"}}}\n\n",
+        "errorMessage": "Codex response failed"
+      },
+      "failedError": {
+        "body": "data: {\"type\":\"response.failed\",\"response\":{\"status\":\"failed\",\"error\":{\"code\":\"server_error\",\"message\":\"boom\"}}}\n\n",
+        "errorMessage": "boom"
+      },
+      "streamError": {
+        "body": "data: {\"type\":\"error\",\"code\":\"bad_event\",\"message\":\"bad stream\"}\n\n",
+        "errorMessage": "Codex error: bad stream"
+      }
+    },
     "responses.custom-namespace-usage": {
       "content": [
         {
@@ -732,6 +746,83 @@
         "output": 12,
         "reasoning": 0,
         "totalTokens": 42
+      }
+    },
+    "responses.provider-errors": {
+      "azure-openai-responses.failed.ordinary": {
+        "errorMessage": "rate_limit_exceeded: Usage limit reached.",
+        "rawStopReason": "failed"
+      },
+      "azure-openai-responses.failed.personal": {
+        "errorMessage": "subscription_sharing_usage_limit_exceeded: Usage limit reached.",
+        "rawStopReason": "failed"
+      },
+      "azure-openai-responses.failed.workspace": {
+        "errorMessage": "subscription_sharing_workplace_individual_usage_limit_exceeded: Usage limit reached.",
+        "rawStopReason": "failed"
+      },
+      "azure-openai-responses.http.ordinary": {
+        "errorMessage": "Azure OpenAI API error (429): {\"code\":\"rate_limit_exceeded\",\"message\":\"Usage limit reached.\",\"type\":\"rate_limit_error\"}"
+      },
+      "azure-openai-responses.http.personal": {
+        "errorMessage": "Azure OpenAI API error (429): {\"code\":\"subscription_sharing_usage_limit_exceeded\",\"message\":\"Usage limit reached.\",\"type\":\"rate_limit_error\"}"
+      },
+      "azure-openai-responses.http.workspace": {
+        "errorMessage": "Azure OpenAI API error (429): {\"code\":\"subscription_sharing_workplace_individual_usage_limit_exceeded\",\"message\":\"Usage limit reached.\",\"type\":\"rate_limit_error\"}"
+      },
+      "openai-codex-responses.error.code-only": {
+        "errorMessage": "Codex error: code_only"
+      },
+      "openai-codex-responses.error.empty": {
+        "errorMessage": "Codex error: {\"type\":\"error\",\"error\":{}}"
+      },
+      "openai-codex-responses.error.nested": {
+        "errorMessage": "Codex error: nested failure"
+      },
+      "openai-codex-responses.failed.ordinary": {
+        "errorMessage": "Usage limit reached."
+      },
+      "openai-codex-responses.failed.personal": {
+        "errorMessage": "Usage limit reached."
+      },
+      "openai-codex-responses.failed.workspace": {
+        "errorMessage": "Usage limit reached."
+      },
+      "openai-responses.failed.ordinary": {
+        "errorMessage": "rate_limit_exceeded: Usage limit reached.",
+        "rawStopReason": "failed"
+      },
+      "openai-responses.failed.personal": {
+        "errorMessage": "subscription_sharing_usage_limit_exceeded: Usage limit reached.\nCheck your ChatGPT usage: https://chatgpt.com/settings/usage",
+        "rawStopReason": "failed"
+      },
+      "openai-responses.failed.workspace": {
+        "errorMessage": "subscription_sharing_workplace_individual_usage_limit_exceeded: Usage limit reached.\nYou've reached your ChatGPT workspace's usage limit. Ask your workspace admin to increase it at admin.openai.com → Workspace → Usage limits.",
+        "rawStopReason": "failed"
+      },
+      "openai-responses.http.custom-provider": {
+        "errorMessage": "fixture-provider API error (429): {\"code\":\"subscription_sharing_usage_limit_exceeded\",\"message\":\"Usage limit reached.\",\"type\":\"rate_limit_error\"}\nCheck your ChatGPT usage: https://chatgpt.com/settings/usage"
+      },
+      "openai-responses.http.empty": {
+        "errorMessage": "OpenAI API error (403): 403 status code (no body)"
+      },
+      "openai-responses.http.large-body": {
+        "errorMessage": "OpenAI API error (429): {\"code\":\"synthetic_limit\",\"message\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx... [truncated 16065 chars]"
+      },
+      "openai-responses.http.ordinary": {
+        "errorMessage": "OpenAI API error (429): {\"code\":\"rate_limit_exceeded\",\"message\":\"Usage limit reached.\",\"type\":\"rate_limit_error\"}"
+      },
+      "openai-responses.http.personal": {
+        "errorMessage": "OpenAI API error (429): {\"code\":\"subscription_sharing_usage_limit_exceeded\",\"message\":\"Usage limit reached.\",\"type\":\"rate_limit_error\"}\nCheck your ChatGPT usage: https://chatgpt.com/settings/usage"
+      },
+      "openai-responses.http.plain": {
+        "errorMessage": "OpenAI API error (403): 403 synthetic gateway failure"
+      },
+      "openai-responses.http.top-message": {
+        "errorMessage": "OpenAI API error (403): {\"message\":\"synthetic gateway rejection\"}"
+      },
+      "openai-responses.http.workspace": {
+        "errorMessage": "OpenAI API error (429): {\"code\":\"subscription_sharing_workplace_individual_usage_limit_exceeded\",\"message\":\"Usage limit reached.\",\"type\":\"rate_limit_error\"}\nYou've reached your ChatGPT workspace's usage limit. Ask your workspace admin to increase it at admin.openai.com → Workspace → Usage limits."
       }
     },
     "responses.reasoning-signature-backfill-phase": {

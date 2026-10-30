@@ -20,19 +20,59 @@ struct OpenAIResponseEventBranchTests {
     process.standardOutput = output
     process.standardError = errors
     try process.run()
+    let outputData = output.fileHandleForReading.readDataToEndOfFile()
     process.waitUntilExit()
     let errorText =
       String(
         data: errors.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
     #expect(process.terminationStatus == 0, Comment(rawValue: errorText))
     let observed = try JSONDecoder().decode(
-      JSONValue.self, from: output.fileHandleForReading.readDataToEndOfFile())
+      JSONValue.self, from: outputData)
     let expected = try JSONDecoder().decode(
       JSONValue.self,
       from: Data(
         contentsOf: root.appending(
           path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")))
     #expect(observed == expected)
+  }
+
+  @Test
+  func responsesProviderErrorsMatchPinnedSourceAcrossFlavors() async throws {
+    let fixture = try responseEventFixture()
+    let root = responseEventRepositoryRoot()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: root.appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "responses.errors.oracle")
+    let cases = try #require(fixture.array("responsesProviderErrorCases"))
+    #expect(cases.count == 23)
+    for value in cases {
+      let spec = try #require(value.objectValue)
+      let name = try #require(spec.string("id"))
+      let api = try #require(spec.string("api"))
+      let provider = try #require(spec.string("provider"))
+      let expected = try #require(
+        oracle.object("cases")?.object("responses.provider-errors")?.object(name))
+      let (request, context) = eventRequestContext(
+        protocolID: api, providerID: provider, modelID: "gpt-model", tools: [], metadata: [:])
+      let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
+      let body = try #require(spec.string("body"))
+      let status = try #require(spec.int("status"))
+      do {
+        for try await _ in adapter.stream(
+          request, context: context,
+          transport: EventBranchTransport(chunks: [Data(body.utf8)], statusCode: status))
+        {}
+        Issue.record("\(name): source error was accepted")
+      } catch let failure as ProviderRuntimeFailure {
+        #expect(failure.code == .transportFailed, Comment(rawValue: name))
+        #expect(failure.message == expected.string("errorMessage"), Comment(rawValue: name))
+        #expect(
+          failure.providerMetadata?.string("rawStopReason") == expected.string("rawStopReason"),
+          Comment(rawValue: name))
+      }
+    }
   }
 
   @Test
@@ -359,7 +399,12 @@ struct OpenAIResponseEventBranchTests {
           #expect(failure.code == .transportFailed)
           #expect(failure.causeDescription == cause)
           if ["failedError", "failedDetails", "streamError"].contains(name) {
-            #expect(failure.message == expected.object(name)?.string("thrown"))
+            let message =
+              protocolID == "openai-codex-responses"
+              ? oracle.object("cases")?.object("responses.codex-failure-branches")?.object(name)?
+                .string("errorMessage")
+              : expected.object(name)?.string("thrown")
+            #expect(failure.message == message)
           }
         }
       }

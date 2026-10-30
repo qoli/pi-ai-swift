@@ -43,6 +43,15 @@ for (const testCase of [
     await runResponsesFlavor(testCase, fixture.responsesServiceTierUsage),
   );
 }
+const providerErrors = {};
+for (const spec of fixture.responsesProviderErrorCases) providerErrors[spec.id] = await runProviderError(spec);
+const codexFailureBranches = {};
+for (const name of ["failedError", "failedDetails", "streamError"]) {
+  const body = fixture.responsesFailureEvents[name].map(event => `data: ${JSON.stringify(event)}\n\n`).join("");
+  codexFailureBranches[name] = { body, ...await runProviderError({
+    id: name, api: "openai-codex-responses", provider: "openai-codex", status: 200, body,
+  }) };
+}
 const responseFailures = {};
 for (const [name, events] of Object.entries(fixture.responsesFailureEvents)) {
   responseFailures[name] = await runResponsesOutcome(events);
@@ -114,6 +123,8 @@ process.stdout.write(`${JSON.stringify({
     "responses.reasoning-signature-backfill-phase": projectResponsesWithSignatures(responsesReasoning),
     "responses.service-tier-cost-matrix": responseServiceTierCosts,
     "responses.failure-branches": responseFailures,
+    "responses.provider-errors": providerErrors,
+    "responses.codex-failure-branches": codexFailureBranches,
     "responses.tool-slot-lifecycle": toolSlots,
     "responses.grammar-history-replay": grammarReplay,
     "responses.terminal-without-start": terminalWithoutStart,
@@ -126,6 +137,27 @@ process.stdout.write(`${JSON.stringify({
     "completions.abort": projectCompletions(completionAbort),
   },
 }, null, 2)}\n`);
+
+async function runProviderError(spec) {
+  const implementation = await providerStreams(upstreamRoot,
+    await import(pathToFileURL(path.join(upstreamRoot, "packages/ai/src/api", `${spec.api}.ts`))));
+  const model = modelFor(spec.api, spec.provider, "gpt-model");
+  const codexToken = `${Buffer.from("{}").toString("base64url")}.${Buffer.from(JSON.stringify({
+    "https://api.openai.com/auth": { chatgpt_account_id: "fixture-account" },
+  })).toString("base64url")}.signature`;
+  const result = await implementation.stream(model, {
+    messages: [{ role: "user", content: "hello", timestamp: 0 }],
+  }, {
+    apiKey: spec.api === "openai-codex-responses" ? codexToken : "fixture",
+    maxRetries: 0, transport: "sse",
+    ...(spec.api === "azure-openai-responses" ? { azureBaseUrl: "https://fixture.invalid/openai/v1" } : {}),
+    fetch: async () => new Response(spec.body, {
+      status: spec.status, headers: { "content-type": spec.status === 200 ? "text/event-stream" : "application/json" },
+    }),
+  }).result();
+  if (result.stopReason !== "error") throw new Error(`${spec.id}: source unexpectedly succeeded`);
+  return { errorMessage: result.errorMessage, rawStopReason: result.rawStopReason };
+}
 
 async function runResponses(events, options) {
   const model = modelFor("openai-responses", "openai", "gpt-model");

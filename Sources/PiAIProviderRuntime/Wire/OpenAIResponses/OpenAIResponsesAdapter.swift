@@ -162,7 +162,8 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               .transportFailed,
               providerID: request.providerID,
               operation: "openai-responses.response",
-              message: "OpenAI Responses request failed (HTTP \(response.statusCode))",
+              message: httpErrorMessage(
+                status: response.statusCode, body: body, providerID: request.providerID),
               cause: body
             )
           }
@@ -196,12 +197,69 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           }
           for event in try reducer.finish() { continuation.yield(event) }
           continuation.finish()
+        } catch let error as ProviderRuntimeFailure {
+          continuation.finish(
+            throwing: ProviderRuntimeFailure(
+              code: error.code, message: usageLimitMessage(error.message),
+              providerID: error.providerID,
+              operation: error.operation, causeDescription: error.causeDescription,
+              providerMetadata: error.providerMetadata))
         } catch {
           continuation.finish(throwing: error)
         }
       }
       continuation.onTermination = { _ in task.cancel() }
     }
+  }
+
+  private func usageLimitMessage(_ message: String) -> String {
+    guard flavor == .standard else { return message }
+    if message.contains("subscription_sharing_usage_limit_exceeded") {
+      return message + "\nCheck your ChatGPT usage: https://chatgpt.com/settings/usage"
+    }
+    if message.contains("subscription_sharing_workplace_individual_usage_limit_exceeded") {
+      return message
+        + "\nYou've reached your ChatGPT workspace's usage limit. Ask your workspace admin to increase it at admin.openai.com → Workspace → Usage limits."
+    }
+    return message
+  }
+
+  private func httpErrorMessage(status: Int, body: String?, providerID: String) -> String {
+    guard flavor != .codex else { return "OpenAI Responses request failed (HTTP \(status))" }
+    let parsed = body.flatMap { try? ProviderOrderedJSON(data: Data($0.utf8)) }
+    let error: ProviderOrderedJSON?
+    switch parsed {
+    case .object:
+      error = parsed?["error"].flatMap { $0.isNullish ? nil : $0 } ?? parsed
+    case .array: error = parsed
+    default: error = nil
+    }
+    let detail: String?
+    if let value = error?["message"], value.isTruthy {
+      detail = value.stringValue ?? (try? value.encodedString())
+    } else if let error, error.isTruthy {
+      detail = try? error.encodedString()
+    } else {
+      detail = parsed?.isTruthy == true ? nil : body
+    }
+    let sdkMessage =
+      detail.flatMap { $0.isEmpty ? nil : "\(status) \($0)" }
+      ?? "\(status) status code (no body)"
+    var normalizedBody: String?
+    if case .object(let members) = error, !members.isEmpty,
+      let serialized = try? error?.encodedString()
+    {
+      // The pinned error-body normalizer caps JSON bodies at 4,000 UTF-16 units.
+      let length = serialized.utf16.count
+      normalizedBody =
+        length > 4_000
+        ? String(decoding: serialized.utf16.prefix(4_000), as: UTF16.self)
+          + "... [truncated \(length - 4_000) chars]"
+        : serialized
+    }
+    let message = normalizedBody.map { sdkMessage.contains($0) ? sdkMessage : $0 } ?? sdkMessage
+    let name = flavor == .azure ? "Azure OpenAI" : (providerID == "openai" ? "OpenAI" : providerID)
+    return "\(name) API error (\(status)): \(message)"
   }
 
   private func makeURLRequest(
@@ -1111,13 +1169,14 @@ private struct OpenAIResponsesReducer {
       providerID: providerID,
       operation: "openai-responses.event.decode"
     )
-    do { return try reduceObject(object, eventName: event.event) } catch let error
+    do { return try reduceObject(object, eventName: event.event, eventData: event.data) } catch let
+      error
       as GrammarToolInputJSONError
     { throw invalid(error.description) }
   }
 
   private mutating func reduceObject(
-    _ object: [String: JSONValue], eventName: String?
+    _ object: [String: JSONValue], eventName: String?, eventData: String
   ) throws -> [ProviderEvent] {
     guard let type = object.string("type") ?? eventName else {
       throw invalid("Responses event is missing type")
@@ -1334,7 +1393,18 @@ private struct OpenAIResponsesReducer {
       let error = object.object("error") ?? object.object("response")?.object("error")
       let details = object.object("response")?.object("incomplete_details")?.string("reason")
       let message: String
-      if type == "error" {
+      if type == "response.failed", flavor == .codex {
+        message =
+          error?.string("message").flatMap { $0.isEmpty ? nil : $0 } ?? "Codex response failed"
+      } else if type == "error", flavor == .codex {
+        let code = object.string("code") ?? error?.string("code")
+        let detail = object.string("message") ?? error?.string("message")
+        let description =
+          try detail.flatMap { $0.isEmpty ? nil : $0 }
+          ?? code.flatMap { $0.isEmpty ? nil : $0 }
+          ?? ProviderOrderedJSON(data: Data(eventData.utf8)).encodedString()
+        message = "Codex error: \(description)"
+      } else if type == "error" {
         message =
           "Error Code \(object.string("code") ?? "undefined"): \(object.string("message") ?? "undefined")"
       } else if let error {
