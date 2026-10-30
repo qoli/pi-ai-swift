@@ -6,6 +6,34 @@ import Testing
 @Suite
 struct OpenAICompletionsAdapterTests {
   @Test
+  func omittedReasoningUsesPinnedSourceDefaultControls() async throws {
+    let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+    let fixture = try decodeJSONObject(
+      Data(contentsOf: root.appending(path: "Fixtures/CandidateCompletions/request.json")),
+      providerID: "fixture", operation: "completions.default-thinking.fixture")
+    let fields: Set<String> = [
+      "thinking", "reasoning_effort", "reasoning", "enable_thinking",
+      "chat_template_kwargs", "chat_template_args",
+    ]
+    for value in try #require(fixture.array("thinkingDefaults")) {
+      let spec = try #require(value.objectValue)
+      let metadata = try #require(spec.object("metadata"))
+      let expected = try #require(spec.object("expected"))
+      let (request, context) = completionFixtureRequestAndContext(metadata: metadata)
+      let transport = CompletionsFixtureTransport(chunks: completionsFixtureChunks())
+      for try await _ in OpenAICompletionsAdapter().stream(
+        request, context: context, transport: transport)
+      {}
+      let sent = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture",
+        operation: "completions.default-thinking.capture")
+      #expect(body.filter { fields.contains($0.key) } == expected)
+    }
+  }
+
+  @Test
   func reasoningFormatsEncodeOffAndMappedEffort() async throws {
     for format in [
       "openai", "openrouter", "deepseek", "zai", "qwen", "qwen-chat-template", "together",

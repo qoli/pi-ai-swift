@@ -369,11 +369,12 @@
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
         "Fixtures/Differential/Cases/cloudflare-auth.json",
         "Fixtures/Differential/Oracle/cloudflare-auth.json",
-        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsTransportTerminationMatchesPinnedSource"
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsTransportTerminationMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#omittedReasoningUsesPinnedSourceDefaultControls"
       ],
       "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "56543597b9e0b18b6185c20e9349c01227267d52b62908331bb3cda2a2eda43d"
+      "swiftEvidenceSHA256": "dfb3da32bc2607111eee1ca639ad213a24fb43858fbb5b9c85b74883644d3fd5"
     },
     {
       "protocolID": "openai-responses",

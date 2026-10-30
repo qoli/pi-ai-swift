@@ -150,13 +150,6 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
             message: "unknown reasoning template variable")
         }
       }
-      guard !values.isEmpty || (format == "baseten" && supportsEffort && (enabled || mapped != nil))
-      else {
-        throw failure(
-          .unsupportedCapability, providerID: providerID,
-          operation: "openai-completions.request.reasoning",
-          message: "reasoning template has no encodable control")
-      }
       if !values.isEmpty { body[field] = .object(values) }
       if format == "baseten", supportsEffort, enabled || mapped != nil {
         body["reasoning_effort"] = .string(wireEffort)
@@ -170,30 +163,12 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
       if enabled && supportsEffort { body["reasoning_effort"] = .string(wireEffort) }
     case "string-thinking":
       if !mappedOffIsNull { body["thinking"] = .string(wireEffort) }
-    case "ant-ling":
-      guard enabled else { break }
-      guard let mapped else {
-        throw failure(
-          .unsupportedCapability, providerID: providerID,
-          operation: "openai-completions.request.reasoning",
-          message: "reasoning effort requires a model mapping")
-      }
-      body["reasoning"] = .object(["effort": .string(mapped)])
-    case "openai":
-      guard supportsEffort else {
-        throw failure(
-          .unsupportedCapability, providerID: providerID,
-          operation: "openai-completions.request.reasoning",
-          message: "model does not encode reasoning effort")
-      }
-      if enabled || mapped != nil {
+    case "ant-ling" where enabled:
+      if let mapped { body["reasoning"] = .object(["effort": .string(mapped)]) }
+    default:
+      if supportsEffort, enabled || mapped != nil {
         body["reasoning_effort"] = .string(wireEffort)
       }
-    default:
-      throw failure(
-        .unsupportedCapability, providerID: providerID,
-        operation: "openai-completions.request.reasoning",
-        message: "unsupported reasoning format: \(format)")
     }
   }
 
@@ -334,7 +309,8 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     {
       body["prompt_cache_retention"] = .string("24h")
     }
-    if let effort = request.options.reasoningEffort, context.model.capabilities.reasoning {
+    if context.model.capabilities.reasoning {
+      let effort = request.options.reasoningEffort ?? .off
       try applyReasoning(
         effort, metadata: metadata, compat: compat, body: &body, providerID: request.providerID,
         maximumOutputTokens: request.options.maximumOutputTokens

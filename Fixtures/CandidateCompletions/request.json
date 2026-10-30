@@ -473,5 +473,995 @@
   ],
   "revision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "sourcePath": "packages/ai/src/api/openai-completions.ts",
-  "sourceSHA256": "e765179e356b4828a38954cda4cec762a851bb1d3a8fa28cdaf05edd12ca5c8a"
+  "sourceSHA256": "e765179e356b4828a38954cda4cec762a851bb1d3a8fa28cdaf05edd12ca5c8a",
+  "thinkingDefaults": [
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "openai"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "openai"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "reasoning_effort": "none"
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "openai"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "zai"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "zai"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "zai"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "deepseek"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "deepseek"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "deepseek"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "enable_thinking": false
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "qwen"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {
+        "enable_thinking": false
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "qwen"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "enable_thinking": false
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "qwen"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "chat_template_kwargs": {
+          "enable_thinking": false,
+          "preserve_thinking": true
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "qwen-chat-template"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {
+        "chat_template_kwargs": {
+          "enable_thinking": false,
+          "preserve_thinking": true
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "qwen-chat-template"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "chat_template_kwargs": {
+          "enable_thinking": false,
+          "preserve_thinking": true
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "qwen-chat-template"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "chat_template_kwargs": {
+          "enabled": false
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "chat-template"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {
+        "chat_template_kwargs": {
+          "enabled": false
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "chat-template"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "chat_template_kwargs": {
+          "enabled": false,
+          "level": "none"
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "chat-template"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "chat_template_args": {
+          "enabled": false
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "baseten"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {
+        "chat_template_args": {
+          "enabled": false
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "baseten"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "chat_template_args": {
+          "enabled": false,
+          "level": "none"
+        },
+        "reasoning_effort": "none"
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "baseten"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "reasoning": {
+          "effort": "none"
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "openrouter"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "openrouter"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "reasoning": {
+          "effort": "none"
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "openrouter"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "reasoning": {
+          "enabled": false
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "together"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {
+        "reasoning": {
+          "enabled": false
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "together"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "reasoning": {
+          "enabled": false
+        }
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "together"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {
+        "thinking": "none"
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "string-thinking"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "string-thinking"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "thinking": "none"
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "string-thinking"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "ant-ling"
+        },
+        "thinkingLevelMap": {}
+      }
+    },
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "ant-ling"
+        },
+        "thinkingLevelMap": {
+          "off": null
+        }
+      }
+    },
+    {
+      "expected": {
+        "reasoning_effort": "none"
+      },
+      "metadata": {
+        "compat": {
+          "chatTemplateArgs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "chatTemplateKwargs": {
+            "enabled": {
+              "$var": "thinking.enabled"
+            },
+            "level": {
+              "$var": "thinking.level"
+            }
+          },
+          "thinkingFormat": "ant-ling"
+        },
+        "thinkingLevelMap": {
+          "off": "none"
+        }
+      }
+    },
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "supportsReasoningEffort": false,
+          "thinkingFormat": "openai"
+        }
+      }
+    },
+    {
+      "expected": {},
+      "metadata": {
+        "compat": {
+          "chatTemplateKwargs": {
+            "level": {
+              "$var": "thinking.level",
+              "omitWhenOff": true
+            }
+          },
+          "thinkingFormat": "chat-template"
+        }
+      }
+    }
+  ]
 }
