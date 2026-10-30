@@ -2158,7 +2158,9 @@
         "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
         "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockFailureMetadataMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockFailureMetadataMatchesPinnedSource",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockRawReasoningMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

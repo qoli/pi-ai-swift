@@ -122,7 +122,17 @@ struct ProviderIntentDifferentialTests {
           providerOptions: providerOptions,
           sessionID: options.string("sessionId"),
           cacheRetention: options.string("cacheRetention").flatMap(
-            ProviderCacheRetention.init(rawValue:)) ?? .none),
+            ProviderCacheRetention.init(rawValue:)) ?? .none,
+          thinkingBudgets: options.object("thinkingBudgets").map { values in
+            Dictionary(
+              uniqueKeysWithValues: values.compactMap {
+                key, value -> (ProviderReasoningEffort, Int)? in
+                guard let effort = ProviderReasoningEffort(rawValue: key),
+                  case .integer(let budget) = value
+                else { return nil }
+                return (effort, Int(budget))
+              })
+          }),
         connectionOptions: .init(
           azureOpenAIResponses: options.string("azureDeploymentName").map {
             .init(azureResourceName: options.string("azureResourceName"), azureDeploymentName: $0)

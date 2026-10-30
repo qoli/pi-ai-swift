@@ -73,7 +73,7 @@
       ],
       "upstreamSourceSHA256": "40a0870f7cb7ce59fc078261fc3bd6c0c53b6bdcee1a24fed995e8b03d30b209",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "d8961a23813126fd12cc02141e28c458d52a1cb198de1a2209d8412058eff7c4"
+      "swiftEvidenceSHA256": "d7a855009ade13d7d51831fdad0b13ba7a53e2b579bbfeadf7f39bf15f33acbc"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -129,7 +129,7 @@
       ],
       "upstreamSourceSHA256": "44f1ffc77bf9899c2e7067280720c0fc5a0b458c0fccd650d3f5739182c2c33f",
       "upstreamTestSHA256": "32bd02c09ad074cb1b498bc752d2e91160d998c39cb5a4e0e07c598ef32a8f4c",
-      "swiftEvidenceSHA256": "07a7edb55796490cedc0fcb6ebd62b574c42ec9b995ea310cd159d4df0257107"
+      "swiftEvidenceSHA256": "fc0d425a693fd79d31773917c0ea59480934e9b7a48779c6c8fc0b73a9327024"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -173,11 +173,13 @@
         "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
         "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockFailureMetadataMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockFailureMetadataMatchesPinnedSource",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockRawReasoningMatchesPinnedSource"
       ],
       "upstreamSourceSHA256": "fcd722758fa9205f6f2633c0445fa6ef36e82c3c5eca2ea959c8af6b2dd6d9f7",
       "upstreamTestSHA256": "616f7bbfd6f524666540459ccfe6bd608fd9adb8e30828afeeaa111fa07d1669",
-      "swiftEvidenceSHA256": "c2442271d2e73b7239b95c0ba86a7330b8d5bca87de9b501121887d8a3839331"
+      "swiftEvidenceSHA256": "910b3daf3a0bc7168b1b85048bbb1330eecd12c8bcce6923b255367b641e32ea"
     },
     {
       "protocolID": "google-generative-ai",
@@ -225,7 +227,7 @@
       ],
       "upstreamSourceSHA256": "20f47dd4749034075eb61695802c2a9587eaa5307442802243b6834d893b3ff0",
       "upstreamTestSHA256": "7daeb72c8c987e20d0e2d4ffd7223b44fc565924f10efe18d725a75559305354",
-      "swiftEvidenceSHA256": "7828f4c8e16014cab8213907595e528701832580285818935b51a073d46f03af"
+      "swiftEvidenceSHA256": "a7799e63af849895db4ae2c20b9fc6e73253e221fa7b0dfd6de65db2f8acc5f7"
     },
     {
       "protocolID": "google-vertex",
@@ -269,7 +271,7 @@
       ],
       "upstreamSourceSHA256": "ab23a583792c46d1da02c82fa55f2a794f92074ca5afcea8839b129ce58818f0",
       "upstreamTestSHA256": "594752aed17eaf8830a52c2c4718aa8ad82f5f3d6f52945866e11700189a4edd",
-      "swiftEvidenceSHA256": "2c39594c2db76df730cbcb5d6fdd264352590e9bf3868d952a97cf221fce477b"
+      "swiftEvidenceSHA256": "df4eb044b735430040194b457b68977e8add566b82cd699c5be3aa65f2994128"
     },
     {
       "protocolID": "mistral-conversations",
@@ -333,7 +335,7 @@
       ],
       "upstreamSourceSHA256": "2ea02438b2f7ac650434868b43feee9e07ab32480c01da9587245dd14cece8d5",
       "upstreamTestSHA256": "4b860d483b44bc3489f5be721e71fbf96b8a952288fde35c3c53096419f23dfa",
-      "swiftEvidenceSHA256": "77083a5f2277b54dd64527107ab2e8058b826069fac3c0077ee4a0447c8ac5e5"
+      "swiftEvidenceSHA256": "8331b0072117dce8a972ca33d5ed754a119dbc8db2d4a9f2fa294952698b373d"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -388,7 +390,7 @@
       ],
       "upstreamSourceSHA256": "805ed5c861052c125e0f1fc34b3630b832d615624536f86db4571e88dc3f760d",
       "upstreamTestSHA256": "ad9cce3e861f84c8fec0aa144728a72bf3c56155046187ccfb136a86f7ce1b27",
-      "swiftEvidenceSHA256": "d91bf208de46594086665b7b4bc6d48d50642b4553d8b589f1d57245d3ec0865"
+      "swiftEvidenceSHA256": "e61140dc1598e45da97af4c1123ad4c9d3c5743a72fbb6e353cf500ba6e66c55"
     },
     {
       "protocolID": "openai-completions",
@@ -472,7 +474,7 @@
       ],
       "upstreamSourceSHA256": "6b5bcab7327f12ad95c1e6464d8d9254b35bf2e8121ae91cf047195e70850406",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "dffa36e83af36f2712c9a76356809ef8e00f77432a0aa34fe601772f4659537b"
+      "swiftEvidenceSHA256": "a4b003531a9b97d12c7d7f51ed50997077e3647333186316d9798273b416ff8a"
     },
     {
       "protocolID": "openai-responses",
@@ -539,7 +541,7 @@
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "dd6529cee7f8b73d5199725b0951e4f3df71f166bcc55280682c35310fa739ab"
+      "swiftEvidenceSHA256": "c82b3d437df6ff33a61ea15452630448c99bafa9cdc1e3340c66df81a20cba98"
     },
     {
       "protocolID": "openrouter-images",

@@ -175,7 +175,9 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
-    if let effort = request.options.reasoningEffort {
+    if request.options.providerOptions["reasoning"] == nil,
+      let effort = request.options.reasoningEffort
+    {
       let supported = try ProviderReasoning.supportedEfforts(
         reasoning: context.model.capabilities.reasoning,
         metadata: context.modelConfiguration.metadata,
@@ -193,7 +195,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
 
     let supportedOptions: Set<String> = [
       "additionalModelRequestFields", "interleavedThinking", "requestMetadata",
-      "forcePromptCaching", "thinkingDisplay",
+      "forcePromptCaching", "thinkingDisplay", "reasoning",
     ]
     let unknown = Set(request.options.providerOptions.keys).subtracting(supportedOptions)
     guard unknown.isEmpty else {
@@ -324,9 +326,14 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
-    guard let requested = request.options.reasoningEffort else { return [:] }
+    let rawReasoning = request.options.providerOptions["reasoning"]
+    let selected =
+      rawReasoning == nil
+      ? request.options.reasoningEffort
+      : rawReasoning?.stringValue.flatMap(ProviderReasoningEffort.init(rawValue:))
+    guard let requested = selected else { return [:] }
     guard context.model.capabilities.reasoning else {
-      if requested == .off { return [:] }
+      if rawReasoning != nil || requested == .off { return [:] }
       throw failure(
         .unsupportedCapability,
         request,
@@ -422,7 +429,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     let customLevel: ProviderReasoningEffort =
       requested == .xhigh || requested == .max ? .high : requested
     if let configured = request.options.thinkingBudgets?[customLevel] {
-      guard configured > 0 else {
+      guard rawReasoning != nil || configured > 0 else {
         throw failure(
           .invalidRequest,
           request,
@@ -432,15 +439,18 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       }
       budget = configured
     }
-    let outputLimit = try effectiveMaximumOutputTokens(request, context: context) ?? budget + 1_024
-    budget = min(budget, max(0, outputLimit - 1_024))
-    guard budget > 0 else {
-      throw failure(
-        .invalidRequest,
-        request,
-        "bedrock.request.reasoning",
-        "Bedrock output limit leaves no room for reasoning"
-      )
+    if rawReasoning == nil {
+      let outputLimit =
+        try effectiveMaximumOutputTokens(request, context: context) ?? budget + 1_024
+      budget = min(budget, max(0, outputLimit - 1_024))
+      guard budget > 0 else {
+        throw failure(
+          .invalidRequest,
+          request,
+          "bedrock.request.reasoning",
+          "Bedrock output limit leaves no room for reasoning"
+        )
+      }
     }
     var thinking: [String: JSONValue] = [
       "type": .string("enabled"), "budget_tokens": .integer(Int64(budget)),
@@ -656,7 +666,8 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     else {
       return nil
     }
-    guard let effort = request.options.reasoningEffort, effort != .off,
+    guard request.options.providerOptions["reasoning"] == nil,
+      let effort = request.options.reasoningEffort, effort != .off,
       ProviderBedrockModel.isAnthropicClaude(id: context.model.id, name: context.model.name)
     else { return requested }
     let candidates = [context.model.id, context.model.name].map {

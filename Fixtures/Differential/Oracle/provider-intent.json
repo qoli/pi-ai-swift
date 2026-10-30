@@ -1897,6 +1897,437 @@
         }
       }
     },
+    "bedrock-raw-options.gpt-oss.high": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "high"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt-oss.low": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "low"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt-oss.max": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "high"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt-oss.medium": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "medium"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt-oss.minimal": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "low"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt-oss.xhigh": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning_effort": "high"
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt6.high": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "high"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt6.low": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "low"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt6.max": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "max"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt6.medium": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "medium"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt6.minimal": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "low"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.gpt6.xhigh": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "reasoning": {
+            "effort": "xhigh"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy-budget-negative": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": -1,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy-budget-uncapped": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 123457,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy-budget-zero": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 0,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy.high": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 16384,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy.low": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 2048,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy.max": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 16384,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy.medium": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 8192,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy.minimal": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 1024,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.legacy.xhigh": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "interleaved-thinking-2025-05-14"
+          ],
+          "thinking": {
+            "budget_tokens": 16384,
+            "display": "summarized",
+            "type": "enabled"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.nonreasoning": {
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.omitted": {
+      "requestBody": {
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.opus48.high": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "high"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.opus48.low": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "low"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.opus48.max": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "high"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.opus48.medium": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "medium"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.opus48.minimal": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "low"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
+    "bedrock-raw-options.opus48.xhigh": {
+      "requestBody": {
+        "additionalModelRequestFields": {
+          "anthropic_beta": [
+            "thinking-binding-controls-2026-08-01"
+          ],
+          "output_config": {
+            "effort": "xhigh"
+          },
+          "thinking": {
+            "block_binding": {
+              "prefix_mismatch_behavior": "drop_block"
+            },
+            "display": "summarized",
+            "type": "adaptive"
+          }
+        },
+        "inferenceConfig": {
+          "maxTokens": 4096
+        }
+      }
+    },
     "bedrock.anthropic.claude-haiku-5.high": {
       "requestBody": {
         "additionalModelRequestFields": {

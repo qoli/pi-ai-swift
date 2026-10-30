@@ -835,6 +835,54 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testBedrockRawReasoningMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("bedrock-raw-options.") == true }
+    XCTAssertEqual(cases.count, 29)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let model = try XCTUnwrap(spec.object("model"))
+      let modelID = try XCTUnwrap(model.string("id"))
+      let sourceOptions = spec.object("options") ?? [:]
+      let budgets = sourceOptions.object("thinkingBudgets").map { values in
+        Dictionary(
+          uniqueKeysWithValues: values.compactMap { key, value -> (ProviderReasoningEffort, Int)? in
+            guard let effort = ProviderReasoningEffort(rawValue: key),
+              case .integer(let budget) = value
+            else { return nil }
+            return (effort, Int(budget))
+          })
+      }
+      let (_, context) = inputs(
+        api: "bedrock-converse-stream", providerID: "amazon-bedrock", modelID: modelID,
+        baseURL: try XCTUnwrap(model.string("baseUrl")), reasoning: model.bool("reasoning"),
+        metadata: model)
+      let request = ProviderRequest(
+        id: name, providerID: "amazon-bedrock", modelID: modelID,
+        messages: [.user([.text("hello")])], tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: ["reasoning": sourceOptions["reasoning"] ?? .null],
+          cacheRetention: .none, thinkingBudgets: budgets))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in BedrockConverseStreamAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+        operation: "ios.bedrock.raw.body")
+      let fields = try XCTUnwrap(spec.array("projectFields")).compactMap(\.stringValue)
+      let actual = Dictionary(
+        uniqueKeysWithValues: fields.compactMap { key in body[key].map { (key, $0) } })
+      XCTAssertEqual(actual, oracle.object("cases")?.object(name)?.object("requestBody"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

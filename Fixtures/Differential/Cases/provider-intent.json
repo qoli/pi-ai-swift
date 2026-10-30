@@ -6659,6 +6659,970 @@
       "rawOptionKeys": [
         "effort"
       ]
+    },
+    {
+      "id": "bedrock-raw-options.opus48.minimal",
+      "model": {
+        "id": "global.anthropic.claude-opus-4-8-v1",
+        "name": "Claude Opus 4.8",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.opus48.low",
+      "model": {
+        "id": "global.anthropic.claude-opus-4-8-v1",
+        "name": "Claude Opus 4.8",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "low"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.opus48.medium",
+      "model": {
+        "id": "global.anthropic.claude-opus-4-8-v1",
+        "name": "Claude Opus 4.8",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.opus48.high",
+      "model": {
+        "id": "global.anthropic.claude-opus-4-8-v1",
+        "name": "Claude Opus 4.8",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "high"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.opus48.xhigh",
+      "model": {
+        "id": "global.anthropic.claude-opus-4-8-v1",
+        "name": "Claude Opus 4.8",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "xhigh"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.opus48.max",
+      "model": {
+        "id": "global.anthropic.claude-opus-4-8-v1",
+        "name": "Claude Opus 4.8",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "max"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt6.minimal",
+      "model": {
+        "id": "global.openai.gpt-6-sol",
+        "name": "GPT-6",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt6.low",
+      "model": {
+        "id": "global.openai.gpt-6-sol",
+        "name": "GPT-6",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "low"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt6.medium",
+      "model": {
+        "id": "global.openai.gpt-6-sol",
+        "name": "GPT-6",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt6.high",
+      "model": {
+        "id": "global.openai.gpt-6-sol",
+        "name": "GPT-6",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "high"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt6.xhigh",
+      "model": {
+        "id": "global.openai.gpt-6-sol",
+        "name": "GPT-6",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "xhigh"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt6.max",
+      "model": {
+        "id": "global.openai.gpt-6-sol",
+        "name": "GPT-6",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "max"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt-oss.minimal",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "GPT OSS",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt-oss.low",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "GPT OSS",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "low"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt-oss.medium",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "GPT OSS",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt-oss.high",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "GPT OSS",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "high"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt-oss.xhigh",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "GPT OSS",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "xhigh"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.gpt-oss.max",
+      "model": {
+        "id": "openai.gpt-oss-120b-1:0",
+        "name": "GPT OSS",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "max"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy.minimal",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "minimal"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy.low",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "low"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy.medium",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "medium"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy.high",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "high"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy.xhigh",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "xhigh"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy.max",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "max"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy-budget-zero",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "max",
+        "thinkingBudgets": {
+          "high": 0
+        }
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy-budget-negative",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "max",
+        "thinkingBudgets": {
+          "high": -1
+        }
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.legacy-budget-uncapped",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "max",
+        "thinkingBudgets": {
+          "high": 123457
+        }
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.omitted",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
+    },
+    {
+      "id": "bedrock-raw-options.nonreasoning",
+      "model": {
+        "id": "anthropic.claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "reasoning": "high"
+      },
+      "rawOptions": true,
+      "rawOptionKeys": [
+        "reasoning"
+      ],
+      "projectFields": [
+        "inferenceConfig",
+        "additionalModelRequestFields"
+      ]
     }
   ]
 }
