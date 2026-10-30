@@ -1,0 +1,953 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "completions.detected-compat-standard",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-deepseek-provider",
+      "protocolID": "openai-completions",
+      "providerID": "deepseek",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-deepseek-url",
+      "protocolID": "openai-completions",
+      "providerID": "custom-deepseek",
+      "modelID": "compat-model",
+      "baseURL": "https://api.deepseek.com/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-deepseek-uppercase",
+      "protocolID": "openai-completions",
+      "providerID": "custom-deepseek",
+      "modelID": "compat-model",
+      "baseURL": "https://API.DEEPSEEK.COM/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-nvidia",
+      "protocolID": "openai-completions",
+      "providerID": "nvidia",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-nvidia-url",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://integrate.api.nvidia.com/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-together",
+      "protocolID": "openai-completions",
+      "providerID": "together",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-together-url",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://api.together.xyz/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-zai",
+      "protocolID": "openai-completions",
+      "providerID": "zai-coding-cn",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-zai-url",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://open.bigmodel.cn/api/paas/v4",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-moonshot",
+      "protocolID": "openai-completions",
+      "providerID": "moonshotai-cn",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-moonshot-url",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://api.moonshot.ai/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-cloudflare-workers",
+      "protocolID": "openai-completions",
+      "providerID": "cloudflare-workers-ai",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-cloudflare-gateway",
+      "protocolID": "openai-completions",
+      "providerID": "cloudflare-ai-gateway",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-ant-ling",
+      "protocolID": "openai-completions",
+      "providerID": "ant-ling",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-cerebras",
+      "protocolID": "openai-completions",
+      "providerID": "cerebras",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-xai",
+      "protocolID": "openai-completions",
+      "providerID": "xai",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-opencode",
+      "protocolID": "openai-completions",
+      "providerID": "opencode",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ],
+      "providerFactory": "opencodeProvider"
+    },
+    {
+      "id": "completions.detected-compat-chutes-url",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://chutes.ai/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-openrouter-anthropic",
+      "protocolID": "openai-completions",
+      "providerID": "openrouter",
+      "modelID": "anthropic/compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-openrouter-openai",
+      "protocolID": "openai-completions",
+      "providerID": "openrouter",
+      "modelID": "openai/compat-model",
+      "baseURL": "https://fixture.invalid/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-openrouter-custom-url",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://openrouter.ai/api/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-openrouter-in-path",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://fixture.invalid/openrouter.ai/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-explicit-overrides",
+      "protocolID": "openai-completions",
+      "providerID": "custom-deepseek",
+      "modelID": "compat-model",
+      "baseURL": "https://api.deepseek.com/v1",
+      "reasoning": true,
+      "compat": {
+        "maxTokensField": "max_completion_tokens",
+        "supportsStore": true,
+        "supportsDeveloperRole": true,
+        "thinkingFormat": "openai",
+        "supportsLongCacheRetention": true
+      },
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-null-overrides",
+      "protocolID": "openai-completions",
+      "providerID": "custom-deepseek",
+      "modelID": "compat-model",
+      "baseURL": "https://api.deepseek.com/v1",
+      "reasoning": true,
+      "compat": {
+        "maxTokensField": null,
+        "supportsStore": null,
+        "supportsDeveloperRole": null,
+        "thinkingFormat": null
+      },
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    },
+    {
+      "id": "completions.detected-compat-custom-opencode-url",
+      "protocolID": "openai-completions",
+      "providerID": "fixture",
+      "modelID": "compat-model",
+      "baseURL": "https://opencode.ai/zen/v1",
+      "reasoning": true,
+      "compat": {},
+      "options": {
+        "maxTokens": 123,
+        "reasoningEffort": "low",
+        "cacheRetention": "long",
+        "sessionId": "compat-session"
+      },
+      "captureWire": true,
+      "headerKeys": [
+        "x-session-id",
+        "session_id",
+        "x-client-request-id",
+        "x-session-affinity",
+        "x-opencode-session"
+      ],
+      "projectFields": [
+        "messages",
+        "store",
+        "max_tokens",
+        "max_completion_tokens",
+        "reasoning_effort",
+        "reasoning",
+        "thinking",
+        "prompt_cache_key",
+        "prompt_cache_retention",
+        "stream_options",
+        "tools"
+      ]
+    }
+  ]
+}

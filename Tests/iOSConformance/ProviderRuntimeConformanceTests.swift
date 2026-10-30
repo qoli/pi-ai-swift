@@ -309,6 +309,68 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testCompletionsDetectedCompatibilityMatchesPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/completions-compat.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/completions-compat.json")
+    for value in try XCTUnwrap(fixture.array("cases")) {
+      let spec = try XCTUnwrap(value.objectValue)
+      let name = try XCTUnwrap(spec.string("id"))
+      let rawOptions = try XCTUnwrap(spec.object("options"))
+      let (baseRequest, context) = inputs(
+        api: "openai-completions",
+        providerID: try XCTUnwrap(spec.string("providerID")),
+        modelID: try XCTUnwrap(spec.string("modelID")),
+        baseURL: try XCTUnwrap(spec.string("baseURL")),
+        metadata: ["compat": try XCTUnwrap(spec["compat"])],
+        options: .init(
+          maximumOutputTokens: rawOptions.int("maxTokens"), temperature: nil,
+          reasoningEffort: .low, responseSchema: nil, providerOptions: [:],
+          sessionID: rawOptions.string("sessionId"), cacheRetention: .long))
+      let request = ProviderRequest(
+        id: name, providerID: baseRequest.providerID,
+        modelID: baseRequest.modelID,
+        messages: [.system("System branch fixture"), .user([.text("hello")])],
+        tools: [
+          .init(
+            name: "sample_tool", description: "Sample tool",
+            inputSchema: .object([
+              "type": .string("object"),
+              "properties": .object(["payload": .object(["type": .string("string")])]),
+              "required": .array([.string("payload")]),
+            ]))
+        ],
+        options: baseRequest.options)
+      let transport = IOSMistralHTTPFixture(status: 418, body: Data())
+      do {
+        for try await _ in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch let failure as ProviderRuntimeFailure {
+        XCTAssertEqual(failure.code, .transportFailed, name)
+      }
+      let sentRequest = await transport.sent
+      let sent = try XCTUnwrap(sentRequest, name)
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent.httpBody, name),
+        providerID: "fixture", operation: "ios.completions.compat.body")
+      let projected = Dictionary(
+        uniqueKeysWithValues:
+          try XCTUnwrap(spec.array("projectFields")).compactMap { value -> (String, JSONValue)? in
+            guard let key = value.stringValue, let value = body[key] else { return nil }
+            return (key, value)
+          })
+      let headers = Dictionary(
+        uniqueKeysWithValues:
+          try XCTUnwrap(spec.array("headerKeys")).map { value -> (String, JSONValue) in
+            let key = try XCTUnwrap(value.stringValue)
+            return (key, sent.value(forHTTPHeaderField: key).map(JSONValue.string) ?? .null)
+          })
+      let expected = try XCTUnwrap(oracle.object("cases")?.object(name))
+      XCTAssertEqual(projected, expected.object("requestBody"), name)
+      XCTAssertEqual(headers, expected.object("requestHeaders"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
@@ -334,6 +396,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
 
   private func inputs(
     api: String, providerID: String? = nil, modelID: String? = nil,
+    baseURL: String = "https://fixture.invalid",
     metadata: [String: JSONValue] = [:], headers: [String: String] = [:],
     options: ProviderGenerationOptions? = nil
   ) -> (
@@ -374,7 +437,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       WireProtocolContext(
         provider: .init(
           id: providerID, name: providerID, authorizationMethods: [], models: [model]),
-        model: model, baseURL: URL(string: "https://fixture.invalid")!, headers: headers,
+        model: model, baseURL: URL(string: baseURL)!, headers: headers,
         credential: isCodex
           ? .oauth(
             .init(

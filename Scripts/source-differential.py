@@ -117,6 +117,12 @@ def main() -> int:
             "Fixtures/AzureOpenAIConfiguration/Oracle/configuration.json",
             "Azure OpenAI configuration branches",
         ),
+        (
+            "openai-request-branch-oracle.mjs",
+            "Fixtures/OpenAIRequestBranches/Cases/completions-compat.json",
+            "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json",
+            "detected Completions compatibility",
+        ),
     ]:
         verify_or_generate_exact(
             repo=repo,

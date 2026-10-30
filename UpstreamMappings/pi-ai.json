@@ -2179,7 +2179,8 @@
         "packages/ai/src/api/constrained-sampling.ts",
         "packages/ai/src/telemetry.ts",
         "packages/ai/src/utils/version.ts",
-        "packages/ai/src/providers/opencode-headers.ts"
+        "packages/ai/src/providers/opencode-headers.ts",
+        "packages/ai/src/providers/opencode.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
@@ -2217,7 +2218,12 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesToolSlotsMatchPinnedSource",
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#detectedCompatibilityMatchesSourceRequestsAndWireHeaders",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsDetectedCompatibilityMatchesPinnedSource",
+        "Scripts/openai-request-branch-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/completions-compat.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2464,7 +2470,8 @@
       "responsibility": "OpenAI Chat Completions request encoding, streaming decoding, compatibility rules, reasoning, images, tools, usage, and stop reasons.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsCompatibility.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2473,7 +2480,9 @@
         "packages/ai/src/api/openai-prompt-cache.ts",
         "packages/ai/src/api/constrained-sampling.ts",
         "packages/ai/src/api/simple-options.ts",
-        "packages/ai/src/models.ts"
+        "packages/ai/src/models.ts",
+        "packages/ai/src/providers/opencode.ts",
+        "packages/ai/src/providers/opencode-headers.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/openai-completions-empty-tools.test.ts",
@@ -2533,7 +2542,11 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTemplateEffortsAndBudgetsMatchPinnedSource",
         "Scripts/openai-request-branch-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/request-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#detectedCompatibilityMatchesSourceRequestsAndWireHeaders",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsDetectedCompatibilityMatchesPinnedSource",
+        "Fixtures/OpenAIRequestBranches/Cases/completions-compat.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json"
       ],
       "requiredGates": [
         "swift-test",

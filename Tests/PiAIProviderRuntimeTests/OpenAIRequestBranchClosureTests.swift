@@ -8,33 +8,35 @@ struct OpenAIRequestBranchClosureTests {
   @Test
   func pinnedSourceOracleIsReproducible() throws {
     let root = repositoryRoot()
-    let process = Process()
-    process.currentDirectoryURL = root
-    process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-    process.arguments = [
-      "node", "Scripts/openai-request-branch-oracle.mjs", ".build/upstreams/pi",
-      "Fixtures/OpenAIRequestBranches/Cases/request-branches.json",
-    ]
-    let output = Pipe()
-    let errors = Pipe()
-    process.standardOutput = output
-    process.standardError = errors
-    try process.run()
-    process.waitUntilExit()
-    let errorText =
-      String(
-        data: errors.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-    #expect(process.terminationStatus == 0, Comment(rawValue: errorText))
+    for stem in ["request-branches", "completions-compat"] {
+      let process = Process()
+      process.currentDirectoryURL = root
+      process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
+      process.arguments = [
+        "node", "Scripts/openai-request-branch-oracle.mjs", ".build/upstreams/pi",
+        "Fixtures/OpenAIRequestBranches/Cases/\(stem).json",
+      ]
+      let output = Pipe()
+      let errors = Pipe()
+      process.standardOutput = output
+      process.standardError = errors
+      try process.run()
+      process.waitUntilExit()
+      let errorText =
+        String(
+          data: errors.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+      #expect(process.terminationStatus == 0, Comment(rawValue: errorText))
 
-    let observed = try decodeJSONObject(
-      output.fileHandleForReading.readDataToEndOfFile(),
-      providerID: "fixture", operation: "openai-request-branch.oracle")
-    let expected = try decodeJSONObject(
-      Data(
-        contentsOf: root.appending(
-          path: "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json")),
-      providerID: "fixture", operation: "openai-request-branch.fixture")
-    #expect(observed == expected)
+      let observed = try decodeJSONObject(
+        output.fileHandleForReading.readDataToEndOfFile(),
+        providerID: "fixture", operation: "openai-request-branch.oracle")
+      let expected = try decodeJSONObject(
+        Data(
+          contentsOf: root.appending(
+            path: "Fixtures/OpenAIRequestBranches/Oracle/\(stem).json")),
+        providerID: "fixture", operation: "openai-request-branch.fixture")
+      #expect(observed == expected)
+    }
   }
 
   @Test
@@ -826,6 +828,63 @@ struct OpenAIRequestBranchClosureTests {
             })
         #expect(projection == expected.object("requestBody"), Comment(rawValue: id))
       } catch { Issue.record("\(id): \(error)") }
+    }
+  }
+
+  @Test
+  func detectedCompatibilityMatchesSourceRequestsAndWireHeaders() async throws {
+    let fixture = try decodeJSONObject(
+      Data(
+        contentsOf: repositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Cases/completions-compat.json")),
+      providerID: "fixture", operation: "completions.compat.cases")
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: repositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json")),
+      providerID: "fixture", operation: "completions.compat.oracle")
+    for value in try #require(fixture.array("cases")) {
+      let spec = try #require(value.objectValue)
+      let id = try #require(spec.string("id"))
+      let rawOptions = try #require(spec.object("options"))
+      let target = makeFixture(
+        protocolID: "openai-completions",
+        providerID: try #require(spec.string("providerID")),
+        modelID: try #require(spec.string("modelID")),
+        reasoning: true, baseURL: try #require(spec.string("baseURL")),
+        metadata: ["compat": try #require(spec["compat"])],
+        options: options(
+          maximum: rawOptions.int("maxTokens"), effort: .low,
+          sessionID: rawOptions.string("sessionId"), cache: .long),
+        tool: ProviderToolDefinition(
+          name: "sample_tool", description: "Sample tool", inputSchema: toolSchema()))
+      let transport = BranchCaptureTransport()
+      do {
+        for try await _ in target.adapter.stream(
+          target.request, context: target.context, transport: transport)
+        {}
+      } catch let failure as ProviderRuntimeFailure {
+        #expect(failure.code == .transportFailed, Comment(rawValue: id))
+      }
+      let request = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(request.httpBody),
+        providerID: "fixture", operation: "completions.compat.body")
+      let projected = Dictionary(
+        uniqueKeysWithValues:
+          try #require(spec.array("projectFields")).compactMap { value -> (String, JSONValue)? in
+            guard let key = value.stringValue, let value = body[key] else { return nil }
+            return (key, value)
+          })
+      let headers = Dictionary(
+        uniqueKeysWithValues:
+          try #require(spec.array("headerKeys")).map { value -> (String, JSONValue) in
+            let key = try #require(value.stringValue)
+            return (key, request.value(forHTTPHeaderField: key).map(JSONValue.string) ?? .null)
+          })
+      let expected = try #require(oracle.object("cases")?.object(id))
+      #expect(projected == expected.object("requestBody"), Comment(rawValue: id))
+      #expect(headers == expected.object("requestHeaders"), Comment(rawValue: id))
     }
   }
 

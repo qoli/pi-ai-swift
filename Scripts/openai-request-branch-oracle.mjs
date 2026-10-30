@@ -128,14 +128,16 @@ process.stdout.write(`${JSON.stringify({
 async function capture(testCase) {
   const modulePath = path.join(
     upstreamRoot,
-    "packages/ai/src/api",
-    `${testCase.protocolID}.ts`,
+    testCase.providerFactory ? "packages/ai/src/providers" : "packages/ai/src/api",
+    `${testCase.providerFactory ? testCase.providerID : testCase.protocolID}.ts`,
   );
+  const source = await import(pathToFileURL(modulePath).href);
   const implementation = await providerStreams(
     upstreamRoot,
-    await import(pathToFileURL(modulePath).href),
+    testCase.providerFactory ? source[testCase.providerFactory]() : source,
   );
   let payload;
+  let requestHeaders;
   const schema = grammarSchema(testCase.grammarSchemaVariant, testCase);
   const tool = {
     name: "sample_tool",
@@ -278,16 +280,21 @@ async function capture(testCase) {
     ...testCase.options,
     onPayload(value) {
       payload = value;
-      throw new CaptureComplete();
+      if (!testCase.captureWire) throw new CaptureComplete();
     },
-    fetch() {
-      throw new Error("unexpected network request");
+    async fetch(input, init) {
+      if (!testCase.captureWire) throw new Error("unexpected network request");
+      const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
+      requestHeaders = Object.fromEntries(testCase.headerKeys.map(key => [key, headers.get(key)]));
+      return new Response(`data: ${JSON.stringify({ choices: [{ index: 0, delta: {}, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`,
+        { status: 200, headers: { "content-type": "text/event-stream" } });
     },
   };
   const stream = implementation.stream(model, context, options);
   const result = await stream.result();
   if (payload !== undefined) return {
     requestBody: canonicalize(project(testCase, payload)),
+    ...(testCase.captureWire ? { requestHeaders } : {}),
     ...(testCase.includeSupportedThinkingLevels
       ? { supportedThinkingLevels: getSupportedThinkingLevels(model) } : {}),
   };

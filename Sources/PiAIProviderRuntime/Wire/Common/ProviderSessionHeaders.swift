@@ -3,8 +3,7 @@ import Foundation
 enum ProviderSessionHeaders {
   static func applyOpenCode(request: ProviderRequest, to urlRequest: inout URLRequest) {
     guard
-      ["opencode", "opencode-go"].contains(request.providerID)
-        || urlRequest.url?.host == "opencode.ai",
+      ["opencode", "opencode-go"].contains(request.providerID),
       let sessionID = request.options.sessionID, !sessionID.isEmpty
     else { return }
     setDefault(sessionID, forHTTPHeaderField: "x-opencode-session", to: &urlRequest)

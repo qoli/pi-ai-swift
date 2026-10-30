@@ -28,7 +28,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           var reducer = OpenAICompletionsReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
-            supportsFinishReason: context.modelConfiguration.metadata.object("compat")?
+            supportsFinishReason: OpenAICompletionsCompatibility.resolve(context)
               .bool("supportsFinishReason") != false,
             grammarInputProperties: try completionGrammarInputProperties(request, context: context),
             pricing: try ProviderUsagePricing.parse(
@@ -185,7 +185,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
-    let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    let compat = OpenAICompletionsCompatibility.resolve(context)
     ProviderSessionHeaders.applyOpenAICompletionsAffinity(
       request: request, context: context, compat: compat, to: &urlRequest)
     ProviderSessionHeaders.applyOpenCode(request: request, to: &urlRequest)
@@ -236,7 +236,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     context: WireProtocolContext
   ) throws -> [String: String] {
     let supports =
-      context.modelConfiguration.metadata.object("compat")?
+      OpenAICompletionsCompatibility.resolve(context)
       .bool("supportsOpenAIGrammarTools") == true
     var result: [String: String] = [:]
     for tool in request.tools {
@@ -255,7 +255,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
     let metadata = context.modelConfiguration.metadata
-    let compat = metadata.object("compat") ?? [:]
+    let compat = OpenAICompletionsCompatibility.resolve(context)
     let activeTools = request.tools
     var body: [String: JSONValue] = [
       "model": .string(request.modelID),
@@ -375,7 +375,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
   ) throws -> [JSONValue] {
     let target = ProviderMessageSource(
       api: protocolID, providerID: context.provider.id, modelID: context.model.id)
-    let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    let compat = OpenAICompletionsCompatibility.resolve(context)
     var result: [JSONValue] = []
     var pendingToolImages: [ProviderImage] = []
     for (messageIndex, message) in messages.enumerated() {

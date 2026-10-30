@@ -1,0 +1,1291 @@
+{
+  "cases": {
+    "completions.detected-compat-ant-ling": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-cerebras": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-chutes-url": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-cloudflare-gateway": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-cloudflare-workers": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-custom-opencode-url": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-deepseek-provider": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "thinking": {
+          "type": "enabled"
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-deepseek-uppercase": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "thinking": {
+          "type": "enabled"
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-deepseek-url": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "thinking": {
+          "type": "enabled"
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-explicit-overrides": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "store": false,
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-moonshot": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-moonshot-url": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-null-overrides": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "thinking": {
+          "type": "enabled"
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-nvidia": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-nvidia-url": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-opencode": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": "compat-session",
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-openrouter-anthropic": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": [
+              {
+                "cache_control": {
+                  "ttl": "1h",
+                  "type": "ephemeral"
+                },
+                "text": "System branch fixture",
+                "type": "text"
+              }
+            ],
+            "role": "developer"
+          },
+          {
+            "content": [
+              {
+                "cache_control": {
+                  "ttl": "1h",
+                  "type": "ephemeral"
+                },
+                "text": "hello",
+                "type": "text"
+              }
+            ],
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning": {
+          "effort": "low"
+        },
+        "store": false,
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "cache_control": {
+              "ttl": "1h",
+              "type": "ephemeral"
+            },
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": "compat-session"
+      }
+    },
+    "completions.detected-compat-openrouter-custom-url": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning": {
+          "effort": "low"
+        },
+        "store": false,
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": "compat-session"
+      }
+    },
+    "completions.detected-compat-openrouter-in-path": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning": {
+          "effort": "low"
+        },
+        "store": false,
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": "compat-session"
+      }
+    },
+    "completions.detected-compat-openrouter-openai": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning": {
+          "effort": "low"
+        },
+        "store": false,
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": "compat-session"
+      }
+    },
+    "completions.detected-compat-standard": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "reasoning_effort": "low",
+        "store": false,
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-together": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "reasoning": {
+          "enabled": true
+        },
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-together-url": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "reasoning": {
+          "enabled": true
+        },
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-xai": {
+      "requestBody": {
+        "max_completion_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "stream_options": {
+          "include_usage": true
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-zai": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "stream_options": {
+          "include_usage": true
+        },
+        "thinking": {
+          "clear_thinking": false,
+          "type": "enabled"
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    },
+    "completions.detected-compat-zai-url": {
+      "requestBody": {
+        "max_tokens": 123,
+        "messages": [
+          {
+            "content": "System branch fixture",
+            "role": "system"
+          },
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "prompt_cache_key": "compat-session",
+        "prompt_cache_retention": "24h",
+        "stream_options": {
+          "include_usage": true
+        },
+        "thinking": {
+          "clear_thinking": false,
+          "type": "enabled"
+        },
+        "tools": [
+          {
+            "function": {
+              "description": "Sample tool",
+              "name": "sample_tool",
+              "parameters": {
+                "properties": {
+                  "payload": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "payload"
+                ],
+                "type": "object"
+              }
+            },
+            "type": "function"
+          }
+        ]
+      },
+      "requestHeaders": {
+        "session_id": null,
+        "x-client-request-id": null,
+        "x-opencode-session": null,
+        "x-session-affinity": null,
+        "x-session-id": null
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}
