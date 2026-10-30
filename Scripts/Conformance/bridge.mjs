@@ -15,6 +15,7 @@ const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
 const { getCurrentSystemPrompt, getCurrentTools } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
 const { getEnvApiKey } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/env-api-keys.ts")));
+const { getProviderEnvValue } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/provider-env.ts")));
 
 function record(operation, protocol, failure, unrepresentedCapabilities = []) {
   const state = expect.getState();
@@ -56,7 +57,8 @@ function fixtureInput(model, context, options, responses, credential) {
       tools: getCurrentTools(context.messages),
       messages: context.messages.filter(message => message.role !== "system"),
     },
-    options,
+    options: { ...options, cacheRetention: options.cacheRetention ||
+      (getProviderEnvValue("PI_CACHE_RETENTION", options.env) === "long" ? "long" : "short") },
     credential,
     environment: Object.fromEntries(Object.entries(process.env).filter(([key]) =>
       key.startsWith("AZURE_OPENAI_") || ["GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_LOCATION"].includes(key))),
