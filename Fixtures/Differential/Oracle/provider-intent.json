@@ -1,5 +1,767 @@
 {
   "cases": {
+    "anthropic-raw-options.adaptive-effort-without-thinking": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "anthropic-raw-options.adaptive-low": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.adaptive-omitted-effort": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ],
+        "thinking": {
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.legacy-budget": {
+      "requestBody": {
+        "betas": [
+          "interleaved-thinking-2025-05-14"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ],
+        "thinking": {
+          "budget_tokens": 2048,
+          "display": "summarized",
+          "type": "enabled"
+        }
+      }
+    },
+    "anthropic-raw-options.legacy-default-budget": {
+      "requestBody": {
+        "betas": [
+          "interleaved-thinking-2025-05-14"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ],
+        "thinking": {
+          "budget_tokens": 1024,
+          "display": "summarized",
+          "type": "enabled"
+        }
+      }
+    },
+    "anthropic-raw-options.legacy-disabled": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        }
+      }
+    },
+    "anthropic-raw-options.legacy-omitted": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "anthropic-raw-options.legacy-zero-budget": {
+      "requestBody": {
+        "betas": [
+          "interleaved-thinking-2025-05-14"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ],
+        "thinking": {
+          "budget_tokens": 1024,
+          "display": "summarized",
+          "type": "enabled"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-None": {
+      "providerThinkingLevel": "high",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "high"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-effort-only": {
+      "providerThinkingLevel": "medium",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "medium"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-high": {
+      "providerThinkingLevel": "high",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "high"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-low": {
+      "providerThinkingLevel": "low",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-max": {
+      "providerThinkingLevel": "max",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "max"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-medium": {
+      "providerThinkingLevel": "medium",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "medium"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-off-supported": {
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-off-unsupported": {
+      "providerThinkingLevel": "high",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "high"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-omitted": {
+      "providerThinkingLevel": "high",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "high"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.managed-xhigh": {
+      "providerThinkingLevel": "xhigh",
+      "requestBody": {
+        "betas": [
+          "mid-conversation-output-config-2026-07-01",
+          "thinking-binding-controls-2026-08-01"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "low"
+            },
+            "role": "system"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          },
+          {
+            "content": [],
+            "output_config": {
+              "effort": "xhigh"
+            },
+            "role": "system"
+          }
+        ],
+        "output_config": {
+          "effort": "low"
+        },
+        "thinking": {
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          },
+          "display": "summarized",
+          "type": "adaptive"
+        }
+      }
+    },
+    "anthropic-raw-options.unmanaged-effort-only": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
     "anthropic-strict-exclusiveMaximum-prefer": {
       "requestBody": {
         "max_tokens": 4096,

@@ -5812,6 +5812,853 @@
       "projectFields": [
         "contents"
       ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-low",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": true,
+        "effort": "low"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-medium",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": true,
+        "effort": "medium"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-high",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": true,
+        "effort": "high"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-xhigh",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": true,
+        "effort": "xhigh"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-max",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": true,
+        "effort": "max"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-None",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": true
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-off-unsupported",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-off-supported",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "low": "low",
+          "high": "high"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-omitted",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {},
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.adaptive-low",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": true,
+        "effort": "low"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.adaptive-omitted-effort",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": true
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.legacy-budget",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {}
+      },
+      "options": {
+        "thinkingEnabled": true,
+        "thinkingBudgetTokens": 2048
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.legacy-zero-budget",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {}
+      },
+      "options": {
+        "thinkingEnabled": true,
+        "thinkingBudgetTokens": 0
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.legacy-default-budget",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {}
+      },
+      "options": {
+        "thinkingEnabled": true
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.legacy-disabled",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {},
+        "compat": {}
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.legacy-omitted",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {}
+      },
+      "options": {},
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.adaptive-effort-without-thinking",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true
+        }
+      },
+      "options": {
+        "effort": "low"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.managed-effort-only",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": "low",
+          "low": "low",
+          "medium": "medium",
+          "high": "high",
+          "max": "max"
+        },
+        "compat": {
+          "forceAdaptiveThinking": true,
+          "supportsMidConvoEffort": true
+        }
+      },
+      "options": {
+        "effort": "medium"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ],
+      "rawOptionKeys": [
+        "effort"
+      ]
+    },
+    {
+      "id": "anthropic-raw-options.unmanaged-effort-only",
+      "model": {
+        "id": "claude-fable-5-1",
+        "name": "Claude Fable 5.1",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 32000,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "thinkingLevelMap": {},
+        "compat": {
+          "forceAdaptiveThinking": true
+        }
+      },
+      "options": {
+        "effort": "medium"
+      },
+      "history": true,
+      "rawOptions": true,
+      "projectFields": [
+        "messages",
+        "thinking",
+        "output_config",
+        "max_tokens",
+        "betas"
+      ],
+      "rawOptionKeys": [
+        "effort"
+      ]
     }
   ]
 }

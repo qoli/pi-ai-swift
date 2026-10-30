@@ -88,8 +88,16 @@ struct ProviderIntentDifferentialTests {
         messages.append(.user([.text("again")]))
       }
       let effort =
-        options.string("reasoningEffort") ?? options.string("reasoning")
-        ?? (options.bool("thinkingEnabled") == false || spec.explicitOff == true ? "off" : nil)
+        spec.rawOptions == true
+        ? nil
+        : options.string("reasoningEffort") ?? options.string("reasoning")
+          ?? (options.bool("thinkingEnabled") == false || spec.explicitOff == true ? "off" : nil)
+      var providerOptions = options.filter { ["samplingParams", "thinking"].contains($0.key) }
+      if spec.rawOptions == true {
+        for key in spec.rawOptionKeys ?? ["thinkingEnabled", "thinkingBudgetTokens", "effort"] {
+          providerOptions[key] = options[key] ?? .null
+        }
+      }
       let request = ProviderRequest(
         id: spec.id, providerID: provider, modelID: id, messages: messages,
         tools: try (spec.tools ?? []).map {
@@ -111,7 +119,7 @@ struct ProviderIntentDifferentialTests {
           },
           reasoningEffort: effort.flatMap(ProviderReasoningEffort.init(rawValue:)),
           responseSchema: nil,
-          providerOptions: options.filter { ["samplingParams", "thinking"].contains($0.key) },
+          providerOptions: providerOptions,
           sessionID: options.string("sessionId"),
           cacheRetention: options.string("cacheRetention").flatMap(
             ProviderCacheRetention.init(rawValue:)) ?? .none),
@@ -122,14 +130,21 @@ struct ProviderIntentDifferentialTests {
       let transport = IntentCaptureTransport()
       let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
       var failure: ProviderRuntimeFailure?
+      var providerThinkingLevel: String?
       do {
         for try await _ in adapter.stream(request, context: context, transport: transport) {}
       } catch {
+        providerThinkingLevel = (error as? ProviderRuntimeFailure)?.providerMetadata?.string(
+          "providerThinkingLevel")
         if await transport.body == nil {
           failure = try #require(error as? ProviderRuntimeFailure)
         }
       }
       let observation = try #require(oracle.cases[spec.id])
+      if spec.rawOptions == true {
+        #expect(
+          providerThinkingLevel == observation.providerThinkingLevel, Comment(rawValue: spec.id))
+      }
       if let expectedError = observation.error {
         #expect(await transport.body == nil, Comment(rawValue: spec.id))
         #expect(failure?.message == expectedError, Comment(rawValue: spec.id))
@@ -172,6 +187,8 @@ struct ProviderIntentDifferentialTests {
     let assistantContent: [[String: JSONValue]]?
     let assistantSource: [String: JSONValue]?
     let projectFields: [String]?
+    let rawOptions: Bool?
+    let rawOptionKeys: [String]?
   }
   private struct Oracle: Decodable {
     let upstreamRevision: String
@@ -181,6 +198,7 @@ struct ProviderIntentDifferentialTests {
     let requestBody: JSONValue?
     let resolvedLevel: String?
     let error: String?
+    let providerThinkingLevel: String?
   }
 }
 
@@ -188,6 +206,8 @@ private actor IntentCaptureTransport: ProviderHTTPStreamingTransport {
   var body: JSONValue?
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     body = try JSONDecoder().decode(JSONValue.self, from: request.httpBody!)
-    throw CancellationError()
+    throw ProviderRuntimeFailure(
+      code: .transportFailed, message: "fixture request captured", providerID: nil,
+      operation: "fixture.capture", causeDescription: nil)
   }
 }

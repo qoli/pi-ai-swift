@@ -100,8 +100,9 @@ struct SwiftConformanceProbe {
         constrainedSampling: try sampling(tool.object("constrainedSampling")))
     }
     let usesRawMistralOptions = api == "mistral-conversations" && input.generationMode != .simple
+    let usesRawAnthropicOptions = api == "anthropic-messages" && input.generationMode != .simple
     let effort =
-      usesRawMistralOptions
+      usesRawMistralOptions || usesRawAnthropicOptions
       ? nil
       : (options.string("reasoningEffort") ?? options.string("reasoning")
         ?? (options.bool("thinkingEnabled") == false ? "off" : nil))
@@ -121,6 +122,11 @@ struct SwiftConformanceProbe {
       }
       if usesRawMistralOptions {
         providerOptions["reasoningEffort"] = options["reasoningEffort"] ?? .null
+      }
+    }
+    if usesRawAnthropicOptions {
+      for key in ["thinkingEnabled", "thinkingBudgetTokens", "effort"] {
+        providerOptions[key] = options[key] ?? .null
       }
     }
     let request = ProviderRequest(

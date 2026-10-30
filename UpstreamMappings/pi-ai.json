@@ -2023,7 +2023,9 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicErrorStopReasonsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInputTransformationsMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInputTransformationsMatchPinnedSource",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicRawOptionsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test",

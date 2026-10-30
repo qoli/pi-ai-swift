@@ -45,7 +45,8 @@ for (const spec of fixture.cases) {
     delete body.modelId;
   }
   if (spec.projectFields) {
-    cases[spec.id] = { requestBody: Object.fromEntries(spec.projectFields.map(key => [key, body[key]])) };
+    cases[spec.id] = { requestBody: Object.fromEntries(spec.projectFields.map(key => [key, body[key]])),
+      ...(spec.rawOptions ? { providerThinkingLevel: result.providerThinkingLevel } : {}) };
     continue;
   }
   cases[spec.id] = { requestBody: spec.model.api.startsWith("google-")

@@ -10,10 +10,15 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
   ) -> AsyncThrowingStream<ProviderEvent, any Error> {
     AsyncThrowingStream { continuation in
       let task = Task {
+        var preparedThinkingLevel: String?
         do {
           let response = try await PreferredStrictToolFallback.response(
             request: request, api: .anthropic, transport: transport,
-            makeRequest: { try makeRequest($0, context: context) })
+            makeRequest: { current in
+              let wire = try makeRequest(current, context: context)
+              preparedThinkingLevel = managedThinkingLevel(request: current, context: context)
+              return wire
+            })
           var reducer = AnthropicEventReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
@@ -43,6 +48,18 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
           }
           for event in try reducer.finish() { continuation.yield(event) }
           continuation.finish()
+        } catch let error as ProviderRuntimeFailure {
+          if let preparedThinkingLevel {
+            var metadata = error.providerMetadata ?? [:]
+            metadata["providerThinkingLevel"] = .string(preparedThinkingLevel)
+            continuation.finish(
+              throwing: ProviderRuntimeFailure(
+                code: error.code, message: error.message, providerID: error.providerID,
+                operation: error.operation, causeDescription: error.causeDescription,
+                providerMetadata: metadata))
+          } else {
+            continuation.finish(throwing: error)
+          }
         } catch {
           continuation.finish(throwing: error)
         }
@@ -66,7 +83,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     urlRequest.setValue("true", forHTTPHeaderField: "anthropic-dangerous-direct-browser-access")
     let isOAuth = isOAuthCredential(context.credential)
     let betaFeatures = betaFeatures(
-      request: request, compat: compat, isOAuth: isOAuth, headers: context.headers)
+      request: request, compat: compat, isOAuth: isOAuth, headers: context.headers,
+      reasoning: context.model.capabilities.reasoning)
     if isOAuth {
       urlRequest.setValue("claude-cli/2.1.280", forHTTPHeaderField: "User-Agent")
       urlRequest.setValue("cli", forHTTPHeaderField: "x-app")
@@ -102,7 +120,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     request: ProviderRequest,
     compat: [String: JSONValue],
     isOAuth: Bool,
-    headers: [String: String]
+    headers: [String: String], reasoning: Bool
   ) -> [String] {
     if let configured = headers.first(where: { $0.key.lowercased() == "anthropic-beta" })?.value {
       return Array(
@@ -118,7 +136,10 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     if !request.tools.isEmpty, compat.bool("supportsEagerToolInputStreaming") == false {
       features.append("fine-grained-tool-streaming-2025-05-14")
     }
-    if request.options.reasoningEffort != nil, request.options.reasoningEffort != .off,
+    let thinkingEnabled =
+      rawThinkingEnabled(request).map { $0.boolValue == true }
+      ?? (request.options.reasoningEffort != nil && request.options.reasoningEffort != .off)
+    if reasoning, thinkingEnabled,
       request.options.providerOptions["interleavedThinking"]?.boolValue != false,
       compat.bool("forceAdaptiveThinking") != true
     {
@@ -193,6 +214,10 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       try makeMessages(request.messages.insertingMissingToolResults(), context: context),
       cacheControl: cacheControl
     )
+    let rawThinking = rawThinkingEnabled(request)
+    let thinkingDisabled =
+      rawThinking == .bool(false) && context.model.capabilities.reasoning
+      && context.modelConfiguration.metadata.object("thinkingLevelMap")?["off"] != .null
     let managedEffort = managedThinkingLevel(request: request, context: context)
     let wireMessages =
       managedEffort.map {
@@ -225,14 +250,19 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
         }
       )
     }
-    if let temperature = request.options.temperature,
-      request.options.reasoningEffort == nil || request.options.reasoningEffort == .off,
-      managedEffort == nil,
+    let allowsTemperature =
+      rawThinking != nil
+      ? rawThinking?.boolValue != true && compat.bool("supportsMidConvoEffort") != true
+      : (request.options.reasoningEffort == nil || request.options.reasoningEffort == .off)
+        && managedEffort == nil
+    if let temperature = request.options.temperature, allowsTemperature,
       compat.bool("supportsTemperature") != false
     {
       body["temperature"] = .number(temperature)
     }
-    if managedEffort != nil {
+    if thinkingDisabled {
+      body["thinking"] = .object(["type": .string("disabled")])
+    } else if managedEffort != nil {
       let display = request.options.providerOptions["thinkingDisplay"]?.stringValue ?? "summarized"
       body["thinking"] = .object([
         "type": .string("adaptive"),
@@ -240,6 +270,27 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
         "block_binding": .object(["prefix_mismatch_behavior": .string("drop_block")]),
       ])
       body["output_config"] = .object(["effort": .string("low")])
+    } else if let rawThinking {
+      if context.model.capabilities.reasoning, rawThinking == .bool(true) {
+        let display = request.options.providerOptions.string("thinkingDisplay") ?? "summarized"
+        if compat.bool("forceAdaptiveThinking") == true {
+          body["thinking"] = .object(["type": .string("adaptive"), "display": .string(display)])
+          if let effort = request.options.providerOptions.string("effort"), !effort.isEmpty {
+            body["output_config"] = .object(["effort": .string(effort)])
+          }
+        } else {
+          let budget: JSONValue
+          switch request.options.providerOptions["thinkingBudgetTokens"] {
+          case nil, .null, .integer(0), .number(0), .bool(false), .string(""):
+            budget = .integer(1024)
+          case .some(let value): budget = value
+          }
+          body["thinking"] = .object([
+            "type": .string("enabled"), "budget_tokens": budget,
+            "display": .string(display),
+          ])
+        }
+      }
     } else if let effort = request.options.reasoningEffort, context.model.capabilities.reasoning {
       let metadata = context.modelConfiguration.metadata
       if effort == .off {
@@ -359,7 +410,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       ])
     }
     let supportedProviderOptions: Set<String> = [
-      "interleavedThinking", "metadata", "thinkingDisplay",
+      "interleavedThinking", "metadata", "thinkingDisplay", "thinkingEnabled",
+      "thinkingBudgetTokens", "effort",
     ]
     let unknown = Set(request.options.providerOptions.keys).subtracting(supportedProviderOptions)
     guard unknown.isEmpty else {
@@ -543,6 +595,15 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     return groupingConsecutiveToolResults(converted)
   }
 
+  private func rawThinkingEnabled(_ request: ProviderRequest) -> JSONValue? {
+    guard
+      ["thinkingEnabled", "thinkingBudgetTokens", "effort"].contains(where: {
+        request.options.providerOptions[$0] != nil
+      })
+    else { return nil }
+    return request.options.providerOptions["thinkingEnabled"] ?? .null
+  }
+
   private func managedThinkingLevel(
     request: ProviderRequest,
     context: WireProtocolContext
@@ -551,6 +612,14 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       context.modelConfiguration.metadata.object("compat")?.bool("supportsMidConvoEffort")
         == true
     else { return nil }
+    if let rawThinking = rawThinkingEnabled(request) {
+      if context.model.capabilities.reasoning, rawThinking == .bool(false),
+        context.modelConfiguration.metadata.object("thinkingLevelMap")?["off"] != .null
+      {
+        return nil
+      }
+      return request.options.providerOptions.string("effort") ?? "high"
+    }
     let requested = request.options.reasoningEffort ?? .high
     guard requested != .off else { return nil }
     return context.modelConfiguration.metadata.object("thinkingLevelMap")?.string(
