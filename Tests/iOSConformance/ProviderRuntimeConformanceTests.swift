@@ -478,6 +478,25 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testBedrockFailureMetadataMatchesPinnedSource() async throws {
+    let oracle = try load("Differential/Oracle/response-anthropic-bedrock-pi.json")
+    let source = try XCTUnwrap(oracle.object("scenarios")?.object("bedrock-provider-stop-error"))
+    let decoder = try XCTUnwrap(source.object("decoderInput"))
+    let chunks = try XCTUnwrap(decoder.array("chunksBase64")).map {
+      try XCTUnwrap(Data(base64Encoded: try XCTUnwrap($0.stringValue)))
+    }
+    let (request, context) = inputs(api: "bedrock-converse-stream", providerID: "amazon-bedrock")
+    let result = try await replay(
+      BedrockConverseStreamAdapter(), request: request,
+      context: context, chunks: chunks)
+    let expected = try XCTUnwrap(source.object("terminal"))
+    XCTAssertEqual(result.failure?.code, .transportFailed)
+    XCTAssertEqual(result.failure?.message, expected.string("errorMessage"))
+    XCTAssertEqual(
+      result.failure?.providerMetadata?.string("rawStopReason"), expected.string("rawStopReason"))
+    XCTAssertNil(result.snapshot)
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

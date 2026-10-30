@@ -1099,7 +1099,8 @@ private struct BedrockEventReducer {
         message: "Provider stopped with: \(value)",
         providerID: providerID,
         operation: "bedrock.event.error",
-        causeDescription: value
+        causeDescription: value,
+        providerMetadata: ["rawStopReason": .string(value)]
       )
     }
   }
