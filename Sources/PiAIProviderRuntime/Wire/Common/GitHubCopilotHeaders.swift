@@ -38,7 +38,7 @@ private func containsImage(_ message: ProviderMessage) -> Bool {
       if case .image = item { return true }
       return false
     }
-  case .system, .assistant, .assistantMessage:
+  case .system, .systemMessage, .assistant, .assistantMessage:
     return false
   }
 }

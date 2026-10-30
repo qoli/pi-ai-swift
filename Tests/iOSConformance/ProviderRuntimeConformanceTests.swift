@@ -1294,6 +1294,71 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAnthropicInlineToolValuesMatchPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/strict-fallback-inline.json")
+    let oracle = try load("Differential/Oracle/strict-fallback-inline.json")
+    for value in try XCTUnwrap(fixture.array("cases")) {
+      let spec = try XCTUnwrap(value.objectValue)
+      let name = try XCTUnwrap(spec.string("id"))
+      func tools(_ values: [JSONValue]) throws -> [ProviderToolDefinition] {
+        try values.map { value in
+          let tool = try XCTUnwrap(value.objectValue)
+          return .init(
+            name: try XCTUnwrap(tool.string("name")), description: tool.string("description") ?? "",
+            inputSchema: try XCTUnwrap(tool["parameters"]),
+            constrainedSampling: tool.object("constrainedSampling")?.string("strict")
+              .flatMap(ProviderStrictPreference.init(rawValue:)).map { .jsonSchema(strict: $0) })
+        }
+      }
+      let messages = try XCTUnwrap(spec.array("messages")).map { value -> ProviderMessage in
+        let message = try XCTUnwrap(value.objectValue)
+        switch message.string("role") {
+        case "system":
+          return .systemMessage(
+            .init(
+              content: message.string("content") ?? "",
+              toolsAdded: try tools(message.array("toolsAdded") ?? []),
+              toolsRemoved: (message.array("toolsRemoved") ?? []).compactMap {
+                $0.objectValue?.string("name")
+              }))
+        case "assistant": return .assistant([])
+        default: return .user([.text(message.string("content") ?? "")])
+        }
+      }
+      var compat = spec.object("compat") ?? [:]
+      compat["supportsStrictTools"] = .bool(true)
+      let (_, base) = inputs(
+        api: "anthropic-messages", modelID: "fixture-claude", reasoning: false,
+        metadata: ["compat": .object(compat)])
+      let key = try XCTUnwrap(spec.string("apiKey"))
+      let credential: ProviderCredential =
+        key.contains("sk-ant-oat")
+        ? .oauth(
+          .init(accessToken: key, refreshToken: "", expiresAt: .distantFuture, metadata: [:]))
+        : .apiKey(.init(key: key, metadata: [:]))
+      var context = WireProtocolContext(
+        provider: base.provider, model: base.model, baseURL: base.baseURL,
+        headers: base.headers, credential: credential, modelConfiguration: base.modelConfiguration)
+      let capture = IOSWireObserverCapture()
+      context.wireObserver = .init(onPayload: { payload, _ in
+        await capture.payload(.object(payload))
+        return nil
+      })
+      let request = ProviderRequest(
+        id: name, providerID: "anthropic", modelID: "fixture-claude", messages: messages,
+        tools: try tools(spec.array("currentTools") ?? []),
+        options: .init(
+          maximumOutputTokens: 100, temperature: nil,
+          reasoningEffort: nil, responseSchema: nil, providerOptions: [:],
+          cacheRetention: spec.string("cacheRetention") == "none" ? .none : .short))
+      for try await _ in AnthropicMessagesAdapter().stream(
+        request, context: context, transport: IOSStrictFallbackFixture(spec: spec))
+      {}
+      let actual = await capture.payloads
+      XCTAssertEqual(actual, oracle.object("cases")?.object(name)?.array("logicalPayloads"), name)
+    }
+  }
+
   func testBedrockImportedContentMatchesPinnedSource() async throws {
     let fixture = try load("Differential/Cases/bedrock-input-interop.json")
     let oracle = try load("Differential/Oracle/bedrock-input-interop.json")
@@ -2437,6 +2502,8 @@ private struct IOSFixtureTransport: ProviderHTTPStreamingTransport {
 }
 
 private actor IOSWireObserverCapture {
+  var payloads: [JSONValue] = []
+  func payload(_ value: JSONValue) { payloads.append(value) }
   var stages: [String] = []
   var requestIDs: [String] = []
   var events: [JSONValue] = []

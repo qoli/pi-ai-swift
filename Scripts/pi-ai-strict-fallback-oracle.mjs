@@ -36,6 +36,7 @@ for (const test of fixture.cases) {
     path.join(root, "packages/ai/src/api", `${test.protocolID}.ts`))));
   const controller = new AbortController();
   const requests = [];
+  const logicalPayloads = [];
   const bedrock = test.protocolID === "bedrock-converse-stream";
   const model = {
     id:"fixture-claude",name:"Claude Fixture",api:test.protocolID,
@@ -43,7 +44,7 @@ for (const test of fixture.cases) {
     baseUrl:bedrock?"https://bedrock-runtime.us-east-1.amazonaws.com":"https://fixture.invalid",
     reasoning:false,input:["text"],contextWindow:200000,maxTokens:100,
     cost:{input:0,output:0,cacheRead:0,cacheWrite:0},
-    compat:bedrock?{supportsStrictMode:true}:{supportsStrictTools:true},
+    compat:{...(bedrock?{supportsStrictMode:true}:{supportsStrictTools:true}),...test.compat},
   };
   const tools = test.preferences.map((preference, i)=>({
     name:`tool_${i}`,description:"Fixture lookup",parameters:fixture.schema,
@@ -68,11 +69,12 @@ for (const test of fixture.cases) {
   };
   const outcomes=[];
   for(let call=0;call<(test.calls??1);call++) {
-    const stream=implementation.stream(model, {
+    const stream=implementation.stream(model, test.messages ? {messages:test.messages} : {
       messages:[{role:"user",content:"Hello",timestamp:0}],tools,
     },{
-      apiKey:"synthetic-fixture-key",maxTokens:100,maxRetries:0,cacheRetention:"none",
+      apiKey:test.apiKey??"synthetic-fixture-key",maxTokens:100,maxRetries:0,cacheRetention:test.cacheRetention??"none",
       signal:controller.signal,env:{AWS_BEDROCK_SKIP_AUTH:"1",AWS_REGION:"us-east-1"},
+      ...(fixture.observeLogicalPayload ? {onPayload: payload => { logicalPayloads.push(structuredClone(payload)); }} : {}),
       fetch:async (_url,init)=> {
         const failure=responseFor(JSON.parse(init.body));
         if(failure) return new Response(failure.body, {status:failure.status,headers:{"content-type":"application/json"}});
@@ -90,6 +92,6 @@ for (const test of fixture.cases) {
       ...(fixture.observeStrictFallbackDiagnostics ? { strictFallbackDiagnostics: (result.diagnostics ?? []).filter(value => value.type.endsWith("_strict_tools_fallback")).map(({ timestamp, ...value }) => value) } : {}),
       ...(result.stopReason==="error"?{errorMessage:result.errorMessage}:{})});
   }
-  cases[test.id]={requests,outcomes};
+  cases[test.id]={requests,outcomes,...(fixture.observeLogicalPayload ? {logicalPayloads} : {})};
 }
 console.log(JSON.stringify({upstreamRevision:fixture.upstreamRevision,cases},null,2));

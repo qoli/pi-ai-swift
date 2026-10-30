@@ -79,8 +79,10 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> URLRequest {
-    try request.validateSingleSystemMessage(operation: "anthropic.request.system")
     let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    if compat.bool("supportsMidConvoSystemMessages") != true {
+      try request.validateSingleSystemMessage(operation: "anthropic.request.system")
+    }
     let endpoint = context.baseURL.appending(path: "v1/messages")
     var urlRequest = URLRequest(url: endpoint)
     urlRequest.httpMethod = "POST"
@@ -159,8 +161,17 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     if let fallbacks = compat.array("allowedFallbackModels"), !fallbacks.isEmpty {
       features.append("server-side-fallback-2026-07-01")
     }
+    if usesNativeToolChanges(request, compat: compat) { features.append("inline-tools-2026-09-15") }
     var seen = Set<String>()
     return features.filter { seen.insert($0).inserted }
+  }
+
+  private func usesNativeToolChanges(_ request: ProviderRequest, compat: [String: JSONValue])
+    -> Bool
+  {
+    compat.bool("supportsMidConvoSystemMessages") == true
+      && compat.bool("supportsMidConvoToolChanges") == true
+      && request.messages.first?.systemPayload?.toolsAdded.isEmpty == false
   }
 
   private func applyCredential(
@@ -207,6 +218,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       )
     }
     let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    let nativeToolChanges = usesNativeToolChanges(request, compat: compat)
     let cacheControl: JSONValue? = {
       guard request.options.cacheRetention != .none else { return nil }
       var value: [String: JSONValue] = ["type": .string("ephemeral")]
@@ -218,7 +230,9 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       return .object(value)
     }()
     let cachedMessages = applyingCacheControlToLastUserMessage(
-      try makeMessages(request.messages.insertingMissingToolResults(), context: context),
+      try makeMessages(
+        request.messages.insertingMissingToolResults(), context: context,
+        isOAuth: isOAuth, nativeToolChanges: nativeToolChanges),
       cacheControl: cacheControl
     )
     let rawThinking = rawThinkingEnabled(request)
@@ -238,10 +252,10 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       "max_tokens": .integer(Int64(maximumOutputTokens)),
       "stream": .bool(true),
     ]
-    let systems = request.messages.compactMap { message -> String? in
-      guard case .system(let text) = message else { return nil }
-      return text
-    }
+    let systems =
+      (compat.bool("supportsMidConvoSystemMessages") == true
+      ? [request.messages.first?.systemPayload?.content].compactMap { $0 }
+      : request.messages.compactMap { $0.systemPayload?.content }).filter { !$0.isEmpty }
     if isOAuth || !systems.isEmpty {
       var systemTexts = systems
       if isOAuth {
@@ -352,34 +366,28 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
           $0.objectValue?.string("model").map { .object(["model": .string($0)]) }
         })
     }
-    if !request.tools.isEmpty {
-      body["tools"] = .array(
-        try request.tools.enumerated().map { index, tool in
-          let resolved = try ProviderConstrainedSamplingResolver.jsonSchema(
-            for: tool,
-            supportsStrictMode: compat.bool("supportsStrictTools") == true,
-            providerID: request.providerID,
-            operation: "anthropic.request.tool-schema",
-            isUnsupportedKeyword: isUnsupportedStrictKeyword)
-          let schema = anthropicToolSchema(resolved.schema, strict: resolved.strict == true)
-          var value: [String: JSONValue] = [
-            "name": .string(isOAuth ? claudeCodeToolName(tool.name) : tool.name),
-            "description": .string(tool.description),
-            "input_schema": schema,
-          ]
-          if resolved.strict == true { value["strict"] = .bool(true) }
-          if compat.bool("supportsEagerToolInputStreaming") != false {
-            value["eager_input_streaming"] = .bool(true)
-          }
-          if index == request.tools.indices.last,
-            compat.bool("supportsCacheControlOnTools") != false,
-            let cacheControl
-          {
-            value["cache_control"] = cacheControl
-          }
-          return .object(value)
-        }
-      )
+    let initialTools =
+      nativeToolChanges
+      ? request.messages.first?.systemPayload?.toolsAdded ?? [] : request.tools
+    if !initialTools.isEmpty {
+      var definitions = try initialTools.enumerated().map { index, tool in
+        try toolDefinition(
+          tool, providerID: request.providerID, compat: compat, isOAuth: isOAuth,
+          cacheControl: index == initialTools.indices.last
+            && compat.bool("supportsCacheControlOnTools") != false ? cacheControl : nil)
+      }
+      if nativeToolChanges {
+        definitions.append(
+          .object([
+            "name": .string("__pi_deferred_placeholder__"),
+            "description": .string("Reserved placeholder. Never available. Never call this."),
+            "input_schema": .object([
+              "type": .string("object"), "properties": .object([:]), "required": .array([]),
+            ]),
+            "defer_loading": .bool(true),
+          ]))
+      }
+      body["tools"] = .array(definitions)
     }
     if let choice = request.options.toolChoice {
       switch choice {
@@ -500,7 +508,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     guard let cacheControl, !messages.isEmpty else { return messages }
     var messages = messages
     let index = messages.index(before: messages.endIndex)
-    guard case .object(var message) = messages[index], message.string("role") == "user",
+    guard case .object(var message) = messages[index],
+      ["user", "system"].contains(message.string("role") ?? ""),
       let content = message["content"]
     else { return messages }
     switch content {
@@ -517,7 +526,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       let blockIndex = blocks.index(before: blocks.endIndex)
       guard case .object(var block) = blocks[blockIndex],
         let type = block.string("type"),
-        ["text", "image", "tool_result"].contains(type)
+        ["text", "image", "tool_result", "tool_addition", "tool_removal"].contains(type)
       else { return messages }
       block["cache_control"] = cacheControl
       blocks[blockIndex] = .object(block)
@@ -530,85 +539,156 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
   }
 
   private func makeMessages(
-    _ messages: [ProviderMessage],
-    context: WireProtocolContext
+    _ messages: [ProviderMessage], context: WireProtocolContext,
+    isOAuth: Bool = false, nativeToolChanges: Bool = false
   ) throws -> [JSONValue] {
+    let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    var pending: [JSONValue] = []
+    var converted: [JSONValue] = []
+    for (index, message) in messages.enumerated() {
+      if let system = message.systemPayload {
+        guard index > 0, compat.bool("supportsMidConvoSystemMessages") == true else { continue }
+        var blocks: [JSONValue] = []
+        if !system.content.isEmpty {
+          blocks.append(.object(["type": .string("text"), "text": .string(system.content)]))
+        }
+        if nativeToolChanges {
+          let redefined = Set(system.toolsAdded.map(\.name))
+          for name in system.toolsRemoved where !redefined.contains(name) {
+            blocks.append(
+              .object([
+                "type": .string("tool_removal"),
+                "tool": .object([
+                  "type": .string("tool_reference"),
+                  "name": .string(isOAuth ? claudeCodeToolName(name) : name),
+                ]),
+              ]))
+          }
+          for tool in system.toolsAdded {
+            let definition = try toolDefinition(
+              tool, providerID: context.provider.id, compat: compat, isOAuth: isOAuth)
+            blocks.append(
+              .object([
+                "type": .string("tool_addition"),
+                "tool": .object([
+                  "type": .string("tool_definition"), "definition": definition,
+                ]),
+              ]))
+          }
+        }
+        if !blocks.isEmpty {
+          pending.append(.object(["role": .string("system"), "content": .array(blocks)]))
+        }
+        continue
+      }
+      guard let value = try makeConversationMessage(message, context: context) else { continue }
+      if value.objectValue?.string("role") == "assistant" {
+        converted.append(contentsOf: pending)
+        pending.removeAll(keepingCapacity: true)
+      }
+      converted.append(value)
+    }
+    converted.append(contentsOf: pending)
+    return groupingConsecutiveToolResults(converted)
+  }
+
+  private func makeConversationMessage(_ message: ProviderMessage, context: WireProtocolContext)
+    throws -> JSONValue?
+  {
     let target = ProviderMessageSource(
       api: protocolID, providerID: context.provider.id, modelID: context.model.id)
     let allowEmptySignature =
       context.modelConfiguration.metadata.object("compat")?.bool("allowEmptySignature") == true
-    let converted: [JSONValue] = try messages.compactMap { message -> JSONValue? in
-      switch message {
-      case .system:
-        return nil
-      case .user(let content):
-        if content.count == 1, case .text(let text) = content[0] {
-          return .object([
-            "role": .string("user"),
-            "content": .string(text),
-          ])
-        }
+    switch message {
+    case .system, .systemMessage:
+      return nil
+    case .user(let content):
+      if content.count == 1, case .text(let text) = content[0] {
         return .object([
           "role": .string("user"),
-          "content": .array(try content.map(makeUserContent(_:))),
+          "content": .string(text),
         ])
-      case .userMessage(let user):
-        return try makeMessages([.user(user.content)], context: context)[0]
-      case .assistant(let content):
-        let blocks = content.compactMap {
-          makeAssistantContent($0, allowEmptySignature: allowEmptySignature)
-        }
-        guard !blocks.isEmpty else { return nil }
-        return .object(["role": .string("assistant"), "content": .array(blocks)])
-      case .assistantMessage(let assistant):
-        guard let content = assistant.replayContent(for: target) else { return nil }
-        let blocks = content.compactMap {
-          makeAssistantContent($0, allowEmptySignature: allowEmptySignature)
-        }
-        guard !blocks.isEmpty else { return nil }
-        return .object(["role": .string("assistant"), "content": .array(blocks)])
-      case .toolResult(let result):
-        let split = ErrorToolResultImages(result)
-        let content = split?.content ?? result.content
-        let hasImage = content.contains { item in
-          if case .image = item { return true }
-          return false
-        }
-        let resultContent: JSONValue
-        if !hasImage {
-          resultContent = .string(
-            content.compactMap { item -> String? in
-              guard case .text(let text) = item else { return nil }
-              return text
-            }.joined(separator: "\n")
-          )
-        } else {
-          var resultBlocks = try content.map(makeToolResultContent(_:))
-          if !content.contains(where: {
-            if case .text = $0 { return true }
-            return false
-          }) {
-            resultBlocks.insert(
-              .object(["type": .string("text"), "text": .string("(see attached image)")]), at: 0)
-          }
-          resultContent = .array(resultBlocks)
-        }
-        var blocks: [JSONValue] = [
-          .object([
-            "type": .string("tool_result"),
-            "tool_use_id": .string(result.toolCallID),
-            "is_error": .bool(result.isError),
-            "content": resultContent,
-          ])
-        ]
-        if let split {
-          blocks.append(.object(["type": .string("text"), "text": .string(split.caption)]))
-          blocks.append(contentsOf: try split.images.map { try makeUserContent(.image($0)) })
-        }
-        return .object(["role": .string("user"), "content": .array(blocks)])
       }
+      return .object([
+        "role": .string("user"),
+        "content": .array(try content.map(makeUserContent(_:))),
+      ])
+    case .userMessage(let user):
+      return try makeMessages([.user(user.content)], context: context)[0]
+    case .assistant(let content):
+      let blocks = content.compactMap {
+        makeAssistantContent($0, allowEmptySignature: allowEmptySignature)
+      }
+      guard !blocks.isEmpty else { return nil }
+      return .object(["role": .string("assistant"), "content": .array(blocks)])
+    case .assistantMessage(let assistant):
+      guard let content = assistant.replayContent(for: target) else { return nil }
+      let blocks = content.compactMap {
+        makeAssistantContent($0, allowEmptySignature: allowEmptySignature)
+      }
+      guard !blocks.isEmpty else { return nil }
+      return .object(["role": .string("assistant"), "content": .array(blocks)])
+    case .toolResult(let result):
+      let split = ErrorToolResultImages(result)
+      let content = split?.content ?? result.content
+      let hasImage = content.contains { item in
+        if case .image = item { return true }
+        return false
+      }
+      let resultContent: JSONValue
+      if !hasImage {
+        resultContent = .string(
+          content.compactMap { item -> String? in
+            guard case .text(let text) = item else { return nil }
+            return text
+          }.joined(separator: "\n")
+        )
+      } else {
+        var resultBlocks = try content.map(makeToolResultContent(_:))
+        if !content.contains(where: {
+          if case .text = $0 { return true }
+          return false
+        }) {
+          resultBlocks.insert(
+            .object(["type": .string("text"), "text": .string("(see attached image)")]), at: 0)
+        }
+        resultContent = .array(resultBlocks)
+      }
+      var blocks: [JSONValue] = [
+        .object([
+          "type": .string("tool_result"),
+          "tool_use_id": .string(result.toolCallID),
+          "is_error": .bool(result.isError),
+          "content": resultContent,
+        ])
+      ]
+      if let split {
+        blocks.append(.object(["type": .string("text"), "text": .string(split.caption)]))
+        blocks.append(contentsOf: try split.images.map { try makeUserContent(.image($0)) })
+      }
+      return .object(["role": .string("user"), "content": .array(blocks)])
     }
-    return groupingConsecutiveToolResults(converted)
+  }
+
+  private func toolDefinition(
+    _ tool: ProviderToolDefinition, providerID: String, compat: [String: JSONValue],
+    isOAuth: Bool, cacheControl: JSONValue? = nil
+  ) throws -> JSONValue {
+    let resolved = try ProviderConstrainedSamplingResolver.jsonSchema(
+      for: tool, supportsStrictMode: compat.bool("supportsStrictTools") == true,
+      providerID: providerID, operation: "anthropic.request.tool-schema",
+      isUnsupportedKeyword: isUnsupportedStrictKeyword)
+    var value: [String: JSONValue] = [
+      "name": .string(isOAuth ? claudeCodeToolName(tool.name) : tool.name),
+      "description": .string(tool.description),
+      "input_schema": anthropicToolSchema(resolved.schema, strict: resolved.strict == true),
+    ]
+    if resolved.strict == true { value["strict"] = .bool(true) }
+    if compat.bool("supportsEagerToolInputStreaming") != false {
+      value["eager_input_streaming"] = .bool(true)
+    }
+    if let cacheControl { value["cache_control"] = cacheControl }
+    return .object(value)
   }
 
   private func rawThinkingEnabled(_ request: ProviderRequest) -> JSONValue? {

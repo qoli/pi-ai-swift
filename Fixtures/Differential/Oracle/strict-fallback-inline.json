@@ -1,0 +1,1370 @@
+{
+  "cases": {
+    "inline-cache-tail": {
+      "logicalPayloads": [
+        {
+          "betas": [
+            "inline-tools-2026-09-15"
+          ],
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            },
+            {
+              "content": [
+                {
+                  "cache_control": {
+                    "type": "ephemeral"
+                  },
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "cache_control": {
+                "type": "ephemeral"
+              },
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "cache_control": {
+                "type": "ephemeral"
+              },
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": []
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            },
+            {
+              "content": [
+                {
+                  "cache_control": {
+                    "type": "ephemeral"
+                  },
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "cache_control": {
+                "type": "ephemeral"
+              },
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "cache_control": {
+                "type": "ephemeral"
+              },
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        }
+      ]
+    },
+    "inline-pending-placement": {
+      "logicalPayloads": [
+        {
+          "betas": [
+            "inline-tools-2026-09-15"
+          ],
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "text": "Update",
+                  "type": "text"
+                },
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": []
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "text": "Update",
+                  "type": "text"
+                },
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        }
+      ]
+    },
+    "inline-prefer-required": {
+      "logicalPayloads": [
+        {
+          "betas": [
+            "claude-code-20250219",
+            "oauth-2025-04-20",
+            "inline-tools-2026-09-15"
+          ],
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "text": "You are Claude Code, Anthropic's official CLI for Claude.",
+              "type": "text"
+            },
+            {
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        },
+        {
+          "betas": [
+            "claude-code-20250219",
+            "oauth-2025-04-20",
+            "inline-tools-2026-09-15"
+          ],
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "properties": {
+                          "optional": {
+                            "type": "number"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup"
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "text": "You are Claude Code, Anthropic's official CLI for Claude.",
+              "type": "text"
+            },
+            {
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": [
+            {
+              "details": {
+                "reason": "strict_tool_limits_exceeded"
+              },
+              "error": {
+                "message": "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large\"}}"
+              },
+              "type": "anthropic_strict_tools_fallback"
+            }
+          ]
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "text": "You are Claude Code, Anthropic's official CLI for Claude.",
+              "type": "text"
+            },
+            {
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        },
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "properties": {
+                          "optional": {
+                            "type": "number"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup"
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            },
+            {
+              "content": [
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "text": "You are Claude Code, Anthropic's official CLI for Claude.",
+              "type": "text"
+            },
+            {
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        }
+      ]
+    },
+    "inline-removal-redefinition": {
+      "logicalPayloads": [
+        {
+          "betas": [
+            "inline-tools-2026-09-15"
+          ],
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "text": "Update",
+                  "type": "text"
+                },
+                {
+                  "tool": {
+                    "name": "other",
+                    "type": "tool_reference"
+                  },
+                  "type": "tool_removal"
+                },
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        }
+      ],
+      "outcomes": [
+        {
+          "events": [
+            "start",
+            "done"
+          ],
+          "stopReason": "stop",
+          "strictFallbackDiagnostics": []
+        }
+      ],
+      "requests": [
+        {
+          "max_tokens": 100,
+          "messages": [
+            {
+              "content": "Hello",
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "text": "Update",
+                  "type": "text"
+                },
+                {
+                  "tool": {
+                    "name": "other",
+                    "type": "tool_reference"
+                  },
+                  "type": "tool_removal"
+                },
+                {
+                  "tool": {
+                    "definition": {
+                      "description": "Fixture lookup",
+                      "eager_input_streaming": true,
+                      "input_schema": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "optional": {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "optional",
+                          "value"
+                        ],
+                        "type": "object"
+                      },
+                      "name": "lookup",
+                      "strict": true
+                    },
+                    "type": "tool_definition"
+                  },
+                  "type": "tool_addition"
+                }
+              ],
+              "role": "system"
+            }
+          ],
+          "model": "fixture-claude",
+          "stream": true,
+          "system": [
+            {
+              "text": "Initial",
+              "type": "text"
+            }
+          ],
+          "tools": [
+            {
+              "description": "Fixture lookup",
+              "eager_input_streaming": true,
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "optional": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "optional",
+                  "value"
+                ],
+                "type": "object"
+              },
+              "name": "lookup",
+              "strict": true
+            },
+            {
+              "defer_loading": true,
+              "description": "Reserved placeholder. Never available. Never call this.",
+              "input_schema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "__pi_deferred_placeholder__"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

@@ -94,6 +94,12 @@ def main() -> int:
     )
     for script, case_relative, oracle_relative, description in [
         (
+            "pi-ai-strict-fallback-oracle.mjs",
+            "Fixtures/Differential/Cases/strict-fallback-inline.json",
+            "Fixtures/Differential/Oracle/strict-fallback-inline.json",
+            "Anthropic inline tool values and strict fallback",
+        ),
+        (
             "pi-ai-bedrock-input-interop-oracle.mjs",
             "Fixtures/Differential/Cases/bedrock-input-interop.json",
             "Fixtures/Differential/Oracle/bedrock-input-interop.json",

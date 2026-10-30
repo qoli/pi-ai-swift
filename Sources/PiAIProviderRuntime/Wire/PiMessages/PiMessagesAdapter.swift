@@ -146,8 +146,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
       )
     }
     let systemPrompt = request.messages.compactMap { message -> String? in
-      guard case .system(let text) = message else { return nil }
-      return text
+      return message.systemPayload?.content
     }.joined(separator: "\n\n")
     var messages = try makeMessages(request.messages, context: context)
     if !systemPrompt.isEmpty || !request.tools.isEmpty {
@@ -196,7 +195,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
   ) throws -> [JSONValue] {
     try messages.compactMap { message -> JSONValue? in
       switch message {
-      case .system:
+      case .system, .systemMessage:
         return nil
       case .user(let content):
         if content.count == 1, case .text(let text) = content[0] {

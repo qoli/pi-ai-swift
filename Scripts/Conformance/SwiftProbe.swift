@@ -93,15 +93,7 @@ struct SwiftConformanceProbe {
     var messages: [ProviderMessage] = []
     if let system = input.context.systemPrompt, !system.isEmpty { messages.append(.system(system)) }
     messages += try input.context.messages.map(message)
-    let tools = try (envelope.object("context")?.array("tools") ?? []).map { value in
-      guard let tool = value.objectValue else {
-        throw ProbeError.unrepresentable("tool-definition-is-not-an-object")
-      }
-      return ProviderToolDefinition(
-        name: try tool.required("name"), description: tool.string("description") ?? "",
-        inputSchema: tool["parameters"] ?? .object([:]),
-        constrainedSampling: try sampling(tool.object("constrainedSampling")))
-    }
+    let tools = try (envelope.object("context")?.array("tools") ?? []).map(toolDefinition)
     let usesRawMistralOptions = api == "mistral-conversations" && input.generationMode != .simple
     let usesRawAnthropicOptions = api == "anthropic-messages" && input.generationMode != .simple
     let usesRawBedrockOptions = api == "bedrock-converse-stream" && input.generationMode != .simple
@@ -183,6 +175,13 @@ struct SwiftConformanceProbe {
             "location": options.string("location") ?? input.environment["GOOGLE_CLOUD_LOCATION"]
               ?? "",
           ]))
+    } else if api == "anthropic-messages", let key = input.credential.key,
+      key.contains("sk-ant-oat")
+    {
+      credential = .oauth(
+        .init(
+          accessToken: key, refreshToken: "", expiresAt: .distantFuture,
+          metadata: input.credential.metadata))
     } else if let key = input.credential.key {
       credential = .apiKey(.init(key: key, metadata: input.credential.metadata))
     } else {
@@ -339,7 +338,14 @@ struct SwiftConformanceProbe {
 
   private static func message(_ raw: [String: JSONValue]) throws -> ProviderMessage {
     switch try raw.required("role") {
-    case "system": return .system(try raw.required("content"))
+    case "system":
+      return .systemMessage(
+        .init(
+          content: try raw.required("content"),
+          toolsAdded: try (raw.array("toolsAdded") ?? []).map(toolDefinition),
+          toolsRemoved: (raw.array("toolsRemoved") ?? []).compactMap {
+            $0.objectValue?.string("name")
+          }))
     case "user":
       let content = try userContent(raw["content"])
       if let timestamp = raw.int("timestamp") {
@@ -436,6 +442,16 @@ struct SwiftConformanceProbe {
   private static func textUTF16(_ block: [String: JSONValue]) throws -> [UInt16]? {
     guard let value = block["textUTF16"] else { return nil }
     return try JSONDecoder().decode([UInt16].self, from: JSONEncoder().encode(value))
+  }
+
+  private static func toolDefinition(_ value: JSONValue) throws -> ProviderToolDefinition {
+    guard let tool = value.objectValue else {
+      throw ProbeError.unrepresentable("tool-definition-is-not-an-object")
+    }
+    return ProviderToolDefinition(
+      name: try tool.required("name"), description: tool.string("description") ?? "",
+      inputSchema: tool["parameters"] ?? .object([:]),
+      constrainedSampling: try sampling(tool.object("constrainedSampling")))
   }
 
   private static func sampling(_ raw: [String: JSONValue]?) throws -> ProviderConstrainedSampling? {

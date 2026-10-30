@@ -277,8 +277,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         try makeContents(request.messages.insertingMissingToolResults(), context: context))
     ]
     let systems = request.messages.compactMap { message -> String? in
-      guard case .system(let text) = message else { return nil }
-      return text
+      return message.systemPayload?.content
     }
     if !systems.isEmpty {
       body["systemInstruction"] = .object([
@@ -400,7 +399,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     var contents: [JSONValue] = []
     for message in messages {
       switch message {
-      case .system:
+      case .system, .systemMessage:
         continue
       case .user(let content):
         contents.append(

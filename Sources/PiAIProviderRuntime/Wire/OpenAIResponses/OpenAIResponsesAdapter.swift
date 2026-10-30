@@ -537,8 +537,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       body["input"] = .array(input)
     }
     let instructions = request.messages.compactMap { message -> String? in
-      guard case .system(let text) = message else { return nil }
-      return text
+      return message.systemPayload?.content
     }
     if flavor == .codex, !instructions.isEmpty {
       body["instructions"] = .string(instructions.joined(separator: "\n\n"))
@@ -743,6 +742,17 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       let messageIndex = replayMessageIndex
       switch message {
       case .system(let text):
+        if includeSystem {
+          let supportsDeveloper =
+            context.modelConfiguration.metadata.object("compat")?
+            .bool("supportsDeveloperRole") != false
+          let role =
+            context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
+          result.append(.object(["role": .string(role), "content": .string(text)]))
+        }
+        continue
+      case .systemMessage(let value):
+        let text = value.content
         if includeSystem {
           let supportsDeveloper =
             context.modelConfiguration.metadata.object("compat")?

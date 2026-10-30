@@ -275,6 +275,9 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
       switch message {
       case .system(let text):
         return .object(["role": .string("system"), "content": .string(text)])
+      case .systemMessage(let value):
+        let text = value.content
+        return .object(["role": .string("system"), "content": .string(text)])
       case .user(let content):
         if content.count == 1, case .text(let text) = content[0] {
           return .object([

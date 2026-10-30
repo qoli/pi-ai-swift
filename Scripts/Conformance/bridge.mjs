@@ -62,10 +62,11 @@ function preserveUTF16(content) {
 }
 
 function fixtureInput(model, context, options, responses, credential, requestSource = "api", generationMode = "raw") {
-  const preservesSystemMessages = model.api === "openai-completions" && model.compat?.supportsMidConvoSystemMessages === true;
+  const preservesSystemMessages = ["openai-completions", "anthropic-messages"].includes(model.api)
+    && model.compat?.supportsMidConvoSystemMessages === true;
   const messages = preservesSystemMessages ? context.messages.map((message, index) => message.role === "system"
     ? { ...message, content: index === 0 ? getSystemMessageText(message) : renderSystemMessageUpdate(message) }
-    : message).filter(message => message.role !== "system" || message.content.length > 0)
+    : message).filter(message => model.api === "anthropic-messages" || message.role !== "system" || message.content.length > 0)
     : context.messages.filter(message => message.role !== "system");
   return {
     model, requestSource, generationMode,

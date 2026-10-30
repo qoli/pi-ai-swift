@@ -140,7 +140,7 @@ private struct DynamicCodingKey: CodingKey {
 extension ProviderRequest {
   func validateSingleSystemMessage(operation: String) throws {
     let systemMessageCount = messages.reduce(into: 0) { count, message in
-      if case .system = message { count += 1 }
+      if message.systemPayload != nil { count += 1 }
     }
     guard systemMessageCount <= 1 else {
       throw ProviderRuntimeFailure(
@@ -157,11 +157,36 @@ extension ProviderRequest {
 
 public enum ProviderMessage: Sendable, Equatable, Codable {
   case system(String)
+  case systemMessage(ProviderSystemMessage)
   case user([ProviderUserContent])
   case userMessage(ProviderUserMessage)
   case assistant([ProviderAssistantContent])
   case assistantMessage(ProviderAssistantMessage)
   case toolResult(ProviderToolResult)
+}
+
+public struct ProviderSystemMessage: Sendable, Equatable, Codable {
+  public let content: String
+  public let toolsAdded: [ProviderToolDefinition]
+  public let toolsRemoved: [String]
+
+  public init(
+    content: String, toolsAdded: [ProviderToolDefinition] = [], toolsRemoved: [String] = []
+  ) {
+    self.content = content
+    self.toolsAdded = toolsAdded
+    self.toolsRemoved = toolsRemoved
+  }
+}
+
+extension ProviderMessage {
+  var systemPayload: ProviderSystemMessage? {
+    switch self {
+    case .system(let content): .init(content: content)
+    case .systemMessage(let value): value
+    default: nil
+    }
+  }
 }
 
 public struct ProviderUserMessage: Sendable, Equatable, Codable {
@@ -306,7 +331,7 @@ extension Array where Element == ProviderMessage {
         pending = []
         completedIDs = []
         result.append(message)
-      case .system:
+      case .system, .systemMessage:
         result.append(message)
       }
     }

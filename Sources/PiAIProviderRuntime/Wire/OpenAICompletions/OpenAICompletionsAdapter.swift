@@ -413,6 +413,12 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         let role =
           context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
         result.append(.object(["role": .string(role), "content": .string(text)]))
+      case .systemMessage(let value):
+        let text = value.content
+        let supportsDeveloper = compat.bool("supportsDeveloperRole") != false
+        let role =
+          context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
+        result.append(.object(["role": .string(role), "content": .string(text)]))
       case .user(let content):
         if compat.bool("requiresAssistantAfterToolResult") == true,
           result.last?.objectValue?.string("role") == "tool"

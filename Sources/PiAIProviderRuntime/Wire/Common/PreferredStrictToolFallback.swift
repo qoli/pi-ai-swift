@@ -48,12 +48,15 @@ enum PreferredStrictToolFallback {
           ]))
         current = ProviderRequest(
           id: request.id, providerID: request.providerID, modelID: request.modelID,
-          messages: request.messages,
-          tools: request.tools.map { tool in
-            guard tool.constrainedSampling == .jsonSchema(strict: .prefer) else { return tool }
-            return ProviderToolDefinition(
-              name: tool.name, description: tool.description, inputSchema: tool.inputSchema)
+          messages: request.messages.map { message in
+            guard case .systemMessage(let system) = message else { return message }
+            return .systemMessage(
+              .init(
+                content: system.content,
+                toolsAdded: system.toolsAdded.map(withoutPreferredStrict),
+                toolsRemoved: system.toolsRemoved))
           },
+          tools: request.tools.map(withoutPreferredStrict),
           options: request.options, connectionOptions: request.connectionOptions)
         continue
       }
@@ -64,6 +67,13 @@ enum PreferredStrictToolFallback {
         operation: api == .anthropic ? "anthropic.response" : "bedrock.response",
         causeDescription: body)
     }
+  }
+
+  private static func withoutPreferredStrict(_ tool: ProviderToolDefinition)
+    -> ProviderToolDefinition
+  {
+    guard tool.constrainedSampling == .jsonSchema(strict: .prefer) else { return tool }
+    return .init(name: tool.name, description: tool.description, inputSchema: tool.inputSchema)
   }
 
   private static func errorMessage(
@@ -118,12 +128,33 @@ enum PreferredStrictToolFallback {
     else { return false }
     let tools = api == .anthropic ? body.array("tools") : body.object("toolConfig")?.array("tools")
     guard let tools else { return false }
-    return request.tools.enumerated().contains { index, tool in
+    let nativeTools =
+      api == .anthropic
+      && tools.last?.objectValue?.string("name") == "__pi_deferred_placeholder__"
+    let initial =
+      nativeTools ? request.messages.first?.systemPayload?.toolsAdded ?? [] : request.tools
+    if initial.enumerated().contains(where: { index, tool in
       guard tool.constrainedSampling == .jsonSchema(strict: .prefer), index < tools.count,
         let value = tools[index].objectValue
       else { return false }
       return (api == .anthropic ? value.bool("strict") : value.object("toolSpec")?.bool("strict"))
         == true
+    }) {
+      return true
+    }
+    guard nativeTools else { return false }
+    let additions = request.messages.dropFirst().flatMap { $0.systemPayload?.toolsAdded ?? [] }
+    let definitions = (body.array("messages") ?? []).flatMap {
+      $0.objectValue?.array("content") ?? []
+    }
+    .compactMap { value -> [String: JSONValue]? in
+      guard let block = value.objectValue, block.string("type") == "tool_addition" else {
+        return nil
+      }
+      return block.object("tool")?.object("definition")
+    }
+    return zip(additions, definitions).contains { tool, definition in
+      tool.constrainedSampling == .jsonSchema(strict: .prefer) && definition.bool("strict") == true
     }
   }
 

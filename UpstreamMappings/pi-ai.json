@@ -2065,7 +2065,11 @@
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#anthropicWireObservationsMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicNativeWireObserverMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift#sourceDerivedPreferredStrictRetriesPreserveRequiredAndFailureBoundaries",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource",
+        "Fixtures/Differential/Cases/strict-fallback-inline.json",
+        "Fixtures/Differential/Oracle/strict-fallback-inline.json",
+        "Tests/PiAIProviderRuntimeTests/AnthropicInlineToolDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInlineToolValuesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test",

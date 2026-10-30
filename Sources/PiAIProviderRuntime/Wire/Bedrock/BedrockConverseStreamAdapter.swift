@@ -530,7 +530,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     let supportsSignature = bedrockSupportsThinkingSignature(context.model)
     var result: [JSONValue] = try messages.compactMap { message -> JSONValue? in
       switch message {
-      case .system:
+      case .system, .systemMessage:
         return nil
       case .user(let content):
         return .object([
