@@ -94,6 +94,12 @@ def main() -> int:
     )
     for script, case_relative, oracle_relative, description in [
         (
+            "pi-ai-client-identity-oracle.mjs",
+            "Fixtures/Differential/Cases/client-identity.json",
+            "Fixtures/Differential/Oracle/client-identity.json",
+            "client identity and attribution headers",
+        ),
+        (
             "pi-ai-anthropic-bedrock-request-oracle.mjs",
             "Fixtures/Differential/Cases/request-anthropic-bedrock.json",
             "Fixtures/Differential/Oracle/request-anthropic-bedrock.json",

@@ -122,6 +122,7 @@ struct SwiftConformanceProbe {
       "azureBaseUrl", "azureResourceName", "azureApiVersion", "azureDeploymentName", "region",
     ]
     var providerOptions = options.filter { !mappedOptions.contains($0.key) }
+    providerOptions["identity"] = options["identity"]
     if api == "mistral-conversations" {
       for key in ["headers", "timeoutMs"] {
         if let value = options[key] { providerOptions[key] = value }
@@ -260,7 +261,10 @@ struct SwiftConformanceProbe {
       wireProtocols: StandardWireProtocols.make(),
       credentialStore: InMemoryProviderCredentialStore(
         credentials: credential.map { [provider: $0] } ?? [:]),
-      transport: transport, wireObserver: wireObserver)
+      transport: transport, wireObserver: wireObserver,
+      identityHost: try JSONDecoder().decode(
+        ProviderIdentityHost.self,
+        from: JSONEncoder().encode(JSONValue.object(envelope.object("identityHost") ?? [:]))))
     let execution = Task {
       var events: [ProviderEvent] = []
       var failure: [String: JSONValue]?

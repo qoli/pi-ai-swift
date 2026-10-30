@@ -125,6 +125,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
   private let refreshCoordinator: CredentialRefreshCoordinator
   private let transport: any ProviderHTTPStreamingTransport
   private let wireObserver: ProviderWireObserver?
+  private let identityHost: ProviderIdentityHost
 
   init(
     catalogRevision: String,
@@ -132,7 +133,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     wireProtocols: [any WireProtocolAdapter],
     credentialStore: any ProviderCredentialStore,
     transport: any ProviderHTTPStreamingTransport,
-    wireObserver: ProviderWireObserver? = nil
+    wireObserver: ProviderWireObserver? = nil,
+    identityHost: ProviderIdentityHost = .init()
   ) throws {
     self.catalogRevision = catalogRevision
     self.providers = try Self.uniqueProviders(providers)
@@ -143,6 +145,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     )
     self.transport = transport
     self.wireObserver = wireObserver
+    self.identityHost = identityHost
   }
 
   func catalog() async throws -> ProviderCatalog {
@@ -309,7 +312,21 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       providerID: request.providerID,
       endpointPolicy: provider.endpointPolicy
     )
-    var headers = requestAuthorization.headers.compactMapValues { $0 }
+    let identity = request.options.providerOptions.object("identity")
+    var headers: [String: String]
+    if modelConfiguration.protocolID == "anthropic-messages", case .oauth = credential {
+      headers = [:]
+    } else if modelConfiguration.protocolID == "bedrock-converse-stream" {
+      headers = ProviderClientIdentity.attributionHeaders(
+        providerID: request.providerID, baseURL: baseURL.absoluteString, identity: identity)
+    } else {
+      headers = ProviderClientIdentity.headers(
+        providerID: request.providerID, baseURL: baseURL.absoluteString, identity: identity,
+        host: identityHost)
+    }
+    let authorizationHeaderNames = Set(requestAuthorization.headers.keys.map { $0.lowercased() })
+    headers = headers.filter { !authorizationHeaderNames.contains($0.key.lowercased()) }
+    headers.merge(requestAuthorization.headers.compactMapValues { $0 }) { _, value in value }
     let providerHeaderNames = Set(provider.headers.keys.map { $0.lowercased() })
     headers = headers.filter { !providerHeaderNames.contains($0.key.lowercased()) }
     headers.merge(provider.headers) { _, providerValue in providerValue }

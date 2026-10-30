@@ -2082,6 +2082,24 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     XCTAssertEqual(body["messages"], expected["messages"])
   }
 
+  func testClientIdentityHeadersMatchPinnedSource() throws {
+    let fixture = try load("Differential/Cases/client-identity.json")
+    let oracle = try load("Differential/Oracle/client-identity.json")
+    for value in try XCTUnwrap(fixture.array("cases")) {
+      let spec = try XCTUnwrap(value.objectValue)
+      let name = try XCTUnwrap(spec.string("id"))
+      let target = try XCTUnwrap(spec.object("target"))
+      let host = try JSONDecoder().decode(
+        ProviderIdentityHost.self, from: JSONEncoder().encode(try XCTUnwrap(spec["host"])))
+      let headers = ProviderClientIdentity.headers(
+        providerID: try XCTUnwrap(target.string("provider")),
+        baseURL: try XCTUnwrap(target.string("baseUrl")), identity: spec.object("identity"),
+        host: host)
+      XCTAssertEqual(
+        JSONValue.object(headers.mapValues(JSONValue.string)), oracle.object("cases")?[name], name)
+    }
+  }
+
   func testPreferredStrictFallbackDiagnosticsMatchPinnedSource() async throws {
     let fixture = try load("Differential/Cases/strict-fallback.json")
     let expectedCases = try XCTUnwrap(

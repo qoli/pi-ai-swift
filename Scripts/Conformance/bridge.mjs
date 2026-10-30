@@ -60,6 +60,7 @@ function fixtureInput(model, context, options, responses, credential, requestSou
     : context.messages.filter(message => message.role !== "system");
   return {
     model, requestSource, generationMode,
+    identityHost: { platform: process.platform, arch: process.arch, node: process.versions.node, bun: process.versions.bun, version: process.version },
     context: {
       systemPrompt: preservesSystemMessages ? undefined : getCurrentSystemPrompt(context.messages),
       tools: getCurrentTools(context.messages),

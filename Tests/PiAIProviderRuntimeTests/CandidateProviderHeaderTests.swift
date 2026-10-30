@@ -16,8 +16,11 @@ struct CandidateProviderHeaderTests {
       from: Data(
         contentsOf: root.appending(
           path: "Fixtures/Differential/Oracle/provider-options.json")))
-    let expected = try #require(
+    var expected = try #require(
       oracle.objectValue?.object("cases")?.object("scope." + protocolID)?.object("headers"))
+    for (name, value) in try sourceNativeIdentityHeaders() where expected[name] == nil {
+      expected[name] = .string(value)
+    }
     let model = ProviderModel(
       id: "fixture-chat", providerID: "fixture", name: "fixture", protocolID: protocolID,
       capabilities: .init(
@@ -80,7 +83,9 @@ struct CandidateProviderHeaderTests {
         contentsOf:
           root.appending(path: "Fixtures/Differential/Oracle/candidate-provider-headers.json")))
     let fixture = try #require(oracle.cases.first { $0.id == "cross-scope" })
-    let expected = try #require(fixture.result)
+    let expected = try sourceNativeIdentityHeaders().merging(try #require(fixture.result)) {
+      _, scoped in scoped
+    }
     let model = ProviderModel(
       id: "gemini-fixture", providerID: "fixture", name: "fixture",
       protocolID: "google-generative-ai",
@@ -127,6 +132,16 @@ struct CandidateProviderHeaderTests {
     let sent = try #require(await recorder.sent)
     for (name, value) in expected { #expect(sent.value(forHTTPHeaderField: name) == value) }
   }
+}
+
+private func sourceNativeIdentityHeaders() throws -> [String: String] {
+  let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+    .deletingLastPathComponent()
+  let oracle = try decodeJSONObject(
+    Data(contentsOf: root.appending(path: "Fixtures/Differential/Oracle/client-identity.json")),
+    providerID: "fixture", operation: "test.headers.identity")
+  return try #require(oracle.object("cases")?.object("non-node-runtime")).compactMapValues(
+    \.stringValue)
 }
 
 private struct CandidateGoogleHeaderAdapter: WireProtocolAdapter {

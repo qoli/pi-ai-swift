@@ -1924,7 +1924,12 @@
         "Fixtures/Differential/Oracle/cloudflare-auth.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsWireCallbacksAreNativeAndMatchSourceRawEvents",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsAwaitObserverFailuresBeforeNormalizingContent",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource",
+        "Scripts/pi-ai-client-identity-oracle.mjs",
+        "Fixtures/Differential/Cases/client-identity.json",
+        "Fixtures/Differential/Oracle/client-identity.json",
+        "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2138,7 +2143,12 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responseBlockLifecycleAndProvisionalPhasesMatchSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors",
+        "Scripts/pi-ai-client-identity-oracle.mjs",
+        "Fixtures/Differential/Cases/client-identity.json",
+        "Fixtures/Differential/Oracle/client-identity.json",
+        "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2384,7 +2394,12 @@
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleWireObserversMatchPinnedSourceAcrossFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors",
+        "Scripts/pi-ai-client-identity-oracle.mjs",
+        "Fixtures/Differential/Cases/client-identity.json",
+        "Fixtures/Differential/Oracle/client-identity.json",
+        "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2443,7 +2458,12 @@
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleWireObserversMatchPinnedSourceAcrossFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors",
+        "Scripts/pi-ai-client-identity-oracle.mjs",
+        "Fixtures/Differential/Cases/client-identity.json",
+        "Fixtures/Differential/Oracle/client-identity.json",
+        "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2522,7 +2542,12 @@
         "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleMistralAndOpenRouterResponsesMatchPinnedSource",
         "Fixtures/Differential/Oracle/response-provider-branches.json",
         "Tests/PiAIProviderRuntimeTests/MistralHTTPTests.swift#nativeWireObserversMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralNativeWireObserverMatchesPinnedSource",
+        "Scripts/pi-ai-client-identity-oracle.mjs",
+        "Fixtures/Differential/Cases/client-identity.json",
+        "Fixtures/Differential/Oracle/client-identity.json",
+        "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
@@ -2710,7 +2735,12 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsAwaitObserverFailuresBeforeNormalizingContent",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsNativeWireObserverMatchesPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#azureCompletionsRetainsMidConversationSystemMessages",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAzureCompletionsKeepsMidConversationSystemMessages"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAzureCompletionsKeepsMidConversationSystemMessages",
+        "Scripts/pi-ai-client-identity-oracle.mjs",
+        "Fixtures/Differential/Cases/client-identity.json",
+        "Fixtures/Differential/Oracle/client-identity.json",
+        "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
@@ -2941,7 +2971,7 @@
     },
     {
       "id": "optional-client-identity-and-login",
-      "responsibility": "Missing optional client identity/attribution, OpenAI ChatGPT login and Anthropic copy-code/federation selection; existing native authorization contracts are separate.",
+      "responsibility": "Missing optional client identity merge facade, OpenAI ChatGPT login and Anthropic copy-code/federation selection; provider identity header projection is tracked separately.",
       "status": "missing",
       "swiftPaths": [],
       "plannedSwiftPaths": [],
@@ -2955,7 +2985,9 @@
         "packages/ai/test/anthropic-federation-sdk.test.ts",
         "packages/ai/test/openai-chatgpt-oauth.test.ts"
       ],
-      "dependsOn": [],
+      "dependsOn": [
+        "provider-client-identity"
+      ],
       "evidence": [
         "Docs/UPSTREAM_GATES.md"
       ],
@@ -2965,6 +2997,41 @@
       ],
       "supportDisposition": "planned",
       "liveVerificationStatus": "notRun"
+    },
+    {
+      "id": "provider-client-identity",
+      "responsibility": "Provider request User-Agent formatting and attribution headers from request client identity and host runtime facts.",
+      "status": "landed",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Runtime/ProviderClientIdentity.swift",
+        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
+      ],
+      "plannedSwiftPaths": [],
+      "upstreamPaths": [
+        "packages/ai/src/utils/identity.ts",
+        "packages/ai/src/utils/version.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/azure-openai-base-url.test.ts",
+        "packages/ai/test/google-raw-stop-reason.test.ts",
+        "packages/ai/test/mistral-http-transport.test.ts"
+      ],
+      "dependsOn": [
+        "canonical-request-event-dtos"
+      ],
+      "evidence": [
+        "Scripts/pi-ai-client-identity-oracle.mjs",
+        "Fixtures/Differential/Cases/client-identity.json",
+        "Fixtures/Differential/Oracle/client-identity.json",
+        "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
+      ],
+      "requiredGates": [
+        "swift-test",
+        "ios-simulator-source-fixtures"
+      ],
+      "supportDisposition": "supported",
+      "liveVerificationStatus": "notRequired"
     }
   ]
 }

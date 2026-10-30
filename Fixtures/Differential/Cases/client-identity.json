@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "node-default",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid"
+      }
+    },
+    {
+      "id": "bun-precedence",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0",
+        "bun": "1.3.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid"
+      }
+    },
+    {
+      "id": "non-node-runtime",
+      "host": {},
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid"
+      }
+    },
+    {
+      "id": "short",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid"
+      },
+      "identity": {
+        "userAgent": "short"
+      }
+    },
+    {
+      "id": "custom",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid"
+      },
+      "identity": {
+        "userAgent": {
+          "custom": "Fixture Client"
+        }
+      }
+    },
+    {
+      "id": "version",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid"
+      },
+      "identity": {
+        "version": "3.2.1"
+      }
+    },
+    {
+      "id": "empty-version",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid"
+      },
+      "identity": {
+        "version": ""
+      }
+    },
+    {
+      "id": "no-attribution",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid"
+      },
+      "identity": {
+        "attribution": null
+      }
+    },
+    {
+      "id": "openrouter",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "openrouter",
+        "baseUrl": "https://fixture.invalid"
+      },
+      "identity": {
+        "attribution": {
+          "name": "fixture",
+          "url": "https://fixture.invalid/app",
+          "categories": [
+            "cli-agent",
+            "testing"
+          ]
+        }
+      }
+    },
+    {
+      "id": "openrouter-url",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/path/openrouter.ai"
+      },
+      "identity": {
+        "attribution": {
+          "name": "fixture",
+          "url": "https://fixture.invalid/app",
+          "categories": [
+            "cli-agent",
+            "testing"
+          ]
+        }
+      }
+    },
+    {
+      "id": "nvidia",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "nvidia",
+        "baseUrl": "https://fixture.invalid"
+      },
+      "identity": {
+        "attribution": {
+          "name": "fixture",
+          "url": "https://fixture.invalid/app",
+          "categories": [
+            "cli-agent",
+            "testing"
+          ]
+        }
+      }
+    },
+    {
+      "id": "nvidia-host",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://INTEGRATE.API.NVIDIA.COM/v1"
+      },
+      "identity": {
+        "attribution": {
+          "name": "fixture",
+          "url": "https://fixture.invalid/app",
+          "categories": [
+            "cli-agent",
+            "testing"
+          ]
+        }
+      }
+    },
+    {
+      "id": "opencode",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "opencode-go",
+        "baseUrl": "https://fixture.invalid"
+      },
+      "identity": {
+        "attribution": {
+          "name": "fixture",
+          "url": "https://fixture.invalid/app",
+          "categories": [
+            "cli-agent",
+            "testing"
+          ]
+        }
+      }
+    },
+    {
+      "id": "opencode-host",
+      "host": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "node": "26.0.0",
+        "version": "v26.0.0"
+      },
+      "target": {
+        "provider": "fixture",
+        "baseUrl": "https://opencode.ai/v1"
+      },
+      "identity": {
+        "attribution": {
+          "name": "fixture",
+          "url": "https://fixture.invalid/app",
+          "categories": [
+            "cli-agent",
+            "testing"
+          ]
+        }
+      }
+    }
+  ]
+}

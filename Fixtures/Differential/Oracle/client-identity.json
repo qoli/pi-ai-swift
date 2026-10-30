@@ -1,0 +1,57 @@
+{
+  "cases": {
+    "bun-precedence": {
+      "User-Agent": "pi/1.4.0 (darwin; bun/1.3.0; arm64)"
+    },
+    "custom": {
+      "User-Agent": "Fixture Client"
+    },
+    "empty-version": {
+      "User-Agent": "pi/ (darwin; node/v26.0.0; arm64)"
+    },
+    "no-attribution": {
+      "User-Agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)"
+    },
+    "node-default": {
+      "User-Agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)"
+    },
+    "non-node-runtime": {
+      "User-Agent": "pi/1.4.0 (browser)"
+    },
+    "nvidia": {
+      "User-Agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
+      "X-BILLING-INVOKE-ORIGIN": "Fixture"
+    },
+    "nvidia-host": {
+      "User-Agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
+      "X-BILLING-INVOKE-ORIGIN": "Fixture"
+    },
+    "opencode": {
+      "User-Agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
+      "x-opencode-client": "fixture"
+    },
+    "opencode-host": {
+      "User-Agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
+      "x-opencode-client": "fixture"
+    },
+    "openrouter": {
+      "HTTP-Referer": "https://fixture.invalid/app",
+      "User-Agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
+      "X-OpenRouter-Categories": "cli-agent,testing",
+      "X-OpenRouter-Title": "fixture"
+    },
+    "openrouter-url": {
+      "HTTP-Referer": "https://fixture.invalid/app",
+      "User-Agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
+      "X-OpenRouter-Categories": "cli-agent,testing",
+      "X-OpenRouter-Title": "fixture"
+    },
+    "short": {
+      "User-Agent": "pi"
+    },
+    "version": {
+      "User-Agent": "pi/3.2.1 (darwin; node/v26.0.0; arm64)"
+    }
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}
