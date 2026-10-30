@@ -242,6 +242,7 @@ private func providerResponseInput(
 
 private func providerBranchCanonicalEvent(_ event: ProviderEvent) -> JSONValue? {
   switch event {
+  case .contentBlock: return nil
   case .responseStarted(let metadata):
     return .object([
       "type": .string("responseStarted"),

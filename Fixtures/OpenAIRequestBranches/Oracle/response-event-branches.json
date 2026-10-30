@@ -530,6 +530,256 @@
         }
       }
     },
+    "responses.block-lifecycle": {
+      "commentary-commentary-completed": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "commentary",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "commentary",
+              "v": 1
+            },
+            "stopReason": "pending",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "commentary-final_answer-completed": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "final_answer-final_answer-completed": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "final_answer-final_answer-incomplete": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "length"
+      },
+      "interleaved-reused-output-index": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_first",
+              "phase": "commentary",
+              "v": 1
+            },
+            "text": "first",
+            "type": "text"
+          },
+          {
+            "signature": {
+              "id": "rs_lifecycle",
+              "summary": [
+                {
+                  "text": "plan",
+                  "type": "summary_text"
+                }
+              ],
+              "type": "reasoning"
+            },
+            "text": "plan",
+            "type": "thinking"
+          },
+          {
+            "signature": {
+              "id": "msg_second",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 1,
+            "stopReason": "pending",
+            "text": "",
+            "type": "thinking_start"
+          },
+          {
+            "contentIndex": 0,
+            "delta": "first",
+            "stopReason": "pending",
+            "text": "first",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 1,
+            "delta": "plan",
+            "stopReason": "pending",
+            "text": "plan",
+            "type": "thinking_delta"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_first",
+              "phase": "commentary",
+              "v": 1
+            },
+            "stopReason": "pending",
+            "text": "first",
+            "type": "text_end"
+          },
+          {
+            "contentIndex": 2,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 2,
+            "delta": "second",
+            "stopReason": "stop",
+            "text": "second",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 1,
+            "signature": {
+              "id": "rs_lifecycle",
+              "summary": [
+                {
+                  "text": "plan",
+                  "type": "summary_text"
+                }
+              ],
+              "type": "reasoning"
+            },
+            "stopReason": "stop",
+            "text": "plan",
+            "type": "thinking_end"
+          },
+          {
+            "contentIndex": 2,
+            "signature": {
+              "id": "msg_second",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      }
+    },
     "responses.codex-failure-branches": {
       "failedDetails": {
         "body": "data: {\"type\":\"response.failed\",\"response\":{\"status\":\"failed\",\"incomplete_details\":{\"reason\":\"policy\"}}}\n\n",

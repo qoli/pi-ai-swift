@@ -2,6 +2,7 @@ import Foundation
 
 public enum ProviderEvent: Sendable, Equatable, Codable {
   case responseStarted(ProviderResponseMetadata)
+  case contentBlock(ProviderContentBlock)
   case textDelta(String)
   case reasoningDelta(String)
   case reasoningSignatureDelta(String)
@@ -12,6 +13,32 @@ public enum ProviderEvent: Sendable, Equatable, Codable {
   case usage(ProviderUsage)
   case responseSnapshot(ProviderResponseSnapshot)
   case completed(ProviderFinishReason)
+}
+
+/// Indexed block updates supplement the legacy text/reasoning deltas. Consumers
+/// using these snapshots must ignore the corresponding legacy delta events.
+public struct ProviderContentBlock: Sendable, Equatable, Codable {
+  public enum Update: Sendable, Equatable, Codable {
+    case started
+    case delta(String)
+    case completed
+  }
+
+  public let index: Int
+  public let content: ProviderResponseContent
+  public let update: Update
+  /// `nil` denotes a pending response; the terminal snapshot remains authoritative.
+  public let provisionalFinishReason: ProviderFinishReason?
+
+  public init(
+    index: Int, content: ProviderResponseContent, update: Update,
+    provisionalFinishReason: ProviderFinishReason? = nil
+  ) {
+    self.index = index
+    self.content = content
+    self.update = update
+    self.provisionalFinishReason = provisionalFinishReason
+  }
 }
 
 public struct ProviderResponseSnapshot: Sendable, Equatable, Codable {
@@ -119,15 +146,18 @@ public enum ProviderResponseContent: Sendable, Equatable, Codable {
 public struct ProviderTextContent: Sendable, Equatable, Codable {
   public let text: String
   public let signature: String?
+  public let phase: String?
   public let providerMetadata: [String: JSONValue]
 
   public init(
     text: String,
     signature: String?,
+    phase: String? = nil,
     providerMetadata: [String: JSONValue] = [:]
   ) {
     self.text = text
     self.signature = signature
+    self.phase = phase
     self.providerMetadata = providerMetadata
   }
 }

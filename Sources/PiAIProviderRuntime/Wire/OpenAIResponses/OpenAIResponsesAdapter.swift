@@ -1139,6 +1139,9 @@ private struct OpenAIResponsesReducer {
   private var reasoningIndexByID: [String: Int] = [:]
   private var toolsByIndex: [Int: ProviderToolCall] = [:]
   private var usage: ProviderUsage?
+  private var blockSlots: [Int?: (kind: String, index: Int)] = [:]
+  private var nextContentIndex = 0
+  private var provisionalFinishReason: ProviderFinishReason?
 
   init(
     providerID: String,
@@ -1201,34 +1204,52 @@ private struct OpenAIResponsesReducer {
       ]
     case "response.output_text.delta":
       guard let delta = object.string("delta") else { throw invalid("text delta is missing delta") }
-      let index = object.int("output_index") ?? 0
+      guard let slot = blockSlots[object.int("output_index")], slot.kind == "message" else {
+        return []
+      }
+      let index = slot.index
       let previous = textByIndex[index]?.text ?? ""
       textByIndex[index] = ProviderTextContent(
-        text: previous + delta, signature: textByIndex[index]?.signature)
-      return [.textDelta(delta)]
+        text: previous + delta, signature: textByIndex[index]?.signature,
+        phase: textByIndex[index]?.phase)
+      return [blockEvent(index, .text(textByIndex[index]!), .delta(delta)), .textDelta(delta)]
     case "response.reasoning_summary_text.delta", "response.reasoning_text.delta":
       guard let delta = object.string("delta") else {
         throw invalid("reasoning delta is missing delta")
       }
-      let index = object.int("output_index") ?? 0
+      guard let slot = blockSlots[object.int("output_index")], slot.kind == "reasoning" else {
+        return []
+      }
+      let index = slot.index
       let previous = reasoningByIndex[index]?.text ?? ""
       reasoningByIndex[index] = ProviderReasoningContent(
         text: previous + delta,
         signature: reasoningByIndex[index]?.signature,
         providerMetadata: [:]
       )
-      return [.reasoningDelta(delta)]
+      return [
+        blockEvent(index, .reasoning(reasoningByIndex[index]!), .delta(delta)),
+        .reasoningDelta(delta),
+      ]
     case "response.reasoning_summary_part.done":
-      let index = object.int("output_index") ?? 0
+      guard let slot = blockSlots[object.int("output_index")], slot.kind == "reasoning" else {
+        return []
+      }
+      let index = slot.index
       guard let current = reasoningByIndex[index] else { return [] }
       reasoningByIndex[index] = ProviderReasoningContent(
         text: current.text + "\n\n", signature: current.signature,
         isRedacted: current.isRedacted, providerMetadata: current.providerMetadata)
-      return [.reasoningDelta("\n\n")]
+      return [
+        blockEvent(index, .reasoning(reasoningByIndex[index]!), .delta("\n\n")),
+        .reasoningDelta("\n\n"),
+      ]
     case "response.output_item.added":
-      guard let item = object.object("item"),
-        ["function_call", "custom_tool_call"].contains(item.string("type") ?? "")
-      else {
+      guard let item = object.object("item") else { return [] }
+      if ["message", "reasoning"].contains(item.string("type") ?? "") {
+        return createBlock(item, at: object.int("output_index")).events
+      }
+      guard ["function_call", "custom_tool_call"].contains(item.string("type") ?? "") else {
         return []
       }
       return try startTool(item, at: object.int("output_index"))
@@ -1271,12 +1292,13 @@ private struct OpenAIResponsesReducer {
         throw invalid("completed output item is missing type")
       }
       if itemType == "reasoning" {
+        let slot = getOrCreateBlock(item, at: object.int("output_index"))
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
         guard let data = try? encoder.encode(JSONValue.object(item)),
           let signature = String(data: data, encoding: .utf8)
         else { throw invalid("reasoning item cannot be encoded") }
-        let index = object.int("output_index") ?? 0
+        let index = slot.index
         let summary = (item.array("summary") ?? []).compactMap { $0.objectValue?.string("text") }
           .joined(separator: "\n\n")
         let content = (item.array("content") ?? []).compactMap { $0.objectValue?.string("text") }
@@ -1288,10 +1310,16 @@ private struct OpenAIResponsesReducer {
           providerMetadata: [:]
         )
         if let id = item.string("id") { reasoningIndexByID[id] = index }
-        return [.reasoningSignatureDelta(signature)]
+        blockSlots.removeValue(forKey: object.int("output_index"))
+        return slot.events + [
+          blockEvent(index, .reasoning(reasoningByIndex[index]!), .completed),
+          .reasoningSignatureDelta(signature),
+        ]
       }
       if itemType == "message" {
-        let index = object.int("output_index") ?? 0
+        if item.string("phase") == "final_answer" { provisionalFinishReason = .stop }
+        let slot = getOrCreateBlock(item, at: object.int("output_index"))
+        let index = slot.index
         let text = (item.array("content") ?? []).compactMap { part -> String? in
           guard let part = part.objectValue else { return nil }
           return part.string("text") ?? part.string("refusal")
@@ -1299,16 +1327,17 @@ private struct OpenAIResponsesReducer {
         guard let id = item.string("id"), !id.isEmpty else {
           throw invalid("completed message item is missing id")
         }
-        var signature = #"{"v":1,"id":"\#(id)""#
+        var signatureMembers: [(String, ProviderOrderedJSON)] = [
+          ("v", .scalar(.integer(1))), ("id", .scalar(.string(id))),
+        ]
         if let phase = item.string("phase") {
-          signature += #", "phase":"\#(phase)""#.replacingOccurrences(of: ", ", with: ",")
+          signatureMembers.append(("phase", .scalar(.string(phase))))
         }
-        signature += "}"
+        let signature = try ProviderOrderedJSON.object(signatureMembers).encodedString()
         textByIndex[index] = ProviderTextContent(
-          text: text.isEmpty ? textByIndex[index]?.text ?? "" : text,
-          signature: signature
-        )
-        return []
+          text: text, signature: signature, phase: item.string("phase"))
+        blockSlots.removeValue(forKey: object.int("output_index"))
+        return slot.events + [blockEvent(index, .text(textByIndex[index]!), .completed)]
       }
       guard ["function_call", "custom_tool_call"].contains(itemType) else { return [] }
       let index = object.int("output_index")
@@ -1337,7 +1366,9 @@ private struct OpenAIResponsesReducer {
       tools.removeValue(forKey: id)
       toolIDsByOutputIndex.removeValue(forKey: index)
       completedToolCall = true
-      toolsByIndex[object.int("output_index") ?? toolsByIndex.count] = call
+      let contentIndex = blockSlots[index]?.index ?? nextContentIndex
+      toolsByIndex[contentIndex] = call
+      blockSlots.removeValue(forKey: index)
       return events + [.toolCallCompleted(call)]
     case "response.completed", "response.incomplete",
       "response.done"
@@ -1583,12 +1614,51 @@ private struct OpenAIResponsesReducer {
     }
     let customProperty =
       item.string("type") == "custom_tool_call" ? (grammarInputProperties[name] ?? "input") : nil
+    blockSlots[index] = ("toolCall", nextContentIndex)
+    nextContentIndex += 1
     toolIDsByOutputIndex[index] = id
     if tools[id] == nil { toolOrder.append(id) }
     tools[id] = try ToolState(
       name: name, arguments: item.string("arguments") ?? item.string("input") ?? "",
       customInputProperty: customProperty, namespace: item.string("namespace"))
     return [.toolCallStarted(id: id, name: name)]
+  }
+
+  private func blockEvent(
+    _ index: Int, _ content: ProviderResponseContent,
+    _ update: ProviderContentBlock.Update
+  ) -> ProviderEvent {
+    .contentBlock(
+      .init(
+        index: index, content: content, update: update,
+        provisionalFinishReason: provisionalFinishReason))
+  }
+
+  private mutating func getOrCreateBlock(_ item: [String: JSONValue], at outputIndex: Int?)
+    -> (index: Int, events: [ProviderEvent])
+  {
+    if let slot = blockSlots[outputIndex], slot.kind == item.string("type") {
+      return (slot.index, [])
+    }
+    return createBlock(item, at: outputIndex)
+  }
+
+  private mutating func createBlock(_ item: [String: JSONValue], at outputIndex: Int?)
+    -> (index: Int, events: [ProviderEvent])
+  {
+    let index = nextContentIndex
+    nextContentIndex += 1
+    let kind = item.string("type") ?? ""
+    blockSlots[outputIndex] = (kind, index)
+    if kind == "message" {
+      if item.string("phase") == "final_answer" { provisionalFinishReason = .stop }
+      let text = ProviderTextContent(text: "", signature: nil, phase: item.string("phase"))
+      textByIndex[index] = text
+      return (index, [blockEvent(index, .text(text), .started)])
+    }
+    let reasoning = ProviderReasoningContent(text: "", signature: nil, providerMetadata: [:])
+    reasoningByIndex[index] = reasoning
+    return (index, [blockEvent(index, .reasoning(reasoning), .started)])
   }
 
   private final class ToolState {

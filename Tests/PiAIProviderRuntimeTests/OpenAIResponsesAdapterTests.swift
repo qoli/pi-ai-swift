@@ -305,6 +305,7 @@ private func responsesFixtureChunks() -> [Data] {
   let stream =
     [
       #"data: {"type":"response.created","response":{"id":"response-1","model":"gpt-fixture"}}"#,
+      #"data: {"type":"response.output_item.added","item":{"type":"message","id":"msg-fixture","content":[]}}"#,
       #"data: {"type":"response.output_text.delta","delta":"hello"}"#,
       #"data: {"type":"response.output_item.done","item":{"type":"reasoning","encrypted_content":"encrypted-reasoning"}}"#,
       #"data: {"type":"response.completed","response":{"usage":{"input_tokens":4,"output_tokens":2,"input_tokens_details":{"cached_tokens":1},"output_tokens_details":{"reasoning_tokens":1}}}}"#,

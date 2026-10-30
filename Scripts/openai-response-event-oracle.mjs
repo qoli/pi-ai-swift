@@ -60,6 +60,34 @@ const toolSlots = {};
 for (const [name, events] of Object.entries(fixture.responseToolSlotEvents)) {
   toolSlots[name] = await runToolSlots(events);
 }
+const blockLifecycle = {};
+for (const [name, events] of Object.entries(fixture.responsesBlockLifecycleEvents)) {
+  const model = modelFor("openai-responses", "openai", "gpt-model");
+  const output = outputFor(model);
+  const stream = new eventStreamModule.AssistantMessageEventStream();
+  const observed = [];
+  const push = stream.push.bind(stream);
+  stream.push = event => {
+    if (/^(text|thinking)_(start|delta|end)$/.test(event.type)) {
+      const block = event.partial.content[event.contentIndex];
+      const signature = block.textSignature ?? block.thinkingSignature;
+      observed.push({ type: event.type, contentIndex: event.contentIndex,
+        text: block.text ?? block.thinking, stopReason: event.partial.stopReason,
+        ...(event.delta !== undefined ? { delta: event.delta } : {}),
+        ...(signature !== undefined ? { signature: JSON.parse(signature) } : {}),
+      });
+    }
+    return push(event);
+  };
+  await shared.processResponsesStream(iterate(events), output, stream, model, {});
+  blockLifecycle[name] = { events: observed, stopReason: output.stopReason,
+    content: output.content.map(block => ({
+      type: block.type, text: block.text ?? block.thinking,
+      ...((block.textSignature ?? block.thinkingSignature) !== undefined
+        ? { signature: JSON.parse(block.textSignature ?? block.thinkingSignature) } : {}),
+    })),
+  };
+}
 const grammarReplay = {};
 const replay = fixture.responsesGrammarReplay;
 for (const [name, spec] of Object.entries(replay.cases)) {
@@ -126,6 +154,7 @@ process.stdout.write(`${JSON.stringify({
     "responses.provider-errors": providerErrors,
     "responses.codex-failure-branches": codexFailureBranches,
     "responses.tool-slot-lifecycle": toolSlots,
+    "responses.block-lifecycle": blockLifecycle,
     "responses.grammar-history-replay": grammarReplay,
     "responses.terminal-without-start": terminalWithoutStart,
     "responses.terminal-status": terminalStatuses,

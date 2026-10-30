@@ -454,6 +454,42 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func responseBlockLifecycleAndProvisionalPhasesMatchSource() async throws {
+    let fixture = try responseEventFixture()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path:
+            "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "responses.blocks.oracle")
+    let cases = try #require(fixture.object("responsesBlockLifecycleEvents"))
+    let expectedCases = try #require(oracle.object("cases")?.object("responses.block-lifecycle"))
+    for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
+      for name in cases.keys.sorted() {
+        let expected = try #require(expectedCases[name]?.objectValue)
+        let (request, context) = eventRequestContext(
+          protocolID: api, modelID: "gpt-model", tools: [], metadata: [:])
+        let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
+        var observed: [JSONValue] = []
+        var snapshot: ProviderResponseSnapshot?
+        for try await event in adapter.stream(
+          request, context: context,
+          transport: EventBranchTransport(
+            chunks: responsesSSE(try #require(cases[name]?.arrayValue))))
+        {
+          if let block = try responseBlockObservation(event) { observed.append(block) }
+          if case .responseSnapshot(let value) = event { snapshot = value }
+        }
+        #expect(observed == expected.array("events"), Comment(rawValue: "\(api):\(name)"))
+        let final = try #require(snapshot)
+        #expect(final.finishReason.rawValue == expected.string("stopReason"))
+        let content = try final.content.map { try responseBlockContent($0) }
+        #expect(content == expected.array("content"), Comment(rawValue: "\(api):\(name)"))
+      }
+    }
+  }
+
+  @Test
   func toolSlotsMatchSourceAtEveryEmissionAcrossAllFlavors() async throws {
     let fixture = try responseEventFixture()
     let oracle = try decodeJSONObject(
@@ -1055,3 +1091,45 @@ private func responseEventRepositoryRoot() -> URL {
     .deletingLastPathComponent()
     .deletingLastPathComponent()
 }
+
+private func responseBlockObservation(_ event: ProviderEvent) throws -> JSONValue? {
+  let raw = try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(event))
+  guard let block = raw.objectValue?.object("contentBlock")?.object("_0"),
+    let content = block["content"], let update = block.object("update"),
+    let stage = update.keys.first
+  else { return nil }
+  let decoded = try JSONDecoder().decode(
+    ProviderResponseContent.self, from: JSONEncoder().encode(content))
+  var result = try #require(responseBlockContent(decoded).objectValue)
+  let kind = result.string("type") == "text" ? "text" : "thinking"
+  result["type"] = .string(
+    kind + "_" + (stage == "completed" ? "end" : stage == "started" ? "start" : "delta"))
+  result["contentIndex"] = block["index"]
+  result["stopReason"] = block["provisionalFinishReason"] ?? .string("pending")
+  if stage == "delta" { result["delta"] = update.object("delta")?["_0"] }
+  return .object(result)
+}
+
+private func responseBlockContent(_ content: ProviderResponseContent) throws -> JSONValue {
+  let kind: String
+  let text: String
+  let signature: String?
+  switch content {
+  case .text(let value):
+    kind = "text"
+    text = value.text
+    signature = value.signature
+  case .reasoning(let value):
+    kind = "thinking"
+    text = value.text
+    signature = value.signature
+  default: throw TestBlockFailure.unexpectedContent
+  }
+  var result: [String: JSONValue] = ["type": .string(kind), "text": .string(text)]
+  if let signature {
+    result["signature"] = try JSONDecoder().decode(JSONValue.self, from: Data(signature.utf8))
+  }
+  return .object(result)
+}
+
+private enum TestBlockFailure: Error { case unexpectedContent }

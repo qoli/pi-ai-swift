@@ -1531,6 +1531,75 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testResponsesBlockLifecycleAndPhasesMatchPinnedSource() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    let cases = try XCTUnwrap(fixture.object("responsesBlockLifecycleEvents"))
+    XCTAssertEqual(cases.count, 5)
+    for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
+      for (name, value) in cases {
+        let expected = try XCTUnwrap(
+          oracle.object("cases")?.object("responses.block-lifecycle")?.object(name))
+        let chunks = try XCTUnwrap(value.arrayValue).map {
+          Data(
+            ("data: " + String(decoding: try JSONEncoder().encode($0), as: UTF8.self) + "\n\n").utf8
+          )
+        }
+        let (request, context) = inputs(api: api)
+        let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
+        let transport = IOSFixtureTransport(chunks: chunks)
+        var observed: [JSONValue] = []
+        var snapshot: ProviderResponseSnapshot?
+        for try await event in adapter.stream(request, context: context, transport: transport) {
+          if case .contentBlock(let block) = event {
+            var fields = try blockFields(block.content)
+            let kind = fields.string("type") == "text" ? "text" : "thinking"
+            let stage: String
+            switch block.update {
+            case .started: stage = "start"
+            case .delta(let delta):
+              stage = "delta"
+              fields["delta"] = .string(delta)
+            case .completed: stage = "end"
+            }
+            fields["type"] = .string(kind + "_" + stage)
+            fields["contentIndex"] = .integer(Int64(block.index))
+            fields["stopReason"] = .string(block.provisionalFinishReason?.rawValue ?? "pending")
+            observed.append(.object(fields))
+          }
+          if case .responseSnapshot(let value) = event { snapshot = value }
+        }
+        XCTAssertEqual(observed, expected.array("events"), "\(api):\(name)")
+        let final = try XCTUnwrap(snapshot)
+        XCTAssertEqual(final.finishReason.rawValue, expected.string("stopReason"), name)
+        XCTAssertEqual(
+          try final.content.map { .object(try blockFields($0)) }, expected.array("content"), name)
+      }
+    }
+  }
+
+  private func blockFields(_ content: ProviderResponseContent) throws -> [String: JSONValue] {
+    let kind: String
+    let text: String
+    let signature: String?
+    switch content {
+    case .text(let value):
+      kind = "text"
+      text = value.text
+      signature = value.signature
+    case .reasoning(let value):
+      kind = "thinking"
+      text = value.text
+      signature = value.signature
+    default: throw NSError(domain: "ios.conformance.unexpectedBlock", code: 1)
+    }
+    var fields: [String: JSONValue] = ["type": .string(kind), "text": .string(text)]
+    if let signature {
+      fields["signature"] = try JSONDecoder().decode(JSONValue.self, from: Data(signature.utf8))
+    }
+    return fields
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

@@ -2454,5 +2454,278 @@
       "status": 200,
       "body": "data: {\"type\":\"error\",\"error\":{}}\n\n"
     }
-  ]
+  ],
+  "responsesBlockLifecycleEvents": {
+    "commentary-commentary-completed": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "commentary"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "commentary"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      }
+    ],
+    "final_answer-final_answer-completed": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      }
+    ],
+    "commentary-final_answer-completed": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "commentary"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      }
+    ],
+    "final_answer-final_answer-incomplete": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp_phase",
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "max_output_tokens"
+          }
+        }
+      }
+    ],
+    "interleaved-reused-output-index": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 8,
+        "item": {
+          "type": "message",
+          "id": "msg_first",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "commentary"
+        }
+      },
+      {
+        "type": "response.output_item.added",
+        "output_index": 2,
+        "item": {
+          "type": "reasoning",
+          "id": "rs_lifecycle",
+          "summary": []
+        }
+      },
+      {
+        "type": "response.output_text.delta",
+        "output_index": 8,
+        "delta": "first"
+      },
+      {
+        "type": "response.reasoning_summary_text.delta",
+        "output_index": 2,
+        "delta": "plan"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 8,
+        "item": {
+          "type": "message",
+          "id": "msg_first",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "first",
+              "annotations": []
+            }
+          ],
+          "phase": "commentary"
+        }
+      },
+      {
+        "type": "response.output_item.added",
+        "output_index": 8,
+        "item": {
+          "type": "message",
+          "id": "msg_second",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_text.delta",
+        "output_index": 8,
+        "delta": "second"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 2,
+        "item": {
+          "type": "reasoning",
+          "id": "rs_lifecycle",
+          "summary": [
+            {
+              "type": "summary_text",
+              "text": "plan"
+            }
+          ]
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 8,
+        "item": {
+          "type": "message",
+          "id": "msg_second",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_lifecycle",
+          "status": "completed",
+          "usage": {
+            "input_tokens": 1,
+            "output_tokens": 1,
+            "total_tokens": 2
+          }
+        }
+      }
+    ]
+  }
 }

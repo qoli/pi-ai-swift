@@ -410,13 +410,33 @@ function googleWireBody(payload) {
     ...(tools ? { tools } : {}), ...(toolConfig ? { toolConfig } : {}) };
 }
 
+const indexedBlockPartials = new WeakSet();
+
 function emit(event, partial, output) {
   const [type, data] = Object.entries(event)[0];
   const value = data._0;
   if (type === "responseStarted") {
     if (value.responseID) partial.responseId = value.responseID;
     output.push({ type: "start", partial: structuredClone(partial) });
+  } else if (type === "contentBlock") {
+    indexedBlockPartials.add(partial);
+    const [kind, payload] = Object.entries(value.content)[0];
+    const block = payload._0;
+    const category = kind === "text" ? "text" : "thinking";
+    const normalized = kind === "text"
+      ? { type: "text", text: block.text, ...(block.signature !== undefined ? { textSignature: block.signature } : {}) }
+      : { type: "thinking", thinking: block.text,
+        ...(block.signature !== undefined ? { thinkingSignature: block.signature } : {}),
+        ...(block.isRedacted !== undefined ? { redacted: block.isRedacted } : {}) };
+    partial.content[value.index] = normalized;
+    partial.stopReason = value.provisionalFinishReason ?? "pending";
+    const [stage, update] = Object.entries(value.update)[0];
+    output.push({ type: `${category}_${stage === "started" ? "start" : stage === "completed" ? "end" : "delta"}`,
+      contentIndex: value.index,
+      ...(stage === "delta" ? { delta: update._0 } : stage === "completed" ? { content: block.text } : {}),
+      partial: structuredClone(partial) });
   } else if (type === "textDelta" || type === "reasoningDelta") {
+    if (indexedBlockPartials.has(partial)) return;
     const kind = type === "textDelta" ? "text" : "thinking";
     let index = partial.content.findLastIndex(block => block.type === kind);
     if (index < 0) {
@@ -429,6 +449,7 @@ function emit(event, partial, output) {
     const index = partial.content.push({ type: "toolCall", id: data.id, name: data.name, arguments: {} }) - 1;
     output.push({ type: "toolcall_start", contentIndex: index, partial: structuredClone(partial) });
   } else if (type === "reasoningSignatureDelta") {
+    if (indexedBlockPartials.has(partial)) return;
     const index = partial.content.findLastIndex(block => block.type === "thinking");
     if (index >= 0) partial.content[index].thinkingSignature =
       (partial.content[index].thinkingSignature ?? "") + value;

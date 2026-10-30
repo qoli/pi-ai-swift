@@ -285,6 +285,7 @@ private struct FailureSourceTerminal: Decodable, Equatable {
 
 private func failureEventType(_ event: ProviderEvent) -> String? {
   switch event {
+  case .contentBlock: nil
   case .responseStarted: nil
   case .textDelta: "textDelta"
   case .reasoningDelta: "reasoningDelta"
