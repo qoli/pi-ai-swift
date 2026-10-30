@@ -18,7 +18,7 @@ end
 
 source = project.main_group.new_file(root.join('Tests/iOSConformance/ProviderRuntimeConformanceTests.swift').to_s)
 target.source_build_phase.add_file_reference(source)
-%w[OpenAIRequestBranches Differential].each do |folder|
+%w[OpenAIRequestBranches Differential AzureOpenAIConfiguration].each do |folder|
   reference = project.main_group.new_file(root.join('Fixtures', folder).to_s)
   reference.last_known_file_type = 'folder'
   target.resources_build_phase.add_file_reference(reference)

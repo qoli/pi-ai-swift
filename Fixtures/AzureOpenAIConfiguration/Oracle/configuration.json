@@ -37,6 +37,22 @@
     "azure-config-model-proxy-path-preserved": {
       "model": "source-model",
       "url": "https://proxy.invalid/custom/root/responses?api-version=proxy-version"
+    },
+    "azure-config-proxy-query-duplicates": {
+      "model": "source-model",
+      "url": "https://proxy.invalid/v1?q=a%20b&k=two&api-version=2026-01-01-preview"
+    },
+    "azure-config-proxy-query-encoding": {
+      "model": "source-model",
+      "url": "https://proxy.invalid/v1?name=two%20words&path=a%2Fb&flag%2Fresponses=&api-version=2026-01-01-preview"
+    },
+    "azure-config-proxy-query-existing-version": {
+      "model": "source-model",
+      "url": "https://proxy.invalid/v1?api-version=2026-01-01-preview&custom=true%2Fresponses"
+    },
+    "azure-config-proxy-query-preserved": {
+      "model": "source-model",
+      "url": "https://proxy.invalid/v1?custom=true%2Fresponses&api-version=2026-01-01-preview"
     }
   },
   "schemaVersion": 1,

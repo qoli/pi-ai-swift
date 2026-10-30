@@ -37,14 +37,18 @@
       "modelBaseURL": "https://model.invalid/model-root",
       "options": {
         "azureResourceName": "explicit-resource",
-        "env": { "AZURE_OPENAI_RESOURCE_NAME": "environment-resource" }
+        "env": {
+          "AZURE_OPENAI_RESOURCE_NAME": "environment-resource"
+        }
       }
     },
     {
       "id": "azure-config-environment-resource",
       "modelID": "source-model",
       "options": {
-        "env": { "AZURE_OPENAI_RESOURCE_NAME": "environment-resource" }
+        "env": {
+          "AZURE_OPENAI_RESOURCE_NAME": "environment-resource"
+        }
       }
     },
     {
@@ -57,7 +61,9 @@
       "id": "azure-config-model-proxy-path-preserved",
       "modelID": "source-model",
       "modelBaseURL": "https://proxy.invalid/custom/root/",
-      "options": { "azureApiVersion": "proxy-version" }
+      "options": {
+        "azureApiVersion": "proxy-version"
+      }
     },
     {
       "id": "azure-config-empty-explicit-uses-environment",
@@ -65,7 +71,9 @@
       "modelBaseURL": "https://model.invalid/model-root",
       "options": {
         "azureBaseUrl": "   ",
-        "env": { "AZURE_OPENAI_BASE_URL": "https://environment.openai.azure.com" }
+        "env": {
+          "AZURE_OPENAI_BASE_URL": "https://environment.openai.azure.com"
+        }
       }
     },
     {
@@ -73,7 +81,9 @@
       "modelID": "source-model",
       "modelBaseURL": "https://proxy.invalid/root",
       "options": {
-        "env": { "AZURE_OPENAI_DEPLOYMENT_NAME_MAP": "other=other-deployment, broken" }
+        "env": {
+          "AZURE_OPENAI_DEPLOYMENT_NAME_MAP": "other=other-deployment, broken"
+        }
       }
     },
     {
@@ -84,7 +94,41 @@
     {
       "id": "azure-config-invalid-base-failure",
       "modelID": "source-model",
-      "options": { "azureBaseUrl": "not a valid URL" }
+      "options": {
+        "azureBaseUrl": "not a valid URL"
+      }
+    },
+    {
+      "id": "azure-config-proxy-query-preserved",
+      "modelID": "source-model",
+      "modelBaseURL": "https://proxy.invalid/v1?custom=true",
+      "options": {
+        "azureApiVersion": "2026-01-01-preview"
+      }
+    },
+    {
+      "id": "azure-config-proxy-query-existing-version",
+      "modelID": "source-model",
+      "modelBaseURL": "https://proxy.invalid/v1?api-version=old&custom=true",
+      "options": {
+        "azureApiVersion": "2026-01-01-preview"
+      }
+    },
+    {
+      "id": "azure-config-proxy-query-encoding",
+      "modelID": "source-model",
+      "modelBaseURL": "https://proxy.invalid/v1?name=two%20words&path=a%2Fb&flag",
+      "options": {
+        "azureApiVersion": "2026-01-01-preview"
+      }
+    },
+    {
+      "id": "azure-config-proxy-query-duplicates",
+      "modelID": "source-model",
+      "modelBaseURL": "https://proxy.invalid/v1?q=a+b&k=one&k=two&api-version=old",
+      "options": {
+        "azureApiVersion": "2026-01-01-preview"
+      }
     }
   ]
 }

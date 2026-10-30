@@ -1366,6 +1366,41 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAzureProxyQueriesMatchPinnedSource() async throws {
+    let fixture = try load("AzureOpenAIConfiguration/Cases/configuration.json")
+    let oracle = try load("AzureOpenAIConfiguration/Oracle/configuration.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("azure-config-proxy-query-") == true }
+    XCTAssertEqual(cases.count, 4)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let modelID = try XCTUnwrap(spec.string("modelID"))
+      let (_, context) = inputs(
+        api: "azure-openai-responses", providerID: "azure-openai-responses", modelID: modelID,
+        baseURL: try XCTUnwrap(spec.string("modelBaseURL")), reasoning: false)
+      let request = ProviderRequest(
+        id: name, providerID: "azure-openai-responses", modelID: modelID,
+        messages: [.system("Azure source fixture"), .user([.text("hello")])], tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: [:]),
+        connectionOptions: .init(
+          azureOpenAIResponses: .init(
+            azureAPIVersion: spec.object("options")?.string("azureApiVersion"))))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in OpenAIResponsesAdapter(
+          protocolID: "azure-openai-responses", flavor: .azure
+        )
+        .stream(request, context: context, transport: transport) {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      XCTAssertEqual(
+        try XCTUnwrap(sent, name).url?.absoluteString,
+        oracle.object("cases")?.object(name)?.string("url"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

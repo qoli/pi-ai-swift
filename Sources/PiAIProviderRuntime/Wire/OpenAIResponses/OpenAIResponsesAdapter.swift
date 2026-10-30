@@ -327,16 +327,32 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           message: "Invalid Azure OpenAI base URL: \(configuration.baseURL)"
         )
       }
+      // The pinned SDK concatenates baseURL and path before parsing the query.
       var components = URLComponents(
-        url: baseURL.appending(path: "responses"),
+        url: URL(string: baseURL.absoluteString + "/responses")!,
         resolvingAgainstBaseURL: false
       )
-      components?.queryItems = [
-        URLQueryItem(
-          name: "api-version",
-          value: configuration.apiVersion
-        )
-      ]
+      let originalQuery = components?.percentEncodedQuery?.replacingOccurrences(
+        of: "+", with: "%20")
+      components?.percentEncodedQuery = originalQuery
+      var query: [(String, String)] = []
+      for item in components?.queryItems ?? [] {
+        if let index = query.firstIndex(where: { $0.0 == item.name }) {
+          query[index].1 = item.value ?? ""
+        } else {
+          query.append((item.name, item.value ?? ""))
+        }
+      }
+      if let index = query.firstIndex(where: { $0.0 == "api-version" }) {
+        query[index].1 = configuration.apiVersion
+      } else {
+        query.append(("api-version", configuration.apiVersion))
+      }
+      let unreserved = CharacterSet(
+        charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
+      components?.percentEncodedQuery = query.map { key, value in
+        "\(key.addingPercentEncoding(withAllowedCharacters: unreserved)!)=\(value.addingPercentEncoding(withAllowedCharacters: unreserved)!)"
+      }.joined(separator: "&")
       guard let url = components?.url else {
         throw failure(
           .invalidRequest,

@@ -2098,7 +2098,9 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseStatusesMatchSourceResultsAndPreserveUsage",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesTerminalStatusesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#azureStrictCompatibilityMatchesSourceFieldPresenceAndRejection",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAzureStrictCompatibilityMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAzureStrictCompatibilityMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAzureProxyQueriesMatchPinnedSource",
+        "Scripts/ios-conformance-project.rb"
       ],
       "requiredGates": [
         "swift-test"

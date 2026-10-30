@@ -187,7 +187,15 @@ struct SwiftConformanceProbe {
     let responses = input.responses ?? []
     let fixtureTransport = ProbeTransport(responses: responses, aborted: input.aborted == true)
     let channel = ProbeChannel()
-    let liveTransport = InteractiveProbeTransport(channel: channel)
+    let azureConfiguration =
+      api == "azure-openai-responses"
+      ? try? ResolvedAzureOpenAIResponsesConfiguration.resolve(
+        request: request, modelBaseURL: model.string("baseUrl")) : nil
+    let liveTransport = InteractiveProbeTransport(
+      channel: channel,
+      azureConfiguration: azureConfiguration.map {
+        ["baseURL": .string($0.baseURL), "apiVersion": .string($0.apiVersion)]
+      })
     let transport: any ProviderHTTPStreamingTransport =
       interactive ? liveTransport : fixtureTransport
     let authorization: any ProviderAuthorizationAdapter
@@ -434,6 +442,7 @@ private struct ProbeOutput: Encodable {
     let url: String
     let headers: [String: String]
     let body: JSONValue
+    var azureConfiguration: [String: JSONValue]? = nil
   }
 }
 
@@ -454,15 +463,20 @@ private final class ProbeChannel: @unchecked Sendable {
 
 private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
   let channel: ProbeChannel
+  let azureConfiguration: [String: JSONValue]?
   private var response: CheckedContinuation<ProviderHTTPStreamingResponse, any Error>?
   private var body: AsyncThrowingStream<Data, any Error>.Continuation?
 
-  init(channel: ProbeChannel) { self.channel = channel }
+  init(channel: ProbeChannel, azureConfiguration: [String: JSONValue]?) {
+    self.channel = channel
+    self.azureConfiguration = azureConfiguration
+  }
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     let captured = ProbeOutput.Request(
       url: request.url!.absoluteString, headers: request.allHTTPHeaderFields ?? [:],
-      body: try JSONDecoder().decode(JSONValue.self, from: request.httpBody ?? Data("null".utf8)))
+      body: try JSONDecoder().decode(JSONValue.self, from: request.httpBody ?? Data("null".utf8)),
+      azureConfiguration: azureConfiguration)
     return try await withTaskCancellationHandler {
       try await withCheckedThrowingContinuation { continuation in
         response = continuation

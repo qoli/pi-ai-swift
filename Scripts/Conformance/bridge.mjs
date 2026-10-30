@@ -329,7 +329,8 @@ async function mockResponse(model, request, body, options, connection) {
   const config = { apiKey: connection.credential.key, baseURL: request.url.split(suffix)[0],
     defaultHeaders, dangerouslyAllowBrowser: true };
   if (model.api === "azure-openai-responses") {
-    config.apiVersion = new URL(request.url).searchParams.get("api-version") ?? "v1";
+    if (!request.azureConfiguration) throw new Error("Swift Azure configuration was not captured");
+    Object.assign(config, request.azureConfiguration);
   }
   if (model.api === "google-generative-ai" || model.api === "google-vertex") {
     const client = connection.client ??= new GoogleGenAI({ apiKey: options.apiKey,
