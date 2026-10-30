@@ -60,11 +60,12 @@
         "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
         "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
         "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
-        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicSSEMatchesPinnedSource"
       ],
       "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "1453b7bb0eb21111f2f0841ddb5cf7f16892dbbd4aba89361917212b2dd84ae1"
+      "swiftEvidenceSHA256": "dd4e0fe581a763b5b7e4913a3681fce5f5ca5335dad7056d5d50ce006d30c9d9"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -370,11 +371,12 @@
         "Fixtures/Differential/Cases/cloudflare-auth.json",
         "Fixtures/Differential/Oracle/cloudflare-auth.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsTransportTerminationMatchesPinnedSource",
-        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#omittedReasoningUsesPinnedSourceDefaultControls"
+        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#omittedReasoningUsesPinnedSourceDefaultControls",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTerminationMatchesPinnedSource"
       ],
       "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "dfb3da32bc2607111eee1ca639ad213a24fb43858fbb5b9c85b74883644d3fd5"
+      "swiftEvidenceSHA256": "6bb3ceb62f14e0a9da5884eb33385a4b4b660ac0695bbed4377e284f14a314b6"
     },
     {
       "protocolID": "openai-responses",

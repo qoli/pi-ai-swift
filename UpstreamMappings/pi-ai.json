@@ -301,11 +301,14 @@
         "Scripts/Conformance/SwiftProbe.swift",
         "Scripts/Conformance/bridge.mjs",
         "Scripts/Conformance/run.py",
-        "Scripts/Conformance/suites.json"
+        "Scripts/Conformance/suites.json",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift",
+        "Scripts/ios-conformance-project.rb"
       ],
       "requiredGates": [
         "swift-test",
-        "upstream-check"
+        "upstream-check",
+        "ios-simulator-source-fixtures"
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
@@ -1997,10 +2000,12 @@
         "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
         "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
         "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
-        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence"
+        "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicSSEMatchesPinnedSource"
       ],
       "requiredGates": [
-        "swift-test"
+        "swift-test",
+        "ios-simulator-source-fixtures"
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
@@ -2481,10 +2486,12 @@
         "Fixtures/Differential/Cases/cloudflare-auth.json",
         "Fixtures/Differential/Oracle/cloudflare-auth.json",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsTransportTerminationMatchesPinnedSource",
-        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#omittedReasoningUsesPinnedSourceDefaultControls"
+        "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#omittedReasoningUsesPinnedSourceDefaultControls",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTerminationMatchesPinnedSource"
       ],
       "requiredGates": [
-        "swift-test"
+        "swift-test",
+        "ios-simulator-source-fixtures"
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired",
