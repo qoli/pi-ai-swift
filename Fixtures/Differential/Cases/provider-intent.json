@@ -4409,6 +4409,1409 @@
       "entrypoint": "stream",
       "explicitOff": false,
       "expectError": true
+    },
+    {
+      "id": "replay-signature.anthropic-messages.unsigned-thinking",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.anthropic-messages.empty-signature",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": ""
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.anthropic-messages.whitespace-signature",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": " \t"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.anthropic-messages.unsigned-empty-thinking",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": ""
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.anthropic-messages.signed-empty-thinking",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "thinkingSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.anthropic-messages.signed-empty-text",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "",
+          "textSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.anthropic-messages.unsigned-whitespace-text",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": " \t"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.anthropic-messages.cross-model-empty-text",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "",
+          "textSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ],
+      "assistantSource": {
+        "model": "different-model"
+      }
+    },
+    {
+      "id": "replay-signature.anthropic-messages.allow-empty-signature",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "allowEmptySignature": true
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": " \t"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.anthropic-messages.signed-whitespace-thinking",
+      "model": {
+        "id": "mimo-fixture",
+        "name": "Fixture",
+        "api": "anthropic-messages",
+        "provider": "xiaomi-token-plan-ams",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": " \t",
+          "thinkingSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "messages"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.unsigned-thinking",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.empty-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": ""
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.whitespace-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": " \t"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.unsigned-empty-thinking",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": ""
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.signed-empty-thinking",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "thinkingSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.signed-empty-text",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "",
+          "textSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.unsigned-whitespace-text",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": " \t"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.cross-model-empty-text",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "",
+          "textSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ],
+      "assistantSource": {
+        "model": "different-model"
+      }
+    },
+    {
+      "id": "replay-signature.google-generative-ai.invalid-thinking-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": "not-base64"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.invalid-text-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "fixture text",
+          "textSignature": "not-base64"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.unsigned-thinking",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.empty-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": ""
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.whitespace-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": " \t"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.unsigned-empty-thinking",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": ""
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.signed-empty-thinking",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "thinkingSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.signed-empty-text",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "",
+          "textSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.unsigned-whitespace-text",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": " \t"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.cross-model-empty-text",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "",
+          "textSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ],
+      "assistantSource": {
+        "model": "different-model"
+      }
+    },
+    {
+      "id": "replay-signature.google-vertex.invalid-thinking-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "thinking",
+          "thinking": "fixture reasoning",
+          "thinkingSignature": "not-base64"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.invalid-text-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "text",
+          "text": "fixture text",
+          "textSignature": "not-base64"
+        },
+        {
+          "type": "text",
+          "text": "answer"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.valid-tool-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {},
+          "thoughtSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-generative-ai.invalid-tool-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-generative-ai",
+        "provider": "google",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {},
+          "thoughtSignature": "not-base64"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.valid-tool-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {},
+          "thoughtSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
+    },
+    {
+      "id": "replay-signature.google-vertex.invalid-tool-signature",
+      "model": {
+        "id": "gemini-3-pro-preview",
+        "name": "Fixture",
+        "api": "google-vertex",
+        "provider": "google-vertex",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": true,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 128000,
+        "maxTokens": 8192,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {
+        "thinkingEnabled": false,
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "history": true,
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {},
+          "thoughtSignature": "not-base64"
+        }
+      ],
+      "projectFields": [
+        "contents"
+      ]
     }
   ]
 }

@@ -1719,6 +1719,1113 @@
         "top_p": 0.8
       }
     },
+    "replay-signature.anthropic-messages.allow-empty-signature": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "signature": "",
+                "thinking": "fixture reasoning",
+                "type": "thinking"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.cross-model-empty-text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.empty-signature": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "fixture reasoning",
+                "type": "text"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.signed-empty-text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.signed-empty-thinking": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "signature": "AAAAAAAAAAAAAAAAAAAAAA==",
+                "thinking": "",
+                "type": "thinking"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.signed-whitespace-thinking": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "signature": "AAAAAAAAAAAAAAAAAAAAAA==",
+                "thinking": " \t",
+                "type": "thinking"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.unsigned-empty-thinking": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.unsigned-thinking": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "fixture reasoning",
+                "type": "text"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.unsigned-whitespace-text": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.anthropic-messages.whitespace-signature": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": [
+              {
+                "text": "fixture reasoning",
+                "type": "text"
+              },
+              {
+                "text": "answer",
+                "type": "text"
+              }
+            ],
+            "role": "assistant"
+          },
+          {
+            "content": "again",
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.cross-model-empty-text": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.empty-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture reasoning",
+                "thought": true
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.invalid-text-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture text"
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.invalid-thinking-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture reasoning",
+                "thought": true
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.invalid-tool-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "functionCall": {
+                  "args": {},
+                  "id": "call_1",
+                  "name": "read"
+                }
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "functionResponse": {
+                  "id": "call_1",
+                  "name": "read",
+                  "response": {
+                    "error": "No result provided"
+                  }
+                }
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.signed-empty-text": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "",
+                "thoughtSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.signed-empty-thinking": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "",
+                "thought": true,
+                "thoughtSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.unsigned-empty-thinking": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.unsigned-thinking": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture reasoning",
+                "thought": true
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.unsigned-whitespace-text": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.valid-tool-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "functionCall": {
+                  "args": {},
+                  "id": "call_1",
+                  "name": "read"
+                },
+                "thoughtSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "functionResponse": {
+                  "id": "call_1",
+                  "name": "read",
+                  "response": {
+                    "error": "No result provided"
+                  }
+                }
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-generative-ai.whitespace-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture reasoning",
+                "thought": true
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.cross-model-empty-text": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.empty-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture reasoning",
+                "thought": true
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.invalid-text-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture text"
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.invalid-thinking-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture reasoning",
+                "thought": true
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.invalid-tool-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "functionCall": {
+                  "args": {},
+                  "id": "call_1",
+                  "name": "read"
+                }
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "functionResponse": {
+                  "id": "call_1",
+                  "name": "read",
+                  "response": {
+                    "error": "No result provided"
+                  }
+                }
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.signed-empty-text": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "",
+                "thoughtSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.signed-empty-thinking": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "",
+                "thought": true,
+                "thoughtSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.unsigned-empty-thinking": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.unsigned-thinking": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture reasoning",
+                "thought": true
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.unsigned-whitespace-text": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.valid-tool-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "functionCall": {
+                  "args": {},
+                  "id": "call_1",
+                  "name": "read"
+                },
+                "thoughtSignature": "AAAAAAAAAAAAAAAAAAAAAA=="
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "functionResponse": {
+                  "id": "call_1",
+                  "name": "read",
+                  "response": {
+                    "error": "No result provided"
+                  }
+                }
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
+    "replay-signature.google-vertex.whitespace-signature": {
+      "requestBody": {
+        "contents": [
+          {
+            "parts": [
+              {
+                "text": "hello"
+              }
+            ],
+            "role": "user"
+          },
+          {
+            "parts": [
+              {
+                "text": "fixture reasoning",
+                "thought": true
+              },
+              {
+                "text": "answer"
+              }
+            ],
+            "role": "model"
+          },
+          {
+            "parts": [
+              {
+                "text": "again"
+              }
+            ],
+            "role": "user"
+          }
+        ]
+      }
+    },
     "responses.configuration-false": {
       "requestBody": {
         "include": [

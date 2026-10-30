@@ -57,8 +57,29 @@ struct ProviderIntentDifferentialTests {
         messages.append(
           .assistantMessage(
             .init(
-              content: [.text("answer")],
-              source: .init(api: api, providerID: provider, modelID: id),
+              content: (spec.assistantContent ?? [
+                ["type": .string("text"), "text": .string("answer")]
+              ]).map { block in
+                if block.string("type") == "toolCall" {
+                  return .toolCall(
+                    .init(
+                      id: block.string("id")!, name: block.string("name")!,
+                      arguments: block["arguments"]!,
+                      thoughtSignature: block.string("thoughtSignature")))
+                }
+                if block.string("type") == "thinking" {
+                  return .reasoning(
+                    .init(
+                      text: block.string("thinking") ?? "",
+                      signature: block.string("thinkingSignature"), providerMetadata: [:]))
+                }
+                return .signedText(
+                  .init(text: block.string("text") ?? "", signature: block.string("textSignature")))
+              },
+              source: .init(
+                api: spec.assistantSource?.string("api") ?? api,
+                providerID: spec.assistantSource?.string("provider") ?? provider,
+                modelID: spec.assistantSource?.string("model") ?? id),
               usage: .init(
                 inputTokens: 0, outputTokens: 0, reasoningTokens: nil,
                 cachedInputTokens: 0, providerMetadata: [:]),
@@ -116,7 +137,13 @@ struct ProviderIntentDifferentialTests {
       }
       if let failure { throw failure }
       var actual = try #require(await transport.body, Comment(rawValue: spec.id))
-      if api.hasPrefix("google-") {
+      if let fields = spec.projectFields {
+        actual = .object(
+          Dictionary(
+            uniqueKeysWithValues: fields.compactMap { key in
+              actual.objectValue?[key].map { (key, $0) }
+            }))
+      } else if api.hasPrefix("google-") {
         actual = .object([
           "thinkingConfig": actual.objectValue?.object("generationConfig")?["thinkingConfig"]
             ?? .null
@@ -142,6 +169,9 @@ struct ProviderIntentDifferentialTests {
     let explicitOff: Bool?
     let apiKey: String?
     let tools: [[String: JSONValue]]?
+    let assistantContent: [[String: JSONValue]]?
+    let assistantSource: [String: JSONValue]?
+    let projectFields: [String]?
   }
   private struct Oracle: Decodable {
     let upstreamRevision: String

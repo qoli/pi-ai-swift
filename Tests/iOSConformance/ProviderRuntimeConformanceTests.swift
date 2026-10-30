@@ -595,6 +595,79 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     XCTAssertNil(unknownResult.snapshot)
   }
 
+  func testSignatureReplayMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("replay-signature.") == true }
+    XCTAssertEqual(cases.count, 34)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let model = try XCTUnwrap(spec.object("model"))
+      let api = try XCTUnwrap(model.string("api"))
+      let provider = try XCTUnwrap(model.string("provider"))
+      let modelID = try XCTUnwrap(model.string("id"))
+      let blocks: [ProviderAssistantContent] = try XCTUnwrap(spec.array("assistantContent")).map {
+        value in
+        let block = try XCTUnwrap(value.objectValue)
+        if block.string("type") == "toolCall" {
+          return .toolCall(
+            .init(
+              id: try XCTUnwrap(block.string("id")), name: try XCTUnwrap(block.string("name")),
+              arguments: try XCTUnwrap(block["arguments"]),
+              thoughtSignature: block.string("thoughtSignature")))
+        }
+        if block.string("type") == "thinking" {
+          return .reasoning(
+            .init(
+              text: block.string("thinking") ?? "", signature: block.string("thinkingSignature"),
+              providerMetadata: [:]))
+        }
+        return .signedText(
+          .init(text: block.string("text") ?? "", signature: block.string("textSignature")))
+      }
+      let (_, context) = inputs(
+        api: api, providerID: provider, modelID: modelID,
+        reasoning: true, metadata: model)
+      let request = ProviderRequest(
+        id: name, providerID: provider, modelID: modelID,
+        messages: [
+          .user([.text("hello")]),
+          .assistantMessage(
+            .init(
+              content: blocks,
+              source: .init(
+                api: api, providerID: provider,
+                modelID: spec.object("assistantSource")?.string("model") ?? modelID),
+              usage: .init(
+                inputTokens: 0, outputTokens: 0, reasoningTokens: nil, cachedInputTokens: 0,
+                providerMetadata: [:]),
+              stopReason: .stop, timestampMilliseconds: 1,
+              providerMetadata: ["providerThinkingLevel": .string("low")])),
+          .user([.text("again")]),
+        ],
+        tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: .off,
+          responseSchema: nil, providerOptions: [:], cacheRetention: .none))
+      let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: provider, operation: "ios.signature.body")
+      let fields = try XCTUnwrap(spec.array("projectFields"))
+      let actual = Dictionary(
+        uniqueKeysWithValues: fields.compactMap { value -> (String, JSONValue)? in
+          guard let key = value.stringValue, let value = body[key] else { return nil }
+          return (key, value)
+        })
+      XCTAssertEqual(actual, oracle.object("cases")?.object(name)?.object("requestBody"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

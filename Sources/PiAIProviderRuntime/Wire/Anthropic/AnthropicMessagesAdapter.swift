@@ -475,6 +475,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
   ) throws -> [JSONValue] {
     let target = ProviderMessageSource(
       api: protocolID, providerID: context.provider.id, modelID: context.model.id)
+    let allowEmptySignature =
+      context.modelConfiguration.metadata.object("compat")?.bool("allowEmptySignature") == true
     let converted: [JSONValue] = try messages.compactMap { message -> JSONValue? in
       switch message {
       case .system:
@@ -493,16 +495,18 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       case .userMessage(let user):
         return try makeMessages([.user(user.content)], context: context)[0]
       case .assistant(let content):
-        return .object([
-          "role": .string("assistant"),
-          "content": .array(content.map(makeAssistantContent(_:))),
-        ])
+        let blocks = content.compactMap {
+          makeAssistantContent($0, allowEmptySignature: allowEmptySignature)
+        }
+        guard !blocks.isEmpty else { return nil }
+        return .object(["role": .string("assistant"), "content": .array(blocks)])
       case .assistantMessage(let assistant):
         guard let content = assistant.replayContent(for: target) else { return nil }
-        return .object([
-          "role": .string("assistant"),
-          "content": .array(content.map(makeAssistantContent(_:))),
-        ])
+        let blocks = content.compactMap {
+          makeAssistantContent($0, allowEmptySignature: allowEmptySignature)
+        }
+        guard !blocks.isEmpty else { return nil }
+        return .object(["role": .string("assistant"), "content": .array(blocks)])
       case .toolResult(let result):
         let split = ErrorToolResultImages(result)
         let content = split?.content ?? result.content
@@ -640,11 +644,15 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     }
   }
 
-  private func makeAssistantContent(_ content: ProviderAssistantContent) -> JSONValue {
+  private func makeAssistantContent(
+    _ content: ProviderAssistantContent, allowEmptySignature: Bool
+  ) -> JSONValue? {
     switch content {
     case .text(let text):
+      guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
       return .object(["type": .string("text"), "text": .string(text)])
     case .signedText(let text):
+      guard !text.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
       return .object(["type": .string("text"), "text": .string(text.text)])
     case .reasoning(let reasoning):
       if reasoning.isRedacted == true {
@@ -653,10 +661,19 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
           "data": reasoning.signature.map(JSONValue.string) ?? .string(""),
         ])
       }
+      let signature = reasoning.signature.flatMap {
+        $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : $0
+      }
+      guard
+        !reasoning.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || signature != nil
+      else { return nil }
+      if signature == nil, !allowEmptySignature {
+        return .object(["type": .string("text"), "text": .string(reasoning.text)])
+      }
       return .object([
         "type": .string("thinking"),
         "thinking": .string(reasoning.text),
-        "signature": reasoning.signature.map(JSONValue.string) ?? .string(""),
+        "signature": .string(signature ?? ""),
       ])
     case .toolCall(let call):
       return .object([

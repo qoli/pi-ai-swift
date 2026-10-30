@@ -2017,7 +2017,9 @@
         "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
         "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json",
         "Tests/PiAIProviderRuntimeTests/CandidateProviderHeaderTests.swift#sdkDispatchPreservesSourceCaseInsensitiveScopePrecedence",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicSSEMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicSSEMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift#candidateProviderRequestsMatchExactSourceIntent",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
@@ -2266,7 +2268,8 @@
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts",
         "packages/ai/test/opencode-provider-headers.test.ts",
-        "packages/ai/test/google-thinking-level-map.test.ts"
+        "packages/ai/test/google-thinking-level-map.test.ts",
+        "packages/ai/test/google-shared-signed-empty-blocks.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2300,7 +2303,8 @@
         "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
-        "Fixtures/Differential/Oracle/failure-provider-declared.json"
+        "Fixtures/Differential/Oracle/failure-provider-declared.json",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2324,7 +2328,8 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts",
-        "packages/ai/test/google-thinking-level-map.test.ts"
+        "packages/ai/test/google-thinking-level-map.test.ts",
+        "packages/ai/test/google-shared-signed-empty-blocks.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2355,7 +2360,8 @@
         "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
-        "Fixtures/Differential/Oracle/failure-provider-declared.json"
+        "Fixtures/Differential/Oracle/failure-provider-declared.json",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

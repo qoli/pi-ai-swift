@@ -414,7 +414,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
             "parts": .array(try user.content.map(makeUserPart(_:))),
           ]))
       case .assistant(let content):
-        let parts = try content.map { try makeAssistantPart($0, modelID: modelID) }
+        let parts = try content.compactMap { try makeAssistantPart($0, modelID: modelID) }
         guard !parts.isEmpty else { continue }
         contents.append(
           .object([
@@ -423,13 +423,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
           ]))
       case .assistantMessage(let assistant):
         guard let content = assistant.replayContent(for: target) else { continue }
-        contents.append(
-          .object([
-            "role": .string("model"),
-            "parts": .array(
-              try content.map { try makeAssistantPart($0, modelID: modelID) }
-            ),
-          ]))
+        let parts = try content.compactMap { try makeAssistantPart($0, modelID: modelID) }
+        guard !parts.isEmpty else { continue }
+        contents.append(.object(["role": .string("model"), "parts": .array(parts)]))
       case .toolResult(let result):
         let resultParts = try makeToolResultParts(
           result,
@@ -484,28 +480,28 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
   private func makeAssistantPart(
     _ content: ProviderAssistantContent,
     modelID: String
-  ) throws -> JSONValue {
+  ) throws -> JSONValue? {
     switch content {
     case .text(let text):
+      guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
       return .object(["text": .string(text)])
     case .signedText(let text):
+      let signature = usableThoughtSignature(text.signature)
+      guard !text.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || signature != nil
+      else { return nil }
       var part: [String: JSONValue] = ["text": .string(text.text)]
-      if let signature = text.signature { part["thoughtSignature"] = .string(signature) }
+      if let signature { part["thoughtSignature"] = .string(signature) }
       return .object(part)
     case .reasoning(let reasoning):
+      let signature = usableThoughtSignature(reasoning.signature)
+      guard
+        !reasoning.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || signature != nil
+      else { return nil }
       var part: [String: JSONValue] = [
         "text": .string(reasoning.text),
         "thought": .bool(true),
       ]
-      if let signature = reasoning.signature {
-        guard Data(base64Encoded: signature) != nil else {
-          throw failure(
-            .invalidRequest,
-            providerID: nil,
-            operation: "google.request.thought-signature",
-            message: "Google thought signature is not valid base64"
-          )
-        }
+      if let signature {
         part["thoughtSignature"] = .string(signature)
       }
       return .object(part)
@@ -518,9 +514,18 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         functionCall["id"] = .string(normalizedToolCallID(call.id))
       }
       var part: [String: JSONValue] = ["functionCall": .object(functionCall)]
-      if let signature = call.thoughtSignature { part["thoughtSignature"] = .string(signature) }
+      if let signature = usableThoughtSignature(call.thoughtSignature) {
+        part["thoughtSignature"] = .string(signature)
+      }
       return .object(part)
     }
+  }
+
+  private func usableThoughtSignature(_ signature: String?) -> String? {
+    guard let signature, signature.utf16.count % 4 == 0,
+      signature.range(of: #"^[A-Za-z0-9+/]+={0,2}$"#, options: .regularExpression) != nil
+    else { return nil }
+    return signature
   }
 
   private func makeToolResultParts(
