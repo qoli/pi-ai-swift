@@ -77,6 +77,120 @@
           "reasoning": null,
           "totalTokens": 2
         }
+      },
+      "wire": {
+        "events": [
+          {},
+          {
+            "message": {
+              "id": "anth-filtered",
+              "model": "fixture-model",
+              "usage": {
+                "input_tokens": 1,
+                "output_tokens": 0
+              }
+            },
+            "type": "message_start"
+          },
+          {
+            "type": "future_event"
+          },
+          {
+            "content_block": {
+              "text": "",
+              "type": "text"
+            },
+            "index": 0,
+            "type": "content_block_start"
+          },
+          {
+            "delta": {
+              "text": "Hello",
+              "type": "text_delta"
+            },
+            "index": 0,
+            "type": "content_block_delta"
+          },
+          {
+            "index": 0,
+            "type": "content_block_stop"
+          },
+          {
+            "delta": {
+              "stop_reason": "end_turn"
+            },
+            "type": "message_delta",
+            "usage": {
+              "output_tokens": 1
+            }
+          },
+          {
+            "type": "message_stop"
+          }
+        ],
+        "models": [
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          }
+        ],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event"
+        ],
+        "stream": true
       }
     },
     "anthropic-mid-output-fallback": {
@@ -152,6 +266,298 @@
         }
       }
     },
+    "anthropic-observer-payload-mutation": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJtc2dfdGVzdCIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MTIsIm91dHB1dF90b2tlbnMiOjAsImNhY2hlX3JlYWRfaW5wdXRfdG9rZW5zIjowLCJjYWNoZV9jcmVhdGlvbl9pbnB1dF90b2tlbnMiOjB9fX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0YXJ0CmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RhcnQiLCJpbmRleCI6MCwiY29udGVudF9ibG9jayI6eyJ0eXBlIjoidGV4dCIsInRleHQiOiIifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX2RlbHRhCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfZGVsdGEiLCJpbmRleCI6MCwiZGVsdGEiOnsidHlwZSI6InRleHRfZGVsdGEiLCJ0ZXh0IjoiSGVsbG8ifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0b3AKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdG9wIiwiaW5kZXgiOjB9CgpldmVudDogbWVzc2FnZV9kZWx0YQpkYXRhOiB7InR5cGUiOiJtZXNzYWdlX2RlbHRhIiwiZGVsdGEiOnsic3RvcF9yZWFzb24iOiJlbmRfdHVybiJ9LCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEyLCJvdXRwdXRfdG9rZW5zIjo1LCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowfX0KCmV2ZW50OiBtZXNzYWdlX3N0b3AKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdG9wIn0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "Hello",
+          "type": "textDelta"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "msg_test",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 12,
+          "output": 5,
+          "reasoning": null,
+          "totalTokens": 17
+        }
+      },
+      "wire": {
+        "events": [
+          {
+            "message": {
+              "id": "msg_test",
+              "usage": {
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "input_tokens": 12,
+                "output_tokens": 0
+              }
+            },
+            "type": "message_start"
+          },
+          {
+            "content_block": {
+              "text": "",
+              "type": "text"
+            },
+            "index": 0,
+            "type": "content_block_start"
+          },
+          {
+            "delta": {
+              "text": "Hello",
+              "type": "text_delta"
+            },
+            "index": 0,
+            "type": "content_block_delta"
+          },
+          {
+            "index": 0,
+            "type": "content_block_stop"
+          },
+          {
+            "delta": {
+              "stop_reason": "end_turn"
+            },
+            "type": "message_delta",
+            "usage": {
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "input_tokens": 12,
+              "output_tokens": 5
+            }
+          },
+          {
+            "type": "message_stop"
+          }
+        ],
+        "models": [
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          }
+        ],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event"
+        ],
+        "stream": false
+      }
+    },
+    "anthropic-observer-payload-replacement": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJtc2dfdGVzdCIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MTIsIm91dHB1dF90b2tlbnMiOjAsImNhY2hlX3JlYWRfaW5wdXRfdG9rZW5zIjowLCJjYWNoZV9jcmVhdGlvbl9pbnB1dF90b2tlbnMiOjB9fX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0YXJ0CmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RhcnQiLCJpbmRleCI6MCwiY29udGVudF9ibG9jayI6eyJ0eXBlIjoidGV4dCIsInRleHQiOiIifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX2RlbHRhCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfZGVsdGEiLCJpbmRleCI6MCwiZGVsdGEiOnsidHlwZSI6InRleHRfZGVsdGEiLCJ0ZXh0IjoiSGVsbG8ifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0b3AKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19zdG9wIiwiaW5kZXgiOjB9CgpldmVudDogbWVzc2FnZV9kZWx0YQpkYXRhOiB7InR5cGUiOiJtZXNzYWdlX2RlbHRhIiwiZGVsdGEiOnsic3RvcF9yZWFzb24iOiJlbmRfdHVybiJ9LCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEyLCJvdXRwdXRfdG9rZW5zIjo1LCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowfX0KCmV2ZW50OiBtZXNzYWdlX3N0b3AKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdG9wIn0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "Hello",
+          "type": "textDelta"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "msg_test",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 12,
+          "output": 5,
+          "reasoning": null,
+          "totalTokens": 17
+        }
+      },
+      "wire": {
+        "events": [
+          {
+            "message": {
+              "id": "msg_test",
+              "usage": {
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "input_tokens": 12,
+                "output_tokens": 0
+              }
+            },
+            "type": "message_start"
+          },
+          {
+            "content_block": {
+              "text": "",
+              "type": "text"
+            },
+            "index": 0,
+            "type": "content_block_start"
+          },
+          {
+            "delta": {
+              "text": "Hello",
+              "type": "text_delta"
+            },
+            "index": 0,
+            "type": "content_block_delta"
+          },
+          {
+            "index": 0,
+            "type": "content_block_stop"
+          },
+          {
+            "delta": {
+              "stop_reason": "end_turn"
+            },
+            "type": "message_delta",
+            "usage": {
+              "cache_creation_input_tokens": 0,
+              "cache_read_input_tokens": 0,
+              "input_tokens": 12,
+              "output_tokens": 5
+            }
+          },
+          {
+            "type": "message_stop"
+          }
+        ],
+        "models": [
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          }
+        ],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event"
+        ],
+        "stream": true
+      }
+    },
     "anthropic-raw-error": {
       "decoderInput": {
         "chunksBase64": [
@@ -184,6 +590,23 @@
           "reasoning": null,
           "totalTokens": 0
         }
+      },
+      "wire": {
+        "events": [],
+        "models": [],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response"
+        ],
+        "stream": true
       }
     },
     "anthropic-redacted-pause-usage": {
@@ -403,6 +826,106 @@
           "reasoning": null,
           "totalTokens": 2
         }
+      },
+      "wire": {
+        "events": [
+          {
+            "message": {
+              "id": "anth-repaired",
+              "model": "fixture-model",
+              "usage": {
+                "input_tokens": 1,
+                "output_tokens": 0
+              }
+            },
+            "type": "message_start"
+          },
+          {
+            "content_block": {
+              "id": "toolu_test",
+              "input": {},
+              "name": "edit",
+              "type": "tool_use"
+            },
+            "index": 0,
+            "type": "content_block_start"
+          },
+          {
+            "delta": {
+              "partial_json": "{\"path\":\"A\\H\",\"text\":\"col1\tcol2\"}",
+              "type": "input_json_delta"
+            },
+            "index": 0,
+            "type": "content_block_delta"
+          },
+          {
+            "index": 0,
+            "type": "content_block_stop"
+          },
+          {
+            "delta": {
+              "stop_reason": "tool_use"
+            },
+            "type": "message_delta",
+            "usage": {
+              "output_tokens": 1
+            }
+          },
+          {
+            "type": "message_stop"
+          }
+        ],
+        "models": [
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          },
+          {
+            "api": "anthropic-messages",
+            "id": "fixture-model",
+            "provider": "anthropic"
+          }
+        ],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "text/event-stream"
+            },
+            "status": 200
+          }
+        ],
+        "stages": [
+          "payload",
+          "response",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event",
+          "event"
+        ],
+        "stream": true
       }
     },
     "anthropic-sensitive-explanation": {

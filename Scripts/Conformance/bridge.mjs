@@ -70,15 +70,19 @@ function fixtureInput(model, context, options, responses, credential, requestSou
       key.startsWith("AZURE_OPENAI_") || ["GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_LOCATION"].includes(key))),
     responses,
     aborted: options.signal?.aborted ?? false,
-    ...(model.api === "openai-completions" && (options.onPayload || options.onResponse || options.onProviderStreamEvent)
+    ...(hasNativeWireObserver(model) && (options.onPayload || options.onResponse || options.onProviderStreamEvent)
       ? { wireObserver: { payload: !!options.onPayload, response: !!options.onResponse, event: !!options.onProviderStreamEvent } } : {}),
   };
 }
 
+function hasNativeWireObserver(model) {
+  return ["openai-completions", "anthropic-messages"].includes(model.api);
+}
+
 function capabilities(options, model) {
   return [
-    ...(options.onProviderStreamEvent && model.api !== "openai-completions" ? ["raw-provider-stream-event-hook"] : []),
-    ...(options.onResponse && model.api !== "openai-completions" ? ["raw-response-hook"] : []),
+    ...(options.onProviderStreamEvent && !hasNativeWireObserver(model) ? ["raw-provider-stream-event-hook"] : []),
+    ...(options.onResponse && !hasNativeWireObserver(model) ? ["raw-response-hook"] : []),
     ...(options.timeoutMs !== undefined && model.api !== "mistral-conversations" ? ["request-timeout-option"] : []),
   ];
 }
@@ -207,7 +211,7 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
           ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
           ...(body.tools ? { tools: body.tools } : {}), ...(body.toolConfig ? { toolConfig: body.toolConfig } : {}) },
       } : mistral ? mistralSDKPayload(body) : body;
-      const replacement = model.api === "openai-completions" ? undefined : await options.onPayload?.(payload, model);
+      const replacement = hasNativeWireObserver(model) ? undefined : await options.onPayload?.(payload, model);
       if (replacement !== undefined) body = google ? googleWireBody(replacement) : mistral ? mistralWirePayload(replacement) : replacement;
       if (options.signal?.aborted) { cancel(); return; }
       if (controller.signal.aborted) return;
@@ -389,7 +393,7 @@ async function mockResponse(model, request, body, options, connection) {
   }
   const frames = (async function* () {
     for await (const event of reply.data) {
-      if (model.api !== "openai-completions") await options.onProviderStreamEvent?.(event, model);
+      if (!hasNativeWireObserver(model)) await options.onProviderStreamEvent?.(event, model);
       const label = model.api === "anthropic-messages" ? `event: ${event.type}\n` : "";
       yield Buffer.from(`${label}data: ${JSON.stringify(event)}\n\n`).toString("base64");
     }

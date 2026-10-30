@@ -6,6 +6,47 @@ import Testing
 @Suite
 struct AnthropicBedrockPiResponseBranchDifferentialTests {
   @Test
+  func anthropicWireObservationsMatchPinnedSource() async throws {
+    let fixture = try responseBranchFixture()
+    let oracle = try responseBranchOracle()
+    for scenario in fixture.scenarios where scenario.observeWire == true {
+      let expected = try #require(oracle.scenarios[scenario.caseID])
+      let capture = AnthropicWireCapture()
+      let mode = scenario.payloadMode
+      var input = responseBranchInput(protocolID: scenario.protocolID)
+      input.context.wireObserver = ProviderWireObserver(
+        onPayload: { payload, context in
+          await Task.yield()
+          await capture.stage("payload", context)
+          if mode == "replacement" {
+            return payload.merging(["stream": .bool(false)]) { _, new in new }
+          }
+          if mode == "mutation" { payload["stream"] = .bool(false) }
+          return nil
+        },
+        onResponse: { response, context in
+          await Task.yield()
+          await capture.response(response, context)
+        },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      do {
+        for try await _ in AnthropicMessagesAdapter().stream(
+          input.request, context: input.context,
+          transport: ResponseBranchTransport(input: expected.decoderInput, capture: capture))
+        {}
+        #expect(expected.outcome == "success")
+      } catch {
+        #expect(expected.outcome == "failure")
+      }
+      #expect(await capture.value() == expected.wire, "wire observations for \(scenario.caseID)")
+      #expect(await capture.requestIDs.allSatisfy { $0 == input.request.id })
+    }
+  }
+
+  @Test
   func successResponseBranchesMatchPinnedSource() async throws {
     let fixture = try responseBranchFixture()
     let oracle = try responseBranchOracle()
@@ -79,8 +120,14 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
 
 private struct ResponseBranchTransport: ProviderHTTPStreamingTransport {
   let input: ResponseBranchDecoderInput
+  var capture: AnthropicWireCapture? = nil
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    if let capture {
+      let payload = try decodeJSONObject(
+        try #require(request.httpBody), providerID: "anthropic", operation: "test.observer.payload")
+      await capture.sent(payload["stream"])
+    }
     let chunks = try input.chunksBase64.map { value in
       try #require(Data(base64Encoded: value))
     }
@@ -283,6 +330,8 @@ private struct ResponseBranchScenario: Decodable {
   let protocolID: String
   let category: String
   let cost: [String: JSONValue]?
+  let observeWire: Bool?
+  let payloadMode: String?
 }
 
 private struct ResponseBranchOracle: Decodable {
@@ -296,6 +345,46 @@ private struct ResponseBranchExpected: Decodable {
   let events: [JSONValue]
   let terminal: JSONValue
   let decoderInput: ResponseBranchDecoderInput
+  let wire: JSONValue?
+}
+
+private actor AnthropicWireCapture {
+  var stages: [String] = []
+  var requestIDs: [String] = []
+  var events: [JSONValue] = []
+  var models: [JSONValue] = []
+  var responses: [JSONValue] = []
+  var streaming: JSONValue?
+
+  func stage(_ name: String, _ context: ProviderWireObserver.Context) {
+    stages.append(name)
+    requestIDs.append(context.requestID)
+  }
+  func sent(_ value: JSONValue?) { streaming = value }
+  func response(_ response: ProviderWireObserver.Response, _ context: ProviderWireObserver.Context)
+  {
+    stage("response", context)
+    responses.append(
+      .object([
+        "status": .integer(Int64(response.status)),
+        "headers": .object(response.headers.mapValues(JSONValue.string)),
+      ]))
+  }
+  func event(_ event: JSONValue, _ context: ProviderWireObserver.Context) {
+    stage("event", context)
+    events.append(event)
+    models.append(
+      .object([
+        "id": .string(context.model.id), "provider": .string(context.model.providerID),
+        "api": .string(context.model.protocolID),
+      ]))
+  }
+  func value() -> JSONValue {
+    .object([
+      "stages": .array(stages.map(JSONValue.string)), "events": .array(events),
+      "models": .array(models), "responses": .array(responses), "stream": streaming ?? .null,
+    ])
+  }
 }
 
 private struct ResponseBranchDecoderInput: Decodable, Sendable {

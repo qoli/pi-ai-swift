@@ -6,17 +6,20 @@
     {
       "caseID": "anthropic-raw-error",
       "protocolID": "anthropic-messages",
-      "category": "providerError"
+      "category": "providerError",
+      "observeWire": true
     },
     {
       "caseID": "anthropic-repaired-sse-tool",
       "protocolID": "anthropic-messages",
-      "category": "success"
+      "category": "success",
+      "observeWire": true
     },
     {
       "caseID": "anthropic-ignored-sse-envelopes",
       "protocolID": "anthropic-messages",
-      "category": "success"
+      "category": "success",
+      "observeWire": true
     },
     {
       "caseID": "anthropic-redacted-pause-usage",
@@ -230,6 +233,20 @@
       "caseID": "pi-terminal-no-start-error",
       "protocolID": "pi-messages",
       "category": "providerError"
+    },
+    {
+      "caseID": "anthropic-observer-payload-replacement",
+      "protocolID": "anthropic-messages",
+      "category": "success",
+      "observeWire": true,
+      "payloadMode": "replacement"
+    },
+    {
+      "caseID": "anthropic-observer-payload-mutation",
+      "protocolID": "anthropic-messages",
+      "category": "success",
+      "observeWire": true,
+      "payloadMode": "mutation"
     }
   ]
 }

@@ -36,10 +36,35 @@ async function runSSE(scenario, input) {
     upstreamRoot,
     await import(pathToFileURL(path.join(apiRoot, `${scenario.protocolID}.ts`)).href),
   );
+  const wire = { stages: [], events: [], models: [], responses: [] };
   const stream = implementation.stream(model(scenario.protocolID), context(), {
-    apiKey: "fixture-key", maxRetries: 0, cacheRetention: "none", fetch: fakeFetch(input),
+    apiKey: "fixture-key", maxRetries: 0, cacheRetention: "none",
+    fetch: async (url, init) => {
+      if (scenario.observeWire) wire.stream = JSON.parse(init.body).stream;
+      return fakeFetch(input)(url, init);
+    },
+    ...(scenario.observeWire ? {
+      onPayload: async payload => {
+        await Promise.resolve();
+        wire.stages.push("payload");
+        if (scenario.payloadMode === "replacement") return { ...payload, stream: false };
+        if (scenario.payloadMode === "mutation") payload.stream = false;
+      },
+      onResponse: async response => {
+        await Promise.resolve();
+        wire.stages.push("response");
+        wire.responses.push(response);
+      },
+      onProviderStreamEvent: async (event, eventModel) => {
+        await Promise.resolve();
+        wire.stages.push("event");
+        wire.events.push(structuredClone(event));
+        wire.models.push({ id: eventModel.id, provider: eventModel.provider, api: eventModel.api });
+      },
+    } : {}),
   });
-  return project(stream);
+  const result = await project(stream);
+  return { ...result, ...(scenario.observeWire ? { wire } : {}) };
 }
 
 async function runBedrock(scenario, input) {
@@ -159,6 +184,15 @@ function canonicalTerminal(message) {
 
 function stimulus(caseID) {
   switch (caseID) {
+    case "anthropic-observer-payload-replacement":
+    case "anthropic-observer-payload-mutation": return sse([
+      anth("message_start", { type: "message_start", message: { id: "msg_test", usage: { input_tokens: 12, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 } } }),
+      anth("content_block_start", { type: "content_block_start", index: 0, content_block: { type: "text", text: "" } }),
+      anth("content_block_delta", { type: "content_block_delta", index: 0, delta: { type: "text_delta", text: "Hello" } }),
+      anth("content_block_stop", { type: "content_block_stop", index: 0 }),
+      anth("message_delta", { type: "message_delta", delta: { stop_reason: "end_turn" }, usage: { input_tokens: 12, output_tokens: 5, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 } }),
+      anth("message_stop", { type: "message_stop" }),
+    ]);
     case "anthropic-transformations-start":
     case "anthropic-transformations-delta":
     case "anthropic-transformations-cleared":

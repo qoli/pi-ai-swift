@@ -1734,6 +1734,70 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAnthropicNativeWireObserverMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/response-anthropic-bedrock-pi.json")
+    let cases = try XCTUnwrap(
+      load("Differential/Oracle/response-anthropic-bedrock-pi.json").object("scenarios"))
+    for value in try XCTUnwrap(fixture.array("scenarios")) {
+      let scenario = try XCTUnwrap(value.objectValue)
+      guard scenario.bool("observeWire") == true else { continue }
+      let name = try XCTUnwrap(scenario.string("caseID"))
+      let spec = try XCTUnwrap(cases.object(name))
+      let expected = try XCTUnwrap(spec.object("wire"))
+      let decoder = try XCTUnwrap(spec.object("decoderInput"))
+      let chunks = try XCTUnwrap(decoder.array("chunksBase64")).map {
+        try XCTUnwrap(Data(base64Encoded: try XCTUnwrap($0.stringValue)))
+      }
+      let capture = IOSWireObserverCapture()
+      let mode = scenario.string("payloadMode")
+      let (request, initialContext) = inputs(
+        api: "anthropic-messages", providerID: "anthropic", modelID: "fixture-model")
+      var context = initialContext
+      context.wireObserver = .init(
+        onPayload: { payload, context in
+          await Task.yield()
+          await capture.stage("payload", context)
+          if mode == "replacement" {
+            return payload.merging(["stream": .bool(false)]) { _, new in new }
+          }
+          if mode == "mutation" { payload["stream"] = .bool(false) }
+          return nil
+        },
+        onResponse: { response, context in
+          await Task.yield()
+          await capture.response(response, context)
+        },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      let transport = IOSMistralHTTPFixture(
+        status: try XCTUnwrap(decoder.int("status")),
+        body: chunks.reduce(into: Data()) { $0.append($1) },
+        headers: (decoder.object("headers") ?? [:]).compactMapValues(\.stringValue))
+      do {
+        for try await _ in AnthropicMessagesAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+        XCTAssertEqual(spec.string("outcome"), "success", name)
+      } catch { XCTAssertEqual(spec.string("outcome"), "failure", name) }
+      let events = await capture.events
+      let models = await capture.models
+      let stages = await capture.stages
+      let responses = await capture.responses
+      let ids = await capture.requestIDs
+      XCTAssertEqual(events, expected.array("events"), name)
+      XCTAssertEqual(models, expected.array("models"), name)
+      XCTAssertEqual(stages.map(JSONValue.string), expected.array("stages"), name)
+      XCTAssertEqual(responses, expected.array("responses"), name)
+      XCTAssertEqual(ids, Array(repeating: request.id, count: stages.count), name)
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody), providerID: "anthropic", operation: "ios.observer")
+      XCTAssertEqual(body["stream"], expected["stream"], name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
@@ -1872,17 +1936,19 @@ private actor IOSMistralTimeoutFixture: ProviderHTTPStreamingTransport {
 private actor IOSMistralHTTPFixture: ProviderHTTPStreamingTransport {
   let status: Int
   let body: Data
+  let headers: [String: String]
   var sent: URLRequest?
 
-  init(status: Int, body: Data) {
+  init(status: Int, body: Data, headers: [String: String] = [:]) {
     self.status = status
     self.body = body
+    self.headers = headers
   }
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     sent = request
     return .init(
-      statusCode: status, headers: [:],
+      statusCode: status, headers: headers,
       body: AsyncThrowingStream { continuation in
         continuation.yield(body)
         continuation.finish()
@@ -1908,6 +1974,7 @@ private actor IOSWireObserverCapture {
   var requestIDs: [String] = []
   var events: [JSONValue] = []
   var models: [JSONValue] = []
+  var responses: [JSONValue] = []
   func stage(_ name: String, _ context: ProviderWireObserver.Context) {
     stages.append(name)
     requestIDs.append(context.requestID)
@@ -1919,6 +1986,15 @@ private actor IOSWireObserverCapture {
       .object([
         "id": .string(context.model.id), "provider": .string(context.model.providerID),
         "api": .string(context.model.protocolID),
+      ]))
+  }
+  func response(_ response: ProviderWireObserver.Response, _ context: ProviderWireObserver.Context)
+  {
+    stage("response", context)
+    responses.append(
+      .object([
+        "status": .integer(Int64(response.status)),
+        "headers": .object(response.headers.mapValues(JSONValue.string)),
       ]))
   }
 }

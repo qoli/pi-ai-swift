@@ -12,13 +12,15 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       let task = Task {
         var preparedThinkingLevel: String?
         do {
+          let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await PreferredStrictToolFallback.response(
             request: request, api: .anthropic, transport: transport,
             makeRequest: { current in
               let wire = try makeRequest(current, context: context)
               preparedThinkingLevel = managedThinkingLevel(request: current, context: context)
-              return wire
+              return try await observation.payload(wire, forceStreamingReplacement: true)
             })
+          try await observation.response(response)
           var reducer = AnthropicEventReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
@@ -36,13 +38,13 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
           for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
-              for normalized in try reducer.reduce(event) {
+              for normalized in try await reducer.reduce(event, observation: observation) {
                 continuation.yield(normalized)
               }
             }
           }
           for event in try decoder.finish() {
-            for normalized in try reducer.reduce(event) {
+            for normalized in try await reducer.reduce(event, observation: observation) {
               continuation.yield(normalized)
             }
           }
@@ -852,7 +854,9 @@ private struct AnthropicEventReducer {
     self.fallbackModels = fallbackModels
   }
 
-  mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
+  mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
+    -> [ProviderEvent]
+  {
     if event.event == "error" {
       throw ProviderRuntimeFailure(
         code: .transportFailed, message: event.data, providerID: providerID,
@@ -869,6 +873,7 @@ private struct AnthropicEventReducer {
       providerID: providerID,
       operation: "anthropic.event.decode"
     )
+    try await observation.streamEvent(.object(object))
     let type = object.string("type")
     switch type {
     case "ping":
