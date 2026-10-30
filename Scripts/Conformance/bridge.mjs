@@ -295,8 +295,14 @@ async function mockResponse(model, request, body, options, connection) {
   }
   const suffix = model.api === "openai-completions" ? "/chat/completions" :
     model.api === "anthropic-messages" ? "/v1/messages" : "/responses";
+  const defaultHeaders = { ...request.headers };
+  for (const name of ["Authorization", "x-api-key"]) {
+    if (!Object.keys(defaultHeaders).some(key => key.toLowerCase() === name.toLowerCase())) {
+      defaultHeaders[name] = null;
+    }
+  }
   const config = { apiKey: connection.credential.key, baseURL: request.url.split(suffix)[0],
-    defaultHeaders: request.headers, dangerouslyAllowBrowser: true };
+    defaultHeaders, dangerouslyAllowBrowser: true };
   if (model.api === "azure-openai-responses") {
     config.apiVersion = new URL(request.url).searchParams.get("api-version") ?? "v1";
   }
