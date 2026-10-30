@@ -37,7 +37,7 @@ struct SwiftConformanceProbe {
   }
 
   private static func execute(_ data: Data, interactive: Bool) async throws {
-    let envelope = try JSONDecoder().decode([String: JSONValue].self, from: data)
+    let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
     if envelope.string("operation") == "catalog" {
       let registry = try BuiltinProviderRegistry.load()
       var catalog: [String: [String: JSONValue]] = [:]
@@ -93,8 +93,11 @@ struct SwiftConformanceProbe {
     var messages: [ProviderMessage] = []
     if let system = input.context.systemPrompt, !system.isEmpty { messages.append(.system(system)) }
     messages += try input.context.messages.map(message)
-    let tools = try input.context.tools.map { tool in
-      ProviderToolDefinition(
+    let tools = try (envelope.object("context")?.array("tools") ?? []).map { value in
+      guard let tool = value.objectValue else {
+        throw ProbeError.unrepresentable("tool-definition-is-not-an-object")
+      }
+      return ProviderToolDefinition(
         name: try tool.required("name"), description: tool.string("description") ?? "",
         inputSchema: tool["parameters"] ?? .object([:]),
         constrainedSampling: try sampling(tool.object("constrainedSampling")))

@@ -131,7 +131,10 @@ struct ProviderIntentDifferentialTests {
         tools: try (spec.tools ?? []).map {
           .init(
             name: try #require($0.string("name")), description: $0.string("description") ?? "",
-            inputSchema: try #require($0["parameters"]),
+            inputSchema: try spec.toolParametersJSON.map {
+              try JSONValue(jsonData: Data($0.utf8))
+            }
+              ?? #require($0["parameters"]),
             constrainedSampling: $0.object("constrainedSampling")?.string("strict").flatMap(
               ProviderStrictPreference.init(rawValue:)
             ).map {
@@ -232,6 +235,7 @@ struct ProviderIntentDifferentialTests {
     let toolResultContent: [[String: JSONValue]]?
     let toolResultIsError: Bool?
     let userContent: [[String: JSONValue]]?
+    let toolParametersJSON: String?
   }
   private struct Oracle: Decodable {
     let upstreamRevision: String

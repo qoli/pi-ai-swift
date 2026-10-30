@@ -70,12 +70,12 @@ enum ProviderConstrainedSamplingResolver {
           "Tool \"\(tool.name)\" cannot use grammar constrained sampling: no supported grammar variant was provided."
       )
     }
-    guard case .object(let schema) = tool.inputSchema,
+    guard let schema = tool.inputSchema.objectValue,
       schema.string("type") == "object",
       case .array(let required)? = schema["required"], required.count == 1,
       case .string(let inputProperty) = required[0],
-      case .object(let properties)? = schema["properties"],
-      case .object(let property)? = properties[inputProperty],
+      let properties = schema["properties"]?.objectValue,
+      let property = properties[inputProperty]?.objectValue,
       property.string("type") == "string"
     else {
       throw invalid(
@@ -91,7 +91,7 @@ enum ProviderConstrainedSamplingResolver {
   private static func strictSchema(
     _ value: JSONValue, isUnsupportedKeyword: ((String, JSONValue) -> Bool)?
   ) throws -> JSONValue {
-    guard case .object(var schema) = value else {
+    guard var schema = value.objectValue else {
       throw StrictSchemaError("root schema must have type object")
     }
     try makeStrict(&schema, isUnsupportedKeyword: isUnsupportedKeyword)
@@ -125,7 +125,7 @@ enum ProviderConstrainedSamplingResolver {
         throw StrictSchemaError("anyOf must contain at least one schema")
       }
       for index in variants.indices {
-        guard case .object(var variant) = variants[index] else {
+        guard var variant = variants[index].objectValue else {
           throw StrictSchemaError("boolean schemas are unsupported")
         }
         if isStructured(variant) {
@@ -139,7 +139,7 @@ enum ProviderConstrainedSamplingResolver {
       throw StrictSchemaError("anyOf must contain at least one schema")
     }
     if let items = schema["items"] {
-      guard case .object(var item) = items else {
+      guard var item = items.objectValue else {
         throw StrictSchemaError("tuple and boolean schemas are unsupported")
       }
       try makeStrict(&item, isUnsupportedKeyword: isUnsupportedKeyword)
@@ -154,7 +154,7 @@ enum ProviderConstrainedSamplingResolver {
     }
     let properties: [String: JSONValue]
     if let value = schema["properties"] {
-      guard case .object(let object) = value else {
+      guard let object = value.objectValue else {
         throw StrictSchemaError("object properties must be a schema map")
       }
       properties = object
@@ -175,7 +175,7 @@ enum ProviderConstrainedSamplingResolver {
     }
     var strictProperties: [String: JSONValue] = [:]
     for (name, value) in properties {
-      guard case .object(var property) = value else {
+      guard var property = value.objectValue else {
         throw StrictSchemaError("boolean schemas are unsupported")
       }
       try makeStrict(&property, isUnsupportedKeyword: isUnsupportedKeyword)
@@ -185,8 +185,9 @@ enum ProviderConstrainedSamplingResolver {
         ? strictValue
         : .object(["anyOf": .array([strictValue, .object(["type": .string("null")])])])
     }
+    let propertyNames = schema["properties"]?.objectPropertyNames ?? []
     schema["properties"] = .object(strictProperties)
-    schema["required"] = .array(properties.keys.sorted().map(JSONValue.string))
+    schema["required"] = .array(propertyNames.map(JSONValue.string))
     schema["additionalProperties"] = .bool(false)
   }
 
@@ -196,7 +197,7 @@ enum ProviderConstrainedSamplingResolver {
   }
 
   private static func allowsNull(_ value: JSONValue) -> Bool {
-    guard case .object(let schema) = value else { return false }
+    guard let schema = value.objectValue else { return false }
     if schema.string("type") == "null" || schema["const"] == .null { return true }
     if case .array(let types)? = schema["type"], types.contains(.string("null")) { return true }
     if case .array(let values)? = schema["enum"], values.contains(.null) { return true }

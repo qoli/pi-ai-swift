@@ -4430,6 +4430,795 @@
         "top_p": 0.8
       }
     },
+    "ordered-schema.anthropic-messages.flat": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "alpha": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "zeta": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "zeta",
+                "alpha"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "ordered-schema.anthropic-messages.flat.legacy": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "alpha": {
+                  "type": "number"
+                },
+                "zeta": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "zeta"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "ordered-schema.anthropic-messages.nested": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "alpha": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "zeta": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "beta": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "zulu": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "zulu",
+                    "beta"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "zeta",
+                "alpha"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "ordered-schema.anthropic-messages.nested.legacy": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "alpha": {
+                  "type": "string"
+                },
+                "zeta": {
+                  "properties": {
+                    "beta": {
+                      "type": "integer"
+                    },
+                    "zulu": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "zulu"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "zeta"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "ordered-schema.azure-openai-responses.flat": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "name": "lookup",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "alpha": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "zeta": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "zeta",
+                "alpha"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.azure-openai-responses.flat.legacy": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "alpha": {
+                  "type": "number"
+                },
+                "zeta": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "zeta"
+              ],
+              "type": "object"
+            },
+            "strict": false,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.azure-openai-responses.nested": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "name": "lookup",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "alpha": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "zeta": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "beta": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "zulu": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "zulu",
+                    "beta"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "zeta",
+                "alpha"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.azure-openai-responses.nested.legacy": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "alpha": {
+                  "type": "string"
+                },
+                "zeta": {
+                  "properties": {
+                    "beta": {
+                      "type": "integer"
+                    },
+                    "zulu": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "zulu"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "zeta"
+              ],
+              "type": "object"
+            },
+            "strict": false,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.bedrock-converse-stream.flat": {
+      "requestBody": {
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Fixture lookup",
+                "inputSchema": {
+                  "json": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "alpha": {
+                        "anyOf": [
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "zeta": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "zeta",
+                      "alpha"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "lookup",
+                "strict": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ordered-schema.bedrock-converse-stream.flat.legacy": {
+      "requestBody": {
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Fixture lookup",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "alpha": {
+                        "type": "number"
+                      },
+                      "zeta": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "zeta"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "lookup"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ordered-schema.bedrock-converse-stream.nested": {
+      "requestBody": {
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Fixture lookup",
+                "inputSchema": {
+                  "json": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "alpha": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "zeta": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "beta": {
+                            "anyOf": [
+                              {
+                                "type": "integer"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "zulu": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "zulu",
+                          "beta"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "zeta",
+                      "alpha"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "lookup",
+                "strict": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ordered-schema.bedrock-converse-stream.nested.legacy": {
+      "requestBody": {
+        "toolConfig": {
+          "tools": [
+            {
+              "toolSpec": {
+                "description": "Fixture lookup",
+                "inputSchema": {
+                  "json": {
+                    "properties": {
+                      "alpha": {
+                        "type": "string"
+                      },
+                      "zeta": {
+                        "properties": {
+                          "beta": {
+                            "type": "integer"
+                          },
+                          "zulu": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "zulu"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "zeta"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "name": "lookup"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ordered-schema.openai-completions.flat": {
+      "requestBody": {
+        "tools": [
+          {
+            "function": {
+              "description": "Fixture lookup",
+              "name": "lookup",
+              "parameters": {
+                "additionalProperties": false,
+                "properties": {
+                  "alpha": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "zeta": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "zeta",
+                  "alpha"
+                ],
+                "type": "object"
+              },
+              "strict": true
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.openai-completions.flat.legacy": {
+      "requestBody": {
+        "tools": [
+          {
+            "function": {
+              "description": "Fixture lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {
+                  "alpha": {
+                    "type": "number"
+                  },
+                  "zeta": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "zeta"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.openai-completions.nested": {
+      "requestBody": {
+        "tools": [
+          {
+            "function": {
+              "description": "Fixture lookup",
+              "name": "lookup",
+              "parameters": {
+                "additionalProperties": false,
+                "properties": {
+                  "alpha": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "zeta": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "beta": {
+                        "anyOf": [
+                          {
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "zulu": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "zulu",
+                      "beta"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "zeta",
+                  "alpha"
+                ],
+                "type": "object"
+              },
+              "strict": true
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.openai-completions.nested.legacy": {
+      "requestBody": {
+        "tools": [
+          {
+            "function": {
+              "description": "Fixture lookup",
+              "name": "lookup",
+              "parameters": {
+                "properties": {
+                  "alpha": {
+                    "type": "string"
+                  },
+                  "zeta": {
+                    "properties": {
+                      "beta": {
+                        "type": "integer"
+                      },
+                      "zulu": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "zulu"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "zeta"
+                ],
+                "type": "object"
+              },
+              "strict": false
+            },
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.openai-responses.flat": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "name": "lookup",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "alpha": {
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "zeta": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "zeta",
+                "alpha"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.openai-responses.flat.legacy": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "alpha": {
+                  "type": "number"
+                },
+                "zeta": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "zeta"
+              ],
+              "type": "object"
+            },
+            "strict": false,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.openai-responses.nested": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "name": "lookup",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "alpha": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "zeta": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "beta": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "zulu": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "zulu",
+                    "beta"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "zeta",
+                "alpha"
+              ],
+              "type": "object"
+            },
+            "strict": true,
+            "type": "function"
+          }
+        ]
+      }
+    },
+    "ordered-schema.openai-responses.nested.legacy": {
+      "requestBody": {
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "name": "lookup",
+            "parameters": {
+              "properties": {
+                "alpha": {
+                  "type": "string"
+                },
+                "zeta": {
+                  "properties": {
+                    "beta": {
+                      "type": "integer"
+                    },
+                    "zulu": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "zulu"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "zeta"
+              ],
+              "type": "object"
+            },
+            "strict": false,
+            "type": "function"
+          }
+        ]
+      }
+    },
     "replay-signature.anthropic-messages.allow-empty-signature": {
       "requestBody": {
         "messages": [

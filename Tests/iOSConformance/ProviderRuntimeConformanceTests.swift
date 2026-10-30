@@ -1482,6 +1482,55 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testOrderedStrictSchemasMatchPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("ordered-schema.") == true }
+    XCTAssertEqual(cases.count, 20)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let model = try XCTUnwrap(spec.object("model"))
+      let api = try XCTUnwrap(model.string("api"))
+      let provider = try XCTUnwrap(model.string("provider"))
+      let modelID = try XCTUnwrap(model.string("id"))
+      let (_, context) = inputs(api: api, providerID: provider, modelID: modelID, metadata: model)
+      let schema = try JSONValue(
+        jsonData: Data(try XCTUnwrap(spec.string("toolParametersJSON")).utf8))
+      let options = spec.object("options") ?? [:]
+      let request = ProviderRequest(
+        id: name, providerID: provider, modelID: modelID, messages: [.user([.text("hello")])],
+        tools: [
+          .init(
+            name: "lookup", description: "Fixture lookup", inputSchema: schema,
+            constrainedSampling: name.hasSuffix(".legacy") ? nil : .jsonSchema(strict: .require))
+        ],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: [:], cacheRetention: .none),
+        connectionOptions: .init(
+          azureOpenAIResponses: options.string("azureDeploymentName").map {
+            .init(azureDeploymentName: $0)
+          }))
+      let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: provider,
+        operation: "ios.ordered.schema")
+      let actual = Dictionary(
+        uniqueKeysWithValues: try XCTUnwrap(spec.array("projectFields")).compactMap {
+          value -> (String, JSONValue)? in
+          guard let key = value.stringValue, let value = body[key] else { return nil }
+          return (key, value)
+        })
+      XCTAssertEqual(actual, oracle.object("cases")?.object(name)?.object("requestBody"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

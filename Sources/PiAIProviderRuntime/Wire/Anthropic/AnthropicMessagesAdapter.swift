@@ -378,7 +378,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       switch choice {
       case .string(let value) where ["auto", "any", "none"].contains(value):
         body["tool_choice"] = .object(["type": .string(value)])
-      case .object(let value) where value.string("type") == "tool":
+      case _ where choice.objectValue?.string("type") == "tool":
+        let value = choice.objectValue!
         guard let name = value.string("name"), !name.isEmpty else {
           throw failure(
             .invalidRequest, providerID: request.providerID,
@@ -421,7 +422,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
         message:
           "unsupported Anthropic provider options: \(unknown.sorted().joined(separator: ", "))")
     }
-    if case .object(let metadata)? = request.options.providerOptions["metadata"],
+    if let metadata = request.options.providerOptions["metadata"]?.objectValue,
       let userID = metadata.string("user_id")
     {
       body["metadata"] = .object(["user_id": .string(userID)])
@@ -470,7 +471,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
   }
 
   private func anthropicToolSchema(_ schema: JSONValue, strict: Bool) -> JSONValue {
-    guard case .object(var object) = schema else {
+    guard var object = schema.objectValue else {
       return .object([
         "type": .string("object"), "properties": .object([:]), "required": .array([]),
       ])

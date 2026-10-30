@@ -834,7 +834,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
             }
             var object: [String: JSONValue]
             if let inputProperty = grammarInputProperties[call.name] {
-              guard case .object(let arguments) = call.arguments,
+              guard let arguments = call.arguments.objectValue,
                 let input = arguments.string(inputProperty)
               else {
                 throw failure(
@@ -931,7 +931,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     if deferLoading { tool["defer_loading"] = .bool(true) }
     if let strict = constrained.strict {
       tool["strict"] = .bool(strict)
-    } else if flavor == .azure, supportsStrictMode {
+    } else if flavor != .codex, supportsStrictMode {
       tool["strict"] = .bool(false)
     } else if flavor == .codex {
       tool["strict"] = .null

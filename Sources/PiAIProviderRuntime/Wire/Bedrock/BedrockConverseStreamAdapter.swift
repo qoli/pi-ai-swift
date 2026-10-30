@@ -258,7 +258,8 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           toolConfiguration["toolChoice"] = .object(["any": .object([:])])
         case .string("none"):
           break
-        case .object(let value) where value.string("type") == "tool":
+        case _ where choice.objectValue?.string("type") == "tool":
+          let value = choice.objectValue!
           guard let name = value.string("name"), !name.isEmpty else {
             throw failure(
               .invalidRequest, request, "bedrock.request.tool-choice",
@@ -285,7 +286,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     }
     var additionalFields = try reasoningFields(request, context: context)
     if let fields = request.options.providerOptions["additionalModelRequestFields"] {
-      guard case .object(let custom) = fields else {
+      guard let custom = fields.objectValue else {
         throw failure(
           .invalidRequest,
           request,
@@ -792,7 +793,8 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
 
   private func sanitizeDocument(_ value: JSONValue) -> JSONValue {
     switch value {
-    case .object(let object):
+    case .object, .orderedObject:
+      let object = value.objectValue!
       return .object(
         object.reduce(into: [:]) { result, item in
           guard !item.key.isEmpty else { return }

@@ -24,7 +24,7 @@ enum ProviderReasoning {
   ) throws -> [ProviderReasoningEffort] {
     let map: [String: JSONValue]
     if let value = metadata["thinkingLevelMap"] {
-      guard case .object(let object) = value else {
+      guard let object = value.objectValue else {
         throw invalidMap("thinkingLevelMap must be an object")
       }
       for (key, value) in object {

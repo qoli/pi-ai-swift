@@ -2,7 +2,7 @@ import Foundation
 
 private func rewriteGoogleConst(_ value: JSONValue, nameMap: Bool = false) -> JSONValue {
   if case .array(let values) = value { return .array(values.map { rewriteGoogleConst($0) }) }
-  guard case .object(let schema) = value else { return value }
+  guard let schema = value.objectValue else { return value }
   let nameMaps: Set<String> = [
     "properties", "patternProperties", "$defs", "definitions", "dependentSchemas", "dependencies",
   ]

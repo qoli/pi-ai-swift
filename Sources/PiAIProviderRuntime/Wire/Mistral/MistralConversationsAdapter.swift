@@ -447,9 +447,9 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     _ effort: ProviderReasoningEffort,
     context: WireProtocolContext
   ) -> String {
-    if case .object(let map)? = context.modelConfiguration.metadata[
+    if let map = context.modelConfiguration.metadata[
       "thinkingLevelMap"
-    ], case .string(let mapped)? = map[effort.rawValue] {
+    ]?.objectValue, case .string(let mapped)? = map[effort.rawValue] {
       return mapped
     }
     return effort == .off ? "none" : "high"
@@ -775,7 +775,7 @@ private struct MistralEventReducer {
     let delta: String
     switch function["arguments"] {
     case .string(let value): delta = value
-    case .object, .array:
+    case .object, .orderedObject, .array:
       guard let value = function["arguments"],
         let encoded = try? JSONEncoder().encode(value),
         let string = String(data: encoded, encoding: .utf8)

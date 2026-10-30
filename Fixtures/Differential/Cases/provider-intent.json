@@ -9998,6 +9998,794 @@
         "messages"
       ],
       "options": {}
+    },
+    {
+      "id": "ordered-schema.anthropic-messages.flat",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.anthropic-messages.nested",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.bedrock-converse-stream.flat",
+      "model": {
+        "id": "ordered-model",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "toolConfig"
+      ]
+    },
+    {
+      "id": "ordered-schema.bedrock-converse-stream.nested",
+      "model": {
+        "id": "ordered-model",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "toolConfig"
+      ]
+    },
+    {
+      "id": "ordered-schema.openai-completions.flat",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "openai-completions",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.openai-completions.nested",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "openai-completions",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.openai-responses.flat",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "openai-responses",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.openai-responses.nested",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "openai-responses",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.azure-openai-responses.flat",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "azure-openai-responses",
+        "provider": "azure-openai-responses",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {
+        "azureDeploymentName": "ordered-model"
+      },
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.azure-openai-responses.nested",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "azure-openai-responses",
+        "provider": "azure-openai-responses",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {},
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "options": {
+        "azureDeploymentName": "ordered-model"
+      },
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.anthropic-messages.flat.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.anthropic-messages.nested.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "anthropic-messages",
+        "provider": "anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.bedrock-converse-stream.flat.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "toolConfig"
+      ]
+    },
+    {
+      "id": "ordered-schema.bedrock-converse-stream.nested.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Claude Fixture",
+        "api": "bedrock-converse-stream",
+        "provider": "amazon-bedrock",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "toolConfig"
+      ]
+    },
+    {
+      "id": "ordered-schema.openai-completions.flat.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "openai-completions",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.openai-completions.nested.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "openai-completions",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.openai-responses.flat.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "openai-responses",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.openai-responses.nested.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "openai-responses",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {},
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.azure-openai-responses.flat.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "azure-openai-responses",
+        "provider": "azure-openai-responses",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"string\"},\"alpha\":{\"type\":\"number\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {
+        "azureDeploymentName": "ordered-model"
+      },
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "ordered-schema.azure-openai-responses.nested.legacy",
+      "model": {
+        "id": "ordered-model",
+        "name": "Ordered Model",
+        "api": "azure-openai-responses",
+        "provider": "azure-openai-responses",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "supportsStrictMode": true
+        }
+      },
+      "toolParametersJSON": "{\"type\":\"object\",\"properties\":{\"zeta\":{\"type\":\"object\",\"properties\":{\"zulu\":{\"type\":\"string\"},\"beta\":{\"type\":\"integer\"}},\"required\":[\"zulu\"]},\"alpha\":{\"type\":\"string\"}},\"required\":[\"zeta\"]}",
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {}
+        }
+      ],
+      "options": {
+        "azureDeploymentName": "ordered-model"
+      },
+      "projectFields": [
+        "tools"
+      ]
     }
   ]
 }

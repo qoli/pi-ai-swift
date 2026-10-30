@@ -50,6 +50,20 @@ indirect enum ProviderOrderedJSON {
     }
   }
 
+  var jsonValuePreservingObjectOrder: JSONValue {
+    switch self {
+    case .undefined: .null
+    case .scalar(let value): value
+    case .array(let values): .array(values.map(\.jsonValuePreservingObjectOrder))
+    case .object(let members):
+      .orderedObject(
+        members.compactMap { key, value in
+          if case .undefined = value { return nil }
+          return .init(key, value.jsonValuePreservingObjectOrder)
+        })
+    }
+  }
+
   mutating func set(_ value: ProviderOrderedJSON, for key: String) {
     guard case .object(var members) = self else { return }
     if let existing = members.firstIndex(where: { $0.0 == key }) {

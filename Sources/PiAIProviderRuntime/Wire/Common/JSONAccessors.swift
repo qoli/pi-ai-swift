@@ -1,9 +1,29 @@
 import Foundation
 
 extension JSONValue {
-  var objectValue: [String: JSONValue]? {
-    guard case .object(let value) = self else { return nil }
-    return value
+  public var objectValue: [String: JSONValue]? {
+    switch self {
+    case .object(let value): return value
+    case .orderedObject(let members):
+      return Dictionary(members.map { ($0.key, $0.value) }, uniquingKeysWith: { _, last in last })
+    default: return nil
+    }
+  }
+
+  public var objectPropertyNames: [String]? {
+    switch self {
+    case .object(let value): return value.keys.sorted()
+    case .orderedObject(let members):
+      var seen = Set<String>()
+      let keys = members.map(\.key).filter { seen.insert($0).inserted }
+      let indexed = keys.compactMap { key -> (UInt32, String)? in
+        guard let index = UInt32(key), index != .max, String(index) == key else { return nil }
+        return (index, key)
+      }.sorted { $0.0 < $1.0 }
+      let indexedKeys = Set(indexed.map(\.1))
+      return indexed.map(\.1) + keys.filter { !indexedKeys.contains($0) }
+    default: return nil
+    }
   }
 
   var arrayValue: [JSONValue]? {

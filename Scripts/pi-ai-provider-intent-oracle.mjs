@@ -77,5 +77,5 @@ function context(spec) {
       content: [{ type: "text", text: spec.toolResultText }], isError: false, timestamp: 2 });
     if (!spec.omitFollowup) messages.push({ role: "user", content: "again", timestamp: 3 });
   }
-  return { messages, ...(spec.tools ? { tools: spec.tools } : {}) };
+  return { messages, ...(spec.tools ? { tools: spec.tools.map(tool => spec.toolParametersJSON === undefined ? tool : { ...tool, parameters: JSON.parse(spec.toolParametersJSON) }) } : {}) };
 }

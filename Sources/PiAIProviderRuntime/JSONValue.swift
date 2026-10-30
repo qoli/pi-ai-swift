@@ -8,6 +8,35 @@ public enum JSONValue: Sendable, Equatable, Codable {
   case string(String)
   case array([JSONValue])
   case object([String: JSONValue])
+  case orderedObject([ObjectMember])
+
+  public struct ObjectMember: Sendable, Equatable {
+    public let key: String
+    public let value: JSONValue
+
+    public init(_ key: String, _ value: JSONValue) {
+      self.key = key
+      self.value = value
+    }
+  }
+
+  /// Retains object member order when it affects a provider's projection.
+  public init(jsonData: Data) throws {
+    self = try ProviderOrderedJSON(data: jsonData).jsonValuePreservingObjectOrder
+  }
+
+  public static func == (lhs: JSONValue, rhs: JSONValue) -> Bool {
+    if let left = lhs.objectValue, let right = rhs.objectValue { return left == right }
+    switch (lhs, rhs) {
+    case (.null, .null): return true
+    case (.bool(let left), .bool(let right)): return left == right
+    case (.integer(let left), .integer(let right)): return left == right
+    case (.number(let left), .number(let right)): return left == right
+    case (.string(let left), .string(let right)): return left == right
+    case (.array(let left), .array(let right)): return left == right
+    default: return false
+    }
+  }
 
   public init(from decoder: any Decoder) throws {
     let container = try decoder.singleValueContainer()
@@ -45,6 +74,8 @@ public enum JSONValue: Sendable, Equatable, Codable {
       try container.encode(value)
     case .object(let value):
       try container.encode(value)
+    case .orderedObject:
+      try container.encode(objectValue!)
     }
   }
 }

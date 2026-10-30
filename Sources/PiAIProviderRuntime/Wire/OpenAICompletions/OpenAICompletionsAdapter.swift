@@ -110,7 +110,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
       let field = format == "baseten" ? "chat_template_args" : "chat_template_kwargs"
       var values: [String: JSONValue] = [:]
       for (name, value) in compat.object(key) ?? [:] {
-        guard case .object(let variable) = value else {
+        guard let variable = value.objectValue else {
           values[name] = value
           continue
         }
