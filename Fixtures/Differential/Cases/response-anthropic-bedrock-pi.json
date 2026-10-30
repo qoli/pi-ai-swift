@@ -160,6 +160,26 @@
         "cacheRead": 0.5,
         "cacheWrite": 6.25
       }
+    },
+    {
+      "caseID": "anthropic-refusal-no-details",
+      "protocolID": "anthropic-messages",
+      "category": "providerError"
+    },
+    {
+      "caseID": "anthropic-refusal-empty-explanation",
+      "protocolID": "anthropic-messages",
+      "category": "providerError"
+    },
+    {
+      "caseID": "anthropic-sensitive-explanation",
+      "protocolID": "anthropic-messages",
+      "category": "providerError"
+    },
+    {
+      "caseID": "anthropic-unknown-stop",
+      "protocolID": "anthropic-messages",
+      "category": "providerError"
     }
   ]
 }

@@ -39,7 +39,10 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
         if ["anthropic-raw-error", "anthropic-error-event"].contains(scenario.caseID) {
           #expect(error.message == expected.terminal.objectValue?.string("errorMessage"))
         }
-        if scenario.caseID == "bedrock-provider-stop-error" {
+        if scenario.caseID == "bedrock-provider-stop-error"
+          || (scenario.protocolID == "anthropic-messages"
+            && expected.terminal.objectValue?.string("rawStopReason") != nil)
+        {
           #expect(
             error.providerMetadata?.string("rawStopReason")
               == expected.terminal.objectValue?.string("rawStopReason"))

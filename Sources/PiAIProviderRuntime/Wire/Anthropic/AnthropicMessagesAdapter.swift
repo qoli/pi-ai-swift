@@ -925,11 +925,16 @@ private struct AnthropicEventReducer {
         if reason == "refusal" || reason == "sensitive" {
           throw ProviderRuntimeFailure(
             code: .transportFailed,
-            message: delta.object("stop_details")?.string("explanation")
-              ?? "Provider stopped with: \(reason)",
+            message: reason == "sensitive"
+              ? "Provider stopped with: sensitive"
+              : (delta.object("stop_details")?.string("explanation").flatMap {
+                $0.isEmpty ? nil : $0
+              }
+                ?? "The model refused to complete the request"),
             providerID: providerID,
             operation: "anthropic.event.error",
-            causeDescription: reason
+            causeDescription: reason,
+            providerMetadata: ["rawStopReason": .string(reason)]
           )
         }
         finishReason = try mapFinishReason(reason)
@@ -1000,7 +1005,11 @@ private struct AnthropicEventReducer {
     case "max_tokens": .length
     case "tool_use": .toolCalls
     case "end_turn", "pause_turn", "stop_sequence": .stop
-    default: throw invalid("unsupported Anthropic stop reason: \(value)")
+    default:
+      throw ProviderRuntimeFailure(
+        code: .transportFailed, message: "Unhandled stop reason: \(value)",
+        providerID: providerID, operation: "anthropic.event.error", causeDescription: value,
+        providerMetadata: ["rawStopReason": .string(value)])
     }
   }
 

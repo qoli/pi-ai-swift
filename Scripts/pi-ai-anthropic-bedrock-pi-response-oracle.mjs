@@ -219,6 +219,22 @@ function stimulus(caseID) {
       anth("message_delta", { type: "message_delta", delta: { stop_reason: "refusal", stop_details: { explanation: "fixture refusal" } }, usage: { output_tokens: 0 } }),
       anth("message_stop", { type: "message_stop" }),
     ]);
+    case "anthropic-refusal-no-details":
+    case "anthropic-refusal-empty-explanation":
+    case "anthropic-sensitive-explanation":
+    case "anthropic-unknown-stop": {
+      const reason = caseID === "anthropic-sensitive-explanation" ? "sensitive"
+        : caseID === "anthropic-unknown-stop" ? "future_stop" : "refusal";
+      const delta = { stop_reason: reason,
+        ...(caseID === "anthropic-refusal-empty-explanation" ? { stop_details: { explanation: "" } } : {}),
+        ...(caseID === "anthropic-sensitive-explanation" ? { stop_details: { explanation: "ignored sensitive detail" } } : {}),
+      };
+      return sse([
+        anth("message_start", { type: "message_start", message: { id: caseID, model: "fixture-model", usage: { input_tokens: 1, output_tokens: 0 } } }),
+        anth("message_delta", { type: "message_delta", delta, usage: { output_tokens: 0 } }),
+        anth("message_stop", { type: "message_stop" }),
+      ]);
+    }
     case "anthropic-error-event": return sse([
       anth("error", { type: "error", error: { type: "overloaded_error", message: "fixture overloaded" } }),
     ]);

@@ -270,6 +270,74 @@
         }
       }
     },
+    "anthropic-refusal-empty-explanation": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtcmVmdXNhbC1lbXB0eS1leHBsYW5hdGlvbiIsIm1vZGVsIjoiZml4dHVyZS1tb2RlbCIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MSwib3V0cHV0X3Rva2VucyI6MH19fQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9kZWx0YSIsImRlbHRhIjp7InN0b3BfcmVhc29uIjoicmVmdXNhbCIsInN0b3BfZGV0YWlscyI6eyJleHBsYW5hdGlvbiI6IiJ9fSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6MH19CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "The model refused to complete the request",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "refusal",
+        "responseID": "anthropic-refusal-empty-explanation",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 1
+        }
+      }
+    },
+    "anthropic-refusal-no-details": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtcmVmdXNhbC1uby1kZXRhaWxzIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfX19CgpldmVudDogbWVzc2FnZV9kZWx0YQpkYXRhOiB7InR5cGUiOiJtZXNzYWdlX2RlbHRhIiwiZGVsdGEiOnsic3RvcF9yZWFzb24iOiJyZWZ1c2FsIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjB9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "The model refused to complete the request",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "refusal",
+        "responseID": "anthropic-refusal-no-details",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 1
+        }
+      }
+    },
     "anthropic-repaired-sse-tool": {
       "decoderInput": {
         "chunksBase64": [
@@ -334,6 +402,40 @@
           "output": 1,
           "reasoning": null,
           "totalTokens": 2
+        }
+      }
+    },
+    "anthropic-sensitive-explanation": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtc2Vuc2l0aXZlLWV4cGxhbmF0aW9uIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfX19CgpldmVudDogbWVzc2FnZV9kZWx0YQpkYXRhOiB7InR5cGUiOiJtZXNzYWdlX2RlbHRhIiwiZGVsdGEiOnsic3RvcF9yZWFzb24iOiJzZW5zaXRpdmUiLCJzdG9wX2RldGFpbHMiOnsiZXhwbGFuYXRpb24iOiJpZ25vcmVkIHNlbnNpdGl2ZSBkZXRhaWwifX0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjB9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "Provider stopped with: sensitive",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "sensitive",
+        "responseID": "anthropic-sensitive-explanation",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 1
         }
       }
     },
@@ -448,6 +550,40 @@
           "output": 2,
           "reasoning": null,
           "totalTokens": 5
+        }
+      }
+    },
+    "anthropic-unknown-stop": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtdW5rbm93bi1zdG9wIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfX19CgpldmVudDogbWVzc2FnZV9kZWx0YQpkYXRhOiB7InR5cGUiOiJtZXNzYWdlX2RlbHRhIiwiZGVsdGEiOnsic3RvcF9yZWFzb24iOiJmdXR1cmVfc3RvcCJ9LCJ1c2FnZSI6eyJvdXRwdXRfdG9rZW5zIjowfX0KCmV2ZW50OiBtZXNzYWdlX3N0b3AKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdG9wIn0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "Unhandled stop reason: future_stop",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "future_stop",
+        "responseID": "anthropic-unknown-stop",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 1
         }
       }
     },

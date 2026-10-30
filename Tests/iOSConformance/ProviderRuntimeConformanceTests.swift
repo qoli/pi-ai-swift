@@ -668,6 +668,31 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAnthropicErrorStopReasonsMatchPinnedSource() async throws {
+    let oracle = try load("Differential/Oracle/response-anthropic-bedrock-pi.json")
+    for name in [
+      "anthropic-refusal", "anthropic-refusal-no-details", "anthropic-refusal-empty-explanation",
+      "anthropic-sensitive-explanation", "anthropic-unknown-stop",
+    ] {
+      let source = try XCTUnwrap(oracle.object("scenarios")?.object(name))
+      let decoder = try XCTUnwrap(source.object("decoderInput"))
+      let chunks = try XCTUnwrap(decoder.array("chunksBase64")).map {
+        try XCTUnwrap(Data(base64Encoded: try XCTUnwrap($0.stringValue)))
+      }
+      let (request, context) = inputs(
+        api: "anthropic-messages", providerID: "anthropic", modelID: "fixture-model")
+      let result = try await replay(
+        AnthropicMessagesAdapter(), request: request, context: context, chunks: chunks)
+      let expected = try XCTUnwrap(source.object("terminal"))
+      XCTAssertEqual(result.failure?.code, .transportFailed, name)
+      XCTAssertEqual(result.failure?.message, expected.string("errorMessage"), name)
+      XCTAssertEqual(
+        result.failure?.providerMetadata?.string("rawStopReason"), expected.string("rawStopReason"),
+        name)
+      XCTAssertNil(result.snapshot, name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
