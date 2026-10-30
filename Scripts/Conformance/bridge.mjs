@@ -9,6 +9,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenAI } from "@google/genai";
 import { BedrockRuntimeClient, ConverseStreamCommand } from "@aws-sdk/client-bedrock-runtime";
 import { EventStreamCodec } from "@smithy/core/event-streams";
+import { mistralSDKPayload, mistralWirePayload } from "./mistral-payload.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
@@ -174,14 +175,15 @@ async function nativeStream(model, context, options, emitEvent) {
   const serve = async request => {
     let body = request.body;
     const google = model.api === "google-generative-ai" || model.api === "google-vertex";
+    const mistral = model.api === "mistral-conversations";
     const payload = model.api === "bedrock-converse-stream" ? { modelId: bedrockModelID(request.url), ...body } : google ? {
       model: model.id, contents: body.contents,
       config: { ...body.generationConfig,
         ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
         ...(body.tools ? { tools: body.tools } : {}), ...(body.toolConfig ? { toolConfig: body.toolConfig } : {}) },
-    } : body;
+    } : mistral ? mistralSDKPayload(body) : body;
     const replacement = await options.onPayload?.(payload, model);
-    if (replacement !== undefined) body = google ? googleWireBody(replacement) : replacement;
+    if (replacement !== undefined) body = google ? googleWireBody(replacement) : mistral ? mistralWirePayload(replacement) : replacement;
     if (options.signal?.aborted) { cancel(); return; }
     if (options.timeoutMs !== undefined) throw new Error("Swift ProviderRequest has no request-timeout option");
     const response = await mockResponse(model, request, body, options, connection);
