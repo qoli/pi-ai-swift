@@ -1850,7 +1850,15 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsTemplateEffortsAndBudgetsMatchPinnedSource",
         "Scripts/openai-request-branch-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/request-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/request-branches.json",
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#failuresRoundTripProviderMetadataAndDecodeExistingRecords",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsProviderErrorsRetainRawReasonsAndLateResponseMetadata",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsFailureMetadataMatchesPinnedSource",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2553,7 +2561,15 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#detectedCompatibilityMatchesSourceRequestsAndWireHeaders",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsDetectedCompatibilityMatchesPinnedSource",
         "Fixtures/OpenAIRequestBranches/Cases/completions-compat.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/completions-compat.json",
+        "Tests/PiAIProviderRuntimeTests/ContractTests.swift#failuresRoundTripProviderMetadataAndDecodeExistingRecords",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsProviderErrorsRetainRawReasonsAndLateResponseMetadata",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsFailureMetadataMatchesPinnedSource",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "requiredGates": [
         "swift-test",

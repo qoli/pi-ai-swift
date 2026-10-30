@@ -19,6 +19,22 @@ func fixtureMetadataWithCost(
 @Suite
 struct ContractTests {
   @Test
+  func failuresRoundTripProviderMetadataAndDecodeExistingRecords() throws {
+    let legacy = Data(#"{"code":"transportFailed","message":"fixture error"}"#.utf8)
+    #expect(
+      try JSONDecoder().decode(ProviderRuntimeFailure.self, from: legacy).providerMetadata == nil)
+    let failure = ProviderRuntimeFailure(
+      code: .transportFailed, message: "fixture error",
+      providerID: "fixture", operation: "fixture.finish", causeDescription: "provider_reason",
+      providerMetadata: [
+        "rawStopReason": .string("provider_reason"), "responseId": .string("response-1"),
+      ])
+    #expect(
+      try JSONDecoder().decode(ProviderRuntimeFailure.self, from: JSONEncoder().encode(failure))
+        == failure)
+  }
+
+  @Test
   func structuredRequestRoundTripsWithoutFlatteningRolesOrTools() throws {
     let request = ProviderRequest(
       id: "request-1",

@@ -262,11 +262,13 @@ struct SwiftConformanceProbe {
   }
 
   private static func project(_ error: ProviderRuntimeFailure) -> [String: JSONValue] {
-    [
+    var result: [String: JSONValue] = [
       "code": .string(error.code.rawValue), "message": .string(error.message),
       "operation": error.operation.map(JSONValue.string) ?? .null,
       "cause": error.causeDescription.map(JSONValue.string) ?? .null,
     ]
+    if let metadata = error.providerMetadata { result["providerMetadata"] = .object(metadata) }
+    return result
   }
 
   private static func message(_ raw: [String: JSONValue]) throws -> ProviderMessage {

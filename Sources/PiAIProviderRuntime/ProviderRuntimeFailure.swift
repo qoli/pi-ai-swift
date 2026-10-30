@@ -21,19 +21,22 @@ public struct ProviderRuntimeFailure: Error, Sendable, Equatable, Codable,
   public let providerID: String?
   public let operation: String?
   public let causeDescription: String?
+  public let providerMetadata: [String: JSONValue]?
 
   public init(
     code: Code,
     message: String,
     providerID: String?,
     operation: String?,
-    causeDescription: String?
+    causeDescription: String?,
+    providerMetadata: [String: JSONValue]? = nil
   ) {
     self.code = code
     self.message = message
     self.providerID = providerID
     self.operation = operation
     self.causeDescription = causeDescription
+    self.providerMetadata = providerMetadata
   }
 
   public var errorDescription: String? { message }

@@ -487,6 +487,48 @@
           }
         ]
       }
+    ],
+    "endAlias": [
+      {
+        "id": "chat-end",
+        "choices": [
+          {
+            "delta": {},
+            "finish_reason": "end"
+          }
+        ]
+      }
+    ],
+    "emptyFinish": [
+      {
+        "id": "chat-empty",
+        "choices": [
+          {
+            "delta": {},
+            "finish_reason": ""
+          }
+        ]
+      }
+    ],
+    "lateErrorMetadata": [
+      {
+        "choices": [
+          {
+            "delta": {},
+            "finish_reason": "network_error"
+          }
+        ]
+      },
+      {
+        "id": "chat-late-error",
+        "model": "routed-error-model",
+        "choices": [],
+        "usage": {
+          "prompt_tokens": 7,
+          "completion_tokens": 3,
+          "total_tokens": 10
+        }
+      }
     ]
   },
   "responsesTerminalWithoutStartEvents": {

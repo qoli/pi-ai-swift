@@ -58,6 +58,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           for event in try reducer.finish() {
             continuation.yield(event)
           }
+          try reducer.validateTerminal()
           continuation.finish()
         } catch {
           continuation.finish(throwing: error)
@@ -783,9 +784,9 @@ private struct OpenAICompletionsReducer {
       guard let choice = choiceValue.objectValue else {
         throw invalid("completion choice is not an object")
       }
-      if let reason = choice.string("finish_reason") {
+      if let reason = choice.string("finish_reason"), !reason.isEmpty {
         rawFinishReason = reason
-        finishReason = try mapFinishReason(reason)
+        finishReason = mapFinishReason(reason)
       }
       if self.usage == nil, let choiceUsage = choice.object("usage") {
         try updateUsage(choiceUsage)
@@ -898,34 +899,47 @@ private struct OpenAICompletionsReducer {
         cachedInputTokens: 0, cacheWriteTokens: 0, totalTokens: 0, providerMetadata: [:],
         cost: .init(input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0))
     }
-    if let usage { events.append(.usage(usage)) }
-    if finishReason == nil, !supportsFinishReason {
+    if finishReason == nil, rawFinishReason == nil, !supportsFinishReason {
       finishReason = toolCalls.isEmpty ? .stop : .toolCalls
       rawFinishReason = nil
     }
-    guard let finishReason else {
-      throw invalid("Stream ended without finish_reason")
-    }
+    guard let finishReason else { return events }
+    if let usage { events.append(.usage(usage)) }
     events.append(responseSnapshot(finishReason, completedTools: events))
     events.append(.completed(finishReason))
     return events
   }
 
-  private func mapFinishReason(_ value: String) throws -> ProviderFinishReason {
+  private func mapFinishReason(_ value: String) -> ProviderFinishReason? {
     switch value {
     case "length": .length
     case "tool_calls", "function_call": .toolCalls
-    case "content_filter", "network_error":
+    case "stop", "end": .stop
+    default: nil
+    }
+  }
+
+  func validateTerminal() throws {
+    guard finishReason == nil else { return }
+    if let rawFinishReason {
       throw ProviderRuntimeFailure(
         code: .transportFailed,
-        message: "OpenAI provider returned an error finish reason: \(value)",
+        message: "Provider finish_reason: \(rawFinishReason)",
         providerID: providerID,
         operation: "openai-completions.event.finish",
-        causeDescription: value
+        causeDescription: rawFinishReason,
+        providerMetadata: failureMetadata()
       )
-    case "stop": .stop
-    default: throw invalid("unsupported OpenAI finish reason: \(value)")
     }
+    throw invalid("Stream ended without finish_reason")
+  }
+
+  private func failureMetadata() -> [String: JSONValue]? {
+    var result: [String: JSONValue] = [:]
+    if let responseID { result["responseId"] = .string(responseID) }
+    if let responseModelID { result["responseModel"] = .string(responseModelID) }
+    if let rawFinishReason { result["rawStopReason"] = .string(rawFinishReason) }
+    return result.isEmpty ? nil : result
   }
 
   private func invalid(_ message: String) -> ProviderRuntimeFailure {
@@ -934,7 +948,8 @@ private struct OpenAICompletionsReducer {
       message: message,
       providerID: providerID,
       operation: "openai-completions.event.reduce",
-      causeDescription: nil
+      causeDescription: nil,
+      providerMetadata: failureMetadata()
     )
   }
 

@@ -137,7 +137,10 @@ export async function processResponsesStream(events, partial, output, model, opt
   const decoded = probe(model, { messages: [{ role: "user", content: "fixture", timestamp: 0 }] },
     { apiKey: "synthetic-decoder-fixture-key", ...options }, [{ status: 200, headers: {}, chunks }]);
   for (const event of decoded.events) emit(event, partial, output);
-  if (decoded.failure) throw new Error(decoded.failure.message ?? decoded.failure.code);
+  if (decoded.failure) {
+    Object.assign(partial, decoded.failure.providerMetadata);
+    throw new Error(decoded.failure.message ?? decoded.failure.code);
+  }
 }
 
 export function stream(model, context, options = {}, requestSource = "api", generationMode = "raw") {
@@ -154,6 +157,7 @@ export function stream(model, context, options = {}, requestSource = "api", gene
       output.push({ type: "done", reason: partial.stopReason, message: partial });
       output.end(partial);
     } catch (error) {
+      Object.assign(partial, error.providerMetadata);
       partial.stopReason = options.signal?.aborted ? "aborted" : "error";
       partial.errorMessage = error.message;
       output.push({ type: "error", reason: partial.stopReason, error: partial });
@@ -233,7 +237,7 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
     }
     const status = await exited;
     if (status !== 0 || !finished) throw new Error(`Swift conformance probe failed: ${stderr}`);
-    if (failure) throw new Error(failure.message ?? failure.code);
+    if (failure) throw Object.assign(new Error(failure.message ?? failure.code), { providerMetadata: failure.providerMetadata });
   } finally {
     options.signal?.removeEventListener("abort", cancel);
     if (!finished) child.kill();

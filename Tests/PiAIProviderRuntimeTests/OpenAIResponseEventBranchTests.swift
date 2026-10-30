@@ -665,7 +665,7 @@ struct OpenAIResponseEventBranchTests {
     for (name, cause, code) in [
       ("contentFilter", "content_filter", ProviderRuntimeFailure.Code.transportFailed),
       ("networkError", "network_error", ProviderRuntimeFailure.Code.transportFailed),
-      ("unknownFinish", nil, ProviderRuntimeFailure.Code.invalidResponse),
+      ("unknownFinish", "mystery", ProviderRuntimeFailure.Code.transportFailed),
     ] {
       do {
         _ = try await completionEvents(try #require(branches[name]?.arrayValue))
@@ -673,6 +673,53 @@ struct OpenAIResponseEventBranchTests {
       } catch let failure as ProviderRuntimeFailure {
         #expect(failure.code == code)
         #expect(failure.causeDescription == cause)
+      }
+    }
+  }
+
+  @Test
+  func completionsProviderErrorsRetainRawReasonsAndLateResponseMetadata() async throws {
+    let fixture = try responseEventFixture()
+    let branches = try #require(fixture.object("completionBranchChunks"))
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "completions.failure-metadata.oracle")
+    let expectedCases = try #require(
+      oracle.object("cases")?.object("completions.stop-reason-response-branches"))
+    for name in [
+      "contentFilter", "networkError", "unknownFinish", "lateErrorMetadata", "emptyFinish",
+      "endAlias",
+    ] {
+      let expected = try #require(expectedCases.object(name))
+      var snapshot: ProviderResponseSnapshot?
+      var failure: ProviderRuntimeFailure?
+      do {
+        snapshot = try await completionEvents(try #require(branches[name]?.arrayValue))
+      } catch let error as ProviderRuntimeFailure { failure = error }
+      if expected.string("stopReason") == "error" {
+        let error = try #require(failure)
+        #expect(snapshot == nil)
+        #expect(error.message == expected.string("errorMessage"), Comment(rawValue: name))
+        let encoded = try decodeJSONObject(
+          JSONEncoder().encode(error),
+          providerID: "fixture", operation: "completions.failure-metadata.encoded")
+        let metadata = encoded.object("providerMetadata") ?? [:]
+        #expect(
+          metadata.string("rawStopReason") == expected.string("rawStopReason"),
+          Comment(rawValue: name))
+        #expect(
+          metadata.string("responseId") == expected.string("responseId"), Comment(rawValue: name))
+        #expect(
+          metadata.string("responseModel") == expected.string("responseModel"),
+          Comment(rawValue: name))
+      } else {
+        #expect(failure == nil, Comment(rawValue: name))
+        #expect(
+          snapshot?.finishReason.rawValue == expected.string("stopReason"), Comment(rawValue: name))
+        #expect(
+          snapshot?.rawFinishReason == expected.string("rawStopReason"), Comment(rawValue: name))
       }
     }
   }

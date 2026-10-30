@@ -101,6 +101,48 @@
           "totalTokens": 0
         }
       },
+      "emptyFinish": {
+        "content": [],
+        "errorMessage": "Stream ended without finish_reason",
+        "responseId": "chat-empty",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "endAlias": {
+        "content": [],
+        "rawStopReason": "end",
+        "responseId": "chat-end",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 0,
+          "output": 0,
+          "totalTokens": 0
+        }
+      },
+      "lateErrorMetadata": {
+        "content": [],
+        "errorMessage": "Provider finish_reason: network_error",
+        "rawStopReason": "network_error",
+        "responseId": "chat-late-error",
+        "responseModel": "routed-error-model",
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "input": 7,
+          "output": 3,
+          "reasoning": 0,
+          "totalTokens": 10
+        }
+      },
       "length": {
         "content": [
           {
