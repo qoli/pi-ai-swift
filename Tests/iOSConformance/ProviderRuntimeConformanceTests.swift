@@ -107,6 +107,49 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testMistralHeaderTimeoutMatchesPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/mistral-timeout.json")
+    let oracle = try load("Differential/Oracle/mistral-timeout.json")
+    for item in try XCTUnwrap(fixture.array("cases")) {
+      let spec = try XCTUnwrap(item.objectValue)
+      let name = try XCTUnwrap(spec.string("id"))
+      let expected = try XCTUnwrap(oracle.object("cases")?.object(name))
+      let (request, context) = inputs(
+        api: "mistral-conversations",
+        options: .init(
+          maximumOutputTokens: 64, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: ["timeoutMs": try XCTUnwrap(spec["timeoutMs"])]))
+      let transport = IOSMistralTimeoutFixture(spec: spec)
+      var snapshot: ProviderResponseSnapshot?
+      var failure: ProviderRuntimeFailure?
+      do {
+        for try await event in MistralConversationsAdapter().stream(
+          request, context: context, transport: transport)
+        {
+          if case .responseSnapshot(let value) = event { snapshot = value }
+        }
+      } catch let error as ProviderRuntimeFailure {
+        failure = error
+      }
+      let requested = await transport.requested
+      XCTAssertEqual(requested, expected.bool("requested"), name)
+      if expected.bool("requested") == false {
+        XCTAssertEqual(failure?.code, .invalidRequest, name)
+      } else if expected.string("stopReason") == "error" {
+        XCTAssertEqual(failure?.message, expected.string("errorMessage"), name)
+        XCTAssertNil(snapshot)
+      } else {
+        XCTAssertNil(failure, name)
+        XCTAssertEqual(snapshot?.finishReason, .stop, name)
+        let reasoning = snapshot?.content.compactMap { content -> String? in
+          guard case .reasoning(let value) = content else { return nil }
+          return value.text
+        }.joined()
+        XCTAssertEqual(reasoning, expected.string("reasoning"), name)
+      }
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
@@ -189,6 +232,37 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     } catch let error as ProviderRuntimeFailure {
       return (snapshot, error, starts)
     }
+  }
+}
+
+private actor IOSMistralTimeoutFixture: ProviderHTTPStreamingTransport {
+  let spec: [String: JSONValue]
+  var requested = false
+  init(spec: [String: JSONValue]) { self.spec = spec }
+
+  func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    requested = true
+    if let delay = spec.int("headerDelayMs"), delay > 0 {
+      try await Task.sleep(for: .milliseconds(delay))
+    }
+    let chunks = try XCTUnwrap(spec.array("chunks"))
+    return .init(
+      statusCode: 200, headers: ["content-type": "text/event-stream"],
+      body: AsyncThrowingStream { continuation in
+        let task = Task {
+          do {
+            for value in chunks {
+              let chunk = try XCTUnwrap(value.objectValue)
+              if let delay = chunk.int("delayMs"), delay > 0 {
+                try await Task.sleep(for: .milliseconds(delay))
+              }
+              continuation.yield(Data(try XCTUnwrap(chunk.string("data")).utf8))
+            }
+            continuation.finish()
+          } catch { continuation.finish(throwing: error) }
+        }
+        continuation.onTermination = { _ in task.cancel() }
+      })
   }
 }
 

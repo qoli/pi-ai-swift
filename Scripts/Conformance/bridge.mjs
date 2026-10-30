@@ -68,18 +68,18 @@ function fixtureInput(model, context, options, responses, credential, requestSou
   };
 }
 
-function capabilities(options) {
+function capabilities(options, model) {
   return [
     ...(options.onProviderStreamEvent ? ["raw-provider-stream-event-hook"] : []),
     ...(options.onResponse ? ["raw-response-hook"] : []),
-    ...(options.timeoutMs !== undefined ? ["request-timeout-option"] : []),
+    ...(options.timeoutMs !== undefined && model.api !== "mistral-conversations" ? ["request-timeout-option"] : []),
   ];
 }
 
 function probe(model, context, options, responses = [], credential = fixtureCredential(model, options)) {
   const result = invoke(fixtureInput(model, context, options, responses, credential));
   record(result.failure?.unrepresentedCapability ? "input" : responses.length ? "decode" : "encode", model.api, result.failure, [
-    ...capabilities(options),
+    ...capabilities(options, model),
     ...(result.failure?.unrepresentedCapability ? [result.failure.unrepresentedCapability] : []),
   ]);
   return result;
@@ -169,42 +169,55 @@ async function nativeStream(model, context, options, emitEvent, requestSource) {
   const lines = createInterface({ input: child.stdout, crlfDelay: Infinity });
   let finished = false;
   let failure;
+  let requestController;
   const send = frame => {
     if (!child.stdin.destroyed && !child.stdin.writableEnded) child.stdin.write(JSON.stringify(frame) + "\n");
   };
   child.stdin.on("error", () => {});
   const cancel = () => send({ kind: "cancel" });
   options.signal?.addEventListener("abort", cancel, { once: true });
-  record("encode", model.api, undefined, capabilities(options), "stream");
+  record("encode", model.api, undefined, capabilities(options, model), "stream");
   send(fixtureInput(model, context, options, [], credential, requestSource));
   const serve = async request => {
-    let body = request.body;
-    const google = model.api === "google-generative-ai" || model.api === "google-vertex";
-    const mistral = model.api === "mistral-conversations";
-    const payload = model.api === "bedrock-converse-stream" ? { modelId: bedrockModelID(request.url), ...body } : google ? {
-      model: model.id, contents: body.contents,
-      config: { ...body.generationConfig,
-        ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
-        ...(body.tools ? { tools: body.tools } : {}), ...(body.toolConfig ? { toolConfig: body.toolConfig } : {}) },
-    } : mistral ? mistralSDKPayload(body) : body;
-    const replacement = await options.onPayload?.(payload, model);
-    if (replacement !== undefined) body = google ? googleWireBody(replacement) : mistral ? mistralWirePayload(replacement) : replacement;
-    if (options.signal?.aborted) { cancel(); return; }
-    if (options.timeoutMs !== undefined) throw new Error("Swift ProviderRequest has no request-timeout option");
-    const response = await mockResponse(model, request, body, options, connection);
-    if (finished) return;
-    send({ kind: "response", status: response.status, headers: response.headers });
-    for await (const data of response.chunks) {
-      if (finished) break;
-      send({ kind: "chunk", data });
+    const controller = new AbortController();
+    requestController = controller;
+    const abort = () => controller.abort(options.signal.reason);
+    options.signal?.addEventListener("abort", abort, { once: true });
+    try {
+      let body = request.body;
+      const google = model.api === "google-generative-ai" || model.api === "google-vertex";
+      const mistral = model.api === "mistral-conversations";
+      const payload = model.api === "bedrock-converse-stream" ? { modelId: bedrockModelID(request.url), ...body } : google ? {
+        model: model.id, contents: body.contents,
+        config: { ...body.generationConfig,
+          ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
+          ...(body.tools ? { tools: body.tools } : {}), ...(body.toolConfig ? { toolConfig: body.toolConfig } : {}) },
+      } : mistral ? mistralSDKPayload(body) : body;
+      const replacement = await options.onPayload?.(payload, model);
+      if (replacement !== undefined) body = google ? googleWireBody(replacement) : mistral ? mistralWirePayload(replacement) : replacement;
+      if (options.signal?.aborted) { cancel(); return; }
+      if (controller.signal.aborted) return;
+      if (options.timeoutMs !== undefined && !mistral) throw new Error("Swift ProviderRequest has no request-timeout option");
+      const response = await mockResponse(model, request, body, { ...options, signal: controller.signal }, connection);
+      if (finished) return;
+      send({ kind: "response", status: response.status, headers: response.headers });
+      for await (const data of response.chunks) {
+        if (finished) break;
+        send({ kind: "chunk", data });
+      }
+      send({ kind: "end" });
+    } finally {
+      options.signal?.removeEventListener("abort", abort);
+      requestController = undefined;
     }
-    send({ kind: "end" });
   };
   try {
     for await (const line of lines) {
       const frame = JSON.parse(line);
       if (frame.kind === "request") {
         void serve(frame.payload).catch(error => send({ kind: "failure", message: error.message }));
+      } else if (frame.kind === "cancelRequest") {
+        requestController?.abort();
       } else if (frame.kind === "event") {
         emitEvent(frame.payload);
       } else if (frame.kind === "finished") {

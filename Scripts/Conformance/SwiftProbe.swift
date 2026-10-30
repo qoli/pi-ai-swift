@@ -112,8 +112,10 @@ struct SwiftConformanceProbe {
       "azureBaseUrl", "azureResourceName", "azureApiVersion", "azureDeploymentName", "region",
     ]
     var providerOptions = options.filter { !mappedOptions.contains($0.key) }
-    if api == "mistral-conversations", let headers = options["headers"] {
-      providerOptions["headers"] = headers
+    if api == "mistral-conversations" {
+      for key in ["headers", "timeoutMs"] {
+        if let value = options[key] { providerOptions[key] = value }
+      }
     }
     let request = ProviderRequest(
       id: "upstream-conformance", providerID: provider, modelID: modelID,
@@ -434,10 +436,23 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
     let captured = ProbeOutput.Request(
       url: request.url!.absoluteString, headers: request.allHTTPHeaderFields ?? [:],
       body: try JSONDecoder().decode(JSONValue.self, from: request.httpBody ?? Data("null".utf8)))
-    return try await withCheckedThrowingContinuation { continuation in
-      response = continuation
-      do { try channel.write("request", captured) } catch { fail(error) }
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        response = continuation
+        do { try channel.write("request", captured) } catch { fail(error) }
+      }
+    } onCancel: {
+      Task { await self.cancelRequest() }
     }
+  }
+
+  private func cancelRequest() {
+    guard response != nil else { return }
+    do { try channel.write("cancelRequest", [String: JSONValue]()) } catch {
+      fail(error)
+      return
+    }
+    fail(CancellationError())
   }
 
   func receive(_ frame: [String: JSONValue]) throws {

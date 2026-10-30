@@ -1,0 +1,29 @@
+{
+  "cases": {
+    "active-stream": {
+      "errorMessage": null,
+      "reasoning": "xxxxx",
+      "requested": true,
+      "stopReason": "stop"
+    },
+    "fractional-timeout": {
+      "errorMessage": "The value of \"delay\" is out of range. It must be an integer. Received 0.5",
+      "reasoning": "",
+      "requested": false,
+      "stopReason": "error"
+    },
+    "headers-timeout": {
+      "errorMessage": "Mistral response headers timed out after 5ms",
+      "reasoning": "",
+      "requested": true,
+      "stopReason": "error"
+    },
+    "negative-timeout": {
+      "errorMessage": "The value of \"delay\" is out of range. It must be >= 0 && <= 4294967295. Received -1",
+      "reasoning": "",
+      "requested": false,
+      "stopReason": "error"
+    }
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

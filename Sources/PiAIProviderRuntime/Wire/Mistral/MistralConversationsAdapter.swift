@@ -11,8 +11,8 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
-          let response = try await transport.stream(
-            try makeURLRequest(request, context: context)
+          let response = try await responseHeaders(
+            for: makeURLRequest(request, context: context), request: request, transport: transport
           )
           guard (200..<300).contains(response.statusCode) else {
             var data = Data()
@@ -81,6 +81,38 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
         }
       }
       continuation.onTermination = { _ in task.cancel() }
+    }
+  }
+
+  private func responseHeaders(
+    for urlRequest: URLRequest, request: ProviderRequest,
+    transport: any ProviderHTTPStreamingTransport
+  ) async throws -> ProviderHTTPStreamingResponse {
+    let timeoutMs: Int
+    if let value = request.options.providerOptions["timeoutMs"], value != .null {
+      guard let milliseconds = value.integerValue,
+        milliseconds >= 0, milliseconds <= Int(UInt32.max)
+      else {
+        throw failure(
+          .invalidRequest, providerID: request.providerID,
+          operation: "mistral.request.timeout",
+          message: "timeoutMs must be an integer from 0 through 4294967295")
+      }
+      timeoutMs = milliseconds
+    } else {
+      timeoutMs = 60_000
+    }
+    return try await withThrowingTaskGroup(of: ProviderHTTPStreamingResponse.self) { group in
+      group.addTask { try await transport.stream(urlRequest) }
+      group.addTask {
+        try await Task.sleep(for: .milliseconds(timeoutMs))
+        throw failure(
+          .transportFailed, providerID: request.providerID,
+          operation: "mistral.response.headers-timeout",
+          message: "Mistral response headers timed out after \(timeoutMs)ms")
+      }
+      defer { group.cancelAll() }
+      return try await group.next()!
     }
   }
 
@@ -209,7 +241,8 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
         message: "Mistral Conversations structured output is not in the pinned upstream contract"
       )
     }
-    for (key, value) in request.options.providerOptions where key != "headers" {
+    for (key, value) in request.options.providerOptions
+    where !["headers", "timeoutMs"].contains(key) {
       body[key] = value
     }
     return body

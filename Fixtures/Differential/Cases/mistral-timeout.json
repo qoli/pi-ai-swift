@@ -1,0 +1,69 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "headers-timeout",
+      "timeoutMs": 5,
+      "headerDelayMs": 40,
+      "chunks": [
+        {
+          "delayMs": 0,
+          "data": "data: {\"id\":\"fixture-response\",\"model\":\"fixture-model\",\"choices\":[{\"index\":0,\"finish_reason\":\"stop\",\"delta\":{}}],\"usage\":{\"prompt_tokens\":1,\"completion_tokens\":1,\"total_tokens\":2}}\n\ndata: [DONE]\n\n"
+        }
+      ]
+    },
+    {
+      "id": "active-stream",
+      "timeoutMs": 20,
+      "headerDelayMs": 0,
+      "chunks": [
+        {
+          "delayMs": 10,
+          "data": "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":[{\"type\":\"thinking\",\"thinking\":[{\"type\":\"text\",\"text\":\"x\"}]}]}}]}\n\n"
+        },
+        {
+          "delayMs": 10,
+          "data": "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":[{\"type\":\"thinking\",\"thinking\":[{\"type\":\"text\",\"text\":\"x\"}]}]}}]}\n\n"
+        },
+        {
+          "delayMs": 10,
+          "data": "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":[{\"type\":\"thinking\",\"thinking\":[{\"type\":\"text\",\"text\":\"x\"}]}]}}]}\n\n"
+        },
+        {
+          "delayMs": 10,
+          "data": "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":[{\"type\":\"thinking\",\"thinking\":[{\"type\":\"text\",\"text\":\"x\"}]}]}}]}\n\n"
+        },
+        {
+          "delayMs": 10,
+          "data": "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":[{\"type\":\"thinking\",\"thinking\":[{\"type\":\"text\",\"text\":\"x\"}]}]}}]}\n\n"
+        },
+        {
+          "delayMs": 0,
+          "data": "data: {\"id\":\"fixture-response\",\"model\":\"fixture-model\",\"choices\":[{\"index\":0,\"finish_reason\":\"stop\",\"delta\":{}}],\"usage\":{\"prompt_tokens\":1,\"completion_tokens\":1,\"total_tokens\":2}}\n\ndata: [DONE]\n\n"
+        }
+      ]
+    },
+    {
+      "id": "negative-timeout",
+      "timeoutMs": -1,
+      "headerDelayMs": 0,
+      "chunks": [
+        {
+          "delayMs": 0,
+          "data": "data: {\"id\":\"fixture-response\",\"model\":\"fixture-model\",\"choices\":[{\"index\":0,\"finish_reason\":\"stop\",\"delta\":{}}],\"usage\":{\"prompt_tokens\":1,\"completion_tokens\":1,\"total_tokens\":2}}\n\ndata: [DONE]\n\n"
+        }
+      ]
+    },
+    {
+      "id": "fractional-timeout",
+      "timeoutMs": 0.5,
+      "headerDelayMs": 0,
+      "chunks": [
+        {
+          "delayMs": 0,
+          "data": "data: {\"id\":\"fixture-response\",\"model\":\"fixture-model\",\"choices\":[{\"index\":0,\"finish_reason\":\"stop\",\"delta\":{}}],\"usage\":{\"prompt_tokens\":1,\"completion_tokens\":1,\"total_tokens\":2}}\n\ndata: [DONE]\n\n"
+        }
+      ]
+    }
+  ]
+}

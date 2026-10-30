@@ -2326,7 +2326,8 @@
         "packages/ai/src/api/mistral-conversations.ts",
         "packages/ai/src/api/mistral-conversations.lazy.ts",
         "packages/ai/src/utils/error-body.ts",
-        "packages/ai/src/utils/text.ts"
+        "packages/ai/src/utils/text.ts",
+        "packages/ai/src/utils/abort-signals.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts",
@@ -2363,7 +2364,12 @@
         "Scripts/pi-ai-mistral-http-oracle.mjs",
         "Fixtures/Differential/Cases/mistral-http.json",
         "Fixtures/Differential/Oracle/mistral-http.json",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralHTTPMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralHTTPMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/MistralTimeoutTests.swift#headerDeadlineAndActiveBodyMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralHeaderTimeoutMatchesPinnedSource",
+        "Scripts/pi-ai-mistral-timeout-oracle.mjs",
+        "Fixtures/Differential/Cases/mistral-timeout.json",
+        "Fixtures/Differential/Oracle/mistral-timeout.json"
       ],
       "requiredGates": [
         "swift-test",
