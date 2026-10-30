@@ -6,6 +6,52 @@ import Testing
 @Suite
 struct ProviderOptionsDifferentialTests {
   @Test
+  func explicitSessionHeaderOverridesMatchPinnedSource() async throws {
+    let oracle = try decodeOracle()
+    let headers = [
+      "Session_ID": "caller-session", "X-Client-Request-Id": "caller-client",
+      "X-Session-Affinity": "caller-affinity", "X-Session-ID": "caller-router",
+    ]
+    let cases: [(String, String, String, String, [String: JSONValue])] = [
+      (
+        "openrouter-completions-override", "openai-completions", "openrouter",
+        "https://openrouter.ai/api/v1", [:]
+      ),
+      (
+        "baseten-completions-override", "openai-completions", "baseten",
+        "https://inference.baseten.co/v1", ["sendSessionAffinityHeaders": .bool(true)]
+      ),
+      (
+        "openrouter-responses-override", "openai-responses", "openrouter",
+        "https://openrouter.ai/api/v1", [:]
+      ),
+      (
+        "openrouter-anthropic-override", "anthropic-messages", "openrouter",
+        "https://openrouter.ai/api/v1", [:]
+      ),
+      (
+        "fireworks-anthropic-override", "anthropic-messages", "fireworks",
+        "https://api.fireworks.ai/inference", ["sendSessionAffinityHeaders": .bool(true)]
+      ),
+    ]
+    for (id, api, provider, baseURL, compat) in cases {
+      let captured = try await capture(
+        protocolID: api, providerID: provider, baseURL: baseURL, compat: compat, headers: headers)
+      #expect(selectedHeaders(captured) == oracle.cases[id]?.headers, Comment(rawValue: id))
+    }
+    for api in [
+      "anthropic-messages", "google-generative-ai", "openai-completions", "openai-responses",
+    ] {
+      let captured = try await capture(
+        protocolID: api, providerID: "opencode", baseURL: "https://opencode.ai/zen/v1",
+        headers: ["X-OpenCode-Session": "caller-opencode"])
+      #expect(
+        captured.value(forHTTPHeaderField: "x-opencode-session")
+          == oracle.cases["opencode-session-override"]?.headers?["x-opencode-session"])
+    }
+  }
+
+  @Test
   func sessionHeadersAndCompatibilityOptionsMatchPinnedSource() async throws {
     let oracle = try decodeOracle()
     #expect(oracle.upstreamRevision == "86dc686cf2fd795b2b24af3d614bb0e1307bcd76")
@@ -72,7 +118,8 @@ struct ProviderOptionsDifferentialTests {
     protocolID: String,
     providerID: String,
     baseURL: String,
-    compat: [String: JSONValue] = [:]
+    compat: [String: JSONValue] = [:],
+    headers: [String: String] = [:]
   ) async throws -> URLRequest {
     let model = ProviderModel(
       id: "fixture-model", providerID: providerID, name: "Fixture", protocolID: protocolID,
@@ -85,7 +132,7 @@ struct ProviderOptionsDifferentialTests {
         id: providerID, name: providerID, authorizationMethods: [], models: [model]),
       model: model,
       baseURL: URL(string: baseURL)!,
-      headers: [:],
+      headers: headers,
       credential: .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:])),
       modelConfiguration: ProviderModelConfiguration(
         protocolID: protocolID, baseURL: nil, headers: [:],

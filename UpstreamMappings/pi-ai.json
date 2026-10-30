@@ -1926,7 +1926,8 @@
         "packages/ai/test/anthropic-strict-tool-fallback.test.ts",
         "packages/ai/test/anthropic-error-tool-result-images.test.ts",
         "packages/ai/test/anthropic-strict-tool-schema.test.ts",
-        "packages/ai/test/openrouter-cost.test.ts"
+        "packages/ai/test/openrouter-cost.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -1961,7 +1962,11 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
+        "Scripts/pi-ai-provider-options-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-options.json",
+        "Fixtures/Differential/Oracle/provider-options.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2112,7 +2117,8 @@
         "packages/ai/src/utils/openrouter-cost.ts",
         "packages/ai/src/api/constrained-sampling.ts",
         "packages/ai/src/telemetry.ts",
-        "packages/ai/src/utils/version.ts"
+        "packages/ai/src/utils/version.ts",
+        "packages/ai/src/providers/opencode-headers.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
@@ -2124,7 +2130,8 @@
         "packages/ai/test/streaming-json.test.ts",
         "packages/ai/test/streaming-tool-arguments.test.ts",
         "packages/ai/test/sampling-options.test.ts",
-        "packages/ai/test/openrouter-cost.test.ts"
+        "packages/ai/test/openrouter-cost.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts"
       ],
       "dependsOn": [],
       "evidence": [
@@ -2135,7 +2142,11 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift",
         "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift",
-        "Scripts/pi-ai-source-runtime.mjs"
+        "Scripts/pi-ai-source-runtime.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
+        "Scripts/pi-ai-provider-options-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-options.json",
+        "Fixtures/Differential/Oracle/provider-options.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2158,7 +2169,8 @@
         "packages/ai/src/api/google-shared.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2180,7 +2192,11 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
+        "Scripts/pi-ai-provider-options-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-options.json",
+        "Fixtures/Differential/Oracle/provider-options.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2354,7 +2370,8 @@
         "packages/ai/test/openai-completions-vllm-priority.test.ts",
         "packages/ai/test/azure-openai-completions.test.ts",
         "packages/ai/test/sampling-options.test.ts",
-        "packages/ai/test/openrouter-cost.test.ts"
+        "packages/ai/test/openrouter-cost.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2382,7 +2399,11 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
+        "Scripts/pi-ai-provider-options-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-options.json",
+        "Fixtures/Differential/Oracle/provider-options.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2413,7 +2434,8 @@
         "packages/ai/test/openai-responses-terminal-event.test.ts",
         "packages/ai/test/openai-responses-tool-result-images.test.ts",
         "packages/ai/test/openai-responses-mid-convo-effort.test.ts",
-        "packages/ai/test/sampling-options.test.ts"
+        "packages/ai/test/sampling-options.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2435,7 +2457,11 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
+        "Scripts/pi-ai-provider-options-oracle.mjs",
+        "Fixtures/Differential/Cases/provider-options.json",
+        "Fixtures/Differential/Oracle/provider-options.json"
       ],
       "requiredGates": [
         "swift-test"

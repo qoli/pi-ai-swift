@@ -8,6 +8,12 @@
     "openrouter-anthropic-session",
     "opencode-session-wrapper",
     "vllm-priority",
-    "responses-max-output-disabled"
+    "responses-max-output-disabled",
+    "openrouter-completions-override",
+    "baseten-completions-override",
+    "openrouter-responses-override",
+    "openrouter-anthropic-override",
+    "fireworks-anthropic-override",
+    "opencode-session-override"
   ]
 }

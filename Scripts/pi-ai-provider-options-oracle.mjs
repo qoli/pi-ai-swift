@@ -39,12 +39,28 @@ const cases = {
   })),
 };
 
+const overrides = {
+  "Session_ID": "caller-session", "X-Client-Request-Id": "caller-client",
+  "X-Session-Affinity": "caller-affinity", "X-Session-ID": "caller-router",
+};
+for (const [id, api, provider, baseUrl, compat] of [
+  ["openrouter-completions-override", "openai-completions", "openrouter", "https://openrouter.ai/api/v1", {}],
+  ["baseten-completions-override", "openai-completions", "baseten", "https://inference.baseten.co/v1", { sendSessionAffinityHeaders: true }],
+  ["openrouter-responses-override", "openai-responses", "openrouter", "https://openrouter.ai/api/v1", {}],
+  ["openrouter-anthropic-override", "anthropic-messages", "openrouter", "https://openrouter.ai/api/v1", {}],
+  ["fireworks-anthropic-override", "anthropic-messages", "fireworks", "https://api.fireworks.ai/inference", { sendSessionAffinityHeaders: true }],
+]) {
+  cases[id] = await captureHeaders(api, model({ api, provider, baseUrl, compat }), overrides);
+}
+cases["opencode-session-override"] = await captureOpenCodeWrapper({ "X-OpenCode-Session": "caller-opencode" });
+
 process.stdout.write(`${JSON.stringify({ schemaVersion: 1, upstreamRevision: revision, cases }, null, 2)}\n`);
 
-async function captureHeaders(protocolID, sourceModel) {
+async function captureHeaders(protocolID, sourceModel, headers) {
   const implementation = await load(protocolID);
   let captured = {};
   const options = baseOptions();
+  options.headers = headers;
   options.fetch = async (input, init) => {
     const request = input instanceof Request ? input : new Request(input, init);
     const headers = Object.fromEntries(request.headers.entries());
@@ -73,7 +89,7 @@ async function capturePayload(protocolID, sourceModel) {
   };
 }
 
-async function captureOpenCodeWrapper() {
+async function captureOpenCodeWrapper(headers) {
   const module = await import(pathToFileURL(path.join(
     upstreamRoot, "packages/ai/src/providers/opencode-headers.ts",
   )).href);
@@ -82,8 +98,9 @@ async function captureOpenCodeWrapper() {
     stream(_model, _context, options) { observed = options; return null; },
     streamSimple(_model, _context, options) { observed = options; return null; },
   });
-  wrapped.stream({}, { messages: [] }, { sessionId: "fixture-session" });
-  return { headers: selected(observed?.headers ?? {}, ["x-opencode-session"]) };
+  wrapped.stream({}, { messages: [] }, { sessionId: "fixture-session", headers });
+  const projected = Object.fromEntries(new Headers(observed?.headers ?? {}).entries());
+  return { headers: selected(projected, ["x-opencode-session"]) };
 }
 
 async function load(protocolID) {

@@ -1,5 +1,13 @@
 {
   "cases": {
+    "baseten-completions-override": {
+      "headers": {
+        "session_id": "caller-session",
+        "x-client-request-id": "caller-client",
+        "x-session-affinity": "caller-affinity",
+        "x-session-id": "caller-router"
+      }
+    },
     "baseten-completions-session": {
       "headers": {
         "session_id": "fixture-session",
@@ -7,9 +15,30 @@
         "x-session-affinity": "fixture-session"
       }
     },
+    "fireworks-anthropic-override": {
+      "headers": {
+        "session_id": "caller-session",
+        "x-client-request-id": "caller-client",
+        "x-session-affinity": "caller-affinity",
+        "x-session-id": "caller-router"
+      }
+    },
+    "opencode-session-override": {
+      "headers": {
+        "x-opencode-session": "caller-opencode"
+      }
+    },
     "opencode-session-wrapper": {
       "headers": {
         "x-opencode-session": "fixture-session"
+      }
+    },
+    "openrouter-anthropic-override": {
+      "headers": {
+        "session_id": "caller-session",
+        "x-client-request-id": "caller-client",
+        "x-session-affinity": "caller-affinity",
+        "x-session-id": "caller-router"
       }
     },
     "openrouter-anthropic-session": {
@@ -17,9 +46,25 @@
         "x-session-id": "fixture-session"
       }
     },
+    "openrouter-completions-override": {
+      "headers": {
+        "session_id": "caller-session",
+        "x-client-request-id": "caller-client",
+        "x-session-affinity": "caller-affinity",
+        "x-session-id": "caller-router"
+      }
+    },
     "openrouter-completions-session": {
       "headers": {
         "x-session-id": "fixture-session"
+      }
+    },
+    "openrouter-responses-override": {
+      "headers": {
+        "session_id": "caller-session",
+        "x-client-request-id": "caller-client",
+        "x-session-affinity": "caller-affinity",
+        "x-session-id": "caller-router"
       }
     },
     "openrouter-responses-session": {
