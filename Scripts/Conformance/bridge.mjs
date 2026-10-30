@@ -16,6 +16,7 @@ const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(ups
 const { getCurrentSystemPrompt, getCurrentTools } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
 const { getEnvApiKey } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/env-api-keys.ts")));
 const { getProviderEnvValue } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/provider-env.ts")));
+const { clampMaxTokensToContext } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/api/simple-options.ts")));
 
 function record(operation, protocol, failure, unrepresentedCapabilities = []) {
   const state = expect.getState();
@@ -221,10 +222,28 @@ async function nativeStream(model, context, options, emitEvent) {
 }
 
 export function streamSimple(model, context, options = {}) {
+  const { reasoning, ...base } = options;
+  let reasoningEffort;
+  if (reasoning) {
+    const available = invoke({
+      ...fixtureInput(model, context, options, [], fixtureCredential(model, options)),
+      operation: "reasoning-levels",
+    });
+    record("catalog", model.api, available.failure);
+    if (!Array.isArray(available)) throw new Error(available.failure?.message ?? "Swift did not return reasoning levels");
+    const order = ["off", "minimal", "low", "medium", "high", "xhigh", "max"];
+    const requested = order.indexOf(reasoning);
+    const candidates = requested < 0 ? available : [
+      ...order.slice(requested), ...order.slice(0, requested).reverse(),
+    ];
+    // Preserve the requested input when Swift offers no choice, so its own
+    // unsupported-level failure remains observable in the original test.
+    reasoningEffort = candidates.find(level => available.includes(level)) ?? reasoning;
+  }
   return stream(model, context, {
-    ...options,
-    maxTokens: options.maxTokens ?? model.maxTokens,
-    reasoningEffort: options.reasoning,
+    ...base,
+    maxTokens: clampMaxTokensToContext(model, context, options.maxTokens ?? model.maxTokens),
+    reasoningEffort,
   });
 }
 
