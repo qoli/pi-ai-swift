@@ -2425,7 +2425,8 @@
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Fixtures/Differential/ResponseBranchInventory.json"
       ],
       "requiredGates": [
         "swift-test"

@@ -732,6 +732,8 @@ private struct OpenAICompletionsReducer {
   private var rawFinishReason: String?
   private var finishReason: ProviderFinishReason?
   private var toolCalls: [Int: ToolCallState] = [:]
+  private var toolSlotsByIndex: [Int: Int] = [:]
+  private var toolSlotsByID: [String: Int] = [:]
   private var usage: ProviderUsage?
   private var reasoningSignature: String?
   private var reasoningDetails: [[String: JSONValue]] = []
@@ -767,6 +769,7 @@ private struct OpenAICompletionsReducer {
       terminal = true
       return []
     }
+    if event.data.trimmingCharacters(in: .whitespacesAndNewlines) == "null" { return [] }
     let object = try decodeJSONObject(
       Data(event.data.utf8),
       providerID: providerID,
@@ -774,11 +777,7 @@ private struct OpenAICompletionsReducer {
     )
     var events: [ProviderEvent] = []
     if !started {
-      guard let responseID = object.string("id") else {
-        throw invalid("completion chunk is missing response id")
-      }
       started = true
-      self.responseID = responseID
       events.append(
         .responseStarted(
           ProviderResponseMetadata(
@@ -789,6 +788,9 @@ private struct OpenAICompletionsReducer {
           )
         )
       )
+    }
+    if responseID == nil, let id = object.string("id"), !id.isEmpty {
+      responseID = id
     }
     if responseModelID == nil, let model = object.string("model"),
       !model.isEmpty, model != requestedModelID
@@ -813,7 +815,9 @@ private struct OpenAICompletionsReducer {
       for key in ["reasoning_content", "reasoning", "reasoning_text"] {
         if let text = delta.string(key), !text.isEmpty {
           retainBlock(.reasoning)
-          reasoningSignature = key
+          reasoningSignature =
+            providerID == "opencode-go" && key == "reasoning"
+            ? "reasoning_content" : key
           reasoning += text
           events.append(.reasoningDelta(text))
           break
@@ -830,14 +834,25 @@ private struct OpenAICompletionsReducer {
         events.append(.textDelta(text))
       }
       for toolValue in delta.array("tool_calls") ?? [] {
-        guard let tool = toolValue.objectValue, let index = tool.int("index") else {
+        guard let tool = toolValue.objectValue else {
           throw invalid("tool call delta is malformed")
         }
+        let streamIndex = tool.int("index")
+        let incomingID = tool.string("id").flatMap { $0.isEmpty ? nil : $0 }
+        let index =
+          streamIndex.flatMap { toolSlotsByIndex[$0] }
+          ?? incomingID.flatMap { toolSlotsByID[$0] } ?? toolCalls.count
+        if let streamIndex { toolSlotsByIndex[streamIndex] = index }
         retainBlock(.tool(index))
         let state = toolCalls[index] ?? ToolCallState()
-        if let id = tool.string("id") { state.id = id }
+        if state.id == nil, let incomingID {
+          state.id = incomingID
+          toolSlotsByID[incomingID] = index
+        }
         if let function = tool.object("function") {
-          if let name = function.string("name"), !name.isEmpty { state.name = name }
+          if state.name == nil, let name = function.string("name"), !name.isEmpty {
+            state.name = name
+          }
           if let arguments = function.string("arguments") {
             state.arguments += arguments
             if let id = state.id, let name = state.name, !state.started {
@@ -849,7 +864,9 @@ private struct OpenAICompletionsReducer {
             }
           }
         } else if let custom = tool.object("custom") {
-          if let name = custom.string("name") { state.name = name }
+          if state.name == nil, let name = custom.string("name"), !name.isEmpty {
+            state.name = name
+          }
           if let input = custom.string("input") {
             state.arguments += input
             if let name = state.name {

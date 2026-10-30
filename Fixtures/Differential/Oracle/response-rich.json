@@ -4955,6 +4955,434 @@
         }
       }
     },
+    "completions.late-id": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJjaG9pY2VzIjpbeyJpbmRleCI6MCwiZGVsdGEiOnsiY29udGVudCI6IkEifSwiZmluaXNoX3JlYXNvbiI6bnVsbH1dfQoKZGF0YTogeyJpZCI6ImxhdGUtaWQiLCJ1c2FnZSI6eyJwcm9tcHRfdG9rZW5zIjoyLCJjb21wbGV0aW9uX3Rva2VucyI6MywidG90YWxfdG9rZW5zIjo1fSwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImRlbHRhIjp7fSwiZmluaXNoX3JlYXNvbiI6InN0b3AifV19CgpkYXRhOiBbRE9ORV0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-chat",
+          "providerID": "fixture-openai-completions",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "A",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "inputTokens": 2,
+          "outputTokens": 3,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "A",
+            "type": "text"
+          }
+        ],
+        "modelID": "fixture-chat",
+        "providerID": "fixture-openai-completions",
+        "rawStopReason": "stop",
+        "responseID": "late-id",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "input": 2,
+          "output": 3,
+          "reasoning": 0,
+          "totalTokens": 5
+        }
+      }
+    },
+    "completions.missing-id": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJjaG9pY2VzIjpbeyJpbmRleCI6MCwiZGVsdGEiOnsiY29udGVudCI6IkEifSwiZmluaXNoX3JlYXNvbiI6bnVsbH1dfQoKZGF0YTogeyJ1c2FnZSI6eyJwcm9tcHRfdG9rZW5zIjoyLCJjb21wbGV0aW9uX3Rva2VucyI6MywidG90YWxfdG9rZW5zIjo1fSwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImRlbHRhIjp7fSwiZmluaXNoX3JlYXNvbiI6InN0b3AifV19CgpkYXRhOiBbRE9ORV0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-chat",
+          "providerID": "fixture-openai-completions",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "A",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "inputTokens": 2,
+          "outputTokens": 3,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "A",
+            "type": "text"
+          }
+        ],
+        "modelID": "fixture-chat",
+        "providerID": "fixture-openai-completions",
+        "rawStopReason": "stop",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "input": 2,
+          "output": 3,
+          "reasoning": 0,
+          "totalTokens": 5
+        }
+      }
+    },
+    "completions.null-chunks": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogbnVsbAoKZGF0YTogeyJpZCI6InZhbGlkLWlkIiwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImRlbHRhIjp7ImNvbnRlbnQiOiJBIn0sImZpbmlzaF9yZWFzb24iOm51bGx9XX0KCmRhdGE6IG51bGwKCmRhdGE6IHsiaWQiOiJ2YWxpZC1pZCIsInVzYWdlIjp7InByb21wdF90b2tlbnMiOjIsImNvbXBsZXRpb25fdG9rZW5zIjozLCJ0b3RhbF90b2tlbnMiOjV9LCJjaG9pY2VzIjpbeyJpbmRleCI6MCwiZGVsdGEiOnt9LCJmaW5pc2hfcmVhc29uIjoic3RvcCJ9XX0KCmRhdGE6IG51bGwKCmRhdGE6IFtET05FXQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-chat",
+          "providerID": "fixture-openai-completions",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "A",
+          "type": "textDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "inputTokens": 2,
+          "outputTokens": 3,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "text": "A",
+            "type": "text"
+          }
+        ],
+        "modelID": "fixture-chat",
+        "providerID": "fixture-openai-completions",
+        "rawStopReason": "stop",
+        "responseID": "valid-id",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "input": 2,
+          "output": 3,
+          "reasoning": 0,
+          "totalTokens": 5
+        }
+      }
+    },
+    "completions.opencode-go-reasoning-signature": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6InJlYXNvbi1pZCIsImNob2ljZXMiOlt7ImluZGV4IjowLCJkZWx0YSI6eyJyZWFzb25pbmciOiJ0aGluayJ9LCJmaW5pc2hfcmVhc29uIjpudWxsfV19CgpkYXRhOiB7ImlkIjoicmVhc29uLWlkIiwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImRlbHRhIjp7ImNvbnRlbnQiOiJhbnN3ZXIifSwiZmluaXNoX3JlYXNvbiI6bnVsbH1dfQoKZGF0YTogeyJpZCI6InJlYXNvbi1pZCIsInVzYWdlIjp7InByb21wdF90b2tlbnMiOjIsImNvbXBsZXRpb25fdG9rZW5zIjozLCJ0b3RhbF90b2tlbnMiOjV9LCJjaG9pY2VzIjpbeyJpbmRleCI6MCwiZGVsdGEiOnt9LCJmaW5pc2hfcmVhc29uIjoic3RvcCJ9XX0KCmRhdGE6IFtET05FXQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-chat",
+          "providerID": "opencode-go",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "delta": "think",
+          "type": "reasoningDelta"
+        },
+        {
+          "delta": "answer",
+          "type": "textDelta"
+        },
+        {
+          "delta": "reasoning_content",
+          "type": "reasoningSignatureDelta"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "inputTokens": 2,
+          "outputTokens": 3,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "stop",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "thinking": "think",
+            "thinkingSignature": "reasoning_content",
+            "type": "thinking"
+          },
+          {
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "modelID": "fixture-chat",
+        "providerID": "opencode-go",
+        "rawStopReason": "stop",
+        "responseID": "reason-id",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "input": 2,
+          "output": 3,
+          "reasoning": 0,
+          "totalTokens": 5
+        }
+      }
+    },
+    "completions.optional-tool-index": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6InRvb2wtaWQiLCJjaG9pY2VzIjpbeyJpbmRleCI6MCwiZGVsdGEiOnsidG9vbF9jYWxscyI6W3siaWQiOiJvcmlnaW5hbC1jYWxsIiwiZnVuY3Rpb24iOnsiYXJndW1lbnRzIjoie1wieFwiOiIsIm5hbWUiOiJsb29rdXAifX1dfSwiZmluaXNoX3JlYXNvbiI6bnVsbH1dfQoKZGF0YTogeyJpZCI6InRvb2wtaWQiLCJjaG9pY2VzIjpbeyJpbmRleCI6MCwiZGVsdGEiOnsidG9vbF9jYWxscyI6W3siaWQiOiJvcmlnaW5hbC1jYWxsIiwiZnVuY3Rpb24iOnsiYXJndW1lbnRzIjoiMX0ifX1dfSwiZmluaXNoX3JlYXNvbiI6bnVsbH1dfQoKZGF0YTogeyJpZCI6InRvb2wtaWQiLCJ1c2FnZSI6eyJwcm9tcHRfdG9rZW5zIjoyLCJjb21wbGV0aW9uX3Rva2VucyI6MywidG90YWxfdG9rZW5zIjo1fSwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImRlbHRhIjp7fSwiZmluaXNoX3JlYXNvbiI6InRvb2xfY2FsbHMifV19CgpkYXRhOiBbRE9ORV0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-chat",
+          "providerID": "fixture-openai-completions",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "id": "original-call",
+          "name": "lookup",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"x\":",
+          "id": "original-call",
+          "type": "toolInputDelta"
+        },
+        {
+          "delta": "1}",
+          "id": "original-call",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "x": 1
+            },
+            "id": "original-call",
+            "name": "lookup"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "inputTokens": 2,
+          "outputTokens": 3,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "arguments": {
+              "x": 1
+            },
+            "id": "original-call",
+            "name": "lookup",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "fixture-chat",
+        "providerID": "fixture-openai-completions",
+        "rawStopReason": "tool_calls",
+        "responseID": "tool-id",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "input": 2,
+          "output": 3,
+          "reasoning": 0,
+          "totalTokens": 5
+        }
+      }
+    },
     "completions.order-interleaved-reasoning-text": {
       "decoderInput": {
         "chunksBase64": [
@@ -5432,6 +5860,109 @@
         "providerID": "fixture-openai-completions",
         "rawStopReason": "tool_calls",
         "responseID": "synthetic-order",
+        "responseModel": null,
+        "stopReason": "toolCalls",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "input": 2,
+          "output": 3,
+          "reasoning": 0,
+          "totalTokens": 5
+        }
+      }
+    },
+    "completions.stable-tool-identity": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZGF0YTogeyJpZCI6InRvb2wtaWQiLCJjaG9pY2VzIjpbeyJpbmRleCI6MCwiZGVsdGEiOnsidG9vbF9jYWxscyI6W3siaW5kZXgiOjAsImlkIjoib3JpZ2luYWwtY2FsbCIsImZ1bmN0aW9uIjp7Im5hbWUiOiJsb29rdXAiLCJhcmd1bWVudHMiOiJ7XCJ4XCI6In19XX0sImZpbmlzaF9yZWFzb24iOm51bGx9XX0KCmRhdGE6IHsiaWQiOiJ0b29sLWlkIiwiY2hvaWNlcyI6W3siaW5kZXgiOjAsImRlbHRhIjp7InRvb2xfY2FsbHMiOlt7ImluZGV4IjowLCJpZCI6ImNoYW5nZWQtY2FsbCIsImZ1bmN0aW9uIjp7Im5hbWUiOiJjaGFuZ2VkLW5hbWUiLCJhcmd1bWVudHMiOiIxfSJ9fV19LCJmaW5pc2hfcmVhc29uIjpudWxsfV19CgpkYXRhOiB7ImlkIjoidG9vbC1pZCIsInVzYWdlIjp7InByb21wdF90b2tlbnMiOjIsImNvbXBsZXRpb25fdG9rZW5zIjozLCJ0b3RhbF90b2tlbnMiOjV9LCJjaG9pY2VzIjpbeyJpbmRleCI6MCwiZGVsdGEiOnt9LCJmaW5pc2hfcmVhc29uIjoidG9vbF9jYWxscyJ9XX0KCmRhdGE6IFtET05FXQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "driver": "http-sse",
+      "normalizedEvents": [
+        {
+          "modelID": "fixture-chat",
+          "providerID": "fixture-openai-completions",
+          "responseID": null,
+          "type": "responseStarted"
+        },
+        {
+          "id": "original-call",
+          "name": "lookup",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"x\":",
+          "id": "original-call",
+          "type": "toolInputDelta"
+        },
+        {
+          "delta": "1}",
+          "id": "original-call",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "x": 1
+            },
+            "id": "original-call",
+            "name": "lookup"
+          },
+          "type": "toolCallCompleted"
+        },
+        {
+          "cachedInputTokens": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 2,
+            "output": 6,
+            "total": 8,
+            "totalFromProvider": false
+          },
+          "inputTokens": 2,
+          "outputTokens": 3,
+          "reasoningTokens": 0,
+          "type": "usage"
+        },
+        {
+          "reason": "toolCalls",
+          "type": "completed"
+        }
+      ],
+      "source": {
+        "entrypoint": "stream",
+        "module": "packages/ai/src/api/openai-completions.ts"
+      },
+      "terminalReplay": {
+        "content": [
+          {
+            "arguments": {
+              "x": 1
+            },
+            "id": "original-call",
+            "name": "lookup",
+            "type": "toolCall"
+          }
+        ],
+        "modelID": "fixture-chat",
+        "providerID": "fixture-openai-completions",
+        "rawStopReason": "tool_calls",
+        "responseID": "tool-id",
         "responseModel": null,
         "stopReason": "toolCalls",
         "usage": {

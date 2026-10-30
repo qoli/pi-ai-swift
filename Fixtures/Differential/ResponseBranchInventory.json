@@ -2007,6 +2007,85 @@
           ]
         }
       ]
+    },
+    {
+      "id": "completions.compatible-chunk-reduction",
+      "required": true,
+      "protocols": [
+        "openai-completions"
+      ],
+      "variants": [
+        "missing-id",
+        "late-id",
+        "null-chunks",
+        "stable-tool-identity",
+        "opencode-go-reasoning-signature",
+        "optional-tool-index"
+      ],
+      "sourceSymbols": [
+        "output.responseId",
+        "chunk",
+        "toolCall.id",
+        "foundReasoningField"
+      ],
+      "expected": "Optional or late response IDs and null chunks preserve valid output; indexed tools retain their first nonempty ID and name; OpenCode Go reasoning persists with the source replay signature.",
+      "status": "covered",
+      "cases": [
+        {
+          "caseID": "completions.missing-id",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "missing-id"
+          ]
+        },
+        {
+          "caseID": "completions.late-id",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "late-id"
+          ]
+        },
+        {
+          "caseID": "completions.null-chunks",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "null-chunks"
+          ]
+        },
+        {
+          "caseID": "completions.stable-tool-identity",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "stable-tool-identity"
+          ]
+        },
+        {
+          "caseID": "completions.opencode-go-reasoning-signature",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "opencode-go-reasoning-signature"
+          ]
+        },
+        {
+          "caseID": "completions.optional-tool-index",
+          "protocols": [
+            "openai-completions"
+          ],
+          "coversVariants": [
+            "optional-tool-index"
+          ]
+        }
+      ]
     }
   ]
 }
