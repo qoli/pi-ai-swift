@@ -76,7 +76,7 @@ function fixtureInput(model, context, options, responses, credential, requestSou
 }
 
 function hasNativeWireObserver(model) {
-  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses", "mistral-conversations"].includes(model.api);
+  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses", "mistral-conversations", "google-generative-ai", "google-vertex"].includes(model.api);
 }
 
 function capabilities(options, model) {
@@ -205,12 +205,7 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
       let body = request.body;
       const google = model.api === "google-generative-ai" || model.api === "google-vertex";
       const mistral = model.api === "mistral-conversations";
-      const payload = model.api === "bedrock-converse-stream" ? { modelId: bedrockModelID(request.url), ...bedrockSDKPayload(body) } : google ? {
-        model: model.id, contents: body.contents,
-        config: { ...body.generationConfig,
-          ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
-          ...(body.tools ? { tools: body.tools } : {}), ...(body.toolConfig ? { toolConfig: body.toolConfig } : {}) },
-      } : mistral ? mistralSDKPayload(body) : body;
+      const payload = model.api === "bedrock-converse-stream" ? { modelId: bedrockModelID(request.url), ...bedrockSDKPayload(body) } : google ? googleSDKPayload(body, model) : mistral ? mistralSDKPayload(body) : body;
       const replacement = hasNativeWireObserver(model) ? undefined : await options.onPayload?.(payload, model);
       if (replacement !== undefined) body = google ? googleWireBody(replacement) : mistral ? mistralWirePayload(replacement) : replacement;
       if (options.signal?.aborted) { cancel(); return; }
@@ -242,10 +237,11 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
           expect(observedContext.model.protocolID).toBe(model.api);
           if (stage === "payload") {
             const mistral = model.api === "mistral-conversations";
-            const payload = mistral ? mistralSDKPayload(value) : value;
+            const google = ["google-generative-ai", "google-vertex"].includes(model.api);
+            const payload = google ? googleSDKPayload(value, model) : mistral ? mistralSDKPayload(value) : value;
             const replacement = await options.onPayload(payload, model);
             const modified = replacement === undefined ? payload : replacement;
-            send({ kind: "observerReply", payload: mistral ? mistralWirePayload(modified) : modified, replaced: replacement !== undefined });
+            send({ kind: "observerReply", payload: google ? googleWireBody(modified) : mistral ? mistralWirePayload(modified) : modified, replaced: replacement !== undefined });
           } else if (stage === "response") {
             await options.onResponse(value, model);
             send({ kind: "observerReply" });
@@ -371,7 +367,9 @@ async function mockResponse(model, request, body, options, connection) {
         ...(tools ? { tools } : {}), ...(toolConfig ? { toolConfig } : {}) } });
     const chunks = (async function* () {
       for await (const event of data) {
-        await options.onProviderStreamEvent?.(event, model);
+        if (hasNativeWireObserver(model) && options.onProviderStreamEvent) {
+          connection.providerEvents.push({ reference: event, serialized: JSON.parse(JSON.stringify(event)) });
+        } else if (!hasNativeWireObserver(model)) await options.onProviderStreamEvent?.(event, model);
         yield Buffer.from(`data: ${JSON.stringify(event)}\n\n`).toString("base64");
       }
     })();
@@ -432,6 +430,13 @@ function bedrockModelID(url) {
   const match = new URL(url).pathname.match(/\/model\/([^/]+)\/converse-stream$/);
   if (!match) throw new Error("Swift Bedrock request did not encode a model route");
   return decodeURIComponent(match[1]);
+}
+
+function googleSDKPayload(body, model) {
+  return { model: model.id, contents: body.contents,
+    config: { ...body.generationConfig,
+      ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
+      ...(body.tools ? { tools: body.tools } : {}), ...(body.toolConfig ? { toolConfig: body.toolConfig } : {}) } };
 }
 
 function googleWireBody(payload) {

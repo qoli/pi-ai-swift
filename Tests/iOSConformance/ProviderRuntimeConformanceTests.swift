@@ -1925,6 +1925,62 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors() async throws {
+    let cases = try XCTUnwrap(
+      load("Differential/Oracle/response-provider-branches.json").object("cases")?.object(
+        "google-native-wire-observer"))
+    for (api, value) in cases {
+      let spec = try XCTUnwrap(value.objectValue)
+      let wire = try XCTUnwrap(spec.object("wire"))
+      let events = try XCTUnwrap(spec.object("decoderInput")?.array("events"))
+      let capture = IOSWireObserverCapture()
+      let provider = api == "google-vertex" ? "fixture-vertex" : "fixture-google"
+      let (request, base) = inputs(
+        api: api, providerID: provider, modelID: "gemini-3-flash-preview", reasoning: true)
+      var context = base
+      context.wireObserver = .init(
+        onPayload: { payload, context in
+          await Task.yield()
+          await capture.stage("payload", context)
+          var config = payload["generationConfig"]?.objectValue ?? [:]
+          config["temperature"] = .number(0.5)
+          payload["generationConfig"] = .object(config)
+          return nil
+        },
+        onResponse: { response, context in await capture.response(response, context) },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      let sse = try events.map {
+        "data: " + String(decoding: try JSONEncoder().encode($0), as: UTF8.self) + "\n\n"
+      }.joined()
+      let transport = IOSMistralHTTPFixture(status: 200, body: Data(sse.utf8))
+      let adapter = try XCTUnwrap(StandardWireProtocols.make().first { $0.protocolID == api })
+      var snapshot: ProviderResponseSnapshot?
+      for try await event in adapter.stream(request, context: context, transport: transport) {
+        if case .responseSnapshot(let value) = event { snapshot = value }
+      }
+      let observed = await capture.events
+      let models = await capture.models
+      let stages = await capture.stages
+      let responses = await capture.responses
+      let ids = await capture.requestIDs
+      XCTAssertEqual(observed, wire.array("events"), api)
+      XCTAssertEqual(models, wire.array("models"), api)
+      XCTAssertEqual(stages.map(JSONValue.string), wire.array("stages"), api)
+      XCTAssertEqual(responses, wire.array("responses"), api)
+      XCTAssertEqual(ids, Array(repeating: request.id, count: stages.count), api)
+      XCTAssertEqual(
+        content(try XCTUnwrap(snapshot)),
+        spec.object("sourceOutcome")?.object("terminalReplay")?.array("content"), api)
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody), providerID: provider, operation: "ios.google.observer")
+      XCTAssertEqual(body.object("generationConfig")?["temperature"], wire["temperature"], api)
+    }
+  }
+
   func testPreferredStrictFallbackDiagnosticsMatchPinnedSource() async throws {
     let fixture = try load("Differential/Cases/strict-fallback.json")
     let expectedCases = try XCTUnwrap(

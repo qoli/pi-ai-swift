@@ -6,6 +6,47 @@ import Testing
 @Suite
 struct ProviderResponseBranchClosureTests {
   @Test
+  func googleWireObserversMatchPinnedSourceAcrossFlavors() async throws {
+    let oracle = try providerResponseDecode(
+      ProviderResponseBranchOracle.self,
+      at: providerResponseRepositoryRoot().appending(
+        path: "Fixtures/Differential/Oracle/response-provider-branches.json"))
+    for api in ["google-generative-ai", "google-vertex"] {
+      let expected = try #require(oracle.cases["google-native-wire-observer"]?[api])
+      let wire = try #require(expected.wire?.objectValue)
+      let capture = GoogleObserverCapture()
+      var input = providerResponseInput(protocolID: api, caseID: "google-native-wire-observer")
+      input.context.wireObserver = .init(
+        onPayload: { payload, context in
+          await Task.yield()
+          await capture.stage("payload", context)
+          var config = payload["generationConfig"]?.objectValue ?? [:]
+          config["temperature"] = .number(0.5)
+          payload["generationConfig"] = .object(config)
+          return nil
+        },
+        onResponse: { _, context in await capture.stage("response", context) },
+        onProviderStreamEvent: { event, context in
+          await Task.yield()
+          await capture.event(event, context)
+        })
+      let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
+      for try await _ in adapter.stream(
+        input.request, context: input.context,
+        transport: ProviderResponseBranchTransport(
+          input: expected.decoderInput, observerCapture: capture))
+      {}
+      #expect(await capture.events == wire.array("events"), Comment(rawValue: api))
+      #expect(await capture.models == wire.array("models"), Comment(rawValue: api))
+      #expect(
+        await capture.stages.map(JSONValue.string) == wire.array("stages"), Comment(rawValue: api))
+      #expect(await capture.temperature == wire["temperature"], Comment(rawValue: api))
+      #expect(wire.array("responses") == [])
+      #expect(await capture.requestIDs.allSatisfy { $0 == input.request.id })
+    }
+  }
+
+  @Test
   func googleMistralAndOpenRouterResponsesMatchPinnedSource() async throws {
     let repository = providerResponseRepositoryRoot()
     let fixture = try providerResponseDecode(
@@ -103,8 +144,14 @@ struct ProviderResponseBranchClosureTests {
 
 private struct ProviderResponseBranchTransport: ProviderHTTPStreamingTransport {
   let input: ProviderResponseBranchDecoderInput
+  var observerCapture: GoogleObserverCapture? = nil
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    if let observerCapture {
+      let body = try decodeJSONObject(
+        try #require(request.httpBody), providerID: "google", operation: "test.observer")
+      await observerCapture.sent(body.object("generationConfig")?["temperature"])
+    }
     if input.kind == "decoded-sdk-error" {
       throw NSError(
         domain: "ProviderResponseBranchFixture",
@@ -388,6 +435,29 @@ private struct ProviderResponseBranchOutcome: Decodable {
   let decoderInput: ProviderResponseBranchDecoderInput
   let sourceOutcome: ProviderResponseBranchSourceOutcome
   let swiftExplicitFailure: Bool?
+  let wire: JSONValue?
+}
+
+private actor GoogleObserverCapture {
+  var events: [JSONValue] = []
+  var models: [JSONValue] = []
+  var stages: [String] = []
+  var requestIDs: [String] = []
+  var temperature: JSONValue?
+  func sent(_ value: JSONValue?) { temperature = value }
+  func stage(_ name: String, _ context: ProviderWireObserver.Context) {
+    stages.append(name)
+    requestIDs.append(context.requestID)
+  }
+  func event(_ event: JSONValue, _ context: ProviderWireObserver.Context) {
+    stage("event", context)
+    events.append(event)
+    models.append(
+      .object([
+        "id": .string(context.model.id), "provider": .string(context.model.providerID),
+        "api": .string(context.model.protocolID),
+      ]))
+  }
 }
 
 private struct ProviderResponseBranchSourceOutcome: Decodable {

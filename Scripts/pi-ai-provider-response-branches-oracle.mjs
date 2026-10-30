@@ -33,7 +33,8 @@ registerHooks({
         export const ThinkingLevel = Object.freeze({ MINIMAL: "MINIMAL", LOW: "LOW", MEDIUM: "MEDIUM", HIGH: "HIGH" });
         export class GoogleGenAI {
           models = {
-            generateContentStream: async function* () {
+            generateContentStream: async function* (params) {
+              globalThis.__PI_GOOGLE_RESPONSE_PARAMS__ = structuredClone(params);
               if (globalThis.__PI_GOOGLE_RESPONSE_ERROR__) throw new Error(globalThis.__PI_GOOGLE_RESPONSE_ERROR__);
               for (const event of globalThis.__PI_GOOGLE_RESPONSE_EVENTS__ ?? []) yield event;
             }
@@ -98,12 +99,31 @@ async function execute(protocolID, scenario) {
   } else {
     options.fetch = fakeFetch(scenario);
   }
+  const wire = { stages: [], events: [], models: [], responses: [] };
+  if (scenario.observeWire) Object.assign(options, {
+    onPayload: async payload => {
+      await Promise.resolve();
+      wire.stages.push("payload");
+      payload.config.temperature = 0.5;
+    },
+    onResponse: async response => {
+      wire.stages.push("response");
+      wire.responses.push(response);
+    },
+    onProviderStreamEvent: async (event, model) => {
+      await Promise.resolve();
+      wire.stages.push("event");
+      wire.events.push(structuredClone(event));
+      wire.models.push({ id: model.id, provider: model.provider, api: model.api });
+    },
+  });
   const projected = await projectAssistantStream(
     implementation.stream(model, baseContext(), options),
     protocolID,
   );
   globalThis.__PI_GOOGLE_RESPONSE_ERROR__ = undefined;
-  return { decoderInput: decoderInput(scenario), sourceOutcome: projected };
+  if (scenario.observeWire) wire.temperature = globalThis.__PI_GOOGLE_RESPONSE_PARAMS__.config.temperature;
+  return { decoderInput: decoderInput(scenario), sourceOutcome: projected, ...(scenario.observeWire ? { wire } : {}) };
 }
 
 async function projectAssistantStream(sourceStream, protocolID) {

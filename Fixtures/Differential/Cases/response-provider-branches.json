@@ -724,6 +724,43 @@
         }
       ],
       "driver": "http-sse"
+    },
+    {
+      "caseID": "google-native-wire-observer",
+      "protocolIDs": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "driver": "decoded-sdk-events",
+      "observeWire": true,
+      "events": [
+        {
+          "responseId": "resp_google",
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "hello"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "candidates": [
+            {
+              "finishReason": "STOP"
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 2,
+            "candidatesTokenCount": 1,
+            "totalTokenCount": 3
+          }
+        }
+      ]
     }
   ]
 }

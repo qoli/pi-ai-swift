@@ -474,6 +474,270 @@
         }
       }
     },
+    "google-native-wire-observer": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "hello"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "responseId": "resp_google"
+            },
+            {
+              "candidates": [
+                {
+                  "finishReason": "STOP"
+                }
+              ],
+              "usageMetadata": {
+                "candidatesTokenCount": 1,
+                "promptTokenCount": 2,
+                "totalTokenCount": 3
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-google",
+              "responseID": null,
+              "type": "responseStarted"
+            },
+            {
+              "delta": "hello",
+              "type": "textDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 2,
+              "outputTokens": 1,
+              "reasoningTokens": 0,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-google",
+            "rawStopReason": "STOP",
+            "responseID": "resp_google",
+            "responseModel": null,
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 2,
+              "output": 1,
+              "reasoning": 0,
+              "totalTokens": 3
+            }
+          }
+        },
+        "wire": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "hello"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "responseId": "resp_google"
+            },
+            {
+              "candidates": [
+                {
+                  "finishReason": "STOP"
+                }
+              ],
+              "usageMetadata": {
+                "candidatesTokenCount": 1,
+                "promptTokenCount": 2,
+                "totalTokenCount": 3
+              }
+            }
+          ],
+          "models": [
+            {
+              "api": "google-generative-ai",
+              "id": "gemini-3-flash-preview",
+              "provider": "fixture-google"
+            },
+            {
+              "api": "google-generative-ai",
+              "id": "gemini-3-flash-preview",
+              "provider": "fixture-google"
+            }
+          ],
+          "responses": [],
+          "stages": [
+            "payload",
+            "event",
+            "event"
+          ],
+          "temperature": 0.5
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "hello"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "responseId": "resp_google"
+            },
+            {
+              "candidates": [
+                {
+                  "finishReason": "STOP"
+                }
+              ],
+              "usageMetadata": {
+                "candidatesTokenCount": 1,
+                "promptTokenCount": 2,
+                "totalTokenCount": 3
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "events": [
+            {
+              "modelID": "gemini-3-flash-preview",
+              "providerID": "fixture-vertex",
+              "responseID": null,
+              "type": "responseStarted"
+            },
+            {
+              "delta": "hello",
+              "type": "textDelta"
+            },
+            {
+              "cachedInputTokens": 0,
+              "inputTokens": 2,
+              "outputTokens": 1,
+              "reasoningTokens": 0,
+              "type": "usage"
+            },
+            {
+              "reason": "stop",
+              "type": "completed"
+            }
+          ],
+          "kind": "success",
+          "terminalReplay": {
+            "content": [
+              {
+                "text": "hello",
+                "type": "text"
+              }
+            ],
+            "modelID": "gemini-3-flash-preview",
+            "providerID": "fixture-vertex",
+            "rawStopReason": "STOP",
+            "responseID": "resp_google",
+            "responseModel": null,
+            "stopReason": "stop",
+            "usage": {
+              "cacheRead": 0,
+              "cacheWrite": 0,
+              "input": 2,
+              "output": 1,
+              "reasoning": 0,
+              "totalTokens": 3
+            }
+          }
+        },
+        "wire": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": [
+                      {
+                        "text": "hello"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "responseId": "resp_google"
+            },
+            {
+              "candidates": [
+                {
+                  "finishReason": "STOP"
+                }
+              ],
+              "usageMetadata": {
+                "candidatesTokenCount": 1,
+                "promptTokenCount": 2,
+                "totalTokenCount": 3
+              }
+            }
+          ],
+          "models": [
+            {
+              "api": "google-vertex",
+              "id": "gemini-3-flash-preview",
+              "provider": "fixture-vertex"
+            },
+            {
+              "api": "google-vertex",
+              "id": "gemini-3-flash-preview",
+              "provider": "fixture-vertex"
+            }
+          ],
+          "responses": [],
+          "stages": [
+            "payload",
+            "event",
+            "event"
+          ],
+          "temperature": 0.5
+        }
+      }
+    },
     "google-safety-stop": {
       "google-generative-ai": {
         "decoderInput": {

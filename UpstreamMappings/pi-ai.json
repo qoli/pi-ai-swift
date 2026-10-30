@@ -131,7 +131,9 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors",
         "Tests/PiAIProviderRuntimeTests/MistralHTTPTests.swift#nativeWireObserversMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralNativeWireObserverMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleWireObserversMatchPinnedSourceAcrossFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors"
       ],
       "requiredGates": [
         "swift-test"
@@ -2372,7 +2374,9 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleWireObserversMatchPinnedSourceAcrossFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors"
       ],
       "requiredGates": [
         "swift-test"
@@ -2429,7 +2433,9 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleWireObserversMatchPinnedSourceAcrossFlavors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors"
       ],
       "requiredGates": [
         "swift-test"

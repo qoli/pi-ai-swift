@@ -68,8 +68,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
+          let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await transport.stream(
-            try makeURLRequest(request, context: context)
+            try await observation.payload(makeURLRequest(request, context: context))
           )
           guard (200..<300).contains(response.statusCode) else {
             let body = try await collectErrorBody(from: response.body)
@@ -105,14 +106,14 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
           for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
-              for normalized in try reducer.reduce(event) {
+              for normalized in try await reducer.reduce(event, observation: observation) {
                 continuation.yield(normalized)
               }
             }
           }
           try Task.checkCancellation()
           for event in try decoder.finish() {
-            for normalized in try reducer.reduce(event) {
+            for normalized in try await reducer.reduce(event, observation: observation) {
               continuation.yield(normalized)
             }
           }
@@ -830,13 +831,16 @@ private struct GoogleEventReducer {
     self.pricing = pricing
   }
 
-  mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
+  mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
+    -> [ProviderEvent]
+  {
     guard event.data != "[DONE]" else { return [] }
     let object = try decodeJSONObject(
       Data(event.data.utf8),
       providerID: providerID,
       operation: "google.event.decode"
     )
+    try await observation.streamEvent(.object(object))
     if let error = object.object("error") {
       throw ProviderRuntimeFailure(
         code: .transportFailed,
