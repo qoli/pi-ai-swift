@@ -2550,6 +2550,22 @@
         ]
       }
     },
+    "completions-empty-tools.assistant-call": {
+      "requestBody": {
+        "tools": []
+      }
+    },
+    "completions-empty-tools.assistant-text": {
+      "requestBody": {}
+    },
+    "completions-empty-tools.none": {
+      "requestBody": {}
+    },
+    "completions-empty-tools.tool-result": {
+      "requestBody": {
+        "tools": []
+      }
+    },
     "google-generative-ai.thinking-disabled-budget": {
       "requestBody": {
         "thinkingConfig": {

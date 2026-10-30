@@ -56,12 +56,17 @@ process.stdout.write(JSON.stringify({ schemaVersion: 1, upstreamRevision: revisi
 
 function context(spec) {
   const messages = [{ role: "user", content: "hello", timestamp: 0 }];
-  if (spec.history) messages.push({
+  if (spec.history) {
+    messages.push({
     role: "assistant", api: spec.model.api, provider: spec.model.provider, model: spec.model.id,
     ...(spec.assistantSource ?? {}),
     providerThinkingLevel: "low", content: spec.assistantContent ?? [{ type: "text", text: "answer" }],
     usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { ...spec.model.cost, total: 0 } },
     stopReason: "stop", timestamp: 1,
-  }, { role: "user", content: "again", timestamp: 2 });
+    });
+    if (spec.toolResultText !== undefined) messages.push({ role: "toolResult", toolCallId: "call_1", toolName: "read",
+      content: [{ type: "text", text: spec.toolResultText }], isError: false, timestamp: 2 });
+    messages.push({ role: "user", content: "again", timestamp: 3 });
+  }
   return { messages, ...(spec.tools ? { tools: spec.tools } : {}) };
 }

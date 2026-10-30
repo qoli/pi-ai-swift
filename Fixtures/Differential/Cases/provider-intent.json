@@ -7623,6 +7623,124 @@
         "inferenceConfig",
         "additionalModelRequestFields"
       ]
+    },
+    {
+      "id": "completions-empty-tools.none",
+      "model": {
+        "id": "fixture-chat",
+        "name": "Fixture Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": false,
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "completions-empty-tools.assistant-text",
+      "model": {
+        "id": "fixture-chat",
+        "name": "Fixture Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": true,
+      "projectFields": [
+        "tools"
+      ]
+    },
+    {
+      "id": "completions-empty-tools.assistant-call",
+      "model": {
+        "id": "fixture-chat",
+        "name": "Fixture Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": true,
+      "projectFields": [
+        "tools"
+      ],
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ]
+    },
+    {
+      "id": "completions-empty-tools.tool-result",
+      "model": {
+        "id": "fixture-chat",
+        "name": "Fixture Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "options": {},
+      "history": true,
+      "projectFields": [
+        "tools"
+      ],
+      "assistantContent": [],
+      "toolResultText": "done"
     }
   ]
 }

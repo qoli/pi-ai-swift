@@ -332,6 +332,23 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         }
       )
       if compat.bool("zaiToolStream") == true { body["tool_stream"] = .bool(true) }
+    } else if request.messages.contains(where: { message in
+      switch message {
+      case .toolResult: return true
+      case .assistant(let content):
+        return content.contains {
+          if case .toolCall = $0 { return true }
+          return false
+        }
+      case .assistantMessage(let assistant):
+        return assistant.content.contains {
+          if case .toolCall = $0 { return true }
+          return false
+        }
+      default: return false
+      }
+    }) {
+      body["tools"] = .array([])
     }
     try applyAnthropicCacheControl(
       body: &body, compat: compat, retention: request.options.cacheRetention,

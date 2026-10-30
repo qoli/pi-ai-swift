@@ -85,6 +85,13 @@ struct ProviderIntentDifferentialTests {
                 cachedInputTokens: 0, providerMetadata: [:]),
               stopReason: .stop, timestampMilliseconds: 1,
               providerMetadata: ["providerThinkingLevel": .string("low")])))
+        if let text = spec.toolResultText {
+          messages.append(
+            .toolResult(
+              .init(
+                toolCallID: "call_1", toolName: "read", content: [.text(text)], isError: false,
+                timestampMilliseconds: 2)))
+        }
         messages.append(.user([.text("again")]))
       }
       let effort =
@@ -199,6 +206,7 @@ struct ProviderIntentDifferentialTests {
     let projectFields: [String]?
     let rawOptions: Bool?
     let rawOptionKeys: [String]?
+    let toolResultText: String?
   }
   private struct Oracle: Decodable {
     let upstreamRevision: String

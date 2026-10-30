@@ -883,6 +883,64 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testCompletionsEmptyToolsMatchPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/provider-intent.json")
+    let oracle = try load("Differential/Oracle/provider-intent.json")
+    let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
+      .filter { $0.string("id")?.hasPrefix("completions-empty-tools.") == true }
+    XCTAssertEqual(cases.count, 4)
+    for spec in cases {
+      let name = try XCTUnwrap(spec.string("id"))
+      let modelID = "fixture-chat"
+      let (_, context) = inputs(
+        api: "openai-completions", providerID: "fixture", modelID: modelID, reasoning: false)
+      var messages: [ProviderMessage] = [.user([.text("hello")])]
+      if spec.bool("history") == true {
+        let blocks: [ProviderAssistantContent] =
+          spec.array("assistantContent")?.compactMap { value in
+            guard let block = value.objectValue, block.string("type") == "toolCall" else {
+              return nil
+            }
+            return .toolCall(.init(id: "call_1", name: "read", arguments: .object([:])))
+          } ?? [.text("answer")]
+        messages.append(
+          .assistantMessage(
+            .init(
+              content: blocks,
+              source: .init(api: "openai-completions", providerID: "fixture", modelID: modelID),
+              usage: .init(
+                inputTokens: 0, outputTokens: 0, reasoningTokens: nil, cachedInputTokens: 0,
+                providerMetadata: [:]),
+              stopReason: .stop, timestampMilliseconds: 1)))
+        if let text = spec.string("toolResultText") {
+          messages.append(
+            .toolResult(
+              .init(
+                toolCallID: "call_1", toolName: "read", content: [.text(text)], isError: false,
+                timestampMilliseconds: 2)))
+        }
+        messages.append(.user([.text("again")]))
+      }
+      let request = ProviderRequest(
+        id: name, providerID: "fixture", modelID: modelID, messages: messages, tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: [:], cacheRetention: .none))
+      let transport = IOSMistralHTTPFixture(status: 400, body: Data())
+      do {
+        for try await _ in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: transport)
+        {}
+      } catch is ProviderRuntimeFailure {}
+      let sent = await transport.sent
+      let body = try decodeJSONObject(
+        try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+        operation: "ios.completions.tools.body")
+      XCTAssertEqual(
+        body["tools"], oracle.object("cases")?.object(name)?.object("requestBody")?["tools"], name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(
