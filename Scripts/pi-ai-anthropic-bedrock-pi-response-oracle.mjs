@@ -157,6 +157,15 @@ function canonicalTerminal(message) {
 
 function stimulus(caseID) {
   switch (caseID) {
+    case "anthropic-raw-error": return sse(["event: error\ndata: fixture raw failure"]);
+    case "anthropic-repaired-sse-tool": return sse([
+      anth("message_start", {type: "message_start", message: {id: "anth-repaired", model: "fixture-model", usage: {input_tokens: 1, output_tokens: 0}}}),
+      anth("content_block_start", {type: "content_block_start", index: 0, content_block: {type: "tool_use", id: "toolu_test", name: "edit", input: {}}}),
+      "event: content_block_delta\ndata: " + String.raw`{"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"path\":\"A\H\",\"text\":\"col1	col2\"}"}}`,
+      anth("content_block_stop", {type: "content_block_stop", index: 0}),
+      anth("message_delta", {type: "message_delta", delta: {stop_reason: "tool_use"}, usage: {output_tokens: 1}}),
+      anth("message_stop", {type: "message_stop"}),
+    ]);
     case "anthropic-ignored-sse-envelopes": return sse([
       "event: proxy.stats\ndata: not json",
       "event: ping\ndata: not json",

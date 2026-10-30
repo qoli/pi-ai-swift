@@ -2189,7 +2189,12 @@
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#successResponseBranchesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly",
+        "Scripts/pi-ai-anthropic-bedrock-pi-response-oracle.mjs",
+        "Fixtures/Differential/Cases/response-anthropic-bedrock-pi.json",
+        "Fixtures/Differential/Oracle/response-anthropic-bedrock-pi.json"
       ],
       "requiredGates": [
         "swift-test"

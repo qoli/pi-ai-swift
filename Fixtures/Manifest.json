@@ -64,7 +64,7 @@
       ],
       "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "92f3dc685e0327f054abc277b718bfc6530f1401098d594c3edee02cc4d2a82a"
+      "swiftEvidenceSHA256": "1453b7bb0eb21111f2f0841ddb5cf7f16892dbbd4aba89361917212b2dd84ae1"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -152,7 +152,7 @@
       ],
       "upstreamSourceSHA256": "fcd722758fa9205f6f2633c0445fa6ef36e82c3c5eca2ea959c8af6b2dd6d9f7",
       "upstreamTestSHA256": "616f7bbfd6f524666540459ccfe6bd608fd9adb8e30828afeeaa111fa07d1669",
-      "swiftEvidenceSHA256": "0ad82d5437cdc8b770be6473f1b40b9701f6420da40db758b0af5475186f6b9c"
+      "swiftEvidenceSHA256": "f69d365833cfd0188b66d2a6ca56a89a44451942e0be8fb67c41fccf903c7922"
     },
     {
       "protocolID": "google-generative-ai",

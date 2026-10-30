@@ -36,6 +36,9 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
           scenario.category == "providerError" ? .transportFailed : .invalidResponse
         #expect(error.code == expectedCode, "typed failure drift for \(scenario.caseID)")
         #expect(error.operation?.contains("event") == true)
+        if ["anthropic-raw-error", "anthropic-error-event"].contains(scenario.caseID) {
+          #expect(error.message == expected.terminal.objectValue?.string("errorMessage"))
+        }
       }
     }
   }

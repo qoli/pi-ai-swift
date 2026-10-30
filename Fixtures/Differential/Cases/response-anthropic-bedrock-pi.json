@@ -4,6 +4,16 @@
   "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "scenarios": [
     {
+      "caseID": "anthropic-raw-error",
+      "protocolID": "anthropic-messages",
+      "category": "providerError"
+    },
+    {
+      "caseID": "anthropic-repaired-sse-tool",
+      "protocolID": "anthropic-messages",
+      "category": "success"
+    },
+    {
       "caseID": "anthropic-ignored-sse-envelopes",
       "protocolID": "anthropic-messages",
       "category": "success"

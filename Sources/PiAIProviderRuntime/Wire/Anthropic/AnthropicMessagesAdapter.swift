@@ -757,14 +757,19 @@ private struct AnthropicEventReducer {
   }
 
   mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
+    if event.event == "error" {
+      throw ProviderRuntimeFailure(
+        code: .transportFailed, message: event.data, providerID: providerID,
+        operation: "anthropic.event.error", causeDescription: nil)
+    }
     guard let name = event.event,
       [
         "message_start", "message_delta", "message_stop",
-        "content_block_start", "content_block_delta", "content_block_stop", "error",
+        "content_block_start", "content_block_delta", "content_block_stop",
       ].contains(name)
     else { return [] }
     let object = try decodeJSONObject(
-      Data(event.data.utf8),
+      Data(repairJSONStringLiterals(event.data).utf8),
       providerID: providerID,
       operation: "anthropic.event.decode"
     )
@@ -964,15 +969,6 @@ private struct AnthropicEventReducer {
       }
       terminal = true
       return [responseSnapshot(finishReason), .completed(finishReason)]
-    case "error":
-      let error = object.object("error")
-      throw ProviderRuntimeFailure(
-        code: .transportFailed,
-        message: error?.string("message") ?? "Anthropic stream returned an error",
-        providerID: providerID,
-        operation: "anthropic.event.error",
-        causeDescription: error?.string("type")
-      )
     default:
       return []
     }

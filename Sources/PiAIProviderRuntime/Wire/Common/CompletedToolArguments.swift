@@ -21,7 +21,7 @@ extension ProviderToolCall {
     do {
       let value: JSONValue
       do { value = try decode(input) } catch {
-        let repaired = repairToolArgumentString(input)
+        let repaired = repairJSONStringLiterals(input)
         guard repaired != input else { throw error }
         value = try decode(repaired)
       }
@@ -40,7 +40,7 @@ extension ProviderToolCall {
 
 /// The pinned repairJson only escapes controls and invalid escapes inside JSON
 /// strings. It never closes incomplete JSON or accepts a parsed prefix.
-private func repairToolArgumentString(_ input: String) -> String {
+func repairJSONStringLiterals(_ input: String) -> String {
   let bytes = Array(input.utf8)
   var result: [UInt8] = []
   var inString = false

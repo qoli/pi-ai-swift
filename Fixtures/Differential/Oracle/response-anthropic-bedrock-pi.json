@@ -152,6 +152,40 @@
         }
       }
     },
+    "anthropic-raw-error": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IGVycm9yCmRhdGE6IGZpeHR1cmUgcmF3IGZhaWx1cmUKCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "errorMessage": "fixture raw failure",
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
     "anthropic-redacted-pause-usage": {
       "decoderInput": {
         "chunksBase64": [
@@ -233,6 +267,73 @@
           "output": 0,
           "reasoning": null,
           "totalTokens": 1
+        }
+      }
+    },
+    "anthropic-repaired-sse-tool": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRoLXJlcGFpcmVkIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfX19CgpldmVudDogY29udGVudF9ibG9ja19zdGFydApkYXRhOiB7InR5cGUiOiJjb250ZW50X2Jsb2NrX3N0YXJ0IiwiaW5kZXgiOjAsImNvbnRlbnRfYmxvY2siOnsidHlwZSI6InRvb2xfdXNlIiwiaWQiOiJ0b29sdV90ZXN0IiwibmFtZSI6ImVkaXQiLCJpbnB1dCI6e319fQoKZXZlbnQ6IGNvbnRlbnRfYmxvY2tfZGVsdGEKZGF0YTogeyJ0eXBlIjoiY29udGVudF9ibG9ja19kZWx0YSIsImluZGV4IjowLCJkZWx0YSI6eyJ0eXBlIjoiaW5wdXRfanNvbl9kZWx0YSIsInBhcnRpYWxfanNvbiI6IntcInBhdGhcIjpcIkFcSFwiLFwidGV4dFwiOlwiY29sMQljb2wyXCJ9In19CgpldmVudDogY29udGVudF9ibG9ja19zdG9wCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RvcCIsImluZGV4IjowfQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9kZWx0YSIsImRlbHRhIjp7InN0b3BfcmVhc29uIjoidG9vbF91c2UifSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6MX19CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "id": "toolu_test",
+          "name": "edit",
+          "type": "toolCallStarted"
+        },
+        {
+          "delta": "{\"path\":\"A\\H\",\"text\":\"col1\tcol2\"}",
+          "id": "toolu_test",
+          "type": "toolInputDelta"
+        },
+        {
+          "toolCall": {
+            "arguments": {
+              "path": "A\\H",
+              "text": "col1\tcol2"
+            },
+            "id": "toolu_test",
+            "name": "edit",
+            "type": "toolCall"
+          },
+          "type": "toolCallCompleted"
+        }
+      ],
+      "outcome": "success",
+      "terminal": {
+        "content": [
+          {
+            "arguments": {
+              "path": "A\\H",
+              "text": "col1\tcol2"
+            },
+            "id": "toolu_test",
+            "name": "edit",
+            "type": "toolCall"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "tool_use",
+        "responseID": "anth-repaired",
+        "responseModel": null,
+        "stopReason": "toolUse",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 2
         }
       }
     },
