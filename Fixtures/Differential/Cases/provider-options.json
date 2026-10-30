@@ -14,6 +14,8 @@
     "openrouter-responses-override",
     "openrouter-anthropic-override",
     "fireworks-anthropic-override",
-    "opencode-session-override"
+    "opencode-session-override",
+    "completions-authorization-override",
+    "completions-empty-authorization"
   ]
 }

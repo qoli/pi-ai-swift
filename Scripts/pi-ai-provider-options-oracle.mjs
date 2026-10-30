@@ -54,9 +54,20 @@ for (const [id, api, provider, baseUrl, compat] of [
 }
 cases["opencode-session-override"] = await captureOpenCodeWrapper({ "X-OpenCode-Session": "caller-opencode" });
 
+for (const [id, value] of [
+  ["completions-authorization-override", "Bearer caller-fixture"],
+  ["completions-empty-authorization", ""],
+]) {
+  cases[id] = await captureHeaders("openai-completions", model({
+    api: "openai-completions", provider: "fixture", baseUrl: "https://fixture.invalid/v1",
+  }), { Authorization: value }, ["authorization"]);
+}
+
 process.stdout.write(`${JSON.stringify({ schemaVersion: 1, upstreamRevision: revision, cases }, null, 2)}\n`);
 
-async function captureHeaders(protocolID, sourceModel, headers) {
+async function captureHeaders(protocolID, sourceModel, headers, names = [
+  "session_id", "x-client-request-id", "x-session-affinity", "x-session-id",
+]) {
   const implementation = await load(protocolID);
   let captured = {};
   const options = baseOptions();
@@ -64,9 +75,7 @@ async function captureHeaders(protocolID, sourceModel, headers) {
   options.fetch = async (input, init) => {
     const request = input instanceof Request ? input : new Request(input, init);
     const headers = Object.fromEntries(request.headers.entries());
-    captured = selected(headers, [
-      "session_id", "x-client-request-id", "x-session-affinity", "x-session-id",
-    ]);
+    captured = selected(headers, names);
     throw new CaptureComplete();
   };
   await implementation.stream(sourceModel, context(), options).result();

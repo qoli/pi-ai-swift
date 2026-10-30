@@ -63,7 +63,7 @@
       ],
       "upstreamSourceSHA256": "94d26b7b82800556686337a76cb97b4704922be4e95a7f159336475c29283afc",
       "upstreamTestSHA256": "c07f0f917b56ec0ee21fd56fff64179b2a9611de947affdf4c90ae20b5768e74",
-      "swiftEvidenceSHA256": "fa63089ab3cf79d2fa5f87a0e9c986e25d6cb3d227837872dadcdb03019269e3"
+      "swiftEvidenceSHA256": "e0e4233397461e5005dd267e3aa47fd14f82ab78dcdf3d83a9cec990a4934bb2"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -188,7 +188,7 @@
       ],
       "upstreamSourceSHA256": "20f47dd4749034075eb61695802c2a9587eaa5307442802243b6834d893b3ff0",
       "upstreamTestSHA256": "b0a8ebc1a5df74883b897c12537b2969e75a3da524556e06152036217824adde",
-      "swiftEvidenceSHA256": "f8150b78dc1f98d5bc3a2d838a4744641bdbbbef951d716ead04a8876d8b1038"
+      "swiftEvidenceSHA256": "40e367e6e05b482c699d742b9c03c51340b7eee36656451075c656ce2c087f44"
     },
     {
       "protocolID": "google-vertex",
@@ -347,11 +347,12 @@
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
         "Fixtures/Differential/Oracle/provider-options.json",
-        "Fixtures/Differential/ResponseBranchInventory.json"
+        "Fixtures/Differential/ResponseBranchInventory.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitCompletionsAuthorizationOverridesCredentialDefaults"
       ],
       "upstreamSourceSHA256": "61848e12368b6ff94fa62d2fec12b032bb3807d22ed20dc02147ef0800608d97",
       "upstreamTestSHA256": "a083a74356f1ec821bd10b6d68fb97a1d4842de5f555da815e00c430348a4e8f",
-      "swiftEvidenceSHA256": "5d7b55fcc417b8b1c64491599c1bdc6d45b2f3653888277fb964edc2d6dd9448"
+      "swiftEvidenceSHA256": "51dbbc3bf018bafb3e5a52d68ba252ba4dbf36041c356bc9ba85c2c0d2c26a6b"
     },
     {
       "protocolID": "openai-responses",
@@ -400,7 +401,7 @@
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "0c240488b4f29278fcadb13b0d6fbadc6a4de278719f780adc453a44c75b38d6"
+      "swiftEvidenceSHA256": "8aba864416653ed0a9bb73126137c8ff812a8175c460872c6b425fe1278226e7"
     },
     {
       "protocolID": "openrouter-images",

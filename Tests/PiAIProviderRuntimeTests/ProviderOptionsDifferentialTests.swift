@@ -6,6 +6,34 @@ import Testing
 @Suite
 struct ProviderOptionsDifferentialTests {
   @Test
+  func explicitCompletionsAuthorizationOverridesCredentialDefaults() async throws {
+    let oracle = try decodeOracle()
+    let cases = [
+      ("completions-authorization-override", "Bearer caller-fixture"),
+      ("completions-empty-authorization", ""),
+    ]
+    let credentials: [ProviderCredential] = [
+      .apiKey(.init(key: "fixture-key", metadata: [:])),
+      .oauth(
+        .init(
+          accessToken: "fixture-oauth", refreshToken: "", expiresAt: .distantFuture,
+          metadata: [:])),
+    ]
+    for credential in credentials {
+      for (id, value) in cases {
+        for name in ["Authorization", "authorization", "AUTHORIZATION"] {
+          let captured = try await capture(
+            protocolID: "openai-completions", providerID: "fixture",
+            baseURL: "https://fixture.invalid/v1", headers: [name: value], credential: credential)
+          #expect(
+            captured.value(forHTTPHeaderField: "Authorization")
+              == oracle.cases[id]?.headers?["authorization"])
+        }
+      }
+    }
+  }
+
+  @Test
   func explicitSessionHeaderOverridesMatchPinnedSource() async throws {
     let oracle = try decodeOracle()
     let headers = [
@@ -119,7 +147,8 @@ struct ProviderOptionsDifferentialTests {
     providerID: String,
     baseURL: String,
     compat: [String: JSONValue] = [:],
-    headers: [String: String] = [:]
+    headers: [String: String] = [:],
+    credential: ProviderCredential = .apiKey(.init(key: "fixture-key", metadata: [:]))
   ) async throws -> URLRequest {
     let model = ProviderModel(
       id: "fixture-model", providerID: providerID, name: "Fixture", protocolID: protocolID,
@@ -133,7 +162,7 @@ struct ProviderOptionsDifferentialTests {
       model: model,
       baseURL: URL(string: baseURL)!,
       headers: headers,
-      credential: .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:])),
+      credential: credential,
       modelConfiguration: ProviderModelConfiguration(
         protocolID: protocolID, baseURL: nil, headers: [:],
         metadata: compat.isEmpty ? [:] : ["compat": .object(compat)]))

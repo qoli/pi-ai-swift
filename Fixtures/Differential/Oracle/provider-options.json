@@ -15,6 +15,14 @@
         "x-session-affinity": "fixture-session"
       }
     },
+    "completions-authorization-override": {
+      "headers": {
+        "authorization": "Bearer caller-fixture"
+      }
+    },
+    "completions-empty-authorization": {
+      "headers": {}
+    },
     "fireworks-anthropic-override": {
       "headers": {
         "session_id": "caller-session",

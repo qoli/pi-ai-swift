@@ -222,9 +222,13 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     )
     switch context.credential {
     case .apiKey(let credential):
-      urlRequest.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")
+      if urlRequest.value(forHTTPHeaderField: "Authorization") == nil {
+        urlRequest.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")
+      }
     case .oauth(let credential):
-      urlRequest.setValue("Bearer \(credential.accessToken)", forHTTPHeaderField: "Authorization")
+      if urlRequest.value(forHTTPHeaderField: "Authorization") == nil {
+        urlRequest.setValue("Bearer \(credential.accessToken)", forHTTPHeaderField: "Authorization")
+      }
     case nil:
       throw failure(
         .missingCredential,
@@ -232,6 +236,9 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         operation: "openai-completions.request.auth",
         message: "OpenAI Completions credential is missing"
       )
+    }
+    if urlRequest.value(forHTTPHeaderField: "Authorization")?.isEmpty == true {
+      urlRequest.setValue(nil, forHTTPHeaderField: "Authorization")
     }
     var body = try makeBody(request, context: context)
     if let azure { body["model"] = .string(azure.deploymentName) }

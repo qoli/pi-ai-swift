@@ -2426,7 +2426,8 @@
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
         "Fixtures/Differential/Oracle/provider-options.json",
-        "Fixtures/Differential/ResponseBranchInventory.json"
+        "Fixtures/Differential/ResponseBranchInventory.json",
+        "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitCompletionsAuthorizationOverridesCredentialDefaults"
       ],
       "requiredGates": [
         "swift-test"
