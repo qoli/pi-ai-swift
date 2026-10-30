@@ -142,6 +142,7 @@ function canonicalTerminal(message) {
     rawStopReason: message.rawStopReason ?? null,
     errorMessage: message.errorMessage ?? null,
     content: message.content ?? [],
+    ...(message.diagnostics ? { diagnostics: message.diagnostics.map(({ timestamp, ...data }) => data) } : {}),
     usage: message.usage ? {
       input: message.usage.input ?? null,
       output: message.usage.output ?? null,
@@ -157,6 +158,24 @@ function canonicalTerminal(message) {
 
 function stimulus(caseID) {
   switch (caseID) {
+    case "anthropic-transformations-start":
+    case "anthropic-transformations-delta":
+    case "anthropic-transformations-cleared":
+    case "anthropic-transformations-nonarray":
+    case "anthropic-transformations-null":
+    case "anthropic-transformations-after-stop": {
+      const first = [{ type: "thinking_dropped", path: "messages.1.content.0", reason: "prefix_binding_mismatch", ignored: "source omits this" }];
+      const last = [{ type: "thinking_dropped", path: "messages.3.content.0", reason: "model_binding_mismatch" }];
+      const ending = caseID.endsWith("delta") ? last : caseID.endsWith("cleared") ? []
+        : caseID.endsWith("nonarray") ? { invalid: true } : caseID.endsWith("null") ? null : undefined;
+      const events = [
+        anth("message_start", { type: "message_start", message: { id: caseID, model: "fixture-model", usage: { input_tokens: 1, output_tokens: 0 }, input_transformations: first } }),
+        anth("message_delta", { type: "message_delta", delta: { stop_reason: "end_turn" }, usage: { output_tokens: 2 }, ...(ending !== undefined ? { input_transformations: ending } : {}) }),
+        anth("message_stop", { type: "message_stop" }),
+      ];
+      if (caseID.endsWith("after-stop")) events.push(anth("message_delta", { type: "message_delta", delta: {}, input_transformations: last }));
+      return sse(events);
+    }
     case "anthropic-raw-error": return sse(["event: error\ndata: fixture raw failure"]);
     case "anthropic-repaired-sse-tool": return sse([
       anth("message_start", {type: "message_start", message: {id: "anth-repaired", model: "fixture-model", usage: {input_tokens: 1, output_tokens: 0}}}),

@@ -180,6 +180,36 @@
       "caseID": "anthropic-unknown-stop",
       "protocolID": "anthropic-messages",
       "category": "providerError"
+    },
+    {
+      "caseID": "anthropic-transformations-start",
+      "protocolID": "anthropic-messages",
+      "category": "success"
+    },
+    {
+      "caseID": "anthropic-transformations-delta",
+      "protocolID": "anthropic-messages",
+      "category": "success"
+    },
+    {
+      "caseID": "anthropic-transformations-cleared",
+      "protocolID": "anthropic-messages",
+      "category": "success"
+    },
+    {
+      "caseID": "anthropic-transformations-nonarray",
+      "protocolID": "anthropic-messages",
+      "category": "success"
+    },
+    {
+      "caseID": "anthropic-transformations-null",
+      "protocolID": "anthropic-messages",
+      "category": "success"
+    },
+    {
+      "caseID": "anthropic-transformations-after-stop",
+      "protocolID": "anthropic-messages",
+      "category": "success"
     }
   ]
 }

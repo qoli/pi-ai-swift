@@ -693,6 +693,35 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAnthropicInputTransformationsMatchPinnedSource() async throws {
+    let oracle = try load("Differential/Oracle/response-anthropic-bedrock-pi.json")
+    for suffix in ["start", "delta", "cleared", "nonarray", "null", "after-stop"] {
+      let name = "anthropic-transformations-" + suffix
+      let source = try XCTUnwrap(oracle.object("scenarios")?.object(name))
+      let decoder = try XCTUnwrap(source.object("decoderInput"))
+      let chunks = try XCTUnwrap(decoder.array("chunksBase64")).map {
+        try XCTUnwrap(Data(base64Encoded: try XCTUnwrap($0.stringValue)))
+      }
+      let (request, context) = inputs(
+        api: "anthropic-messages", providerID: "anthropic", modelID: "fixture-model")
+      let before = Int64(Date().timeIntervalSince1970 * 1_000)
+      let result = try await replay(
+        AnthropicMessagesAdapter(), request: request, context: context, chunks: chunks)
+      let after = Int64(Date().timeIntervalSince1970 * 1_000)
+      XCTAssertNil(result.failure, name)
+      let snapshot = try XCTUnwrap(result.snapshot, name)
+      let diagnostics = try snapshot.providerMetadata.array("diagnostics")?.map {
+        value -> JSONValue in
+        var diagnostic = try XCTUnwrap(value.objectValue)
+        let timestamp = try XCTUnwrap(diagnostic.int("timestamp"))
+        XCTAssertTrue(Int64(timestamp) >= before && Int64(timestamp) <= after, name)
+        diagnostic.removeValue(forKey: "timestamp")
+        return .object(diagnostic)
+      }
+      XCTAssertEqual(diagnostics, source.object("terminal")?.array("diagnostics"), name)
+    }
+  }
+
   private func load(_ path: String) throws -> [String: JSONValue] {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     return try decodeJSONObject(

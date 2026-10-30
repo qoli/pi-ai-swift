@@ -200,7 +200,7 @@ private func canonicalBranchSnapshot(_ snapshot: ProviderResponseSnapshot) throw
   } else {
     usage = .null
   }
-  return .object([
+  var value: [String: JSONValue] = [
     "responseID": snapshot.responseID.map(JSONValue.string) ?? .null,
     "responseModel": snapshot.responseModelID.map(JSONValue.string) ?? .null,
     "providerID": .string(snapshot.providerID),
@@ -210,7 +210,17 @@ private func canonicalBranchSnapshot(_ snapshot: ProviderResponseSnapshot) throw
     "errorMessage": .null,
     "content": .array(snapshot.content.map(canonicalBranchContent)),
     "usage": usage,
-  ])
+  ]
+  if let diagnostics = snapshot.providerMetadata.array("diagnostics") {
+    value["diagnostics"] = .array(
+      try diagnostics.map { value in
+        var object = try #require(value.objectValue)
+        #expect(object.int("timestamp") != nil)
+        object.removeValue(forKey: "timestamp")
+        return .object(object)
+      })
+  }
+  return .object(value)
 }
 
 private func sourceStopReason(_ reason: ProviderFinishReason) -> String {

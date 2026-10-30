@@ -41,7 +41,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
               continuation.yield(normalized)
             }
           }
-          try reducer.validateTerminal()
+          for event in try reducer.finish() { continuation.yield(event) }
           continuation.finish()
         } catch {
           continuation.finish(throwing: error)
@@ -740,6 +740,7 @@ private struct AnthropicEventReducer {
   let fallbackModels: [JSONValue]
   let isOpenRouter: Bool
   private var reportedAccounting: [String: JSONValue] = [:]
+  private var inputTransformations: [JSONValue]?
   private var responseID: String?
   private var responseModelID: String?
   private var inputTokens: Int? = 0
@@ -799,6 +800,9 @@ private struct AnthropicEventReducer {
         throw invalid("message_start is missing message")
       }
       started = true
+      if let transformations = message.array("input_transformations") {
+        inputTransformations = transformations
+      }
       responseID = message.string("id")
       let model = message.string("model")
       responseModelID = model
@@ -919,6 +923,9 @@ private struct AnthropicEventReducer {
       completedTools[index] = call
       return [.toolCallCompleted(call)]
     case "message_delta":
+      if let transformations = object.array("input_transformations") {
+        inputTransformations = transformations
+      }
       reportedAccounting = object.object("usage") ?? [:]
       if let delta = object.object("delta"), let reason = delta.string("stop_reason") {
         rawFinishReason = reason
@@ -986,18 +993,21 @@ private struct AnthropicEventReducer {
       guard toolBlocks.isEmpty else {
         throw invalid("message_stop arrived with incomplete tool calls")
       }
-      guard let finishReason else {
+      guard finishReason != nil else {
         throw invalid("message_stop arrived without a stop reason")
       }
       terminal = true
-      return [responseSnapshot(finishReason), .completed(finishReason)]
+      return []
     default:
       return []
     }
   }
 
-  func validateTerminal() throws {
-    guard terminal else { throw invalid("Anthropic stream ended without message_stop") }
+  func finish() throws -> [ProviderEvent] {
+    guard terminal, let finishReason else {
+      throw invalid("Anthropic stream ended without message_stop")
+    }
+    return [responseSnapshot(finishReason), .completed(finishReason)]
   }
 
   private func mapFinishReason(_ value: String) throws -> ProviderFinishReason {
@@ -1048,6 +1058,25 @@ private struct AnthropicEventReducer {
     let output = outputTokens ?? 0
     let cacheRead = cachedInputTokens ?? 0
     let cacheWrite = cacheWriteTokens ?? 0
+    var metadata =
+      providerThinkingLevel.map { ["providerThinkingLevel": JSONValue.string($0)] } ?? [:]
+    if let inputTransformations, !inputTransformations.isEmpty {
+      metadata["diagnostics"] = .array([
+        .object([
+          "type": .string("anthropic_input_transformations"),
+          "timestamp": .integer(Int64(Date().timeIntervalSince1970 * 1_000)),
+          "details": .object([
+            "transformations": .array(
+              inputTransformations.map { value in
+                .object(
+                  (value.objectValue ?? [:]).filter {
+                    ["type", "path", "reason"].contains($0.key) && $0.value != .null
+                  })
+              })
+          ]),
+        ])
+      ])
+    }
     return .responseSnapshot(
       ProviderResponseSnapshot(
         responseID: responseID,
@@ -1071,9 +1100,7 @@ private struct AnthropicEventReducer {
         finishReason: reason,
         rawFinishReason: rawFinishReason,
         timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000),
-        providerMetadata: providerThinkingLevel.map {
-          ["providerThinkingLevel": .string($0)]
-        } ?? [:]
+        providerMetadata: metadata
       ))
   }
 

@@ -553,6 +553,280 @@
         }
       }
     },
+    "anthropic-transformations-after-stop": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtdHJhbnNmb3JtYXRpb25zLWFmdGVyLXN0b3AiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEsIm91dHB1dF90b2tlbnMiOjB9LCJpbnB1dF90cmFuc2Zvcm1hdGlvbnMiOlt7InR5cGUiOiJ0aGlua2luZ19kcm9wcGVkIiwicGF0aCI6Im1lc3NhZ2VzLjEuY29udGVudC4wIiwicmVhc29uIjoicHJlZml4X2JpbmRpbmdfbWlzbWF0Y2giLCJpZ25vcmVkIjoic291cmNlIG9taXRzIHRoaXMifV19fQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9kZWx0YSIsImRlbHRhIjp7InN0b3BfcmVhc29uIjoiZW5kX3R1cm4ifSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6Mn19CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9CgpldmVudDogbWVzc2FnZV9kZWx0YQpkYXRhOiB7InR5cGUiOiJtZXNzYWdlX2RlbHRhIiwiZGVsdGEiOnt9LCJpbnB1dF90cmFuc2Zvcm1hdGlvbnMiOlt7InR5cGUiOiJ0aGlua2luZ19kcm9wcGVkIiwicGF0aCI6Im1lc3NhZ2VzLjMuY29udGVudC4wIiwicmVhc29uIjoibW9kZWxfYmluZGluZ19taXNtYXRjaCJ9XX0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "transformations": [
+                {
+                  "path": "messages.3.content.0",
+                  "reason": "model_binding_mismatch",
+                  "type": "thinking_dropped"
+                }
+              ]
+            },
+            "type": "anthropic_input_transformations"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "anthropic-transformations-after-stop",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 2,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "anthropic-transformations-cleared": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtdHJhbnNmb3JtYXRpb25zLWNsZWFyZWQiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEsIm91dHB1dF90b2tlbnMiOjB9LCJpbnB1dF90cmFuc2Zvcm1hdGlvbnMiOlt7InR5cGUiOiJ0aGlua2luZ19kcm9wcGVkIiwicGF0aCI6Im1lc3NhZ2VzLjEuY29udGVudC4wIiwicmVhc29uIjoicHJlZml4X2JpbmRpbmdfbWlzbWF0Y2giLCJpZ25vcmVkIjoic291cmNlIG9taXRzIHRoaXMifV19fQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9kZWx0YSIsImRlbHRhIjp7InN0b3BfcmVhc29uIjoiZW5kX3R1cm4ifSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6Mn0sImlucHV0X3RyYW5zZm9ybWF0aW9ucyI6W119CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "anthropic-transformations-cleared",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 2,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "anthropic-transformations-delta": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtdHJhbnNmb3JtYXRpb25zLWRlbHRhIiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfSwiaW5wdXRfdHJhbnNmb3JtYXRpb25zIjpbeyJ0eXBlIjoidGhpbmtpbmdfZHJvcHBlZCIsInBhdGgiOiJtZXNzYWdlcy4xLmNvbnRlbnQuMCIsInJlYXNvbiI6InByZWZpeF9iaW5kaW5nX21pc21hdGNoIiwiaWdub3JlZCI6InNvdXJjZSBvbWl0cyB0aGlzIn1dfX0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjJ9LCJpbnB1dF90cmFuc2Zvcm1hdGlvbnMiOlt7InR5cGUiOiJ0aGlua2luZ19kcm9wcGVkIiwicGF0aCI6Im1lc3NhZ2VzLjMuY29udGVudC4wIiwicmVhc29uIjoibW9kZWxfYmluZGluZ19taXNtYXRjaCJ9XX0KCmV2ZW50OiBtZXNzYWdlX3N0b3AKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdG9wIn0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "transformations": [
+                {
+                  "path": "messages.3.content.0",
+                  "reason": "model_binding_mismatch",
+                  "type": "thinking_dropped"
+                }
+              ]
+            },
+            "type": "anthropic_input_transformations"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "anthropic-transformations-delta",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 2,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "anthropic-transformations-nonarray": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtdHJhbnNmb3JtYXRpb25zLW5vbmFycmF5IiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfSwiaW5wdXRfdHJhbnNmb3JtYXRpb25zIjpbeyJ0eXBlIjoidGhpbmtpbmdfZHJvcHBlZCIsInBhdGgiOiJtZXNzYWdlcy4xLmNvbnRlbnQuMCIsInJlYXNvbiI6InByZWZpeF9iaW5kaW5nX21pc21hdGNoIiwiaWdub3JlZCI6InNvdXJjZSBvbWl0cyB0aGlzIn1dfX0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjJ9LCJpbnB1dF90cmFuc2Zvcm1hdGlvbnMiOnsiaW52YWxpZCI6dHJ1ZX19CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "transformations": [
+                {
+                  "path": "messages.1.content.0",
+                  "reason": "prefix_binding_mismatch",
+                  "type": "thinking_dropped"
+                }
+              ]
+            },
+            "type": "anthropic_input_transformations"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "anthropic-transformations-nonarray",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 2,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "anthropic-transformations-null": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtdHJhbnNmb3JtYXRpb25zLW51bGwiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEsIm91dHB1dF90b2tlbnMiOjB9LCJpbnB1dF90cmFuc2Zvcm1hdGlvbnMiOlt7InR5cGUiOiJ0aGlua2luZ19kcm9wcGVkIiwicGF0aCI6Im1lc3NhZ2VzLjEuY29udGVudC4wIiwicmVhc29uIjoicHJlZml4X2JpbmRpbmdfbWlzbWF0Y2giLCJpZ25vcmVkIjoic291cmNlIG9taXRzIHRoaXMifV19fQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9kZWx0YSIsImRlbHRhIjp7InN0b3BfcmVhc29uIjoiZW5kX3R1cm4ifSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6Mn0sImlucHV0X3RyYW5zZm9ybWF0aW9ucyI6bnVsbH0KCmV2ZW50OiBtZXNzYWdlX3N0b3AKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdG9wIn0KCg=="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "transformations": [
+                {
+                  "path": "messages.1.content.0",
+                  "reason": "prefix_binding_mismatch",
+                  "type": "thinking_dropped"
+                }
+              ]
+            },
+            "type": "anthropic_input_transformations"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "anthropic-transformations-null",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 2,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
+    "anthropic-transformations-start": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtdHJhbnNmb3JtYXRpb25zLXN0YXJ0IiwibW9kZWwiOiJmaXh0dXJlLW1vZGVsIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfSwiaW5wdXRfdHJhbnNmb3JtYXRpb25zIjpbeyJ0eXBlIjoidGhpbmtpbmdfZHJvcHBlZCIsInBhdGgiOiJtZXNzYWdlcy4xLmNvbnRlbnQuMCIsInJlYXNvbiI6InByZWZpeF9iaW5kaW5nX21pc21hdGNoIiwiaWdub3JlZCI6InNvdXJjZSBvbWl0cyB0aGlzIn1dfX0KCmV2ZW50OiBtZXNzYWdlX2RlbHRhCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2VfZGVsdGEiLCJkZWx0YSI6eyJzdG9wX3JlYXNvbiI6ImVuZF90dXJuIn0sInVzYWdlIjp7Im91dHB1dF90b2tlbnMiOjJ9fQoKZXZlbnQ6IG1lc3NhZ2Vfc3RvcApkYXRhOiB7InR5cGUiOiJtZXNzYWdlX3N0b3AifQoK"
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "success",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "transformations": [
+                {
+                  "path": "messages.1.content.0",
+                  "reason": "prefix_binding_mismatch",
+                  "type": "thinking_dropped"
+                }
+              ]
+            },
+            "type": "anthropic_input_transformations"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "fixture-model",
+        "providerID": "anthropic",
+        "rawStopReason": "end_turn",
+        "responseID": "anthropic-transformations-start",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 2,
+          "reasoning": null,
+          "totalTokens": 3
+        }
+      }
+    },
     "anthropic-unknown-stop": {
       "decoderInput": {
         "chunksBase64": [
@@ -715,6 +989,14 @@
       "outcome": "failure",
       "terminal": {
         "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "errorCode": "ThrottlingException"
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
         "errorMessage": "Throttling error: fixture throttled",
         "modelID": "fixture-model",
         "providerID": "amazon-bedrock",
@@ -761,6 +1043,14 @@
             "type": "text"
           }
         ],
+        "diagnostics": [
+          {
+            "details": {
+              "requestId": "bedrock-branch"
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
         "errorMessage": "Bedrock stream ended without a stop reason",
         "modelID": "fixture-model",
         "providerID": "amazon-bedrock",
@@ -797,6 +1087,14 @@
       "outcome": "failure",
       "terminal": {
         "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "requestId": "bedrock-branch"
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
         "errorMessage": "Provider stopped with: guardrail_intervened",
         "modelID": "fixture-model",
         "providerID": "amazon-bedrock",

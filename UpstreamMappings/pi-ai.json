@@ -1960,7 +1960,8 @@
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/anthropic-messages.ts",
-        "packages/ai/src/api/anthropic-messages.lazy.ts"
+        "packages/ai/src/api/anthropic-messages.lazy.ts",
+        "packages/ai/src/utils/diagnostics.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/anthropic-empty-thinking-signature-compat.test.ts",
@@ -2021,7 +2022,8 @@
         "Tests/PiAIProviderRuntimeTests/ProviderIntentDifferentialTests.swift#candidateProviderRequestsMatchExactSourceIntent",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicErrorStopReasonsMatchPinnedSource",
-        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly"
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInputTransformationsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
