@@ -2014,7 +2014,14 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseWithoutCreatedMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#earlyResponseEOFPreservesSourceError",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesFailureBranchesAreTypedAcrossAllFlavors",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2337,7 +2344,14 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseWithoutCreatedMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#earlyResponseEOFPreservesSourceError",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesFailureBranchesAreTypedAcrossAllFlavors",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2461,7 +2475,14 @@
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseWithoutCreatedMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#earlyResponseEOFPreservesSourceError",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesFailureBranchesAreTypedAcrossAllFlavors",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "requiredGates": [
         "swift-test"

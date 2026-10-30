@@ -91,11 +91,18 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseWithoutCreatedMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#earlyResponseEOFPreservesSourceError",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesFailureBranchesAreTypedAcrossAllFlavors",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "upstreamSourceSHA256": "44f1ffc77bf9899c2e7067280720c0fc5a0b458c0fccd650d3f5739182c2c33f",
       "upstreamTestSHA256": "32bd02c09ad074cb1b498bc752d2e91160d998c39cb5a4e0e07c598ef32a8f4c",
-      "swiftEvidenceSHA256": "b740ebde1a3154893a161dda21a2efca28c1aaa8c57b05f93467d8e65e825588"
+      "swiftEvidenceSHA256": "57408e63a0fcf2ca458348d1931c2c4a300f8dc4632a4dc4b6709e0fbb7c7e88"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -271,11 +278,18 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseWithoutCreatedMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#earlyResponseEOFPreservesSourceError",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesFailureBranchesAreTypedAcrossAllFlavors",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "upstreamSourceSHA256": "805ed5c861052c125e0f1fc34b3630b832d615624536f86db4571e88dc3f760d",
       "upstreamTestSHA256": "ad9cce3e861f84c8fec0aa144728a72bf3c56155046187ccfb136a86f7ce1b27",
-      "swiftEvidenceSHA256": "a5bab9d4b8e5b637b08df23234a0d6b2774ba98917b21e4a698a82d5946ca48c"
+      "swiftEvidenceSHA256": "fc6ff8c1237aad3523d248bd292d00e98e085dcd8acdb900c8c85c9c9e1e4779"
     },
     {
       "protocolID": "openai-completions",
@@ -366,11 +380,18 @@
         "Tests/PiAIProviderRuntimeTests/ProviderOptionsDifferentialTests.swift#explicitSessionHeaderOverridesMatchPinnedSource",
         "Scripts/pi-ai-provider-options-oracle.mjs",
         "Fixtures/Differential/Cases/provider-options.json",
-        "Fixtures/Differential/Oracle/provider-options.json"
+        "Fixtures/Differential/Oracle/provider-options.json",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#terminalResponseWithoutCreatedMatchesPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#earlyResponseEOFPreservesSourceError",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesFailureBranchesAreTypedAcrossAllFlavors",
+        "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#unfinishedResponseToolsFailAtTerminalAcrossAllFlavors",
+        "Scripts/openai-response-event-oracle.mjs",
+        "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "cd74bfce27ca6417a061689bbb9f4b34aa8a1584f165a84d4ed9b5717f74b1d1",
-      "swiftEvidenceSHA256": "f99e4f41bf217ac67e575f6e77c974a1879693031c6b35835da90c4e71ff9966"
+      "swiftEvidenceSHA256": "b24d1d1f343d0a1206f18733bb33c951ff697079dbb80873a185cb3a388839de"
     },
     {
       "protocolID": "openrouter-images",

@@ -263,6 +263,9 @@
         "rawStopReason": "incomplete.content_filter",
         "stopReason": "error"
       },
+      "earlyEof": {
+        "thrown": "OpenAI Responses stream ended before a terminal response event"
+      },
       "failedDetails": {
         "thrown": "incomplete: policy"
       },
@@ -501,6 +504,52 @@
           "output": 4,
           "reasoning": 1,
           "totalTokens": 14
+        }
+      }
+    },
+    "responses.terminal-without-start": {
+      "completed": {
+        "content": [],
+        "rawStopReason": "completed",
+        "responseId": "resp-terminal-only",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 2,
+          "cacheWrite": 3,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 12,
+          "output": 7,
+          "reasoning": 0,
+          "totalTokens": 27
+        }
+      },
+      "incomplete": {
+        "content": [],
+        "rawStopReason": "incomplete.max_output_tokens",
+        "responseId": "resp-terminal-only",
+        "stopReason": "length",
+        "usage": {
+          "cacheRead": 5,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0,
+            "totalFromProvider": false
+          },
+          "input": 25,
+          "output": 12,
+          "reasoning": 0,
+          "totalTokens": 42
         }
       }
     }

@@ -259,9 +259,40 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func terminalResponseWithoutCreatedMatchesPinnedSource() async throws {
+    let fixture = try responseEventFixture()
+    let cases = try #require(fixture.object("responsesTerminalWithoutStartEvents"))
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "terminal-without-start.oracle")
+    let expected = try #require(oracle.object("cases")?.object("responses.terminal-without-start"))
+    for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
+      for (name, events) in cases {
+        let result = try await responseEvents(
+          protocolID: api, modelID: "gpt-model", events: try #require(events.arrayValue),
+          tools: [], metadata: [:])
+        let source = try #require(expected.object(name))
+        #expect(result.responseID == source.string("responseId"))
+        #expect(result.rawFinishReason == source.string("rawStopReason"))
+        #expect(result.finishReason.rawValue == source.string("stopReason"))
+        #expect(result.usage?.inputTokens == source.object("usage")?.int("input"))
+        #expect(result.usage?.totalTokens == source.object("usage")?.int("totalTokens"))
+      }
+    }
+  }
+
+  @Test
   func responsesFailureBranchesAreTypedAcrossAllFlavors() async throws {
     let fixture = try responseEventFixture()
     let failures = try #require(fixture.object("responsesFailureEvents"))
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "failure-message.oracle")
+    let expected = try #require(oracle.object("cases")?.object("responses.failure-branches"))
     let expectedCauses = [
       "failedError": "server_error",
       "failedDetails": "policy",
@@ -283,8 +314,25 @@ struct OpenAIResponseEventBranchTests {
         } catch let failure as ProviderRuntimeFailure {
           #expect(failure.code == .transportFailed)
           #expect(failure.causeDescription == cause)
+          if ["failedError", "failedDetails", "streamError"].contains(name) {
+            #expect(failure.message == expected.object(name)?.string("thrown"))
+          }
         }
       }
+    }
+  }
+
+  @Test
+  func earlyResponseEOFPreservesSourceError() async throws {
+    let fixture = try responseEventFixture()
+    let events = try #require(fixture.object("responsesFailureEvents")?.array("earlyEof"))
+    do {
+      _ = try await responseEvents(
+        protocolID: "openai-responses", modelID: "gpt-model", events: events,
+        tools: [], metadata: [:])
+      Issue.record("expected early EOF failure")
+    } catch let failure as ProviderRuntimeFailure {
+      #expect(failure.message == "OpenAI Responses stream ended before a terminal response event")
     }
   }
 
@@ -308,7 +356,10 @@ struct OpenAIResponseEventBranchTests {
         Issue.record("unfinished tool call completed for \(api)")
       } catch let failure as ProviderRuntimeFailure {
         #expect(failure.code == .invalidResponse)
-        #expect(failure.message.contains("unfinished tool call"))
+        #expect(
+          failure.message
+            == oracle.object("cases")?.object("responses.failure-branches")?
+            .object("unfinishedTool")?.string("thrown"))
       }
     }
   }

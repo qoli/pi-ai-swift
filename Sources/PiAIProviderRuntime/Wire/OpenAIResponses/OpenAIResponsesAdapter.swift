@@ -1031,6 +1031,7 @@ private struct OpenAIResponsesReducer {
   private var terminal = false
   private var responseID: String?
   private var tools: [String: ToolState] = [:]
+  private var toolOrder: [String] = []
   let providerThinkingLevel: String?
   private var toolIDsByItemID: [String: String] = [:]
   private var toolIDsByOutputIndex: [Int: String] = [:]
@@ -1131,6 +1132,7 @@ private struct OpenAIResponsesReducer {
       let customProperty =
         item.string("type") == "custom_tool_call"
         ? (grammarInputProperties[name] ?? "input") : nil
+      if tools[id] == nil { toolOrder.append(id) }
       tools[id] = ToolState(
         name: name,
         arguments: item.string("arguments") ?? item.string("input") ?? "",
@@ -1240,8 +1242,9 @@ private struct OpenAIResponsesReducer {
       guard let response = object.object("response") else {
         throw invalid("completed event is missing response")
       }
-      guard tools.isEmpty else {
-        throw invalid("OpenAI Responses stream completed with an unfinished tool call")
+      if let id = toolOrder.first(where: { tools[$0] != nil }), let state = tools[id] {
+        throw invalid(
+          "OpenAI Responses stream completed with an unfinished tool call: \(state.name) (\(id))")
       }
       terminal = true
       try backfillReasoningSignatures(from: response)
@@ -1296,16 +1299,24 @@ private struct OpenAIResponsesReducer {
       terminal = true
       let error = object.object("error") ?? object.object("response")?.object("error")
       let details = object.object("response")?.object("incomplete_details")?.string("reason")
-      let topLevelMessage = object.string("message")
-      let topLevelCode = object.string("code")
+      let message: String
+      if type == "error" {
+        message =
+          "Error Code \(object.string("code") ?? "undefined"): \(object.string("message") ?? "undefined")"
+      } else if let error {
+        message =
+          "\(error.string("code").flatMap { $0.isEmpty ? nil : $0 } ?? "unknown"): \(error.string("message").flatMap { $0.isEmpty ? nil : $0 } ?? "no message")"
+      } else if let details, !details.isEmpty {
+        message = "incomplete: \(details)"
+      } else {
+        message = "Unknown error (no error details in response)"
+      }
       throw ProviderRuntimeFailure(
         code: .transportFailed,
-        message: error?.string("message") ?? topLevelMessage
-          ?? details.map { "OpenAI response failed: \($0)" }
-          ?? "OpenAI Responses stream failed",
+        message: message,
         providerID: providerID,
         operation: "openai-responses.event.error",
-        causeDescription: error?.string("code") ?? topLevelCode ?? details
+        causeDescription: error?.string("code") ?? object.string("code") ?? details
       )
     case "response.output_text.done", "response.content_part.added",
       "response.content_part.done",
@@ -1318,8 +1329,8 @@ private struct OpenAIResponsesReducer {
   }
 
   func validateTerminal() throws {
-    guard started, terminal else {
-      throw invalid("OpenAI Responses stream ended without a terminal event")
+    guard terminal else {
+      throw invalid("OpenAI Responses stream ended before a terminal response event")
     }
     guard tools.isEmpty else {
       throw invalid("OpenAI Responses stream ended with incomplete tool calls")

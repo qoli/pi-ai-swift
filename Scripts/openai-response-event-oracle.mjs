@@ -44,6 +44,10 @@ const responseFailures = {};
 for (const [name, events] of Object.entries(fixture.responsesFailureEvents)) {
   responseFailures[name] = await runResponsesOutcome(events);
 }
+const terminalWithoutStart = {};
+for (const [name, events] of Object.entries(fixture.responsesTerminalWithoutStartEvents)) {
+  terminalWithoutStart[name] = projectResponses(await runResponses(events, {}));
+}
 const completions = await runCompletions(fixture.completionChunks);
 const completionHTTPRawMetadata = await runCompletionHTTPRawMetadata();
 const completionAbort = await runCompletionAbort();
@@ -65,6 +69,7 @@ process.stdout.write(`${JSON.stringify({
     "responses.reasoning-signature-backfill-phase": projectResponsesWithSignatures(responsesReasoning),
     "responses.service-tier-cost-matrix": responseServiceTierCosts,
     "responses.failure-branches": responseFailures,
+    "responses.terminal-without-start": terminalWithoutStart,
     "completions.reasoning-details-response-model": projectCompletions(completions),
     "completions.stop-reason-response-branches": completionBranches,
     "completions.http-raw-metadata": projectCompletions(completionHTTPRawMetadata),

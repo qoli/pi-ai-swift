@@ -273,6 +273,14 @@
           }
         }
       }
+    ],
+    "earlyEof": [
+      {
+        "type": "response.created",
+        "response": {
+          "id": "resp-early"
+        }
+      }
     ]
   },
   "completionChunks": [
@@ -478,6 +486,46 @@
             "finish_reason": "mystery"
           }
         ]
+      }
+    ]
+  },
+  "responsesTerminalWithoutStartEvents": {
+    "completed": [
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp-terminal-only",
+          "status": "completed",
+          "usage": {
+            "input_tokens": 17,
+            "output_tokens": 7,
+            "total_tokens": 27,
+            "input_tokens_details": {
+              "cached_tokens": 2,
+              "cache_write_tokens": 3
+            }
+          }
+        }
+      }
+    ],
+    "incomplete": [
+      {
+        "type": "response.incomplete",
+        "response": {
+          "id": "resp-terminal-only",
+          "status": "incomplete",
+          "incomplete_details": {
+            "reason": "max_output_tokens"
+          },
+          "usage": {
+            "input_tokens": 30,
+            "output_tokens": 12,
+            "total_tokens": 42,
+            "input_tokens_details": {
+              "cached_tokens": 5
+            }
+          }
+        }
       }
     ]
   }
