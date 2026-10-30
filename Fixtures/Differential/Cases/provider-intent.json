@@ -914,6 +914,2225 @@
           }
         }
       ]
+    },
+    {
+      "id": "anthropic-strict-minimum-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-minimum-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-maximum-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "maximum": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-maximum-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "maximum": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-exclusiveMinimum-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "exclusiveMinimum": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-exclusiveMinimum-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "exclusiveMinimum": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-exclusiveMaximum-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "exclusiveMaximum": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-exclusiveMaximum-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "exclusiveMaximum": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-multipleOf-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "multipleOf": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-multipleOf-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "number",
+                "multipleOf": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-maxItems-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 3
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-maxItems-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 3
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-uniqueItems-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": false
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-uniqueItems-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": false
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-minContains-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minContains": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-minContains-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minContains": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-maxContains-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxContains": 3
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-maxContains-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "maxContains": 3
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-minItems-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-minItems-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-minProperties-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "object",
+                "properties": {},
+                "minProperties": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-minProperties-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "object",
+                "properties": {},
+                "minProperties": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-maxProperties-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "object",
+                "properties": {},
+                "maxProperties": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-maxProperties-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "object",
+                "properties": {},
+                "maxProperties": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-format-regex-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "regex"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-format-regex-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "regex"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-format-number-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-format-number-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-nested-minItems-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "object",
+                "properties": {
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-nested-minItems-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "object",
+                "properties": {
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-union-minimum-prefer",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": false,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "prefer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-union-minimum-require",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "expectError": true,
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-minimum-items-zero",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 0
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-minimum-items-one",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-string-constraints",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100,
+                "pattern": "^[a-z]+$"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-date-time",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-time",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "time"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-date",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-duration",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "duration"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-email",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "email"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-hostname",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "hostname"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-uri",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-ipv4",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "ipv4"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-ipv6",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "ipv6"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
+    },
+    {
+      "id": "anthropic-strict-supported-format-uuid",
+      "model": {
+        "id": "claude-opus-4-8",
+        "name": "Claude Opus 4.8",
+        "api": "anthropic-messages",
+        "provider": "fixture-anthropic",
+        "baseUrl": "https://fixture.invalid",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "contextWindow": 200000,
+        "maxTokens": 4096,
+        "compat": {
+          "supportsStrictTools": true
+        }
+      },
+      "tools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ]
     }
   ]
 }

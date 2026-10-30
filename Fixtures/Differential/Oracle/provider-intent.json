@@ -1,5 +1,1047 @@
 {
   "cases": {
+    "anthropic-strict-exclusiveMaximum-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "exclusiveMaximum": 1,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-exclusiveMaximum-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but exclusiveMaximum: 1 is unsupported."
+    },
+    "anthropic-strict-exclusiveMinimum-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "exclusiveMinimum": 1,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-exclusiveMinimum-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but exclusiveMinimum: 1 is unsupported."
+    },
+    "anthropic-strict-format-number-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "format": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-format-number-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but format: 1 is unsupported."
+    },
+    "anthropic-strict-format-regex-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "format": "regex",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-format-regex-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but format: \"regex\" is unsupported."
+    },
+    "anthropic-strict-maxContains-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxContains": 3,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-maxContains-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but maxContains: 3 is unsupported."
+    },
+    "anthropic-strict-maxItems-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 3,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-maxItems-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but maxItems: 3 is unsupported."
+    },
+    "anthropic-strict-maxProperties-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "maxProperties": 1,
+                  "properties": {},
+                  "type": "object"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-maxProperties-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but maxProperties: 1 is unsupported."
+    },
+    "anthropic-strict-maximum-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "maximum": 1,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-maximum-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but maximum: 1 is unsupported."
+    },
+    "anthropic-strict-minContains-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "minContains": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-minContains-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but minContains: 1 is unsupported."
+    },
+    "anthropic-strict-minItems-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 2,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-minItems-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but minItems: 2 is unsupported."
+    },
+    "anthropic-strict-minProperties-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "minProperties": 1,
+                  "properties": {},
+                  "type": "object"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-minProperties-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but minProperties: 1 is unsupported."
+    },
+    "anthropic-strict-minimum-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "minimum": 1,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-minimum-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but minimum: 1 is unsupported."
+    },
+    "anthropic-strict-multipleOf-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "multipleOf": 1,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-multipleOf-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but multipleOf: 1 is unsupported."
+    },
+    "anthropic-strict-nested-minItems-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "properties": {
+                    "tags": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "minItems": 2,
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-nested-minItems-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but minItems: 2 is unsupported."
+    },
+    "anthropic-strict-supported-format-date": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "date",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-date-time": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-duration": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "duration",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-email": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "email",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-hostname": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "hostname",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-ipv4": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "ipv4",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-ipv6": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "ipv6",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-time": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "time",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-uri": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "uri",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-format-uuid": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "format": "uuid",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-minimum-items-one": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-minimum-items-zero": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 0,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-supported-string-constraints": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "pattern": "^[a-z]+$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup",
+            "strict": true
+          }
+        ]
+      }
+    },
+    "anthropic-strict-union-minimum-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "anyOf": [
+                    {
+                      "minimum": 1,
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-union-minimum-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but minimum: 1 is unsupported."
+    },
+    "anthropic-strict-uniqueItems-prefer": {
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-opus-4-8",
+        "stream": true,
+        "tools": [
+          {
+            "description": "Fixture lookup",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "value": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "uniqueItems": false
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "type": "object"
+            },
+            "name": "lookup"
+          }
+        ]
+      }
+    },
+    "anthropic-strict-uniqueItems-require": {
+      "error": "Tool \"lookup\" requires JSON-schema constrained sampling, but uniqueItems: false is unsupported."
+    },
     "anthropic.managed-off": {
       "requestBody": {
         "betas": [

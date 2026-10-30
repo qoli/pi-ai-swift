@@ -23,7 +23,12 @@ for (const spec of fixture.cases) {
     onPayload(value) { body = value; if (spec.model.api !== "mistral-conversations") throw new Error("fixture capture complete"); },
     fetch(_url, init) { body = JSON.parse(init.body); throw new Error("fixture wire capture complete"); },
   }).result();
-  if (body === undefined) throw new Error(`${spec.id}: ${result.errorMessage}`);
+  if (body === undefined) {
+    if (!spec.expectError) throw new Error(`${spec.id}: ${result.errorMessage}`);
+    cases[spec.id] = { error: result.errorMessage };
+    continue;
+  }
+  if (spec.expectError) throw new Error(`${spec.id}: upstream unexpectedly accepted this schema`);
   if (spec.model.api === "bedrock-converse-stream") {
     if (body.modelId !== spec.model.id) throw new Error("Bedrock model identity changed");
     delete body.modelId;

@@ -60,7 +60,12 @@ struct ProviderIntentDifferentialTests {
         tools: try (spec.tools ?? []).map {
           .init(
             name: try #require($0.string("name")), description: $0.string("description") ?? "",
-            inputSchema: try #require($0["parameters"]))
+            inputSchema: try #require($0["parameters"]),
+            constrainedSampling: $0.object("constrainedSampling")?.string("strict").flatMap(
+              ProviderStrictPreference.init(rawValue:)
+            ).map {
+              .jsonSchema(strict: $0)
+            })
         },
         options: .init(
           maximumOutputTokens: 4096,
@@ -81,13 +86,23 @@ struct ProviderIntentDifferentialTests {
           }))
       let transport = IntentCaptureTransport()
       let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
+      var failure: ProviderRuntimeFailure?
       do {
         for try await _ in adapter.stream(request, context: context, transport: transport) {}
       } catch {
-        if await transport.body == nil { throw error }
+        if await transport.body == nil {
+          failure = try #require(error as? ProviderRuntimeFailure)
+        }
       }
+      let observation = try #require(oracle.cases[spec.id])
+      if let expectedError = observation.error {
+        #expect(await transport.body == nil, Comment(rawValue: spec.id))
+        #expect(failure?.message == expectedError, Comment(rawValue: spec.id))
+        continue
+      }
+      if let failure { throw failure }
       let actual = try #require(await transport.body, Comment(rawValue: spec.id))
-      let expected = try #require(oracle.cases[spec.id]?.requestBody)
+      let expected = try #require(observation.requestBody)
       if actual != expected {
         Issue.record("\(spec.id): \(firstRequestDifference(actual, expected))")
       }
@@ -111,7 +126,10 @@ struct ProviderIntentDifferentialTests {
     let upstreamRevision: String
     let cases: [String: Observation]
   }
-  private struct Observation: Decodable { let requestBody: JSONValue }
+  private struct Observation: Decodable {
+    let requestBody: JSONValue?
+    let error: String?
+  }
 }
 
 private actor IntentCaptureTransport: ProviderHTTPStreamingTransport {

@@ -11,7 +11,8 @@ enum ProviderConstrainedSamplingResolver {
     for tool: ProviderToolDefinition,
     supportsStrictMode: Bool,
     providerID: String,
-    operation: String
+    operation: String,
+    isUnsupportedKeyword: ((String, JSONValue) -> Bool)? = nil
   ) throws -> (schema: JSONValue, strict: Bool?) {
     guard case .jsonSchema(let preference)? = tool.constrainedSampling else {
       return (tool.inputSchema, nil)
@@ -28,7 +29,7 @@ enum ProviderConstrainedSamplingResolver {
       return (tool.inputSchema, nil)
     }
     do {
-      return (try strictSchema(tool.inputSchema), true)
+      return (try strictSchema(tool.inputSchema, isUnsupportedKeyword: isUnsupportedKeyword), true)
     } catch let error as StrictSchemaError {
       if preference == .require {
         throw invalid(
@@ -87,18 +88,22 @@ enum ProviderConstrainedSamplingResolver {
     return Grammar(syntax: syntax, definition: definition, inputProperty: inputProperty)
   }
 
-  private static func strictSchema(_ value: JSONValue) throws -> JSONValue {
+  private static func strictSchema(
+    _ value: JSONValue, isUnsupportedKeyword: ((String, JSONValue) -> Bool)?
+  ) throws -> JSONValue {
     guard case .object(var schema) = value else {
       throw StrictSchemaError("root schema must have type object")
     }
-    try makeStrict(&schema)
+    try makeStrict(&schema, isUnsupportedKeyword: isUnsupportedKeyword)
     guard schema.string("type") == "object" else {
       throw StrictSchemaError("root schema must have type object")
     }
     return .object(schema)
   }
 
-  private static func makeStrict(_ schema: inout [String: JSONValue]) throws {
+  private static func makeStrict(
+    _ schema: inout [String: JSONValue], isUnsupportedKeyword: ((String, JSONValue) -> Bool)?
+  ) throws {
     let unsupported = [
       "$ref", "$defs", "definitions", "allOf", "oneOf", "patternProperties",
       "dependentSchemas", "dependencies", "unevaluatedProperties", "propertyNames",
@@ -106,6 +111,14 @@ enum ProviderConstrainedSamplingResolver {
     ]
     if let key = unsupported.first(where: { schema[$0] != nil }) {
       throw StrictSchemaError("\(key) schemas are unsupported")
+    }
+    if let isUnsupportedKeyword {
+      for (key, value) in schema where isUnsupportedKeyword(key, value) {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.withoutEscapingSlashes]
+        let encoded = String(decoding: try encoder.encode(value), as: UTF8.self)
+        throw StrictSchemaError("\(key): \(encoded) is unsupported")
+      }
     }
     if case .array(var variants)? = schema["anyOf"] {
       guard !variants.isEmpty else {
@@ -118,7 +131,7 @@ enum ProviderConstrainedSamplingResolver {
         if isStructured(variant) {
           throw StrictSchemaError("object and array unions are unsupported")
         }
-        try makeStrict(&variant)
+        try makeStrict(&variant, isUnsupportedKeyword: isUnsupportedKeyword)
         variants[index] = .object(variant)
       }
       schema["anyOf"] = .array(variants)
@@ -129,7 +142,7 @@ enum ProviderConstrainedSamplingResolver {
       guard case .object(var item) = items else {
         throw StrictSchemaError("tuple and boolean schemas are unsupported")
       }
-      try makeStrict(&item)
+      try makeStrict(&item, isUnsupportedKeyword: isUnsupportedKeyword)
       schema["items"] = .object(item)
     }
     if schema["properties"] != nil, schema.string("type") != "object" {
@@ -165,7 +178,7 @@ enum ProviderConstrainedSamplingResolver {
       guard case .object(var property) = value else {
         throw StrictSchemaError("boolean schemas are unsupported")
       }
-      try makeStrict(&property)
+      try makeStrict(&property, isUnsupportedKeyword: isUnsupportedKeyword)
       let strictValue = JSONValue.object(property)
       strictProperties[name] =
         required.contains(name) || allowsNull(strictValue)

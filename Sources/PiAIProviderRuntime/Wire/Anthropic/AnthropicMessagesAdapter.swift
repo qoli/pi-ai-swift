@@ -301,7 +301,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
             for: tool,
             supportsStrictMode: compat.bool("supportsStrictTools") == true,
             providerID: request.providerID,
-            operation: "anthropic.request.tool-schema")
+            operation: "anthropic.request.tool-schema",
+            isUnsupportedKeyword: isUnsupportedStrictKeyword)
           let schema = anthropicToolSchema(resolved.schema, strict: resolved.strict == true)
           var value: [String: JSONValue] = [
             "name": .string(isOAuth ? claudeCodeToolName(tool.name) : tool.name),
@@ -398,6 +399,22 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       "webfetch": "WebFetch", "websearch": "WebSearch",
     ]
     return canonical[name.lowercased()] ?? name
+  }
+
+  private func isUnsupportedStrictKeyword(_ key: String, _ value: JSONValue) -> Bool {
+    switch key {
+    case "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "multipleOf",
+      "maxItems", "uniqueItems", "minContains", "maxContains", "minProperties", "maxProperties":
+      return true
+    case "minItems":
+      return ![.integer(0), .integer(1), .number(0), .number(1)].contains(value)
+    case "format":
+      guard let format = value.stringValue else { return true }
+      return ![
+        "date-time", "time", "date", "duration", "email", "hostname", "uri", "ipv4", "ipv6", "uuid",
+      ].contains(format)
+    default: return false
+    }
   }
 
   private func anthropicToolSchema(_ schema: JSONValue, strict: Bool) -> JSONValue {
