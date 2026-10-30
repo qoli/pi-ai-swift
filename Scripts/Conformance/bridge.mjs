@@ -110,7 +110,8 @@ export function getProviders() {
 }
 
 export function convertMessages(model, context, compat, options = {}) {
-  const result = probe({ ...model, compat: { ...model.compat, ...compat } }, context, { apiKey: "test", ...options });
+  const result = probe({ ...model, compat: { ...model.compat, ...compat } }, context,
+    { apiKey: "test", ...options, cacheRetention: "none" });
   if (!result.request) throw new Error(result.failure?.message ?? "Swift did not project messages");
   return result.request.body.messages ?? result.request.body.contents;
 }

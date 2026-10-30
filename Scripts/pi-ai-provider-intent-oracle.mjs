@@ -20,6 +20,13 @@ for (const spec of fixture.cases) {
     cases[spec.id] = error ? { error } : { resolvedLevel };
     continue;
   }
+  if (spec.operation === "completionsMessages") {
+    const source = await import(pathToFileURL(path.join(root, "packages/ai/src/api/openai-completions.ts")));
+    const { normalizeContext } = await import(pathToFileURL(path.join(root, "packages/ai/src/utils/transcript.ts")));
+    cases[spec.id] = { requestBody: { messages: source.convertMessages(spec.model,
+      normalizeContext(context(spec)), spec.model.compat) } };
+    continue;
+  }
   const source = spec.azureProvider
     ? (await import(pathToFileURL(path.join(root, "packages/ai/src/providers/azure.ts")))).azureProvider()
     : await import(pathToFileURL(path.join(root, "packages/ai/src/api", `${spec.model.api}.ts`)));
@@ -66,7 +73,7 @@ function context(spec) {
     });
     if (spec.toolResultText !== undefined) messages.push({ role: "toolResult", toolCallId: "call_1", toolName: "read",
       content: [{ type: "text", text: spec.toolResultText }], isError: false, timestamp: 2 });
-    messages.push({ role: "user", content: "again", timestamp: 3 });
+    if (!spec.omitFollowup) messages.push({ role: "user", content: "again", timestamp: 3 });
   }
   return { messages, ...(spec.tools ? { tools: spec.tools } : {}) };
 }

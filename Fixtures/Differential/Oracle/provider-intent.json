@@ -2566,6 +2566,93 @@
         "tools": []
       }
     },
+    "completions-message-helper.crlf": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "(no tool output)",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          }
+        ]
+      }
+    },
+    "completions-message-helper.empty": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "(no tool output)",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          }
+        ]
+      }
+    },
+    "completions-message-helper.whitespace": {
+      "requestBody": {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          },
+          {
+            "content": null,
+            "role": "assistant",
+            "tool_calls": [
+              {
+                "function": {
+                  "arguments": "{}",
+                  "name": "read"
+                },
+                "id": "call_1",
+                "type": "function"
+              }
+            ]
+          },
+          {
+            "content": "(no tool output)",
+            "role": "tool",
+            "tool_call_id": "call_1"
+          }
+        ]
+      }
+    },
     "google-generative-ai.thinking-disabled-budget": {
       "requestBody": {
         "thinkingConfig": {

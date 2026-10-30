@@ -887,13 +887,17 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     let fixture = try load("Differential/Cases/provider-intent.json")
     let oracle = try load("Differential/Oracle/provider-intent.json")
     let cases = try XCTUnwrap(fixture.array("cases")).compactMap(\.objectValue)
-      .filter { $0.string("id")?.hasPrefix("completions-empty-tools.") == true }
-    XCTAssertEqual(cases.count, 4)
+      .filter {
+        $0.string("id")?.hasPrefix("completions-empty-tools.") == true
+          || $0.string("id")?.hasPrefix("completions-message-helper.") == true
+      }
+    XCTAssertEqual(cases.count, 7)
     for spec in cases {
       let name = try XCTUnwrap(spec.string("id"))
       let modelID = "fixture-chat"
       let (_, context) = inputs(
-        api: "openai-completions", providerID: "fixture", modelID: modelID, reasoning: false)
+        api: "openai-completions", providerID: "fixture", modelID: modelID, reasoning: false,
+        metadata: spec.object("model") ?? [:])
       var messages: [ProviderMessage] = [.user([.text("hello")])]
       if spec.bool("history") == true {
         let blocks: [ProviderAssistantContent] =
@@ -919,7 +923,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
                 toolCallID: "call_1", toolName: "read", content: [.text(text)], isError: false,
                 timestampMilliseconds: 2)))
         }
-        messages.append(.user([.text("again")]))
+        if spec.bool("omitFollowup") != true { messages.append(.user([.text("again")])) }
       }
       let request = ProviderRequest(
         id: name, providerID: "fixture", modelID: modelID, messages: messages, tools: [],
@@ -936,8 +940,10 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       let body = try decodeJSONObject(
         try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
         operation: "ios.completions.tools.body")
-      XCTAssertEqual(
-        body["tools"], oracle.object("cases")?.object(name)?.object("requestBody")?["tools"], name)
+      let fields = try XCTUnwrap(spec.array("projectFields")).compactMap(\.stringValue)
+      let actual = Dictionary(
+        uniqueKeysWithValues: fields.compactMap { key in body[key].map { (key, $0) } })
+      XCTAssertEqual(actual, oracle.object("cases")?.object(name)?.object("requestBody"), name)
     }
   }
 

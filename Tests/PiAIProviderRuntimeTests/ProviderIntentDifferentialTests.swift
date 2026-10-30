@@ -92,7 +92,7 @@ struct ProviderIntentDifferentialTests {
                 toolCallID: "call_1", toolName: "read", content: [.text(text)], isError: false,
                 timestampMilliseconds: 2)))
         }
-        messages.append(.user([.text("again")]))
+        if spec.omitFollowup != true { messages.append(.user([.text("again")])) }
       }
       let effort =
         spec.rawOptions == true
@@ -207,6 +207,7 @@ struct ProviderIntentDifferentialTests {
     let rawOptions: Bool?
     let rawOptionKeys: [String]?
     let toolResultText: String?
+    let omitFollowup: Bool?
   }
   private struct Oracle: Decodable {
     let upstreamRevision: String

@@ -7741,6 +7741,147 @@
       ],
       "assistantContent": [],
       "toolResultText": "done"
+    },
+    {
+      "id": "completions-message-helper.empty",
+      "model": {
+        "id": "fixture-chat",
+        "name": "Fixture Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "cacheControlFormat": "anthropic",
+          "supportsLongCacheRetention": true,
+          "requiresToolResultName": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresThinkingAsText": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "projectFields": [
+        "messages"
+      ],
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "operation": "completionsMessages",
+      "toolResultText": "",
+      "omitFollowup": true
+    },
+    {
+      "id": "completions-message-helper.crlf",
+      "model": {
+        "id": "fixture-chat",
+        "name": "Fixture Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "cacheControlFormat": "anthropic",
+          "supportsLongCacheRetention": true,
+          "requiresToolResultName": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresThinkingAsText": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "projectFields": [
+        "messages"
+      ],
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "operation": "completionsMessages",
+      "toolResultText": "\r\n",
+      "omitFollowup": true
+    },
+    {
+      "id": "completions-message-helper.whitespace",
+      "model": {
+        "id": "fixture-chat",
+        "name": "Fixture Chat",
+        "api": "openai-completions",
+        "provider": "fixture",
+        "baseUrl": "https://fixture.invalid/v1",
+        "reasoning": false,
+        "input": [
+          "text"
+        ],
+        "contextWindow": 32768,
+        "maxTokens": 4096,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "compat": {
+          "cacheControlFormat": "anthropic",
+          "supportsLongCacheRetention": true,
+          "requiresToolResultName": false,
+          "requiresAssistantAfterToolResult": false,
+          "requiresThinkingAsText": false,
+          "requiresReasoningContentOnAssistantMessages": false,
+          "supportsMidConvoToolAdditions": false
+        }
+      },
+      "options": {},
+      "history": true,
+      "projectFields": [
+        "messages"
+      ],
+      "assistantContent": [
+        {
+          "type": "toolCall",
+          "id": "call_1",
+          "name": "read",
+          "arguments": {}
+        }
+      ],
+      "operation": "completionsMessages",
+      "toolResultText": " \n\t",
+      "omitFollowup": true
     }
   ]
 }
