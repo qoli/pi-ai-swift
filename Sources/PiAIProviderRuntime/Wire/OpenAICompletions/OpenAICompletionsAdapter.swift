@@ -858,9 +858,25 @@ private struct OpenAICompletionsReducer {
     let value: JSONValue
     do { value = try JSONDecoder().decode(JSONValue.self, from: Data(event.data.utf8)) } catch {
       throw ProviderRuntimeFailure(
-        code: .invalidResponse, message: "provider response contains malformed JSON",
+        code: .invalidResponse,
+        message: "Error reading response: malformed server-sent event JSON.",
         providerID: providerID, operation: "openai-completions.event.decode",
         causeDescription: String(describing: error))
+    }
+    if event.event == "error"
+      || value.objectValue?["error"].map({ ProviderOrderedJSON.scalar($0).isTruthy }) == true
+    {
+      let parsed = try ProviderOrderedJSON(data: Data(event.data.utf8))
+      let error = parsed["error"].flatMap { $0.isNullish ? nil : $0 } ?? parsed
+      let message: String
+      if let detail = error["message"], detail.isTruthy {
+        message = try detail.stringValue ?? detail.encodedString()
+      } else if error.isTruthy {
+        message = try error.encodedString()
+      } else {
+        message = "(no status code or body)"
+      }
+      throw invalid(message)
     }
     try await observation.streamEvent(value)
     guard let object = value.objectValue else { return [] }

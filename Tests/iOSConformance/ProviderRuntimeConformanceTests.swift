@@ -1791,6 +1791,35 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     return fields
   }
 
+  func testCompletionsSDKErrorsStayOutsideRawObserver() async throws {
+    let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
+    let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
+    for (name, value) in try XCTUnwrap(fixture.object("completionSDKErrorEvents")) {
+      let sse = try XCTUnwrap(value.stringValue)
+      let expected = try XCTUnwrap(
+        oracle.object("cases")?.object("completions.sdk-error-events")?.object(name))
+      let (request, base) = inputs(
+        api: "openai-completions", providerID: "fixture", modelID: "requested-model",
+        reasoning: false)
+      var context = base
+      let capture = IOSWireObserverCapture()
+      context.wireObserver = .init(onProviderStreamEvent: { event, model in
+        await capture.event(event, model)
+      })
+      let result = try await replay(
+        OpenAICompletionsAdapter(), request: request, context: context, chunks: [Data(sse.utf8)])
+      let actual = await capture.events
+      XCTAssertEqual(actual, expected.array("events"), name)
+      if let message = expected.object("output")?.string("errorMessage") {
+        XCTAssertEqual(result.failure?.message, message, name)
+      } else {
+        XCTAssertNil(result.failure, name)
+        XCTAssertEqual(
+          result.snapshot?.content, [.text(.init(text: "hello", signature: nil))], name)
+      }
+    }
+  }
+
   func testCompletionsNativeWireObserverMatchesPinnedSource() async throws {
     let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
     let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")

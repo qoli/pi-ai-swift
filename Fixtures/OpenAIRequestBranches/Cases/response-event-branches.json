@@ -3168,5 +3168,12 @@
       "status": 200,
       "body": "event: error\ndata: {\"type\":\"error\",\"code\":\"fixture_code\",\"message\":\"fixture failure\"}\n\n"
     }
+  },
+  "completionSDKErrorEvents": {
+    "error-envelope": "data: {\"error\":{\"message\":\"quota\",\"type\":\"server_error\",\"code\":\"limit\"}}\n\n",
+    "named-error": "event: error\ndata: {\"message\":\"named quota\"}\n\n",
+    "scalar-error": "data: {\"error\":\"scalar quota\"}\n\n",
+    "falsy-error-control": "data: {\"error\":false,\"choices\":[]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"hello\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n",
+    "malformed-json": "data: {bad}\n\n"
   }
 }

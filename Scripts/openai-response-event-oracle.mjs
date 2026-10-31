@@ -157,6 +157,14 @@ completionNonObjectObserved.output = projectCompletions(await runCompletions(fix
   },
 }));
 const completionTransport = {};
+const completionSDKErrors = {};
+for (const [name, rawSSE] of Object.entries(fixture.completionSDKErrorEvents)) {
+  const observed = { events: [] };
+  observed.output = projectCompletions(await runCompletions([], {
+    rawSSE, onProviderStreamEvent: async event => { observed.events.push(structuredClone(event)); },
+  }));
+  completionSDKErrors[name] = observed;
+}
 for (const [name, spec] of Object.entries(fixture.completionTransportCases)) {
   completionTransport[name] = await runCompletions([], {
     supportsFinishReason: spec.supportsFinishReason, rawSSE: spec.sse, collectEvents: true,
@@ -191,6 +199,7 @@ process.stdout.write(`${JSON.stringify({
     "completions.block-lifecycle": completionBlockLifecycle,
     "completions.provider-stream-observer": completionObserved,
     "completions.non-object-provider-events": completionNonObjectObserved,
+    "completions.sdk-error-events": completionSDKErrors,
     "completions.http-raw-metadata": projectCompletions(completionHTTPRawMetadata),
     "completions.abort": projectCompletions(completionAbort),
   },

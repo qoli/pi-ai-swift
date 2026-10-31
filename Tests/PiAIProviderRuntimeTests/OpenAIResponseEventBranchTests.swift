@@ -579,6 +579,45 @@ struct OpenAIResponseEventBranchTests {
   }
 
   @Test
+  func completionsSDKErrorsDoNotReachRawEventCallback() async throws {
+    let fixture = try responseEventFixture()
+    let oracle = try decodeJSONObject(
+      Data(
+        contentsOf: responseEventRepositoryRoot().appending(
+          path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
+      providerID: "fixture", operation: "completion.sdk-errors")
+    for (name, value) in try #require(fixture.object("completionSDKErrorEvents")) {
+      let sse = try #require(value.stringValue)
+      let expected = try #require(
+        oracle.object("cases")?.object("completions.sdk-error-events")?.object(name))
+      let capture = WireObserverCapture()
+      let (request, base) = eventRequestContext(
+        protocolID: "openai-completions", providerID: "fixture", modelID: "requested-model",
+        tools: [], metadata: [:])
+      var context = base
+      context.wireObserver = .init(onProviderStreamEvent: { event, model in
+        await capture.event(event, model)
+      })
+      var failure: ProviderRuntimeFailure?
+      var snapshot: ProviderResponseSnapshot?
+      do {
+        for try await event in OpenAICompletionsAdapter().stream(
+          request, context: context, transport: EventBranchTransport(chunks: [Data(sse.utf8)]))
+        {
+          if case .responseSnapshot(let value) = event { snapshot = value }
+        }
+      } catch let value as ProviderRuntimeFailure { failure = value }
+      #expect(await capture.events == expected.array("events"), Comment(rawValue: name))
+      if let message = expected.object("output")?.string("errorMessage") {
+        #expect(failure?.message == message, Comment(rawValue: name))
+      } else {
+        #expect(failure == nil, Comment(rawValue: name))
+        #expect(snapshot?.content == [.text(.init(text: "hello", signature: nil))])
+      }
+    }
+  }
+
+  @Test
   func completionsAwaitObserverFailuresBeforeNormalizingContent() async throws {
     let fixture = try responseEventFixture()
     let chunks = try #require(fixture.array("completionObserverChunks"))

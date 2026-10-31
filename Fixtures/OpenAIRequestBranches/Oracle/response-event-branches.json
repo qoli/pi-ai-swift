@@ -514,6 +514,104 @@
         "totalTokens": 14
       }
     },
+    "completions.sdk-error-events": {
+      "error-envelope": {
+        "events": [],
+        "output": {
+          "content": [],
+          "errorMessage": "quota",
+          "stopReason": "error",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "falsy-error-control": {
+        "events": [
+          {
+            "choices": [],
+            "error": false
+          },
+          {
+            "choices": [
+              {
+                "delta": {
+                  "content": "hello"
+                },
+                "finish_reason": "stop",
+                "index": 0
+              }
+            ]
+          }
+        ],
+        "output": {
+          "content": [
+            {
+              "text": "hello",
+              "type": "text"
+            }
+          ],
+          "rawStopReason": "stop",
+          "stopReason": "stop",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "malformed-json": {
+        "events": [],
+        "output": {
+          "content": [],
+          "errorMessage": "Error reading response: malformed server-sent event JSON.",
+          "stopReason": "error",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "named-error": {
+        "events": [],
+        "output": {
+          "content": [],
+          "errorMessage": "named quota",
+          "stopReason": "error",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      },
+      "scalar-error": {
+        "events": [],
+        "output": {
+          "content": [],
+          "errorMessage": "\"scalar quota\"",
+          "stopReason": "error",
+          "usage": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "totalTokens": 0
+          }
+        }
+      }
+    },
     "completions.stop-reason-response-branches": {
       "contentFilter": {
         "content": [],
