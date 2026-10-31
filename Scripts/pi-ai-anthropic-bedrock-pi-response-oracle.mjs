@@ -34,6 +34,11 @@ registerHooks({
           globalThis.__PI_BEDROCK_OBSERVER_PARAMS__ = command.input;
           return { $metadata: { httpStatusCode: 200, requestId: "bedrock-branch" }, stream: (async function* () {
             yield { messageStart: { role: "assistant" } };
+            if (globalThis.__PI_BEDROCK_TRANSPORT_ERROR__) {
+              const error = new Error(globalThis.__PI_BEDROCK_TRANSPORT_ERROR__);
+              error.name = "TimeoutError";
+              throw error;
+            }
             yield { internalServerException: new Error("bedrock stream failed") };
           })() };
         }
@@ -119,8 +124,9 @@ async function runBedrock(scenario, input) {
     if (!address || typeof address === "string") throw new Error("invalid loopback address");
     const implementation = await providerStreams(
       upstreamRoot,
-      await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href + (scenario.driver === "decoded-sdk-events" ? "?decoded-fixture" : "")),
+      await import(pathToFileURL(path.join(apiRoot, "bedrock-converse-stream.ts")).href + (scenario.driver?.startsWith("decoded-sdk-") ? "?decoded-fixture" : "")),
     );
+    globalThis.__PI_BEDROCK_TRANSPORT_ERROR__ = input.transportFailure;
     const stream = implementation.stream(
       { ...model(scenario.protocolID), ...(scenario.cost ? { cost: scenario.cost } : {}), baseUrl: `http://127.0.0.1:${address.port}` },
       context(),
@@ -412,6 +418,17 @@ function stimulus(caseID) {
       ["messageStart", { role: "assistant" }],
       ["throttlingException", { message: "fixture throttled" }, "exception"],
     ]);
+    case "bedrock-unmodeled-error-before-response": return aws([
+      ["ModelStreamErrorException", { message: "fixture unmodeled error" }, "error"],
+    ]);
+    case "bedrock-unmodeled-error-after-start": return aws([
+      ["messageStart", { role: "assistant" }],
+      ["ModelStreamErrorException", { message: "fixture unmodeled error" }, "error"],
+    ]);
+    case "bedrock-underlying-transport-error": return {
+      ...aws([["messageStart", { role: "assistant" }]]),
+      transportFailure: "fixture transport error",
+    };
     case "bedrock-missing-terminal": return aws([
       ["messageStart", { role: "assistant" }],
       ["contentBlockDelta", { contentBlockIndex: 0, delta: { text: "partial" } }],
@@ -488,12 +505,16 @@ function encodeAWS(eventType, payload, messageType = "event") {
     (value) => new TextEncoder().encode(value),
   );
   return Buffer.from(codec.encode({
-    headers: {
+    headers: messageType === "error" ? {
+      ":message-type": { type: "string", value: "error" },
+      ":error-code": { type: "string", value: eventType },
+      ":error-message": { type: "string", value: payload.message },
+    } : {
       ":message-type": { type: "string", value: messageType },
       [messageType === "exception" ? ":exception-type" : ":event-type"]: { type: "string", value: eventType },
       ":content-type": { type: "string", value: "application/json" },
     },
-    body: new TextEncoder().encode(JSON.stringify(payload)),
+    body: messageType === "error" ? new Uint8Array() : new TextEncoder().encode(JSON.stringify(payload)),
   }));
 }
 function fakeFetch(input) {

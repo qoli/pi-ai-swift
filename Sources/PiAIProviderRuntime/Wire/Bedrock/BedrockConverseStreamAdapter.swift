@@ -18,6 +18,10 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
         var diagnostics: [JSONValue] = []
         var responseRequestID: String?
         var sdkExceptionName: String?
+        var sdkErrorCode: String?
+        var sdkErrorStatus: Int?
+        var sdkDeserializationSuffix = ""
+        var receivedSDKResponse = false
         do {
           let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await PreferredStrictToolFallback.response(
@@ -34,8 +38,20 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           func observeResponse(_ message: AWSEventStreamMessage) {
             if message.headers[":message-type"] == "exception" {
               sdkExceptionName = BedrockFailure.exceptionName(message.headers[":exception-type"])
-            } else if responseRequestID == nil {
-              responseRequestID = BedrockFailure.normalized(diagnosticRequestID)
+              sdkErrorCode = sdkExceptionName
+            } else if message.headers[":message-type"] == "error" {
+              sdkErrorCode = message.headers[":error-code"]
+              if !receivedSDKResponse {
+                sdkErrorStatus = response.statusCode
+                responseRequestID = BedrockFailure.normalized(diagnosticRequestID)
+                sdkDeserializationSuffix =
+                  "\n  Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object."
+              }
+            } else {
+              receivedSDKResponse = true
+              if responseRequestID == nil {
+                responseRequestID = BedrockFailure.normalized(diagnosticRequestID)
+              }
             }
           }
           var decoder = AWSEventStreamDecoder()
@@ -71,7 +87,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           var metadata = error.providerMetadata ?? [:]
           var failures = metadata.array("diagnostics") ?? []
           if let value = BedrockFailure.diagnostic(
-            errorCode: sdkExceptionName, requestID: responseRequestID)
+            status: sdkErrorStatus, errorCode: sdkErrorCode, requestID: responseRequestID)
           {
             failures.append(value)
           }
@@ -83,12 +99,26 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
               code: error.code,
               message: sdkExceptionName.map {
                 BedrockFailure.message(error.message, exceptionName: $0)
-              } ?? error.message,
+              } ?? (error.message + sdkDeserializationSuffix),
               providerID: error.providerID,
               operation: error.operation, causeDescription: error.causeDescription,
               providerMetadata: metadata.isEmpty ? nil : metadata))
         } catch {
-          continuation.finish(throwing: error)
+          guard !Task.isCancelled, !(error is CancellationError),
+            !diagnostics.isEmpty || responseRequestID != nil
+          else {
+            continuation.finish(throwing: error)
+            return
+          }
+          if let value = BedrockFailure.diagnostic(requestID: responseRequestID) {
+            diagnostics.append(value)
+          }
+          continuation.finish(
+            throwing: ProviderRuntimeFailure(
+              code: .transportFailed, message: error.localizedDescription,
+              providerID: request.providerID, operation: "bedrock.response",
+              causeDescription: String(describing: error),
+              providerMetadata: ["diagnostics": .array(diagnostics)]))
         }
       }
       continuation.onTermination = { _ in task.cancel() }
@@ -982,6 +1012,14 @@ private struct BedrockEventReducer {
     async throws -> [ProviderEvent]
   {
     let messageType = message.headers[":message-type"] ?? "event"
+    if messageType == "error" {
+      throw ProviderRuntimeFailure(
+        code: .transportFailed,
+        message: message.headers[":error-message"].flatMap { $0.isEmpty ? nil : $0 }
+          ?? "UnknownError",
+        providerID: providerID, operation: "bedrock.event.error",
+        causeDescription: message.headers[":error-code"])
+    }
     let eventType = message.headers[":event-type"] ?? message.headers[":exception-type"]
     let object = try decodeJSONObject(
       message.payload,

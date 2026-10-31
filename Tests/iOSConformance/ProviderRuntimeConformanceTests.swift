@@ -495,7 +495,8 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       let before = Int64(Date().timeIntervalSince1970 * 1_000)
       let result = try await replay(
         BedrockConverseStreamAdapter(), request: request, context: context, chunks: chunks,
-        status: try XCTUnwrap(decoder.int("status")), headers: headers)
+        status: try XCTUnwrap(decoder.int("status")), headers: headers,
+        failure: decoder.string("transportFailure"))
       let after = Int64(Date().timeIntervalSince1970 * 1_000)
       let failure = try XCTUnwrap(result.failure, name)
       let diagnostics = try (failure.providerMetadata?.array("diagnostics") ?? []).map {
@@ -2434,7 +2435,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
   private func replay(
     _ adapter: any WireProtocolAdapter, request: ProviderRequest, context: WireProtocolContext,
     chunks: [Data], status: Int = 200,
-    headers: [String: String] = ["content-type": "text/event-stream"]
+    headers: [String: String] = ["content-type": "text/event-stream"], failure: String? = nil
   ) async throws -> (
     snapshot: ProviderResponseSnapshot?, failure: ProviderRuntimeFailure?, starts: Int
   ) {
@@ -2443,7 +2444,8 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     do {
       for try await event in adapter.stream(
         request, context: context,
-        transport: IOSFixtureTransport(chunks: chunks, status: status, headers: headers))
+        transport: IOSFixtureTransport(
+          chunks: chunks, status: status, headers: headers, failure: failure))
       {
         if case .responseSnapshot(let value) = event { snapshot = value }
         if case .responseStarted = event { starts += 1 }
@@ -2577,13 +2579,20 @@ private struct IOSFixtureTransport: ProviderHTTPStreamingTransport {
   let chunks: [Data]
   var status = 200
   var headers = ["content-type": "text/event-stream"]
+  var failure: String? = nil
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     .init(
       statusCode: status, headers: headers,
       body: AsyncThrowingStream { continuation in
         for chunk in chunks { continuation.yield(chunk) }
-        continuation.finish()
+        if let failure {
+          continuation.finish(
+            throwing: NSError(
+              domain: "fixture", code: 1, userInfo: [NSLocalizedDescriptionKey: failure]))
+        } else {
+          continuation.finish()
+        }
       })
   }
 }

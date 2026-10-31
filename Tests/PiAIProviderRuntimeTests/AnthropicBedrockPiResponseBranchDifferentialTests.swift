@@ -228,7 +228,13 @@ private struct ResponseBranchTransport: ProviderHTTPStreamingTransport {
       headers: input.headers,
       body: AsyncThrowingStream { continuation in
         for chunk in chunks { continuation.yield(chunk) }
-        continuation.finish()
+        if let message = input.transportFailure {
+          continuation.finish(
+            throwing: NSError(
+              domain: "fixture", code: 1, userInfo: [NSLocalizedDescriptionKey: message]))
+        } else {
+          continuation.finish()
+        }
       })
   }
 }
@@ -488,6 +494,7 @@ private actor AnthropicWireCapture {
 }
 
 private struct ResponseBranchDecoderInput: Decodable, Sendable {
+  let transportFailure: String?
   let kind: String
   let status: Int
   let headers: [String: String]

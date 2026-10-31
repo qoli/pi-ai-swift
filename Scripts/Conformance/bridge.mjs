@@ -350,26 +350,39 @@ async function mockResponse(model, request, body, options, connection) {
     } catch (error) {
       const status = error.$metadata?.httpStatusCode ?? (error.name === "ValidationException" ? 400 : undefined);
       if (!status) throw error;
-      return { status, headers: { "x-amzn-errortype": error.name },
+      return { status, headers: { "x-amzn-errortype": error.name,
+        ...(error.$metadata?.requestId ? { "x-amzn-requestid": error.$metadata.requestId } : {}) },
         chunks: [Buffer.from(JSON.stringify({ __type: error.name, message: error.message })).toString("base64")] };
     }
     const codec = new EventStreamCodec(bytes => new TextDecoder().decode(bytes), value => new TextEncoder().encode(value));
     const chunks = (async function* () {
-      for await (const event of response.stream) {
-        const [type, payload] = Object.entries(event)[0];
-        const body = JSON.stringify(payload instanceof Error ? { ...payload, message: payload.message } : payload,
-          (_key, value) => value instanceof Uint8Array ? Buffer.from(value).toString("base64") : value);
-        if (hasNativeWireObserver(model) && options.onProviderStreamEvent) {
-          connection.providerEvents.push({ reference: event, serialized: { [type]: JSON.parse(body) } });
-        } else if (!hasNativeWireObserver(model)) await options.onProviderStreamEvent?.(event, model);
+      try {
+        for await (const event of response.stream) {
+          const [type, payload] = Object.entries(event)[0];
+          const body = JSON.stringify(payload instanceof Error ? { ...payload, message: payload.message } : payload,
+            (_key, value) => value instanceof Uint8Array ? Buffer.from(value).toString("base64") : value);
+          if (hasNativeWireObserver(model) && options.onProviderStreamEvent) {
+            connection.providerEvents.push({ reference: event, serialized: { [type]: JSON.parse(body) } });
+          } else if (!hasNativeWireObserver(model)) await options.onProviderStreamEvent?.(event, model);
+          yield Buffer.from(codec.encode({
+            headers: {
+              // The fixture has already yielded a parsed SDK item, including any error item.
+              ":message-type": { type: "string", value: "event" },
+              ":event-type": { type: "string", value: type },
+              ":content-type": { type: "string", value: "application/json" },
+            },
+            body: new TextEncoder().encode(body),
+          })).toString("base64");
+        }
+      } catch (error) {
+        if (!(error instanceof Error) || !error.name.endsWith("Exception")) throw error;
         yield Buffer.from(codec.encode({
           headers: {
-            // The fixture has already yielded a parsed SDK item, including any error item.
-            ":message-type": { type: "string", value: "event" },
-            ":event-type": { type: "string", value: type },
-            ":content-type": { type: "string", value: "application/json" },
+            ":message-type": { type: "string", value: "error" },
+            ":error-code": { type: "string", value: error.name },
+            ":error-message": { type: "string", value: error.message },
           },
-          body: new TextEncoder().encode(body),
+          body: new Uint8Array(),
         })).toString("base64");
       }
     })();

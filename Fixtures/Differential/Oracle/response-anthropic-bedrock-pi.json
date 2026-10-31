@@ -2390,6 +2390,140 @@
         }
       }
     },
+    "bedrock-underlying-transport-error": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA=="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200,
+        "transportFailure": "fixture transport error"
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "requestId": "bedrock-branch"
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "fixture transport error",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-unmodeled-error-after-start": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAdwAAAGf9BhdNDTptZXNzYWdlLXR5cGUHAAVlcnJvcgs6ZXJyb3ItY29kZQcAGU1vZGVsU3RyZWFtRXJyb3JFeGNlcHRpb24OOmVycm9yLW1lc3NhZ2UHABdmaXh0dXJlIHVubW9kZWxlZCBlcnJvcj58vY8="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "errorCode": "ModelStreamErrorException",
+              "requestId": "bedrock-branch"
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "fixture unmodeled error",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-unmodeled-error-before-response": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdwAAAGf9BhdNDTptZXNzYWdlLXR5cGUHAAVlcnJvcgs6ZXJyb3ItY29kZQcAGU1vZGVsU3RyZWFtRXJyb3JFeGNlcHRpb24OOmVycm9yLW1lc3NhZ2UHABdmaXh0dXJlIHVubW9kZWxlZCBlcnJvcj58vY8="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "errorCode": "ModelStreamErrorException",
+              "requestId": "bedrock-branch",
+              "status": 200
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "fixture unmodeled error\n  Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
     "pi-error-event": {
       "decoderInput": {
         "chunksBase64": [

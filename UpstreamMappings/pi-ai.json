@@ -2183,7 +2183,8 @@
         "packages/ai/test/anthropic-error-tool-result-images.test.ts",
         "packages/ai/test/bedrock-cache-write-1h-cost.test.ts",
         "packages/ai/test/bedrock-convert-messages.test.ts",
-        "packages/ai/test/bedrock-stream-state.test.ts"
+        "packages/ai/test/bedrock-stream-state.test.ts",
+        "packages/ai/test/bedrock-error-metadata.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",

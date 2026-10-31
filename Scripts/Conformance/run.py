@@ -185,7 +185,7 @@ def main():
         "conformant": conformant,
         "exitCodes": exit_codes,
         "scope": "unchanged upstream test files listed in suites",
-        "bridgeBoundary": "Swift ProviderRuntimeKernel, wire adapters and catalog; upstream transcript assembly, fixture credentials and SDK transports remain test infrastructure; authorization lifecycle is not covered",
+        "bridgeBoundary": "Swift ProviderRuntimeKernel, wire adapters and catalog; upstream transcript assembly, fixture credentials and SDK transports remain test infrastructure; general SDK retry policies and authorization lifecycle are not covered",
         "mismatchMeaning": "An original assertion differs across the bridge; ownership and bridge triage are required before classifying it as a Swift runtime defect",
         "suites": [{
             "path": f"packages/ai/test/{suite}",

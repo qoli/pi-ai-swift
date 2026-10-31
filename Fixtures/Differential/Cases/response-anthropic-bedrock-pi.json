@@ -357,6 +357,22 @@
         "kind": "aws-eventstream",
         "status": 200
       }
+    },
+    {
+      "caseID": "bedrock-unmodeled-error-before-response",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics"
+    },
+    {
+      "caseID": "bedrock-unmodeled-error-after-start",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics"
+    },
+    {
+      "caseID": "bedrock-underlying-transport-error",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics",
+      "driver": "decoded-sdk-transport-error"
     }
   ]
 }

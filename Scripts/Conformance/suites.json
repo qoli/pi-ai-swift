@@ -17,6 +17,7 @@
     "azure-openai-tool-choice.test.ts",
     "bedrock-cache-write-1h-cost.test.ts",
     "bedrock-convert-messages.test.ts",
+    "bedrock-error-metadata.test.ts",
     "bedrock-raw-stop-reason.test.ts",
     "bedrock-redacted-reasoning.test.ts",
     "bedrock-stream-state.test.ts",
