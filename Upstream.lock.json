@@ -430,7 +430,8 @@
     "packages/telemetry/src/memory.ts",
     "packages/telemetry/src/metrics.ts",
     "packages/telemetry/src/noop.ts",
-    "packages/ai/test/bedrock-convert-messages.test.ts"
+    "packages/ai/test/bedrock-convert-messages.test.ts",
+    "packages/ai/test/bedrock-stream-state.test.ts"
   ],
   "sourceArtifact": {
     "kind": "frozen-public-catalog-inputs",

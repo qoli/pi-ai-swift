@@ -272,6 +272,9 @@ struct SwiftConformanceProbe {
       identityHost: try JSONDecoder().decode(
         ProviderIdentityHost.self,
         from: JSONEncoder().encode(JSONValue.object(envelope.object("identityHost") ?? [:]))))
+    if input.measureHeap == true, pi_heap_begin() != 0 {
+      throw ProbeError.unrepresentable("swift-process-heap-observer")
+    }
     let execution = Task {
       var events: [ProviderEvent] = []
       var failure: [String: JSONValue]?
@@ -311,6 +314,10 @@ struct SwiftConformanceProbe {
     }
     let (events, failure) = await execution.value
     if interactive {
+      if input.measureHeap == true {
+        let bytes = pi_heap_allocated_bytes()
+        try channel.write("heap", ["allocatedBytes": bytes])
+      }
       try channel.write("finished", failure)
       return
     }
@@ -489,6 +496,7 @@ private struct ProbeInput: Decodable {
   let environment: [String: String]
   let responses: [Response]?
   let aborted: Bool?
+  let measureHeap: Bool?
   struct Context: Decodable {
     let systemPrompt: String?
     let messages: [[String: JSONValue]]

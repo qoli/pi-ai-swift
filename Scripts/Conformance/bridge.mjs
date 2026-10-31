@@ -1,4 +1,5 @@
 import { spawn, spawnSync } from "node:child_process";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { appendFileSync } from "node:fs";
 import { createInterface } from "node:readline";
 import path from "node:path";
@@ -13,6 +14,14 @@ import { mistralSDKPayload, mistralWirePayload } from "./mistral-payload.mjs";
 import { bedrockSDKPayload, bedrockWirePayload } from "./bedrock-payload.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
+const heapObservations = new AsyncLocalStorage();
+
+export async function measureNativeAllocatedBytes(operation) {
+  const samples = [];
+  await heapObservations.run(samples, operation);
+  if (!samples.length) throw new Error("No Swift heap measurement was returned");
+  return samples.reduce((total, sample) => total + sample, 0);
+}
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
 const { getCurrentSystemPrompt, getCurrentTools } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
 const { getSystemMessageText, renderSystemMessageUpdate } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/text.ts")));
@@ -196,6 +205,7 @@ export function stream(model, context, options = {}, requestSource = "api", gene
 }
 
 async function nativeStream(model, context, options, emitEvent, requestSource, generationMode) {
+  const heapSamples = heapObservations.getStore();
   const credential = fixtureCredential(model, options);
   const connection = { credential, providerEvents: [] };
   const child = spawn(process.env.PI_CONFORMANCE_PROBE, ["--stream"], { stdio: ["pipe", "pipe", "pipe"] });
@@ -213,7 +223,7 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
   const cancel = () => send({ kind: "cancel" });
   options.signal?.addEventListener("abort", cancel, { once: true });
   record("encode", model.api, undefined, capabilities(options, model), "stream");
-  send(fixtureInput(model, context, options, [], credential, requestSource, generationMode));
+  send({ ...fixtureInput(model, context, options, [], credential, requestSource, generationMode), measureHeap: !!heapSamples });
   const serve = async request => {
     const controller = new AbortController();
     requestController = controller;
@@ -275,6 +285,13 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
         requestController?.abort();
       } else if (frame.kind === "event") {
         emitEvent(frame.payload);
+      } else if (frame.kind === "heap") {
+        if (!heapSamples) throw new Error("Unexpected Swift heap measurement");
+        heapSamples.push(frame.payload.allocatedBytes);
+        const state = expect.getState();
+        appendFileSync(path.join(process.env.PI_CONFORMANCE_OUTPUT, "heap-observations.jsonl"), JSON.stringify({
+          file: state.testPath, test: state.currentTestName, protocol: model.api, allocatedBytes: frame.payload.allocatedBytes,
+        }) + "\n");
       } else if (frame.kind === "finished") {
         finished = true;
         failure = frame.payload;

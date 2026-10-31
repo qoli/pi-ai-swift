@@ -132,10 +132,14 @@ def main():
         modules = bin_path
     if not objects:
         raise SystemExit("Swift provider-runtime object files were not produced")
+    heap_object = bin_path / "heap-observer.o"
+    run(["xcrun", "clang", "-std=c11", "-c",
+         str(repo / "Scripts/Conformance/HeapObserver.c"), "-o", str(heap_object)], cwd=repo)
     run(["xcrun", "swiftc", "-parse-as-library", "-g", "-enable-testing",
+         "-import-objc-header", str(repo / "Scripts/Conformance/HeapObserver.h"),
          "-I", str(modules),
          str(repo / "Scripts/Conformance/SwiftProbe.swift"),
-         *map(str, objects), "-o", str(probe)], cwd=repo)
+         *map(str, objects), str(heap_object), "-o", str(probe)], cwd=repo)
     environment = {
         key: value for key, value in os.environ.items()
         if not re.search(r"TOKEN|API_KEY|SECRET|ACCESS_KEY|CREDENTIAL|PROXY$", key, re.IGNORECASE)
@@ -154,6 +158,7 @@ def main():
     reports = {}
     exit_codes = {}
     (build / "upstream-invocations.jsonl").write_text("")
+    (build / "heap-observations.jsonl").write_text("")
     for implementation in ["upstream", "swift"]:
         environment["PI_CONFORMANCE_IMPLEMENTATION"] = implementation
         (build / "swift-invocations.jsonl").write_text("")
@@ -188,6 +193,8 @@ def main():
         } for suite in suites],
         "statusCounts": dict(Counter(case["status"] for case in cases)),
         "conformanceCounts": dict(Counter(case["conformanceStatus"] for case in cases)),
+        "heapMeasurements": [json.loads(line) for line in
+                             (build / "heap-observations.jsonl").read_text().splitlines()],
         "upstreamStatusCounts": dict(Counter(case["upstreamStatus"] for case in cases)),
         "suiteResults": {implementation: [{
             "path": str(Path(file["name"]).relative_to(upstream)),

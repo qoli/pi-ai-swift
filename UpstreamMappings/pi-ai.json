@@ -2180,7 +2180,8 @@
         "packages/ai/test/bedrock-strict-tool-fallback.test.ts",
         "packages/ai/test/anthropic-error-tool-result-images.test.ts",
         "packages/ai/test/bedrock-cache-write-1h-cost.test.ts",
-        "packages/ai/test/bedrock-convert-messages.test.ts"
+        "packages/ai/test/bedrock-convert-messages.test.ts",
+        "packages/ai/test/bedrock-stream-state.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2231,7 +2232,11 @@
         "Fixtures/Differential/Cases/bedrock-input-interop.json",
         "Fixtures/Differential/Oracle/bedrock-input-interop.json",
         "Tests/PiAIProviderRuntimeTests/BedrockInputInteropDifferentialTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockImportedContentMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockImportedContentMatchesPinnedSource",
+        "Scripts/Conformance/HeapObserver.c",
+        "Scripts/Conformance/HeapObserver.h",
+        "Scripts/Conformance/memory-observer.mjs",
+        "Scripts/tests/test_native_heap_observer.py"
       ],
       "requiredGates": [
         "swift-test"
