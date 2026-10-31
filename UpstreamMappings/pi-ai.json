@@ -2420,7 +2420,8 @@
         "Fixtures/Differential/Cases/client-identity.json",
         "Fixtures/Differential/Oracle/client-identity.json",
         "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleSignedToolCallMatchesStreamAndSnapshot"
       ],
       "requiredGates": [
         "swift-test"
@@ -2484,7 +2485,8 @@
         "Fixtures/Differential/Cases/client-identity.json",
         "Fixtures/Differential/Oracle/client-identity.json",
         "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleSignedToolCallMatchesStreamAndSnapshot"
       ],
       "requiredGates": [
         "swift-test"

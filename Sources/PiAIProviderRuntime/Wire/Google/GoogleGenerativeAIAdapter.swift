@@ -900,27 +900,21 @@ private struct GoogleEventReducer {
             }
             toolCallIDs.insert(id)
             sawToolCall = true
-            self.content.append(
-              .toolCall(
-                ProviderToolCall(
-                  id: id,
-                  name: name,
-                  arguments: arguments,
-                  thoughtSignature: part.string("thoughtSignature").flatMap {
-                    $0.isEmpty ? nil : $0
-                  }
-                )))
+            let call = ProviderToolCall(
+              id: id,
+              name: name,
+              arguments: arguments,
+              thoughtSignature: part.string("thoughtSignature").flatMap {
+                $0.isEmpty ? nil : $0
+              })
+            self.content.append(.toolCall(call))
             let argumentData = try JSONEncoder().encode(arguments)
             guard let argumentText = String(data: argumentData, encoding: .utf8) else {
               throw invalid("Google function call arguments are not UTF-8")
             }
             normalized.append(.toolCallStarted(id: id, name: name))
             normalized.append(.toolInputDelta(id: id, delta: argumentText))
-            normalized.append(
-              .toolCallCompleted(
-                ProviderToolCall(id: id, name: name, arguments: arguments)
-              )
-            )
+            normalized.append(.toolCallCompleted(call))
           }
         }
       }

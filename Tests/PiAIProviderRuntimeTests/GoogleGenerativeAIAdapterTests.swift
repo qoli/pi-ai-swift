@@ -132,11 +132,23 @@ struct GoogleGenerativeAIAdapterTests {
           ProviderToolCall(
             id: "call-1",
             name: "weather",
-            arguments: .object(["city": .string("Taipei")])
+            arguments: .object(["city": .string("Taipei")]),
+            thoughtSignature: "ZWZnaA=="
           )
         ))
     )
     #expect(events.last == .completed(.toolCalls))
+    let completedCalls = events.compactMap { event -> ProviderToolCall? in
+      if case .toolCallCompleted(let call) = event { call } else { nil }
+    }
+    let snapshot = try #require(
+      events.compactMap { event -> ProviderResponseSnapshot? in
+        if case .responseSnapshot(let value) = event { value } else { nil }
+      }.last)
+    #expect(
+      snapshot.content.compactMap { content -> ProviderToolCall? in
+        if case .toolCall(let call) = content { call } else { nil }
+      } == completedCalls)
 
     let sent = try #require(await transport.request())
     #expect(

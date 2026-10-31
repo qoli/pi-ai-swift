@@ -456,6 +456,31 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testGoogleSignedToolCallMatchesStreamAndSnapshot() async throws {
+    let wire =
+      #"data: {"candidates":[{"content":{"role":"model","parts":[{"functionCall":{"id":"signed-call","name":"echo","args":{"value":"fixture"}},"thoughtSignature":"fixture-signature"}]},"finishReason":"STOP"}]}"#
+      + "\n\n"
+    for api in ["google-generative-ai", "google-vertex"] {
+      let (request, context) = inputs(api: api, providerID: api)
+      var calls: [ProviderToolCall] = []
+      var snapshot: ProviderResponseSnapshot?
+      for try await event in GoogleGenerativeAIAdapter(
+        protocolID: api, flavor: api == "google-vertex" ? .vertex : .generativeAI
+      ).stream(request, context: context, transport: IOSFixtureTransport(chunks: [Data(wire.utf8)]))
+      {
+        if case .toolCallCompleted(let call) = event { calls.append(call) }
+        if case .responseSnapshot(let value) = event { snapshot = value }
+      }
+      XCTAssertEqual(calls.count, 1, api)
+      XCTAssertEqual(calls.first?.thoughtSignature, "fixture-signature", api)
+      let snapshotCalls = try XCTUnwrap(snapshot).content.compactMap {
+        content -> ProviderToolCall? in
+        if case .toolCall(let call) = content { call } else { nil }
+      }
+      XCTAssertEqual(calls, snapshotCalls, api)
+    }
+  }
+
   func testGoogleFailureMetadataMatchesPinnedSource() async throws {
     let oracle = try load("Differential/Oracle/failure-provider-declared.json")
     for api in ["google-generative-ai", "google-vertex"] {
