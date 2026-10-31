@@ -17,6 +17,7 @@ behavior. Document completion claims must stay within that evidence.
 | [UPSTREAM_CHECK_2026-09-24.md](UPSTREAM_CHECK_2026-09-24.md) | Retired | Initial failed assessment; superseded by schema 6 reconstruction and the completed sync |
 | [SCHEMA6_FEASIBILITY.md](SCHEMA6_FEASIBILITY.md) | Landed | Catalog probe and tooling-stage history; full acceptance recorded in the sync report |
 | [UPSTREAM_SYNC_2026-09-25.md](UPSTREAM_SYNC_2026-09-25.md) | Landed | Exact-source schema 6 acceptance, wire/usage corrections, emission-time evidence and explicit unsupported capabilities |
+| [UPSTREAM_REVIEW_2026-10-30.md](UPSTREAM_REVIEW_2026-10-30.md) | Draft | Candidate `86dc686c` assessment, strict retry policy and tool-argument error contract decisions; accepted pin unchanged |
 
 ## Status meanings
 
