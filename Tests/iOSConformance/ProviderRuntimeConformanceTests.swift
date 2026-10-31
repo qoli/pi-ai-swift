@@ -738,9 +738,15 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
         ?? ["thinkingEnabled", "thinkingBudgetTokens", "effort"]
       let providerOptions = Dictionary(
         uniqueKeysWithValues: keys.map { ($0, sourceOptions[$0] ?? .null) })
-      let (_, context) = inputs(
+      let (_, baseContext) = inputs(
         api: "anthropic-messages", providerID: "anthropic", modelID: modelID,
         reasoning: true, metadata: model)
+      var context = baseContext
+      let payloads = IOSWireObserverCapture()
+      context.wireObserver = .init(onPayload: { payload, _ in
+        await payloads.payload(.object(payload))
+        return nil
+      })
       let request = ProviderRequest(
         id: name, providerID: "anthropic", modelID: modelID,
         messages: [
@@ -771,10 +777,8 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       XCTAssertEqual(
         failure?.providerMetadata?.string("providerThinkingLevel"),
         expected.string("providerThinkingLevel"), name)
-      let sent = await transport.sent
-      let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: "anthropic",
-        operation: "ios.anthropic.raw.body")
+      let observed = await payloads.payloads
+      let body = try XCTUnwrap(observed.last?.objectValue, name)
       let fields = try XCTUnwrap(spec.array("projectFields")).compactMap(\.stringValue)
       let actual = Dictionary(
         uniqueKeysWithValues: fields.compactMap { key in body[key].map { (key, $0) } })
@@ -1341,6 +1345,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
         headers: base.headers, credential: credential, modelConfiguration: base.modelConfiguration)
       let capture = IOSWireObserverCapture()
       context.wireObserver = .init(onPayload: { payload, _ in
+        for (key, value) in spec.object("payloadChanges") ?? [:] { payload[key] = value }
         await capture.payload(.object(payload))
         return nil
       })
@@ -1351,11 +1356,14 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
           maximumOutputTokens: 100, temperature: nil,
           reasoningEffort: nil, responseSchema: nil, providerOptions: [:],
           cacheRetention: spec.string("cacheRetention") == "none" ? .none : .short))
+      let transport = IOSStrictFallbackFixture(spec: spec)
       for try await _ in AnthropicMessagesAdapter().stream(
-        request, context: context, transport: IOSStrictFallbackFixture(spec: spec))
+        request, context: context, transport: transport)
       {}
       let actual = await capture.payloads
       XCTAssertEqual(actual, oracle.object("cases")?.object(name)?.array("logicalPayloads"), name)
+      let http = await transport.httpRequests
+      XCTAssertEqual(http, oracle.object("cases")?.object(name)?.array("httpRequests"), name)
     }
   }
 
@@ -2386,8 +2394,21 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
 private actor IOSStrictFallbackFixture: ProviderHTTPStreamingTransport {
   let spec: [String: JSONValue]
   var attempts = 0
+  var httpRequests: [JSONValue] = []
   init(spec: [String: JSONValue]) { self.spec = spec }
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    httpRequests.append(
+      .object([
+        "url": .string(try XCTUnwrap(request.url?.absoluteString)),
+        "body": try JSONDecoder().decode(JSONValue.self, from: XCTUnwrap(request.httpBody)),
+        "headers": .object(
+          Dictionary(
+            uniqueKeysWithValues: (request.allHTTPHeaderFields ?? [:]).compactMap { key, value in
+              let name = key.lowercased()
+              return ["anthropic-beta", "anthropic-user-profile-id", "anthropic-workspace-id"]
+                .contains(name) ? (name, .string(value)) : nil
+            })),
+      ]))
     let index = attempts
     attempts += 1
     let bedrock = spec.string("protocolID") == "bedrock-converse-stream"

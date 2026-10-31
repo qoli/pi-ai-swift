@@ -86,6 +86,7 @@ struct AnthropicInlineToolDifferentialTests {
       let transport = InlineToolFixtureTransport(spec: spec)
       let payloads = InlineToolPayloadCapture()
       context.wireObserver = .init(onPayload: { payload, _ in
+        for (key, value) in spec.object("payloadChanges") ?? [:] { payload[key] = value }
         await payloads.append(.object(payload))
         return nil
       })
@@ -98,6 +99,13 @@ struct AnthropicInlineToolDifferentialTests {
         }
       } catch { Issue.record("\(name): \(error)") }
       #expect(completed, Comment(rawValue: name))
+      let sent = await transport.httpRequests
+      #expect(
+        sent == expected.array("httpRequests"),
+        Comment(
+          rawValue:
+            "\(name): \(firstRequestDifference(.array(sent), .array(expected.array("httpRequests") ?? [])))"
+        ))
       let actual = await payloads.values
       #expect(
         actual == expected.array("logicalPayloads"),
@@ -117,10 +125,22 @@ private actor InlineToolPayloadCapture {
 private actor InlineToolFixtureTransport: ProviderHTTPStreamingTransport {
   let spec: [String: JSONValue]
   var requests: [JSONValue] = []
+  var httpRequests: [JSONValue] = []
   init(spec: [String: JSONValue]) { self.spec = spec }
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     let index = requests.count
     requests.append(try JSONDecoder().decode(JSONValue.self, from: #require(request.httpBody)))
+    httpRequests.append(
+      .object([
+        "url": .string(try #require(request.url?.absoluteString)), "body": requests[index],
+        "headers": .object(
+          Dictionary(
+            uniqueKeysWithValues: (request.allHTTPHeaderFields ?? [:]).compactMap { key, value in
+              let name = key.lowercased()
+              return ["anthropic-beta", "anthropic-user-profile-id", "anthropic-workspace-id"]
+                .contains(name) ? (name, .string(value)) : nil
+            })),
+      ]))
     let failures = spec.array("failures") ?? []
     if index < failures.count, let failure = failures[index].objectValue {
       return .init(

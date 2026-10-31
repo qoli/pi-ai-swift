@@ -97,8 +97,8 @@ function fixtureInput(model, context, options, responses, credential, requestSou
       key.startsWith("AZURE_OPENAI_") || ["GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_LOCATION"].includes(key))),
     responses,
     aborted: options.signal?.aborted ?? false,
-    ...(hasNativeWireObserver(model) && (options.onPayload || options.onResponse || options.onProviderStreamEvent)
-      ? { wireObserver: { payload: !!options.onPayload, response: !!options.onResponse, event: !!options.onProviderStreamEvent } } : {}),
+    ...(hasNativeWireObserver(model) && (model.api === "anthropic-messages" || options.onPayload || options.onResponse || options.onProviderStreamEvent)
+      ? { wireObserver: { payload: model.api === "anthropic-messages" || !!options.onPayload, response: !!options.onResponse, event: !!options.onProviderStreamEvent } } : {}),
   };
 }
 
@@ -268,8 +268,9 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
             const google = ["google-generative-ai", "google-vertex"].includes(model.api);
             const bedrock = model.api === "bedrock-converse-stream";
             const payload = bedrock ? bedrockSDKPayload(value) : google ? googleSDKPayload(value, model) : mistral ? mistralSDKPayload(value) : value;
-            const replacement = await options.onPayload(payload, model);
+            const replacement = await options.onPayload?.(payload, model);
             const modified = replacement === undefined ? payload : replacement;
+            if (model.api === "anthropic-messages") connection.logicalPayload = modified;
             send({ kind: "observerReply", payload: bedrock ? bedrockWirePayload(modified) : google ? googleWireBody(modified) : mistral ? mistralWirePayload(modified) : modified, replaced: replacement !== undefined });
           } else if (stage === "response") {
             await options.onResponse(value, model);
@@ -415,6 +416,13 @@ async function mockResponse(model, request, body, options, connection) {
     return { status: 200, headers: {}, chunks };
   }
   const OpenAI = model.api === "azure-openai-responses" ? OpenAISDK.AzureOpenAI : OpenAISDK.default;
+  if (model.api === "anthropic-messages") {
+    if (!connection.logicalPayload) throw new Error("Native Anthropic payload observation is missing");
+    body = { ...body };
+    for (const field of ["betas", "user_profile_id", "workspace_id"]) {
+      if (Object.hasOwn(connection.logicalPayload, field)) body[field] = connection.logicalPayload[field];
+    }
+  }
   const client = connection.client ??= options.client ??
     (model.api === "anthropic-messages" ? new Anthropic(config) : new OpenAI(config));
   if (model.api === "anthropic-messages" && options.client?.beta?.messages) {

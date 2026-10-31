@@ -144,17 +144,21 @@ struct SourceDerivedRequestDifferentialTests {
       )
     )
 
+    let payloads = SourceLogicalPayloadCapture()
     do {
       let adapter = try #require(
         StandardWireProtocols.make().first { $0.protocolID == protocolCase.protocolID }
       )
-      for try await _ in adapter.stream(request, context: context, transport: capture) {}
+      for try await _ in adapter.stream(
+        request, context: payloads.observing(context), transport: capture)
+      {}
     } catch {
       // The capture transport deliberately returns HTTP 418 after retaining the request.
     }
     let captured = try #require(await capture.request())
     let body = try #require(captured.httpBody)
-    return try JSONDecoder().decode(JSONValue.self, from: body)
+    return try await payloads.body(
+      from: JSONDecoder().decode(JSONValue.self, from: body), protocolID: protocolCase.protocolID)
   }
 
   private func credential(protocolID: String) -> String {
@@ -348,11 +352,14 @@ struct SourceDerivedRequestDifferentialTests {
         toolChoice: scenario.toolChoice.map(JSONValue.string)
       )
     )
+    let payloads = SourceLogicalPayloadCapture()
     do {
       let adapter = try #require(
         StandardWireProtocols.make().first { $0.protocolID == protocolCase.protocolID }
       )
-      for try await _ in adapter.stream(request, context: context, transport: capture) {}
+      for try await _ in adapter.stream(
+        request, context: payloads.observing(context), transport: capture)
+      {}
     } catch {
       // The capture transport deliberately returns HTTP 418 after retaining the request.
     }
@@ -360,7 +367,9 @@ struct SourceDerivedRequestDifferentialTests {
       await capture.request(),
       "request was rejected before capture for \(scenario.caseID)/\(protocolCase.protocolID)"
     )
-    return try JSONDecoder().decode(JSONValue.self, from: try #require(captured.httpBody))
+    return try await payloads.body(
+      from: JSONDecoder().decode(JSONValue.self, from: #require(captured.httpBody)),
+      protocolID: protocolCase.protocolID)
   }
 
   private func replaySignatures(

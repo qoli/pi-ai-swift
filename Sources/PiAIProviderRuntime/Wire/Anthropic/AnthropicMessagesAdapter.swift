@@ -20,7 +20,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
             makeRequest: { current in
               let wire = try makeRequest(current, context: context)
               preparedThinkingLevel = managedThinkingLevel(request: current, context: context)
-              return try await observation.payload(wire, forceStreamingReplacement: true)
+              let observed = try await observation.payload(wire, forceStreamingReplacement: true)
+              return try httpRequest(observed, providerID: request.providerID)
             })
           try await observation.response(response)
           var reducer = AnthropicEventReducer(
@@ -84,6 +85,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       try request.validateSingleSystemMessage(operation: "anthropic.request.system")
     }
     let endpoint = context.baseURL.appending(path: "v1/messages")
+      .appending(queryItems: [.init(name: "beta", value: "true")])
     var urlRequest = URLRequest(url: endpoint)
     urlRequest.httpMethod = "POST"
     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -97,9 +99,6 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     if isOAuth {
       urlRequest.setValue("claude-cli/2.1.280", forHTTPHeaderField: "User-Agent")
       urlRequest.setValue("cli", forHTTPHeaderField: "x-app")
-    }
-    if !betaFeatures.isEmpty {
-      urlRequest.setValue(betaFeatures.joined(separator: ","), forHTTPHeaderField: "anthropic-beta")
     }
     for (name, value) in context.headers {
       urlRequest.setValue(value, forHTTPHeaderField: name)
@@ -123,6 +122,38 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       operation: "anthropic.request.encode"
     )
     return urlRequest
+  }
+
+  private func httpRequest(_ prepared: URLRequest, providerID: String) throws -> URLRequest {
+    var result = prepared
+    guard let data = prepared.httpBody,
+      var body = try JSONValue(jsonData: data).objectValue
+    else {
+      throw failure(
+        .invalidRequest, providerID: providerID, operation: "anthropic.request.encode",
+        message: "Anthropic prepared payload must be a JSON object")
+    }
+    for (field, header) in [
+      ("betas", "anthropic-beta"), ("user_profile_id", "anthropic-user-profile-id"),
+      ("workspace_id", "anthropic-workspace-id"),
+    ] {
+      if let value = body.removeValue(forKey: field), value != .null {
+        result.setValue(try sdkHeaderString(value), forHTTPHeaderField: header)
+      }
+    }
+    result.httpBody = try encodeJSONObject(
+      body, providerID: providerID, operation: "anthropic.request.encode")
+    return result
+  }
+
+  private func sdkHeaderString(_ value: JSONValue) throws -> String {
+    switch value {
+    case .string(let text): return text
+    case .null: return ""
+    case .array(let values): return try values.map(sdkHeaderString).joined(separator: ",")
+    case .object, .orderedObject: return "[object Object]"
+    default: return try ProviderOrderedJSON.scalar(value).encodedString()
+    }
   }
 
   private func betaFeatures(

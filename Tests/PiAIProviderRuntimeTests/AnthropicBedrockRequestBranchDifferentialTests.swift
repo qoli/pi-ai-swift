@@ -51,15 +51,19 @@ struct AnthropicBedrockRequestBranchDifferentialTests {
     let adapter: any WireProtocolAdapter =
       configuration.protocolID == "anthropic-messages"
       ? AnthropicMessagesAdapter() : BedrockConverseStreamAdapter()
+    let payloads = SourceLogicalPayloadCapture()
     do {
       for try await _ in adapter.stream(
-        configuration.request, context: configuration.context, transport: transport)
+        configuration.request, context: payloads.observing(configuration.context),
+        transport: transport)
       {}
     } catch {
       if await transport.request() == nil { throw error }
     }
     let sent = try #require(await transport.request())
-    let body = try JSONDecoder().decode(JSONValue.self, from: try #require(sent.httpBody))
+    let body = try await payloads.body(
+      from: JSONDecoder().decode(JSONValue.self, from: #require(sent.httpBody)),
+      protocolID: configuration.protocolID)
     let selected = Set([
       "accept", "anthropic-beta", "anthropic-dangerous-direct-browser-access",
       "authorization", "x-api-key", "x-app", "x-session-affinity",

@@ -169,11 +169,14 @@ struct ProviderIntentDifferentialTests {
             .init(azureResourceName: options.string("azureResourceName"), azureDeploymentName: $0)
           }))
       let transport = IntentCaptureTransport()
+      let payloads = SourceLogicalPayloadCapture()
       let adapter = try #require(StandardWireProtocols.make().first { $0.protocolID == api })
       var failure: ProviderRuntimeFailure?
       var providerThinkingLevel: String?
       do {
-        for try await _ in adapter.stream(request, context: context, transport: transport) {}
+        for try await _ in adapter.stream(
+          request, context: payloads.observing(context), transport: transport)
+        {}
       } catch {
         providerThinkingLevel = (error as? ProviderRuntimeFailure)?.providerMetadata?.string(
           "providerThinkingLevel")
@@ -192,7 +195,8 @@ struct ProviderIntentDifferentialTests {
         continue
       }
       if let failure { throw failure }
-      var actual = try #require(await transport.body, Comment(rawValue: spec.id))
+      var actual = try await payloads.body(
+        from: #require(await transport.body, Comment(rawValue: spec.id)), protocolID: api)
       if let fields = spec.projectFields {
         actual = .object(
           Dictionary(

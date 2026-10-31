@@ -37,6 +37,7 @@ for (const test of fixture.cases) {
   const controller = new AbortController();
   const requests = [];
   const logicalPayloads = [];
+  const httpRequests = [];
   const bedrock = test.protocolID === "bedrock-converse-stream";
   const model = {
     id:"fixture-claude",name:"Claude Fixture",api:test.protocolID,
@@ -74,8 +75,10 @@ for (const test of fixture.cases) {
     },{
       apiKey:test.apiKey??"synthetic-fixture-key",maxTokens:100,maxRetries:0,cacheRetention:test.cacheRetention??"none",
       signal:controller.signal,env:{AWS_BEDROCK_SKIP_AUTH:"1",AWS_REGION:"us-east-1"},
-      ...(fixture.observeLogicalPayload ? {onPayload: payload => { logicalPayloads.push(structuredClone(payload)); }} : {}),
-      fetch:async (_url,init)=> {
+      ...(fixture.observeLogicalPayload ? {onPayload: payload => { Object.assign(payload, test.payloadChanges); logicalPayloads.push(structuredClone(payload)); }} : {}),
+      fetch:async (url,init)=> {
+        if (fixture.observeHTTPRequests) httpRequests.push({url:String(url),body:JSON.parse(init.body),headers:Object.fromEntries(
+          [...new Headers(init.headers)].filter(([name]) => ["anthropic-beta","anthropic-user-profile-id","anthropic-workspace-id"].includes(name)))});
         const failure=responseFor(JSON.parse(init.body));
         if(failure) return new Response(failure.body, {status:failure.status,headers:{"content-type":"application/json"}});
         const frames=test.streamError
@@ -92,6 +95,6 @@ for (const test of fixture.cases) {
       ...(fixture.observeStrictFallbackDiagnostics ? { strictFallbackDiagnostics: (result.diagnostics ?? []).filter(value => value.type.endsWith("_strict_tools_fallback")).map(({ timestamp, ...value }) => value) } : {}),
       ...(result.stopReason==="error"?{errorMessage:result.errorMessage}:{})});
   }
-  cases[test.id]={requests,outcomes,...(fixture.observeLogicalPayload ? {logicalPayloads} : {})};
+  cases[test.id]={requests,outcomes,...(fixture.observeLogicalPayload ? {logicalPayloads} : {}),...(fixture.observeHTTPRequests ? {httpRequests} : {})};
 }
 console.log(JSON.stringify({upstreamRevision:fixture.upstreamRevision,cases},null,2));

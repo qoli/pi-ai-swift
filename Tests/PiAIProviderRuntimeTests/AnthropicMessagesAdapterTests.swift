@@ -168,7 +168,7 @@ struct AnthropicMessagesAdapterTests {
     #expect(events.last == .completed(.toolCalls))
 
     let sent = try #require(await transport.request())
-    #expect(sent.url?.absoluteString == "https://api.kimi.com/coding/v1/messages")
+    #expect(sent.url?.absoluteString == "https://api.kimi.com/coding/v1/messages?beta=true")
     #expect(sent.value(forHTTPHeaderField: "x-api-key") == "fixture-key")
     #expect(sent.value(forHTTPHeaderField: "anthropic-version") == "2023-06-01")
     let body = try decodeJSONObject(

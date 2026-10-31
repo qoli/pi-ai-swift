@@ -2069,7 +2069,8 @@
         "Fixtures/Differential/Cases/strict-fallback-inline.json",
         "Fixtures/Differential/Oracle/strict-fallback-inline.json",
         "Tests/PiAIProviderRuntimeTests/AnthropicInlineToolDifferentialTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInlineToolValuesMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInlineToolValuesMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/SourceLogicalPayloadCapture.swift"
       ],
       "requiredGates": [
         "swift-test",

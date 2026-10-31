@@ -534,7 +534,420 @@
       "failures": [],
       "cacheRetention": "none",
       "apiKey": "synthetic-fixture-key"
+    },
+    {
+      "id": "sdk-header-fields",
+      "protocolID": "anthropic-messages",
+      "preferences": [],
+      "messages": [
+        {
+          "role": "system",
+          "content": "Initial",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "require"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        },
+        {
+          "role": "user",
+          "content": "Hello",
+          "timestamp": 1
+        },
+        {
+          "role": "system",
+          "content": "",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "prefer"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        },
+        {
+          "role": "system",
+          "content": "",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "require"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        }
+      ],
+      "currentTools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "properties": {
+              "optional": {
+                "type": "number"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "compat": {
+        "supportsMidConvoSystemMessages": true,
+        "supportsMidConvoToolChanges": true
+      },
+      "failures": [],
+      "cacheRetention": "none",
+      "apiKey": "synthetic-fixture-key",
+      "payloadChanges": {
+        "betas": [
+          "fixture-beta"
+        ],
+        "user_profile_id": "profile-fixture",
+        "workspace_id": "workspace-fixture"
+      }
+    },
+    {
+      "id": "sdk-empty-betas",
+      "protocolID": "anthropic-messages",
+      "preferences": [],
+      "messages": [
+        {
+          "role": "system",
+          "content": "Initial",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "require"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        },
+        {
+          "role": "user",
+          "content": "Hello",
+          "timestamp": 1
+        },
+        {
+          "role": "system",
+          "content": "",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "prefer"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        },
+        {
+          "role": "system",
+          "content": "",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "require"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        }
+      ],
+      "currentTools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "properties": {
+              "optional": {
+                "type": "number"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "compat": {
+        "supportsMidConvoSystemMessages": true,
+        "supportsMidConvoToolChanges": true
+      },
+      "failures": [],
+      "cacheRetention": "none",
+      "apiKey": "synthetic-fixture-key",
+      "payloadChanges": {
+        "betas": []
+      }
+    },
+    {
+      "id": "sdk-null-betas",
+      "protocolID": "anthropic-messages",
+      "preferences": [],
+      "messages": [
+        {
+          "role": "system",
+          "content": "Initial",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "require"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        },
+        {
+          "role": "user",
+          "content": "Hello",
+          "timestamp": 1
+        },
+        {
+          "role": "system",
+          "content": "",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "prefer"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        },
+        {
+          "role": "system",
+          "content": "",
+          "toolsAdded": [
+            {
+              "name": "lookup",
+              "description": "Fixture lookup",
+              "parameters": {
+                "properties": {
+                  "optional": {
+                    "type": "number"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "type": "object"
+              },
+              "constrainedSampling": {
+                "type": "json_schema",
+                "strict": "require"
+              }
+            }
+          ],
+          "toolsRemoved": [],
+          "timestamp": 0
+        }
+      ],
+      "currentTools": [
+        {
+          "name": "lookup",
+          "description": "Fixture lookup",
+          "parameters": {
+            "properties": {
+              "optional": {
+                "type": "number"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "constrainedSampling": {
+            "type": "json_schema",
+            "strict": "require"
+          }
+        }
+      ],
+      "compat": {
+        "supportsMidConvoSystemMessages": true,
+        "supportsMidConvoToolChanges": true
+      },
+      "failures": [],
+      "cacheRetention": "none",
+      "apiKey": "synthetic-fixture-key",
+      "payloadChanges": {
+        "betas": null
+      }
     }
   ],
-  "observeLogicalPayload": true
+  "observeLogicalPayload": true,
+  "observeHTTPRequests": true
 }
