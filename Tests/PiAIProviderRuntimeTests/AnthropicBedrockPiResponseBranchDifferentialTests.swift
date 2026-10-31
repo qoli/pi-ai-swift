@@ -120,7 +120,8 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
   func providerErrorsAndInvalidWireDataFailExplicitly() async throws {
     let fixture = try responseBranchFixture()
     let oracle = try responseBranchOracle()
-    for scenario in fixture.scenarios where scenario.category != "success" {
+    for scenario in fixture.scenarios
+    where scenario.category != "success" && scenario.category != "failureDiagnostics" {
       let expected = try #require(oracle.scenarios[scenario.caseID])
       #expect(expected.outcome == "failure")
       do {
@@ -146,6 +147,36 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
           #expect(error.message == expected.terminal.objectValue?.string("errorMessage"))
         }
       }
+    }
+  }
+
+  @Test
+  func bedrockFailureDiagnosticsMatchPinnedHTTPAndStreamErrors() async throws {
+    let fixture = try responseBranchFixture()
+    let oracle = try responseBranchOracle()
+    for scenario in fixture.scenarios where scenario.protocolID == "bedrock-converse-stream" {
+      let expected = try #require(oracle.scenarios[scenario.caseID])
+      guard expected.outcome == "failure", let source = expected.terminal.objectValue else {
+        continue
+      }
+      let before = Int64(Date().timeIntervalSince1970 * 1_000)
+      var failure: ProviderRuntimeFailure?
+      do { _ = try await replay(scenario: scenario, expected: expected) } catch let value
+        as ProviderRuntimeFailure
+      { failure = value }
+      let after = Int64(Date().timeIntervalSince1970 * 1_000)
+      let error = try #require(failure, Comment(rawValue: scenario.caseID))
+      let diagnostics = try (error.providerMetadata?.array("diagnostics") ?? []).map {
+        value -> JSONValue in
+        var object = try #require(value.objectValue)
+        let timestamp = try #require(object.int("timestamp"))
+        #expect(Int64(timestamp) >= before && Int64(timestamp) <= after)
+        object.removeValue(forKey: "timestamp")
+        return .object(object)
+      }
+      #expect(diagnostics == source.array("diagnostics") ?? [], Comment(rawValue: scenario.caseID))
+      #expect(error.message == source.string("errorMessage"), Comment(rawValue: scenario.caseID))
+      if scenario.category == "failureDiagnostics" { #expect(error.code == .transportFailed) }
     }
   }
 

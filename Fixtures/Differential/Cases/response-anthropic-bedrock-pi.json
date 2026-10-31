@@ -256,6 +256,107 @@
       "category": "providerError",
       "observeWire": true,
       "driver": "decoded-sdk-events"
+    },
+    {
+      "caseID": "bedrock-http-validation-diagnostic",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics",
+      "decoderInput": {
+        "status": 400,
+        "headers": {
+          "content-type": "application/json",
+          "x-amzn-requestid": "fixture-http-id"
+        },
+        "chunksBase64": [
+          "eyJfX3R5cGUiOiAiY29tLmFtYXpvbmF3cy5iZWRyb2NrI1ZhbGlkYXRpb25FeGNlcHRpb24iLCAibWVzc2FnZSI6ICJpbnZhbGlkIGZpeHR1cmUifQ=="
+        ],
+        "kind": "awsEventStream"
+      }
+    },
+    {
+      "caseID": "bedrock-http-unknown-diagnostic",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics",
+      "decoderInput": {
+        "status": 400,
+        "headers": {
+          "content-type": "application/json",
+          "x-amzn-requestid": "fixture-unknown-id"
+        },
+        "chunksBase64": [
+          "eyJtZXNzYWdlIjogInBsYWluIGZpeHR1cmUifQ=="
+        ],
+        "kind": "awsEventStream"
+      }
+    },
+    {
+      "caseID": "bedrock-http-overlong-id-diagnostic",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics",
+      "decoderInput": {
+        "status": 400,
+        "headers": {
+          "content-type": "application/json",
+          "x-amzn-requestid": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"
+        },
+        "chunksBase64": [
+          "eyJfX3R5cGUiOiAiVmFsaWRhdGlvbkV4Y2VwdGlvbiIsICJtZXNzYWdlIjogImludmFsaWQgZml4dHVyZSJ9"
+        ],
+        "kind": "awsEventStream"
+      }
+    },
+    {
+      "caseID": "bedrock-http-status-only-diagnostic",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics",
+      "decoderInput": {
+        "status": 404,
+        "headers": {
+          "content-type": "application/json"
+        },
+        "chunksBase64": [
+          "e30="
+        ],
+        "kind": "awsEventStream"
+      }
+    },
+    {
+      "caseID": "bedrock-midstream-exception-diagnostic",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics"
+    },
+    {
+      "caseID": "bedrock-http-non-js-whitespace-id-diagnostic",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics",
+      "decoderInput": {
+        "status": 400,
+        "headers": {
+          "content-type": "application/json",
+          "x-amzn-requestid": "\u0085fixture-id\u0085"
+        },
+        "chunksBase64": [
+          "eyJfX3R5cGUiOiAiY29tLmFtYXpvbmF3cy5iZWRyb2NrI1ZhbGlkYXRpb25FeGNlcHRpb24iLCAibWVzc2FnZSI6ICJpbnZhbGlkIGZpeHR1cmUifQ=="
+        ],
+        "kind": "awsEventStream"
+      }
+    },
+    {
+      "caseID": "bedrock-stream-non-js-whitespace-id-diagnostic",
+      "protocolID": "bedrock-converse-stream",
+      "category": "failureDiagnostics",
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAhgAAAFFH6Ps5DTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoiZ3VhcmRyYWlsX2ludGVydmVuZWQifVYf5Yc="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "\u0085fixture-id\u0085"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      }
     }
   ]
 }

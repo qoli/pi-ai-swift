@@ -1539,6 +1539,271 @@
         }
       }
     },
+    "bedrock-http-non-js-whitespace-id-diagnostic": {
+      "decoderInput": {
+        "chunksBase64": [
+          "eyJfX3R5cGUiOiAiY29tLmFtYXpvbmF3cy5iZWRyb2NrI1ZhbGlkYXRpb25FeGNlcHRpb24iLCAibWVzc2FnZSI6ICJpbnZhbGlkIGZpeHR1cmUifQ=="
+        ],
+        "headers": {
+          "content-type": "application/json",
+          "x-amzn-requestid": "fixture-id"
+        },
+        "kind": "awsEventStream",
+        "status": 400
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "errorCode": "ValidationException",
+              "requestId": "fixture-id",
+              "status": 400
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "Validation error: invalid fixture",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-http-overlong-id-diagnostic": {
+      "decoderInput": {
+        "chunksBase64": [
+          "eyJfX3R5cGUiOiAiVmFsaWRhdGlvbkV4Y2VwdGlvbiIsICJtZXNzYWdlIjogImludmFsaWQgZml4dHVyZSJ9"
+        ],
+        "headers": {
+          "content-type": "application/json",
+          "x-amzn-requestid": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"
+        },
+        "kind": "awsEventStream",
+        "status": 400
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "errorCode": "ValidationException",
+              "status": 400
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "Validation error: invalid fixture",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-http-status-only-diagnostic": {
+      "decoderInput": {
+        "chunksBase64": [
+          "e30="
+        ],
+        "headers": {
+          "content-type": "application/json"
+        },
+        "kind": "awsEventStream",
+        "status": 404
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "status": 404
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "Unknown: UnknownError",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-http-unknown-diagnostic": {
+      "decoderInput": {
+        "chunksBase64": [
+          "eyJtZXNzYWdlIjogInBsYWluIGZpeHR1cmUifQ=="
+        ],
+        "headers": {
+          "content-type": "application/json",
+          "x-amzn-requestid": "fixture-unknown-id"
+        },
+        "kind": "awsEventStream",
+        "status": 400
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "requestId": "fixture-unknown-id",
+              "status": 400
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "Unknown: plain fixture",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-http-validation-diagnostic": {
+      "decoderInput": {
+        "chunksBase64": [
+          "eyJfX3R5cGUiOiAiY29tLmFtYXpvbmF3cy5iZWRyb2NrI1ZhbGlkYXRpb25FeGNlcHRpb24iLCAibWVzc2FnZSI6ICJpbnZhbGlkIGZpeHR1cmUifQ=="
+        ],
+        "headers": {
+          "content-type": "application/json",
+          "x-amzn-requestid": "fixture-http-id"
+        },
+        "kind": "awsEventStream",
+        "status": 400
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "errorCode": "ValidationException",
+              "requestId": "fixture-http-id",
+              "status": 400
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "Validation error: invalid fixture",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
+    "bedrock-midstream-exception-diagnostic": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAkAAAAGGOkam3DTptZXNzYWdlLXR5cGUHAAlleGNlcHRpb24POmV4Y2VwdGlvbi10eXBlBwATdGhyb3R0bGluZ0V4Y2VwdGlvbg06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsibWVzc2FnZSI6ImZpeHR1cmUgdGhyb3R0bGVkIn0KF40f"
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "bedrock-branch"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "errorCode": "ThrottlingException",
+              "requestId": "bedrock-branch"
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "Throttling error: fixture throttled",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": null,
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
+      }
+    },
     "bedrock-missing-terminal": {
       "decoderInput": {
         "chunksBase64": [
@@ -2008,6 +2273,50 @@
           "event"
         ],
         "temperature": 0.25
+      }
+    },
+    "bedrock-stream-non-js-whitespace-id-diagnostic": {
+      "decoderInput": {
+        "chunksBase64": [
+          "AAAAdgAAAFKW1freDTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcADG1lc3NhZ2VTdGFydA06Y29udGVudC10eXBlBwAQYXBwbGljYXRpb24vanNvbnsicm9sZSI6ImFzc2lzdGFudCJ9HMa+GA==",
+          "AAAAhgAAAFFH6Ps5DTptZXNzYWdlLXR5cGUHAAVldmVudAs6ZXZlbnQtdHlwZQcAC21lc3NhZ2VTdG9wDTpjb250ZW50LXR5cGUHABBhcHBsaWNhdGlvbi9qc29ueyJzdG9wUmVhc29uIjoiZ3VhcmRyYWlsX2ludGVydmVuZWQifVYf5Yc="
+        ],
+        "headers": {
+          "content-type": "application/vnd.amazon.eventstream",
+          "x-amzn-requestid": "fixture-id"
+        },
+        "kind": "aws-eventstream",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "terminal": {
+        "content": [],
+        "diagnostics": [
+          {
+            "details": {
+              "requestId": "fixture-id"
+            },
+            "type": "bedrock_response_failure"
+          }
+        ],
+        "errorMessage": "Provider stopped with: guardrail_intervened",
+        "modelID": "fixture-model",
+        "providerID": "amazon-bedrock",
+        "rawStopReason": "guardrail_intervened",
+        "responseID": null,
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": null,
+          "cacheWriteCost": 0,
+          "input": 0,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 0
+        }
       }
     },
     "bedrock-tool-use": {

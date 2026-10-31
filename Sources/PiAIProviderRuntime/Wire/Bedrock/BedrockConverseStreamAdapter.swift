@@ -16,6 +16,8 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         var diagnostics: [JSONValue] = []
+        var responseRequestID: String?
+        var sdkExceptionName: String?
         do {
           let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await PreferredStrictToolFallback.response(
@@ -26,6 +28,16 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
               try await makeURLRequest($0, context: context, observation: observation)
             })
           let requestID = transportRequestID(response.headers)
+          let diagnosticRequestID = response.headers.first {
+            $0.key.lowercased() == "x-amzn-requestid"
+          }?.value
+          func observeResponse(_ message: AWSEventStreamMessage) {
+            if message.headers[":message-type"] == "exception" {
+              sdkExceptionName = BedrockFailure.exceptionName(message.headers[":exception-type"])
+            } else if responseRequestID == nil {
+              responseRequestID = BedrockFailure.normalized(diagnosticRequestID)
+            }
+          }
           var decoder = AWSEventStreamDecoder()
           var reducer = BedrockEventReducer(
             providerID: request.providerID,
@@ -39,12 +51,14 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           for try await chunk in response.body {
             try Task.checkCancellation()
             for message in try decoder.append(chunk) {
+              observeResponse(message)
               for event in try await reducer.reduce(message, observation: observation) {
                 continuation.yield(event)
               }
             }
           }
           for message in try decoder.finish() {
+            observeResponse(message)
             for event in try await reducer.reduce(message, observation: observation) {
               continuation.yield(event)
             }
@@ -53,14 +67,26 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
             continuation.yield(event)
           }
           continuation.finish()
-        } catch let error as ProviderRuntimeFailure where !diagnostics.isEmpty {
+        } catch let error as ProviderRuntimeFailure {
           var metadata = error.providerMetadata ?? [:]
-          metadata["diagnostics"] = .array(diagnostics)
+          var failures = metadata.array("diagnostics") ?? []
+          if let value = BedrockFailure.diagnostic(
+            errorCode: sdkExceptionName, requestID: responseRequestID)
+          {
+            failures.append(value)
+          }
+          if !diagnostics.isEmpty || !failures.isEmpty {
+            metadata["diagnostics"] = .array(diagnostics + failures)
+          }
           continuation.finish(
             throwing: ProviderRuntimeFailure(
-              code: error.code, message: error.message, providerID: error.providerID,
+              code: error.code,
+              message: sdkExceptionName.map {
+                BedrockFailure.message(error.message, exceptionName: $0)
+              } ?? error.message,
+              providerID: error.providerID,
               operation: error.operation, causeDescription: error.causeDescription,
-              providerMetadata: metadata))
+              providerMetadata: metadata.isEmpty ? nil : metadata))
         } catch {
           continuation.finish(throwing: error)
         }
@@ -1120,7 +1146,7 @@ private struct BedrockEventReducer {
 
   mutating func finish() throws -> [ProviderEvent] {
     guard started, let reason = stopReason else {
-      throw invalid("Bedrock stream ended without messageStart and messageStop")
+      throw invalid("Bedrock stream ended without a stop reason")
     }
     guard tools.isEmpty else { throw invalid("Bedrock stream ended with incomplete tool calls") }
     if completed { return [] }

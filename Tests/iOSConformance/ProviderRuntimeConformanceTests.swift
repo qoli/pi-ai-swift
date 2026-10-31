@@ -478,6 +478,39 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testBedrockFailureDiagnosticsMatchPinnedHTTPAndStreamErrors() async throws {
+    let oracle = try load("Differential/Oracle/response-anthropic-bedrock-pi.json")
+    for (name, value) in try XCTUnwrap(oracle.object("scenarios")) where name.hasPrefix("bedrock") {
+      let scenario = try XCTUnwrap(value.objectValue)
+      guard scenario.string("outcome") == "failure" else { continue }
+      let source = try XCTUnwrap(scenario.object("terminal"))
+      let decoder = try XCTUnwrap(scenario.object("decoderInput"))
+      let chunks = try XCTUnwrap(decoder.array("chunksBase64")).map {
+        try XCTUnwrap(Data(base64Encoded: try XCTUnwrap($0.stringValue)))
+      }
+      let headers = (decoder.object("headers") ?? [:]).compactMapValues(\.stringValue)
+      let (request, context) = inputs(
+        api: "bedrock-converse-stream", providerID: "amazon-bedrock", modelID: "fixture-model",
+        baseURL: "https://bedrock-runtime.us-east-1.amazonaws.com", reasoning: true)
+      let before = Int64(Date().timeIntervalSince1970 * 1_000)
+      let result = try await replay(
+        BedrockConverseStreamAdapter(), request: request, context: context, chunks: chunks,
+        status: try XCTUnwrap(decoder.int("status")), headers: headers)
+      let after = Int64(Date().timeIntervalSince1970 * 1_000)
+      let failure = try XCTUnwrap(result.failure, name)
+      let diagnostics = try (failure.providerMetadata?.array("diagnostics") ?? []).map {
+        value -> JSONValue in
+        var object = try XCTUnwrap(value.objectValue)
+        let timestamp = try XCTUnwrap(object.int("timestamp"))
+        XCTAssertTrue(Int64(timestamp) >= before && Int64(timestamp) <= after, name)
+        object.removeValue(forKey: "timestamp")
+        return .object(object)
+      }
+      XCTAssertEqual(diagnostics, source.array("diagnostics") ?? [], name)
+      XCTAssertEqual(failure.message, source.string("errorMessage"), name)
+    }
+  }
+
   func testBedrockFailureMetadataMatchesPinnedSource() async throws {
     let oracle = try load("Differential/Oracle/response-anthropic-bedrock-pi.json")
     let source = try XCTUnwrap(oracle.object("scenarios")?.object("bedrock-provider-stop-error"))
@@ -2400,7 +2433,8 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
 
   private func replay(
     _ adapter: any WireProtocolAdapter, request: ProviderRequest, context: WireProtocolContext,
-    chunks: [Data]
+    chunks: [Data], status: Int = 200,
+    headers: [String: String] = ["content-type": "text/event-stream"]
   ) async throws -> (
     snapshot: ProviderResponseSnapshot?, failure: ProviderRuntimeFailure?, starts: Int
   ) {
@@ -2408,7 +2442,8 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     var starts = 0
     do {
       for try await event in adapter.stream(
-        request, context: context, transport: IOSFixtureTransport(chunks: chunks))
+        request, context: context,
+        transport: IOSFixtureTransport(chunks: chunks, status: status, headers: headers))
       {
         if case .responseSnapshot(let value) = event { snapshot = value }
         if case .responseStarted = event { starts += 1 }
@@ -2540,10 +2575,12 @@ private actor IOSMistralHTTPFixture: ProviderHTTPStreamingTransport {
 
 private struct IOSFixtureTransport: ProviderHTTPStreamingTransport {
   let chunks: [Data]
+  var status = 200
+  var headers = ["content-type": "text/event-stream"]
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     .init(
-      statusCode: 200, headers: ["content-type": "text/event-stream"],
+      statusCode: status, headers: headers,
       body: AsyncThrowingStream { continuation in
         for chunk in chunks { continuation.yield(chunk) }
         continuation.finish()

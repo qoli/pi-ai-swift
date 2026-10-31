@@ -49,7 +49,7 @@ registerHooks({
 });
 const results = {};
 for (const scenario of fixture.scenarios) {
-  const input = stimulus(scenario.caseID);
+  const input = scenario.decoderInput ?? stimulus(scenario.caseID);
   const projected = scenario.protocolID === "bedrock-converse-stream"
     ? await runBedrock(scenario, input)
     : await runSSE(scenario, input);
@@ -406,6 +406,10 @@ function stimulus(caseID) {
       ["messageStop", { stopReason: "guardrail_intervened" }],
     ]);
     case "bedrock-exception": return aws([
+      ["throttlingException", { message: "fixture throttled" }, "exception"],
+    ]);
+    case "bedrock-midstream-exception-diagnostic": return aws([
+      ["messageStart", { role: "assistant" }],
       ["throttlingException", { message: "fixture throttled" }, "exception"],
     ]);
     case "bedrock-missing-terminal": return aws([

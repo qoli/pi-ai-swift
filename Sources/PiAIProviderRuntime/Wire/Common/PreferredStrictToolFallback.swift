@@ -65,8 +65,23 @@ enum PreferredStrictToolFallback {
         message: errorMessage(api: api, response: response, body: body),
         providerID: request.providerID,
         operation: api == .anthropic ? "anthropic.response" : "bedrock.response",
-        causeDescription: body)
+        causeDescription: body,
+        providerMetadata: api == .bedrock ? bedrockFailureMetadata(response, body: body) : nil)
     }
+  }
+
+  private static func bedrockFailureMetadata(
+    _ response: ProviderHTTPStreamingResponse, body: String?
+  ) -> [String: JSONValue]? {
+    let object = body.flatMap {
+      try? JSONDecoder().decode(JSONValue.self, from: Data($0.utf8)).objectValue
+    }
+    let name = BedrockFailure.responseErrorName(headers: response.headers, body: object)
+    let requestID = response.headers.first { $0.key.lowercased() == "x-amzn-requestid" }?.value
+    return BedrockFailure.diagnostic(
+      status: response.statusCode, errorCode: name, requestID: requestID
+    )
+    .map { ["diagnostics": .array([$0])] }
   }
 
   private static func withoutPreferredStrict(_ tool: ProviderToolDefinition)
@@ -101,22 +116,13 @@ enum PreferredStrictToolFallback {
       let object = body.flatMap {
         try? JSONDecoder().decode(JSONValue.self, from: Data($0.utf8)).objectValue
       }
-      let header = response.headers.first { $0.key.lowercased() == "x-amzn-errortype" }?.value
-      let type = (header ?? object?.string("__type") ?? object?.string("code"))?
-        .split(separator: "#").last?.split(separator: ":").first.map(String.init)
-      let message = object?.string("message") ?? object?.string("Message") ?? body ?? "UnknownError"
-      let prefixes = [
-        "InternalServerException": "Internal server error",
-        "ModelStreamErrorException": "Model stream error",
-        "ValidationException": "Validation error",
-        "ThrottlingException": "Throttling error",
-        "ServiceUnavailableException": "Service unavailable",
-      ]
-      let hint =
-        message.range(of: "data retention mode", options: .caseInsensitive) == nil
-        ? ""
-        : " See https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html for supported data retention modes."
-      return type.map { "\(prefixes[$0] ?? $0): \(message)\(hint)" } ?? "\(message)\(hint)"
+      let type =
+        BedrockFailure.responseErrorName(headers: response.headers, body: object)
+        ?? (object != nil ? "Unknown" : nil)
+      let message =
+        object?.string("message") ?? object?.string("Message")
+        ?? (object != nil ? "UnknownError" : body ?? "UnknownError")
+      return BedrockFailure.message(message, exceptionName: type)
     }
   }
 

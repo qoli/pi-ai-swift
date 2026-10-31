@@ -2169,7 +2169,8 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/Bedrock/AWSEventStream.swift",
         "Sources/PiAIProviderRuntime/Wire/Bedrock/AWSSignatureV4.swift",
-        "Sources/PiAIProviderRuntime/Wire/Bedrock/BedrockConverseStreamAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/Bedrock/BedrockConverseStreamAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/Bedrock/BedrockFailure.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2237,7 +2238,9 @@
         "Scripts/Conformance/HeapObserver.c",
         "Scripts/Conformance/HeapObserver.h",
         "Scripts/Conformance/memory-observer.mjs",
-        "Scripts/tests/test_native_heap_observer.py"
+        "Scripts/tests/test_native_heap_observer.py",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#bedrockFailureDiagnosticsMatchPinnedHTTPAndStreamErrors",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockFailureDiagnosticsMatchPinnedHTTPAndStreamErrors"
       ],
       "requiredGates": [
         "swift-test"
