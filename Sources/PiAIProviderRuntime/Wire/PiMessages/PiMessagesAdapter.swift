@@ -11,17 +11,23 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     AsyncThrowingStream { continuation in
       let task = Task {
         do {
-          let response = try await transport.stream(
-            try makeURLRequest(request, context: context)
-          )
+          let observation = ProviderWireObservation(request: request, wire: context)
+          let urlRequest = try await observation.payload(makeURLRequest(request, context: context))
+          let response = try await transport.stream(urlRequest)
+          try await observation.response(response)
           guard (200..<300).contains(response.statusCode) else {
             let body = try await collectErrorBody(from: response.body)
             throw failure(
               .transportFailed,
               providerID: request.providerID,
               operation: "pi-messages.response",
-              message: "pi-messages request failed (HTTP \(response.statusCode))",
-              cause: body
+              message: responseErrorMessage(status: response.statusCode, body: body),
+              cause: body,
+              metadata: [
+                "diagnostics": .array([
+                  responseDiagnostic(request, response: response, body: body, url: urlRequest.url!)
+                ])
+              ]
             )
           }
 
@@ -34,7 +40,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
           for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
-              for normalized in try reducer.reduce(event) {
+              for normalized in try await reducer.reduce(event, observation: observation) {
                 continuation.yield(normalized)
               }
               if reducer.isTerminal {
@@ -44,7 +50,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
             }
           }
           for event in try decoder.finish() {
-            for normalized in try reducer.reduce(event) {
+            for normalized in try await reducer.reduce(event, observation: observation) {
               continuation.yield(normalized)
             }
             if reducer.isTerminal {
@@ -106,7 +112,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
         .missingCredential,
         providerID: request.providerID,
         operation: "pi-messages.request.auth",
-        message: "pi-messages credential is missing"
+        message: "No API key provided for provider \"\(request.providerID)\""
       )
     }
     urlRequest.httpBody = try encodeJSONObject(
@@ -172,7 +178,9 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     if let effort = request.options.reasoningEffort, effort != .off {
       options["reasoning"] = .string(effort.rawValue)
     }
-    options["cacheRetention"] = .string(request.options.cacheRetention.rawValue)
+    if request.options.cacheRetentionIsExplicit != false {
+      options["cacheRetention"] = .string(request.options.cacheRetention.rawValue)
+    }
     if let sessionID = request.options.sessionID {
       options["sessionId"] = .string(sessionID)
     }
@@ -406,19 +414,55 @@ struct PiMessagesAdapter: WireProtocolAdapter {
     ])
   }
 
+  private func responseErrorMessage(status: Int, body: String?) -> String {
+    let error = body.flatMap { try? JSONValue(jsonData: Data($0.utf8)) }.flatMap {
+      $0.objectValue?.object("error")
+    }
+    let detail = error?.string("message") ?? body ?? ""
+    let code = error?.string("code").map { " (\($0))" } ?? ""
+    return "\(status): \(detail)\(code)"
+  }
+
+  private func responseDiagnostic(
+    _ request: ProviderRequest, response: ProviderHTTPStreamingResponse, body: String?, url: URL
+  ) -> JSONValue {
+    let timestamp = JSONValue.integer(Int64(Date().timeIntervalSince1970 * 1_000))
+    var details: [String: JSONValue] = [
+      "version": .integer(1), "provider": .string(request.providerID),
+      "model": .string(request.modelID), "url": .string(url.absoluteString),
+      "status": .integer(Int64(response.statusCode)), "timestampMs": timestamp,
+    ]
+    if let error = body.flatMap({ try? JSONValue(jsonData: Data($0.utf8)) })?
+      .objectValue?.object("error")
+    {
+      details["error"] = .object(error)
+    } else {
+      let text = body ?? ""
+      details["body"] = .string(
+        text.utf16.count > 8_192
+          ? String(decoding: text.utf16.prefix(8_192), as: UTF16.self) + "…" : text)
+    }
+    return .object([
+      "type": .string("pi_messages_response_failure"), "timestamp": timestamp,
+      "details": .object(details),
+    ])
+  }
+
   private func failure(
     _ code: ProviderRuntimeFailure.Code,
     providerID: String?,
     operation: String,
     message: String,
-    cause: String? = nil
+    cause: String? = nil,
+    metadata: [String: JSONValue]? = nil
   ) -> ProviderRuntimeFailure {
     ProviderRuntimeFailure(
       code: code,
       message: message,
       providerID: providerID,
       operation: operation,
-      causeDescription: cause
+      causeDescription: cause,
+      providerMetadata: metadata
     )
   }
 }
@@ -442,7 +486,9 @@ private struct PiMessagesEventReducer {
     self.timestampMilliseconds = Int64(Date().timeIntervalSince1970 * 1_000)
   }
 
-  mutating func reduce(_ event: ServerSentEvent) throws -> [ProviderEvent] {
+  mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
+    -> [ProviderEvent]
+  {
     if event.data == "[DONE]" { return [] }
     guard !isTerminal else {
       throw invalid("pi-messages emitted data after its terminal event")
@@ -452,6 +498,7 @@ private struct PiMessagesEventReducer {
       providerID: providerID,
       operation: "pi-messages.event.decode"
     )
+    try await observation.streamEvent(.object(object))
     guard let type = object.string("type") else {
       throw invalid("pi-messages event is missing type")
     }
@@ -460,7 +507,9 @@ private struct PiMessagesEventReducer {
         completedContent.count + textStates.count + reasoningStates.count + toolStates.count
       let limit = type.hasSuffix("_start") ? count : count - 1
       guard let index = object.int("contentIndex"), index >= 0, index <= limit else {
-        throw invalid("pi-messages event has an invalid contentIndex")
+        let value = object["contentIndex"] ?? .null
+        let serialized = String(decoding: try JSONEncoder().encode(value), as: UTF8.self)
+        throw invalid("Invalid contentIndex \(serialized) in pi-messages \(type) event")
       }
     }
     switch type {
@@ -612,13 +661,18 @@ private struct PiMessagesEventReducer {
       return [.usage(normalizedUsage), .responseSnapshot(snapshot), .completed(finishReason)]
     case "error":
       isTerminal = true
+      var metadata: [String: JSONValue] = [:]
+      for key in ["usage", "responseId", "responseModel", "providerThinkingLevel"] {
+        metadata[key] = object[key]
+      }
       throw ProviderRuntimeFailure(
         code: .transportFailed,
         message: object.string("errorMessage")
           ?? "pi-messages stream returned an error",
         providerID: providerID,
         operation: "pi-messages.event.error",
-        causeDescription: object.string("reason")
+        causeDescription: object.string("reason"),
+        providerMetadata: metadata.isEmpty ? nil : metadata
       )
     default:
       throw invalid("unsupported pi-messages event: \(type)")

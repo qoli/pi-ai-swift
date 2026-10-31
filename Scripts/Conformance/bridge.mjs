@@ -23,7 +23,7 @@ export async function measureNativeAllocatedBytes(operation) {
   return samples.reduce((total, sample) => total + sample, 0);
 }
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
-const { getCurrentSystemPrompt, getCurrentTools } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
+const { getCurrentSystemPrompt, getCurrentTools, normalizeContext } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
 const { getSystemMessageText, renderSystemMessageUpdate } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/text.ts")));
 const { getEnvApiKey } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/env-api-keys.ts")));
 const { getProviderEnvValue } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/provider-env.ts")));
@@ -49,6 +49,8 @@ function invoke(input) {
   if (processResult.status !== 0) throw new Error(`Swift conformance probe failed: ${processResult.stderr}`);
   return JSON.parse(processResult.stdout);
 }
+
+export { invoke as invokeNative, record as recordNative, probe as projectNativeRequest, fixtureInput };
 
 function fixtureCredential(model, options) {
   const environment = { ...process.env, ...options.env };
@@ -91,7 +93,7 @@ function fixtureInput(model, context, options, responses, credential, requestSou
         grammarToolInputProperties: Object.fromEntries(options.grammarToolInputProperties),
       } : {}),
       cacheRetention: options.cacheRetention ||
-      (getProviderEnvValue("PI_CACHE_RETENTION", options.env) === "long" ? "long" : "short") },
+      (getProviderEnvValue("PI_CACHE_RETENTION", options.env) === "long" ? "long" : model.api === "pi-messages" ? undefined : "short") },
     credential,
     environment: Object.fromEntries(Object.entries(process.env).filter(([key]) =>
       key.startsWith("AZURE_OPENAI_") || ["GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_LOCATION"].includes(key))),
@@ -103,11 +105,15 @@ function fixtureInput(model, context, options, responses, credential, requestSou
 }
 
 function hasNativeWireObserver(model) {
-  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses", "mistral-conversations", "google-generative-ai", "google-vertex", "bedrock-converse-stream"].includes(model.api);
+  return ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses", "mistral-conversations", "google-generative-ai", "google-vertex", "bedrock-converse-stream", "pi-messages"].includes(model.api);
 }
 
 function capabilities(options, model) {
   return [
+    ...(options.fetch && ["google-generative-ai", "google-vertex"].includes(model.api)
+      ? ["google-sdk-custom-fetch-contract"] : []),
+    ...(model.api === "anthropic-messages" && options.env?.ANTHROPIC_FEDERATION_RULE_ID && !options.apiKey
+      ? ["anthropic-workload-identity-federation"] : []),
     ...(options.onProviderStreamEvent && !hasNativeWireObserver(model) ? ["raw-provider-stream-event-hook"] : []),
     ...(options.onResponse && !hasNativeWireObserver(model) ? ["raw-response-hook"] : []),
     ...(options.timeoutMs !== undefined && model.api !== "mistral-conversations" ? ["request-timeout-option"] : []),
@@ -115,7 +121,9 @@ function capabilities(options, model) {
 }
 
 function probe(model, context, options, responses = [], credential = fixtureCredential(model, options)) {
-  const result = invoke(fixtureInput(model, context, options, responses, credential));
+  const samples = heapObservations.getStore();
+  const result = invoke({ ...fixtureInput(model, context, options, responses, credential), measureHeap: !!samples });
+  if (samples && result.allocatedBytes !== undefined) samples.push(result.allocatedBytes);
   record(result.failure?.unrepresentedCapability ? "input" : responses.length ? "decode" : "encode", model.api, result.failure, [
     ...capabilities(options, model),
     ...(result.failure?.unrepresentedCapability ? [result.failure.unrepresentedCapability] : []),
@@ -202,6 +210,19 @@ export function stream(model, context, options = {}, requestSource = "api", gene
     }
   })();
   return output;
+}
+
+export async function generateImages(model, context, options = {}) {
+  const partial = { content: [], stopReason: "pending", timestamp: Date.now() };
+  try {
+    await nativeStream(model, normalizeContext({ messages: [{ role: "user", content: context.input, timestamp: 0 }] }),
+      options, event => emit(event, partial, { push() {} }), "api", "raw");
+  } catch (error) {
+    partial.stopReason = options.signal?.aborted ? "aborted" : "error";
+    partial.errorMessage = options.signal?.aborted ? "Request aborted" : error.message;
+  }
+  const { content, ...result } = partial;
+  return { ...result, output: content };
 }
 
 async function nativeStream(model, context, options, emitEvent, requestSource, generationMode) {
@@ -350,6 +371,11 @@ async function mockResponse(model, request, body, options, connection) {
     } catch (error) {
       const status = error.$metadata?.httpStatusCode ?? (error.name === "ValidationException" ? 400 : undefined);
       if (!status) throw error;
+      if (typeof error.$response?.body === "string") {
+        record("decode", model.api, undefined, ["parsed-sdk-error-object-versus-raw-http-response"]);
+        return { status, headers: error.$response.headers ?? {},
+          chunks: [Buffer.from(error.$response.body).toString("base64")] };
+      }
       return { status, headers: { "x-amzn-errortype": error.name,
         ...(error.$metadata?.requestId ? { "x-amzn-requestid": error.$metadata.requestId } : {}) },
         chunks: [Buffer.from(JSON.stringify({ __type: error.name, message: error.message })).toString("base64")] };
@@ -395,7 +421,7 @@ async function mockResponse(model, request, body, options, connection) {
     });
     return { status: response.status, headers: Object.fromEntries(response.headers), chunks: responseChunks(response, options.signal) };
   }
-  const suffix = model.api === "openai-completions" ? "/chat/completions" :
+  const suffix = ["openai-completions", "openrouter-images"].includes(model.api) ? "/chat/completions" :
     model.api === "anthropic-messages" ? "/v1/messages" : "/responses";
   const defaultHeaders = { ...request.headers };
   for (const name of ["Authorization", "x-api-key"]) {
@@ -403,7 +429,10 @@ async function mockResponse(model, request, body, options, connection) {
       defaultHeaders[name] = null;
     }
   }
-  const config = { apiKey: connection.credential.key, baseURL: request.url.split(suffix)[0],
+  const config = { ...(model.api === "anthropic-messages" ? {
+    apiKey: connection.credential.key?.includes("sk-ant-oat") ? null : connection.credential.key ?? null,
+    authToken: connection.credential.key?.includes("sk-ant-oat") ? connection.credential.key : null,
+  } : { apiKey: connection.credential.key }), baseURL: request.url.split(suffix)[0],
     defaultHeaders, dangerouslyAllowBrowser: true };
   if (model.api === "azure-openai-responses") {
     if (!request.azureConfiguration) throw new Error("Swift Azure configuration was not captured");
@@ -438,12 +467,12 @@ async function mockResponse(model, request, body, options, connection) {
   }
   const client = connection.client ??= options.client ??
     (model.api === "anthropic-messages" ? new Anthropic(config) : new OpenAI(config));
-  if (model.api === "anthropic-messages" && options.client?.beta?.messages) {
-    const response = await options.client.beta.messages.create(body, { signal: options.signal }).asResponse();
+  if (model.api === "anthropic-messages" && client.beta?.messages) {
+    const response = await client.beta.messages.create(body, { signal: options.signal }).asResponse();
     return { status: response.status, headers: Object.fromEntries(response.headers), chunks: responseChunks(response, options.signal) };
   }
   const resource = model.api === "anthropic-messages" ? client.messages :
-    model.api === "openai-completions" ? client.chat.completions : client.responses;
+    ["openai-completions", "openrouter-images"].includes(model.api) ? client.chat.completions : client.responses;
   let reply;
   try {
     const pending = resource.create(body, { signal: options.signal });
@@ -454,6 +483,10 @@ async function mockResponse(model, request, body, options, connection) {
     return { status: error.status, headers: {},
       chunks: [Buffer.from(JSON.stringify(error.error ?? { message: error.message })).toString("base64")] };
   }
+  if (model.api === "openrouter-images") return {
+    status: reply.response.status, headers: Object.fromEntries(reply.response.headers),
+    chunks: [Buffer.from(JSON.stringify(reply.data)).toString("base64")],
+  };
   const frames = (async function* () {
     for await (const event of reply.data) {
       if (hasNativeWireObserver(model) && options.onProviderStreamEvent) {
@@ -569,6 +602,7 @@ function emit(event, partial, output) {
         for (const key of Object.keys(call)) delete call[key];
         return Object.assign(call, { type: "toolCall", ...payload._0 });
       }
+      if (kind === "asset") return { type: "image", mimeType: payload._0.mimeType, data: payload._0.data };
       throw new Error(`Unmapped Swift response content: ${kind}`);
     });
     partial.responseId = value.responseID;

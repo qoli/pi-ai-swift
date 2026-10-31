@@ -170,11 +170,14 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard let deviceCode = body.string("device_code"), !deviceCode.isEmpty,
       let userCode = body.string("user_code"), !userCode.isEmpty,
       let verification = body.string("verification_uri"),
-      let verificationURL = URL(string: verification),
-      let verificationScheme = verificationURL.scheme?.lowercased(),
-      ["http", "https"].contains(verificationScheme),
       let expiresIn = body.int("expires_in"), expiresIn > 0
     else { throw failure("Radius device authorization response is malformed") }
+    guard let verificationURL = URL(string: verification),
+      let verificationScheme = verificationURL.scheme?.lowercased(),
+      ["http", "https"].contains(verificationScheme), verificationURL.host != nil
+    else {
+      throw failure("Untrusted verification_uri in Radius OAuth device authorization response")
+    }
     var interval = body.int("interval") ?? 5
     guard interval > 0 else { throw failure("Radius device polling interval is invalid") }
     let expiresAt = clock.now().addingTimeInterval(TimeInterval(expiresIn))
@@ -191,7 +194,7 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       throw failure("Radius device authorization was not acknowledged")
     }
     while clock.now() < expiresAt {
-      try await clock.sleep(for: .seconds(interval))
+      try Task.checkCancellation()
       let tokenResponse = try await transport.send(
         oauthFormRequest(
           url: gateway.appending(path: "v1/oauth/token"),
@@ -215,13 +218,15 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
         operation: "radius.oauth.device.poll"
       ).string("error")
       switch error {
-      case "authorization_pending": continue
+      case "authorization_pending": break
       case "slow_down": interval += 5
       case "expired_token": throw failure("Radius device authorization expired")
       case "access_denied": throw failure("Radius device authorization was denied")
       default:
         throw failure("Radius device token polling failed (HTTP \(tokenResponse.statusCode))")
       }
+      let remaining = expiresAt.timeIntervalSince(clock.now())
+      if remaining > 0 { try await clock.sleep(for: .seconds(min(Double(interval), remaining))) }
     }
     throw failure("Radius device authorization timed out")
   }
@@ -241,7 +246,7 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       var components = URLComponents(string: endpoint),
       let authorizationScheme = components.scheme?.lowercased(),
       ["http", "https"].contains(authorizationScheme)
-    else { throw failure("Radius OAuth discovery is malformed") }
+    else { throw failure("Invalid Radius OAuth config from \(gateway.absoluteString)") }
     let pkce = try OAuthPKCE.make()
     components.queryItems = [
       URLQueryItem(name: "response_type", value: "code"),
@@ -303,17 +308,20 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     gateway: URL,
     operation: String
   ) throws -> OAuthCredential {
-    try oauthCredential(
-      oauthResponseObject(
-        response,
-        providerID: Self.providerID,
-        operation: operation
-      ),
+    let body = try oauthResponseObject(
+      response,
+      providerID: Self.providerID,
+      operation: operation
+    )
+    var metadata = ["gateway": gateway.absoluteString]
+    if let scope = body.string("scope") { metadata["scope"] = scope }
+    return try oauthCredential(
+      body,
       providerID: Self.providerID,
       operation: operation,
       now: clock.now(),
       expirySkew: 60,
-      metadata: ["gateway": gateway.absoluteString]
+      metadata: metadata
     )
   }
 

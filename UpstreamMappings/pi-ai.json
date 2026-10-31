@@ -223,7 +223,8 @@
         "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
         "Fixtures/Differential/Cases/cloudflare-auth.json",
-        "Fixtures/Differential/Oracle/cloudflare-auth.json"
+        "Fixtures/Differential/Oracle/cloudflare-auth.json",
+        "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#preservesNormalizedProviderRefreshFailure"
       ],
       "requiredGates": [
         "swift-test"
@@ -367,7 +368,7 @@
       "id": "kimi-coding-oauth",
       "providerID": "kimi-coding",
       "responsibility": "Kimi Coding subscription device authorization, token refresh, and credential state.",
-      "status": "landed",
+      "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Authorization/KimiCodingOAuthAuthorizationAdapter.swift"
       ],
@@ -396,7 +397,10 @@
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRun"
+      "liveVerificationStatus": "notRun",
+      "conformanceGaps": [
+        "Pinned kimi-coding-oauth.test.ts requires a refresh retry after HTTP 429; Native currently fails that request. Retry policy remains an explicit Class C decision and was not changed by this audit."
+      ]
     },
     {
       "id": "openai-codex-oauth",
@@ -423,7 +427,10 @@
         "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#tokenExchangeReturnsCredentialWithoutPersistingTokens",
         "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#refreshRotatesCredentialAndPreservesAccountIdentity",
         "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift#malformedRefreshFailsWithoutRetainingOrInventingTokens",
-        "Sources/PiAILiveProbe/PiAILiveProbe.swift"
+        "Sources/PiAILiveProbe/PiAILiveProbe.swift",
+        "Scripts/Conformance/AuthorizationProbe.swift",
+        "Scripts/Conformance/authorization.mjs",
+        "Tests/PiAIProviderRuntimeTests/OpenAICodexOAuthTests.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -514,7 +521,11 @@
         "packages/ai/src/providers/anthropic.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/providers.test.ts"
+        "packages/ai/test/providers.test.ts",
+        "packages/ai/test/anthropic-auth-token.test.ts",
+        "packages/ai/test/anthropic-federation-sdk.test.ts",
+        "packages/ai/test/anthropic-federation.test.ts",
+        "packages/ai/test/anthropic-oauth.test.ts"
       ],
       "dependsOn": [
         "builtin-provider-registry",
@@ -801,7 +812,8 @@
         "packages/ai/src/providers/github-copilot.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/providers.test.ts"
+        "packages/ai/test/providers.test.ts",
+        "packages/ai/test/github-copilot-oauth.test.ts"
       ],
       "dependsOn": [
         "builtin-provider-registry",
@@ -1388,7 +1400,10 @@
         "packages/ai/src/providers/openrouter-api.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/providers.test.ts"
+        "packages/ai/test/providers.test.ts",
+        "packages/ai/test/oauth-auth.test.ts",
+        "packages/ai/test/openrouter-oauth.test.ts",
+        "packages/ai/test/openrouter-user-models.test.ts"
       ],
       "dependsOn": [
         "builtin-provider-registry",
@@ -1525,7 +1540,8 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts",
-        "packages/ai/test/radius-provider.test.ts"
+        "packages/ai/test/radius-provider.test.ts",
+        "packages/ai/test/radius-oauth.test.ts"
       ],
       "dependsOn": [
         "builtin-provider-registry",
@@ -1628,7 +1644,8 @@
         "packages/ai/src/providers/xai.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/providers.test.ts"
+        "packages/ai/test/providers.test.ts",
+        "packages/ai/test/xai-oauth.test.ts"
       ],
       "dependsOn": [
         "builtin-provider-registry",
@@ -2255,58 +2272,60 @@
       "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/ProviderConstrainedSamplingResolver.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/JSONAccessors.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/ProviderSessionHeaders.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/ServerSentEvents.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/CompletedToolArguments.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/PreferredStrictToolFallback.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ErrorToolResultImages.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/ProviderSamplingParameters.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/GrammarToolInputJSONBuffer.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/JSONAccessors.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/PreferredStrictToolFallback.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderErrorText.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderInputText.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderOrderedJSON.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/ProviderInputText.swift"
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderSamplingParameters.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderSessionHeaders.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ServerSentEvents.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
+        "packages/ai/src/api/constrained-sampling.ts",
         "packages/ai/src/api/github-copilot-headers.ts",
         "packages/ai/src/api/simple-options.ts",
         "packages/ai/src/api/transform-messages.ts",
+        "packages/ai/src/providers/opencode-headers.ts",
+        "packages/ai/src/providers/opencode.ts",
+        "packages/ai/src/telemetry.ts",
         "packages/ai/src/utils/diagnostics.ts",
         "packages/ai/src/utils/error-body.ts",
         "packages/ai/src/utils/estimate.ts",
         "packages/ai/src/utils/event-stream.ts",
         "packages/ai/src/utils/hash.ts",
         "packages/ai/src/utils/headers.ts",
+        "packages/ai/src/utils/identity.ts",
         "packages/ai/src/utils/json-parse.ts",
         "packages/ai/src/utils/node-http-proxy.ts",
-        "packages/ai/src/utils/identity.ts",
+        "packages/ai/src/utils/openrouter-cost.ts",
         "packages/ai/src/utils/provider-env.ts",
         "packages/ai/src/utils/provider-retry.ts",
         "packages/ai/src/utils/sanitize-unicode.ts",
         "packages/ai/src/utils/sleep.ts",
+        "packages/ai/src/utils/streaming-json.ts",
         "packages/ai/src/utils/text.ts",
         "packages/ai/src/utils/transcript.ts",
         "packages/ai/src/utils/uuid.ts",
-        "packages/ai/src/utils/streaming-json.ts",
-        "packages/ai/src/utils/openrouter-cost.ts",
-        "packages/ai/src/api/constrained-sampling.ts",
-        "packages/ai/src/telemetry.ts",
-        "packages/ai/src/utils/version.ts",
-        "packages/ai/src/providers/opencode-headers.ts",
-        "packages/ai/src/providers/opencode.ts"
+        "packages/ai/src/utils/version.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
+        "packages/ai/test/error-body.test.ts",
         "packages/ai/test/event-stream.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts",
+        "packages/ai/test/openrouter-cost.test.ts",
         "packages/ai/test/provider-error-body-regression.test.ts",
         "packages/ai/test/provider-retry.test.ts",
-        "packages/ai/test/tool-call-without-result.test.ts",
-        "packages/ai/test/unicode-surrogate.test.ts",
+        "packages/ai/test/sampling-options.test.ts",
         "packages/ai/test/streaming-json.test.ts",
         "packages/ai/test/streaming-tool-arguments.test.ts",
-        "packages/ai/test/sampling-options.test.ts",
-        "packages/ai/test/openrouter-cost.test.ts",
-        "packages/ai/test/opencode-provider-headers.test.ts"
+        "packages/ai/test/tool-call-without-result.test.ts",
+        "packages/ai/test/unicode-surrogate.test.ts"
       ],
       "dependsOn": [],
       "evidence": [
@@ -2375,10 +2394,13 @@
         "packages/ai/src/api/google-shared.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/stream.test.ts",
-        "packages/ai/test/opencode-provider-headers.test.ts",
+        "packages/ai/test/google-shared-convert-tools.test.ts",
+        "packages/ai/test/google-shared-gemini3-unsigned-tool-call.test.ts",
+        "packages/ai/test/google-shared-signed-empty-blocks.test.ts",
         "packages/ai/test/google-thinking-level-map.test.ts",
-        "packages/ai/test/google-shared-signed-empty-blocks.test.ts"
+        "packages/ai/test/google-thinking-signature.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts",
+        "packages/ai/test/stream.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2444,9 +2466,12 @@
         "packages/ai/src/api/google-vertex.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/google-shared-convert-tools.test.ts",
+        "packages/ai/test/google-shared-gemini3-unsigned-tool-call.test.ts",
+        "packages/ai/test/google-shared-signed-empty-blocks.test.ts",
         "packages/ai/test/google-thinking-level-map.test.ts",
-        "packages/ai/test/google-shared-signed-empty-blocks.test.ts"
+        "packages/ai/test/google-thinking-signature.test.ts",
+        "packages/ai/test/stream.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2675,6 +2700,7 @@
         "packages/ai/src/providers/opencode-headers.ts"
       ],
       "upstreamTestPaths": [
+        "packages/ai/test/azure-openai-completions.test.ts",
         "packages/ai/test/openai-completions-empty-tools.test.ts",
         "packages/ai/test/openai-completions-reasoning-details.test.ts",
         "packages/ai/test/openai-completions-response-model.test.ts",
@@ -2682,10 +2708,10 @@
         "packages/ai/test/openai-completions-tool-choice.test.ts",
         "packages/ai/test/openai-completions-tool-result-images.test.ts",
         "packages/ai/test/openai-completions-vllm-priority.test.ts",
-        "packages/ai/test/azure-openai-completions.test.ts",
-        "packages/ai/test/sampling-options.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts",
         "packages/ai/test/openrouter-cost.test.ts",
-        "packages/ai/test/opencode-provider-headers.test.ts"
+        "packages/ai/test/provider-error-body-regression.test.ts",
+        "packages/ai/test/sampling-options.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2879,7 +2905,9 @@
         "packages/ai/src/providers/openrouter.ts"
       ],
       "upstreamTestPaths": [
-        "packages/ai/test/image-model-data.test.ts"
+        "packages/ai/test/image-model-data.test.ts",
+        "packages/ai/test/openrouter-images.test.ts",
+        "packages/ai/test/provider-error-body-passthrough.test.ts"
       ],
       "imageProviderID": "openrouter",
       "dependsOn": [
@@ -2922,6 +2950,7 @@
         "packages/ai/src/api/pi-messages.lazy.ts"
       ],
       "upstreamTestPaths": [
+        "packages/ai/test/pi-messages.test.ts",
         "packages/ai/test/stream.test.ts"
       ],
       "dependsOn": [
@@ -2941,7 +2970,8 @@
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
         "Scripts/pi-ai-tool-arguments-oracle.mjs",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPiTerminalEventsWithoutStartMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPiTerminalEventsWithoutStartMatchPinnedSource",
+        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#preservesUnspecifiedAndExplicitCacheRetentionAcrossCoding"
       ],
       "requiredGates": [
         "swift-test"
@@ -3057,6 +3087,208 @@
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired"
+    },
+    {
+      "id": "unchanged-upstream-conformance",
+      "responsibility": "Review the complete pinned upstream suite inventory and compare unchanged original assertions with actual Native operations and dispatch, keeping omissions, skips, bridge/interface gaps and mismatches explicit.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
+      ],
+      "plannedSwiftPaths": [],
+      "upstreamPaths": [
+        "packages/ai/src/models.ts",
+        "packages/ai/src/types.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/provider-error-body-regression.test.ts",
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/abort.test.ts",
+        "packages/ai/test/anthropic-auth-token.test.ts",
+        "packages/ai/test/anthropic-cache-write-1h-cost.test.ts",
+        "packages/ai/test/anthropic-eager-tool-input-compat.test.ts",
+        "packages/ai/test/anthropic-eager-tool-input-e2e.test.ts",
+        "packages/ai/test/anthropic-empty-thinking-signature-compat.test.ts",
+        "packages/ai/test/anthropic-error-tool-result-images.test.ts",
+        "packages/ai/test/anthropic-federation-sdk.test.ts",
+        "packages/ai/test/anthropic-federation.test.ts",
+        "packages/ai/test/anthropic-force-adaptive-thinking.test.ts",
+        "packages/ai/test/anthropic-long-cache-retention-e2e.test.ts",
+        "packages/ai/test/anthropic-mid-conversation-effort.test.ts",
+        "packages/ai/test/anthropic-oauth.test.ts",
+        "packages/ai/test/anthropic-opus-4-8-smoke.test.ts",
+        "packages/ai/test/anthropic-sse-parsing.test.ts",
+        "packages/ai/test/anthropic-strict-tool-fallback.test.ts",
+        "packages/ai/test/anthropic-strict-tool-schema.test.ts",
+        "packages/ai/test/anthropic-temperature-compat.test.ts",
+        "packages/ai/test/anthropic-thinking-binding-e2e.test.ts",
+        "packages/ai/test/anthropic-thinking-disable.test.ts",
+        "packages/ai/test/anthropic-tool-name-normalization.test.ts",
+        "packages/ai/test/azure-openai-base-url.test.ts",
+        "packages/ai/test/azure-openai-completions.test.ts",
+        "packages/ai/test/azure-openai-responses-reasoning-replay.test.ts",
+        "packages/ai/test/azure-openai-tool-choice.test.ts",
+        "packages/ai/test/baseten-models.test.ts",
+        "packages/ai/test/bedrock-cache-write-1h-cost.test.ts",
+        "packages/ai/test/bedrock-convert-messages.test.ts",
+        "packages/ai/test/bedrock-credentials.test.ts",
+        "packages/ai/test/bedrock-custom-headers.test.ts",
+        "packages/ai/test/bedrock-endpoint-resolution.test.ts",
+        "packages/ai/test/bedrock-error-metadata.test.ts",
+        "packages/ai/test/bedrock-models.test.ts",
+        "packages/ai/test/bedrock-raw-stop-reason.test.ts",
+        "packages/ai/test/bedrock-redacted-reasoning.test.ts",
+        "packages/ai/test/bedrock-response-headers.test.ts",
+        "packages/ai/test/bedrock-stream-state.test.ts",
+        "packages/ai/test/bedrock-strict-tool-fallback.test.ts",
+        "packages/ai/test/bedrock-thinking-payload.test.ts",
+        "packages/ai/test/cache-retention.test.ts",
+        "packages/ai/test/cloudflare-stream.test.ts",
+        "packages/ai/test/constrained-sampling.test.ts",
+        "packages/ai/test/context-overflow.test.ts",
+        "packages/ai/test/cross-provider-handoff.test.ts",
+        "packages/ai/test/empty.test.ts",
+        "packages/ai/test/env-api-keys.test.ts",
+        "packages/ai/test/error-body.test.ts",
+        "packages/ai/test/fetch-option.test.ts",
+        "packages/ai/test/fireworks-model-generation.test.ts",
+        "packages/ai/test/fireworks-models.test.ts",
+        "packages/ai/test/github-copilot-anthropic.test.ts",
+        "packages/ai/test/github-copilot-oauth.test.ts",
+        "packages/ai/test/github-copilot-request-size-overflow.test.ts",
+        "packages/ai/test/google-raw-stop-reason.test.ts",
+        "packages/ai/test/google-shared-convert-tools.test.ts",
+        "packages/ai/test/google-shared-gemini3-unsigned-tool-call.test.ts",
+        "packages/ai/test/google-shared-image-tool-result-routing.test.ts",
+        "packages/ai/test/google-shared-retry.test.ts",
+        "packages/ai/test/google-shared-signed-empty-blocks.test.ts",
+        "packages/ai/test/google-thinking-disable.test.ts",
+        "packages/ai/test/google-thinking-level-map.test.ts",
+        "packages/ai/test/google-thinking-signature.test.ts",
+        "packages/ai/test/google-vertex-api-key-resolution.test.ts",
+        "packages/ai/test/identity.test.ts",
+        "packages/ai/test/image-tool-result.test.ts",
+        "packages/ai/test/images-models.test.ts",
+        "packages/ai/test/images.test.ts",
+        "packages/ai/test/interleaved-thinking.test.ts",
+        "packages/ai/test/json-parse.test.ts",
+        "packages/ai/test/kimi-coding-oauth.test.ts",
+        "packages/ai/test/max-thinking.test.ts",
+        "packages/ai/test/meta-oauth.test.ts",
+        "packages/ai/test/mistral-http-transport.test.ts",
+        "packages/ai/test/mistral-raw-stop-reason.test.ts",
+        "packages/ai/test/mistral-reasoning-mode.test.ts",
+        "packages/ai/test/mistral-tool-schema.test.ts",
+        "packages/ai/test/model-types.test.ts",
+        "packages/ai/test/models-runtime.test.ts",
+        "packages/ai/test/oauth-auth.test.ts",
+        "packages/ai/test/openai-chatgpt-oauth.test.ts",
+        "packages/ai/test/openai-codex-cache-affinity-e2e.test.ts",
+        "packages/ai/test/openai-codex-oauth.test.ts",
+        "packages/ai/test/openai-codex-stream.test.ts",
+        "packages/ai/test/openai-completions-cache-control-format.test.ts",
+        "packages/ai/test/openai-completions-empty-tools.test.ts",
+        "packages/ai/test/openai-completions-prompt-cache.test.ts",
+        "packages/ai/test/openai-completions-provider-stream-event.test.ts",
+        "packages/ai/test/openai-completions-raw-stop-reason.test.ts",
+        "packages/ai/test/openai-completions-reasoning-details.test.ts",
+        "packages/ai/test/openai-completions-response-model.test.ts",
+        "packages/ai/test/openai-completions-retry.test.ts",
+        "packages/ai/test/openai-completions-thinking-as-text.test.ts",
+        "packages/ai/test/openai-completions-thinking-token-budget.test.ts",
+        "packages/ai/test/openai-completions-tool-choice.test.ts",
+        "packages/ai/test/openai-completions-tool-result-images.test.ts",
+        "packages/ai/test/openai-completions-vllm-priority.test.ts",
+        "packages/ai/test/openai-responses-cache-affinity-e2e.test.ts",
+        "packages/ai/test/openai-responses-chatgpt-sign-in.test.ts",
+        "packages/ai/test/openai-responses-compat.test.ts",
+        "packages/ai/test/openai-responses-empty-tool-result.test.ts",
+        "packages/ai/test/openai-responses-foreign-toolcall-id.test.ts",
+        "packages/ai/test/openai-responses-message-id.test.ts",
+        "packages/ai/test/openai-responses-mid-convo-effort.test.ts",
+        "packages/ai/test/openai-responses-namespace.test.ts",
+        "packages/ai/test/openai-responses-partial-json-cleanup.test.ts",
+        "packages/ai/test/openai-responses-reasoning-replay-e2e.test.ts",
+        "packages/ai/test/openai-responses-terminal-event.test.ts",
+        "packages/ai/test/openai-responses-tool-result-images.test.ts",
+        "packages/ai/test/openai-responses-usage-limit.test.ts",
+        "packages/ai/test/opencode-provider-headers.test.ts",
+        "packages/ai/test/openrouter-cache-write-repro.test.ts",
+        "packages/ai/test/openrouter-cost.test.ts",
+        "packages/ai/test/openrouter-images.test.ts",
+        "packages/ai/test/openrouter-oauth.test.ts",
+        "packages/ai/test/openrouter-reasoning-options.test.ts",
+        "packages/ai/test/openrouter-user-models.test.ts",
+        "packages/ai/test/pi-messages.test.ts",
+        "packages/ai/test/pre-generation-error.test.ts",
+        "packages/ai/test/provider-error-body-passthrough.test.ts",
+        "packages/ai/test/provider-retry.test.ts",
+        "packages/ai/test/providers.test.ts",
+        "packages/ai/test/qwen-token-plan-models.test.ts",
+        "packages/ai/test/radius-oauth.test.ts",
+        "packages/ai/test/radius-provider.test.ts",
+        "packages/ai/test/radius-thinking-replay-e2e.test.ts",
+        "packages/ai/test/responseid.test.ts",
+        "packages/ai/test/sampling-options.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts",
+        "packages/ai/test/supports-xhigh.test.ts",
+        "packages/ai/test/together-models.test.ts",
+        "packages/ai/test/tokens.test.ts",
+        "packages/ai/test/tool-call-id-normalization.test.ts",
+        "packages/ai/test/tool-call-without-result.test.ts",
+        "packages/ai/test/total-tokens.test.ts",
+        "packages/ai/test/transcript-tool-changes.test.ts",
+        "packages/ai/test/unicode-surrogate.test.ts",
+        "packages/ai/test/xai-oauth.test.ts",
+        "packages/ai/test/xai-responses.test.ts",
+        "packages/ai/test/xhigh.test.ts",
+        "packages/ai/test/xiaomi-models.test.ts",
+        "packages/ai/test/xiaomi-token-plan-ams-anthropic-empty-signature-smoke.test.ts",
+        "packages/ai/test/zai-coding-plan-models.test.ts",
+        "packages/ai/test/zen.test.ts"
+      ],
+      "dependsOn": [
+        "differential-fixture-harness"
+      ],
+      "evidence": [
+        "Scripts/Conformance/AuthorizationProbe.swift",
+        "Scripts/Conformance/HeapObserver.c",
+        "Scripts/Conformance/HeapObserver.h",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Scripts/Conformance/authorization.mjs",
+        "Scripts/Conformance/bedrock-payload.mjs",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/compat.mjs",
+        "Scripts/Conformance/constrained-sampling.mjs",
+        "Scripts/Conformance/constrained-tools.mjs",
+        "Scripts/Conformance/error-body.mjs",
+        "Scripts/Conformance/google-shared.mjs",
+        "Scripts/Conformance/helpers.mjs",
+        "Scripts/Conformance/images.mjs",
+        "Scripts/Conformance/json-parse.mjs",
+        "Scripts/Conformance/memory-observer.mjs",
+        "Scripts/Conformance/mistral-payload.mjs",
+        "Scripts/Conformance/mistral-payload.test.mjs",
+        "Scripts/Conformance/models.mjs",
+        "Scripts/Conformance/offline-credentials.mjs",
+        "Scripts/Conformance/openrouter-cost.mjs",
+        "Scripts/Conformance/providers.mjs",
+        "Scripts/Conformance/responses-shared.mjs",
+        "Scripts/Conformance/run.py",
+        "Scripts/Conformance/setup.mjs",
+        "Scripts/Conformance/suites.json",
+        "Scripts/Conformance/upstream-trace.mjs",
+        "Scripts/Conformance/vitest.config.mjs",
+        "Scripts/tests/test_conformance_reporting.py"
+      ],
+      "requiredGates": [
+        "unchanged-upstream-conformance",
+        "swift-test",
+        "ios-simulator-source-fixtures"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRequired",
+      "conformanceBoundary": "Unchanged upstream suites run against both implementations; only matching assertions with corresponding Native invocation and dispatch evidence count as passed. Selected-suite skips, bridge/interface gaps, missing cases, and mismatches remain incomplete."
     }
   ]
 }

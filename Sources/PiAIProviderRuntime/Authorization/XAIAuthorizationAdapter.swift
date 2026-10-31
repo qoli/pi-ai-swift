@@ -72,18 +72,14 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       minimumValidity: 60,
       now: clock.now(),
       refresh: { credential in
-        let response = try await sendToken([
-          "grant_type": "refresh_token",
-          "client_id": Self.clientID,
-          "refresh_token": credential.refreshToken,
-        ])
-        return try oauthCredential(
+        let response = try await sendToken(
+          [
+            "grant_type": "refresh_token", "client_id": Self.clientID,
+            "refresh_token": credential.refreshToken,
+          ], message: "xAI OAuth token refresh failed")
+        return try makeCredential(
           response,
-          providerID: Self.providerID,
           operation: "xai.oauth.refresh",
-          now: clock.now(),
-          expirySkew: 300,
-          defaultLifetime: 3_600,
           previousRefreshToken: credential.refreshToken
         )
       }
@@ -108,8 +104,6 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard let deviceCode = body.string("device_code"), !deviceCode.isEmpty,
       let userCode = body.string("user_code"), !userCode.isEmpty,
       let verification = body.string("verification_uri"),
-      let verificationURL = URL(string: verification),
-      verificationURL.scheme == "https",
       let expiresIn = body.int("expires_in"), expiresIn > 0
     else {
       throw oauthFailure(
@@ -119,17 +113,15 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
         message: "xAI device authorization response is malformed"
       )
     }
+    let verificationURL = try verificationURL(verification)
     let completeURL: URL?
-    if let value = body.string("verification_uri_complete") {
-      guard let url = URL(string: value), url.scheme == "https" else {
-        throw failure("xAI verification_uri_complete is untrusted")
-      }
-      completeURL = url
+    if let value = body.string("verification_uri_complete"), !value.isEmpty {
+      completeURL = try self.verificationURL(value)
     } else {
       completeURL = nil
     }
-    let interval = body.int("interval") ?? 5
-    guard interval > 0 else { throw failure("xAI polling interval is invalid") }
+    let reportedInterval = body.int("interval") ?? 0
+    let interval = reportedInterval > 0 ? reportedInterval : 5
     return Device(
       deviceCode: deviceCode,
       userCode: userCode,
@@ -149,17 +141,13 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
         "device_code": device.deviceCode,
       ])
       if (200..<300).contains(response.statusCode) {
-        return try oauthCredential(
+        return try makeCredential(
           try decodeJSONObject(
             response.body,
             providerID: Self.providerID,
             operation: "xai.oauth.device.poll"
           ),
-          providerID: Self.providerID,
-          operation: "xai.oauth.device.poll",
-          now: clock.now(),
-          expirySkew: 300,
-          defaultLifetime: 3_600
+          operation: "xai.oauth.device.poll"
         )
       }
       let body = try decodeJSONObject(
@@ -187,9 +175,44 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     throw failure("xAI device authorization timed out")
   }
 
-  private func sendToken(_ fields: [String: String]) async throws -> [String: JSONValue] {
-    try oauthResponseObject(
-      try await sendTokenResponse(fields),
+  private func verificationURL(_ value: String) throws -> URL {
+    guard let url = URL(string: value), url.scheme == "https", url.host != nil else {
+      throw failure("Untrusted verification URI in xAI OAuth response")
+    }
+    return url
+  }
+
+  private func makeCredential(
+    _ body: [String: JSONValue], operation: String, previousRefreshToken: String? = nil
+  ) throws -> OAuthCredential {
+    for field in ["access_token", "refresh_token"] {
+      if field == "refresh_token", body[field] == nil, previousRefreshToken != nil { continue }
+      guard let value = body.string(field), !value.isEmpty else {
+        throw failure("Invalid xAI OAuth response field: \(field)")
+      }
+    }
+    return try oauthCredential(
+      body, providerID: Self.providerID, operation: operation, now: clock.now(),
+      expirySkew: 300, defaultLifetime: 3_600, previousRefreshToken: previousRefreshToken)
+  }
+
+  private func sendToken(_ fields: [String: String], message: String) async throws
+    -> [String: JSONValue]
+  {
+    let response = try await sendTokenResponse(fields)
+    guard (200..<300).contains(response.statusCode) else {
+      let body = try? JSONValue(jsonData: response.body).objectValue
+      let code = body?.string("error")
+      let description = body?.string("error_description")
+      let detail = [code, description].compactMap { $0 }.joined(separator: ": ")
+      throw oauthFailure(
+        .authorizationFailed, providerID: Self.providerID, operation: "xai.oauth.refresh",
+        message:
+          "\(message) (HTTP \(response.statusCode))" + (detail.isEmpty ? "" : ": \(detail)")
+      )
+    }
+    return try oauthResponseObject(
+      response,
       providerID: Self.providerID,
       operation: "xai.oauth.token"
     )

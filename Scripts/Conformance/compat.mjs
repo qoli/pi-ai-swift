@@ -1,5 +1,6 @@
 export * from "pi-conformance:upstream-compat";
 export { getModel, getModels, getProviders } from "./bridge.mjs";
+export { getSupportedThinkingLevels, clampThinkingLevel } from "./helpers.mjs";
 
 import { stream as swiftStream, streamSimple as swiftStreamSimple } from "./bridge.mjs";
 import { normalizeContext } from "pi-conformance:upstream-compat";

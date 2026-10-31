@@ -115,11 +115,30 @@ struct CredentialRefreshCoordinatorTests {
       Issue.record("credential race silently overwrote external state")
     } catch let error as ProviderRuntimeFailure {
       #expect(error.code == .authorizationFailed)
-      #expect(error.operation == "credential.refresh")
+      #expect(error.operation == "credential.refresh.commit")
     } catch {
       Issue.record("credential race returned an unexpected error: \(error)")
     }
     #expect(await store.read(providerID: "provider") == nil)
+  }
+
+  @Test
+  func preservesNormalizedProviderRefreshFailure() async throws {
+    let now = Date(timeIntervalSince1970: 2_000_000_000)
+    let store = InMemoryProviderCredentialStore(credentials: [
+      "provider": .oauth(refreshFixtureCredential(suffix: "denied", expiresAt: now))
+    ])
+    let coordinator = CredentialRefreshCoordinator(credentialStore: store)
+    let denied = ProviderRuntimeFailure(
+      code: .authorizationFailed, message: "invalid_grant: refresh token revoked",
+      providerID: "provider", operation: "fixture.oauth.refresh", causeDescription: nil)
+    do {
+      _ = try await coordinator.credential(
+        providerID: "provider", now: now, refresh: { _ in throw denied })
+      Issue.record("denied refresh completed successfully")
+    } catch let error as ProviderRuntimeFailure {
+      #expect(error == denied)
+    }
   }
 
   @Test

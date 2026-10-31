@@ -11,23 +11,48 @@ private func rewriteGoogleConst(_ value: JSONValue, nameMap: Bool = false) -> JS
     "additionalItems", "unevaluatedItems", "contains", "allOf", "anyOf", "oneOf", "not",
     "if", "then", "else", "contentSchema",
   ]
-  var result = schema.mapValues { $0 }
-  for (key, child) in schema {
+  var result: [JSONValue.ObjectMember] = []
+  for key in value.objectPropertyNames ?? [] {
+    let child = schema[key]!
+    let rewritten: JSONValue
     if nameMap || subschemas.contains(key) {
-      result[key] = rewriteGoogleConst(child)
+      rewritten = rewriteGoogleConst(child)
     } else if nameMaps.contains(key) {
-      result[key] = rewriteGoogleConst(child, nameMap: true)
+      rewritten = rewriteGoogleConst(child, nameMap: true)
+    } else {
+      rewritten = child
     }
+    result.append(.init(key, rewritten))
   }
-  if !nameMap, result["enum"] == nil, let constant = result["const"] {
+  if !nameMap, schema["enum"] == nil, let constant = schema["const"] {
     switch constant {
     case .string, .integer, .number:
-      result["const"] = nil
-      result["enum"] = .array([constant])
+      result.removeAll { $0.key == "const" }
+      result.append(.init("enum", .array([constant])))
     default: break
     }
   }
-  return .object(result)
+  return .orderedObject(result)
+}
+
+enum GoogleToolProjection {
+  static func declarations(
+    _ tools: [ProviderToolDefinition], supportsStrictMode: Bool, providerID: String
+  ) throws -> (tools: JSONValue?, usesStrictMode: Bool) {
+    guard !tools.isEmpty else { return (nil, false) }
+    var usesStrictMode = false
+    let declarations = try tools.map { tool -> JSONValue in
+      let resolved = try ProviderConstrainedSamplingResolver.jsonSchema(
+        for: tool, supportsStrictMode: supportsStrictMode,
+        providerID: providerID, operation: "google.request.tools")
+      usesStrictMode = usesStrictMode || resolved.strict == true
+      return .orderedObject([
+        .init("name", .string(tool.name)), .init("description", .string(tool.description)),
+        .init("parametersJsonSchema", rewriteGoogleConst(resolved.schema)),
+      ])
+    }
+    return (.array([.object(["functionDeclarations": .array(declarations)])]), usesStrictMode)
+  }
 }
 
 enum GoogleVertexConfiguration {
@@ -345,27 +370,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
 
     if !request.tools.isEmpty {
       let supportsStrictMode = supportsStrictToolSampling(request.modelID)
-      var usesStrictMode = false
-      body["tools"] = .array([
-        .object([
-          "functionDeclarations": .array(
-            try request.tools.map { tool in
-              let resolved = try ProviderConstrainedSamplingResolver.jsonSchema(
-                for: tool,
-                supportsStrictMode: supportsStrictMode,
-                providerID: request.providerID,
-                operation: "google.request.tools"
-              )
-              usesStrictMode = usesStrictMode || resolved.strict == true
-              return .object([
-                "name": .string(tool.name),
-                "description": .string(tool.description),
-                "parametersJsonSchema": rewriteGoogleConst(resolved.schema),
-              ])
-            }
-          )
-        ])
-      ])
+      let projection = try GoogleToolProjection.declarations(
+        request.tools, supportsStrictMode: supportsStrictMode, providerID: request.providerID)
+      body["tools"] = projection.tools
       if let choice = request.options.toolChoice {
         guard let stringChoice = choice.stringValue,
           let mode = toolChoiceMode(stringChoice)
@@ -380,7 +387,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         body["toolConfig"] = .object([
           "functionCallingConfig": .object(["mode": .string(mode)])
         ])
-      } else if usesStrictMode {
+      } else if projection.usesStrictMode {
         body["toolConfig"] = .object([
           "functionCallingConfig": .object(["mode": .string("VALIDATED")])
         ])

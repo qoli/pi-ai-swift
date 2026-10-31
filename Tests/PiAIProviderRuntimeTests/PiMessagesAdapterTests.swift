@@ -180,6 +180,48 @@ struct PiMessagesAdapterTests {
   }
 
   @Test
+  func preservesUnspecifiedAndExplicitCacheRetentionAcrossCoding() async throws {
+    let unspecified = ProviderGenerationOptions(
+      maximumOutputTokens: nil, temperature: nil, reasoningEffort: nil,
+      responseSchema: nil, providerOptions: [:])
+    var cases: [(ProviderGenerationOptions, String?)] = [(unspecified, nil)]
+    for retention: ProviderCacheRetention in [.none, .short, .long] {
+      cases.append(
+        (
+          ProviderGenerationOptions(
+            maximumOutputTokens: nil, temperature: nil, reasoningEffort: nil,
+            responseSchema: nil, providerOptions: [:], cacheRetention: retention),
+          retention.rawValue
+        ))
+    }
+    let encoded = try JSONEncoder().encode(cases[2].0)
+    var legacy = try #require(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+    legacy.removeValue(forKey: "cacheRetentionIsExplicit")
+    cases.append(
+      (
+        try JSONDecoder().decode(
+          ProviderGenerationOptions.self, from: JSONSerialization.data(withJSONObject: legacy)),
+        "short"
+      ))
+    for (options, expected) in cases {
+      let coded = try JSONDecoder().decode(
+        ProviderGenerationOptions.self, from: JSONEncoder().encode(options))
+      let model = piMessagesFixtureModel()
+      let request = ProviderRequest(
+        id: "cache-presence", providerID: "radius", modelID: model.id,
+        messages: [.user([.text("fixture")])], tools: [], options: coded)
+      let transport = PiMessagesFixtureTransport(statusCode: 200, chunks: piMessagesSuccessChunks())
+      for try await _ in PiMessagesAdapter().stream(
+        request, context: piMessagesFixtureContext(model: model), transport: transport)
+      {}
+      let sent = try #require(await transport.request())
+      let body = try decodeJSONObject(
+        try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+      #expect(body.object("options")?.string("cacheRetention") == expected)
+    }
+  }
+
+  @Test
   func failsExplicitlyForHTTPServerAndMissingTerminalErrors() async {
     let adapter = PiMessagesAdapter()
     let model = piMessagesFixtureModel()

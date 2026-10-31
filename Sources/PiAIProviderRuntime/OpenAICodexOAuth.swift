@@ -32,17 +32,24 @@ public struct OpenAICodexOAuthClient: Sendable {
 
   private let transport: any ProviderHTTPTransport
   private let authBaseURL: URL
+  private let clock: any ProviderOAuthClock
 
   public init(
     transport: any ProviderHTTPTransport = URLSessionProviderHTTPTransport()
   ) {
     self.transport = transport
     self.authBaseURL = URL(string: "https://auth.openai.com")!
+    self.clock = SystemProviderOAuthClock()
   }
 
-  init(transport: any ProviderHTTPTransport, authBaseURL: URL) {
+  init(
+    transport: any ProviderHTTPTransport,
+    authBaseURL: URL = URL(string: "https://auth.openai.com")!,
+    clock: any ProviderOAuthClock = SystemProviderOAuthClock()
+  ) {
     self.transport = transport
     self.authBaseURL = authBaseURL
+    self.clock = clock
   }
 
   public func login(
@@ -121,7 +128,7 @@ public struct OpenAICodexOAuthClient: Sendable {
       userCode: payload.userCode,
       verificationURL: authBaseURL.appending(path: "codex/device"),
       pollingInterval: .seconds(max(1, payload.interval)),
-      expiresAt: Date().addingTimeInterval(Self.deviceAuthorizationLifetime)
+      expiresAt: clock.now().addingTimeInterval(Self.deviceAuthorizationLifetime)
     )
   }
 
@@ -129,13 +136,15 @@ public struct OpenAICodexOAuthClient: Sendable {
     _ authorization: OpenAICodexDeviceAuthorization
   ) async throws -> OAuthCredential {
     var interval = authorization.pollingInterval
+    var receivedSlowDown = false
 
-    while Date() < authorization.expiresAt {
+    while clock.now() < authorization.expiresAt {
       try Task.checkCancellation()
       switch try await pollDeviceAuthorization(authorization) {
       case .pending:
         break
       case .slowDown:
+        receivedSlowDown = true
         interval += .seconds(Self.slowDownIncrementSeconds)
       case .authorized(let code, let verifier):
         return try await exchangeAuthorizationCode(
@@ -144,16 +153,18 @@ public struct OpenAICodexOAuthClient: Sendable {
         )
       }
 
-      let remaining = authorization.expiresAt.timeIntervalSinceNow
+      let remaining = authorization.expiresAt.timeIntervalSince(clock.now())
       guard remaining > 0 else { break }
       let sleepSeconds = min(interval.timeInterval, remaining)
-      try await Task.sleep(for: .seconds(sleepSeconds))
+      try await clock.sleep(for: .seconds(sleepSeconds))
     }
 
     throw failure(
       .authorizationFailed,
       operation: "oauth.device.poll",
-      message: "OpenAI Codex device authorization timed out"
+      message: receivedSlowDown
+        ? "Device flow timed out after one or more slow_down responses. This is often caused by clock drift in WSL or VM environments. Please sync or restart the VM clock and try again."
+        : "Device flow timed out"
     )
   }
 
@@ -183,11 +194,11 @@ public struct OpenAICodexOAuthClient: Sendable {
     request.httpBody = Data(form.utf8)
     let response = try await send(request, operation: "oauth.token.refresh")
     guard (200..<300).contains(response.statusCode) else {
-      throw httpFailure(
-        response,
-        operation: "oauth.token.refresh",
-        message: "OpenAI Codex token refresh failed"
-      )
+      let body = String(data: response.body, encoding: .utf8) ?? ""
+      throw failure(
+        .authorizationFailed, operation: "oauth.token.refresh",
+        message: "OpenAI Codex token refresh failed (\(response.statusCode)): \(body)",
+        causeDescription: body)
     }
     let token: TokenResponse = try decode(
       response.body,
@@ -206,7 +217,7 @@ public struct OpenAICodexOAuthClient: Sendable {
     return OAuthCredential(
       accessToken: token.accessToken,
       refreshToken: token.refreshToken,
-      expiresAt: Date().addingTimeInterval(TimeInterval(token.expiresIn)),
+      expiresAt: clock.now().addingTimeInterval(TimeInterval(token.expiresIn)),
       metadata: ["accountID": accountID]
     )
   }
@@ -258,11 +269,11 @@ public struct OpenAICodexOAuthClient: Sendable {
     case "slow_down":
       return .slowDown
     default:
-      throw httpFailure(
-        response,
-        operation: "oauth.device.poll",
-        message: "OpenAI Codex device authorization polling failed"
-      )
+      let body = String(data: response.body, encoding: .utf8) ?? ""
+      throw failure(
+        .authorizationFailed, operation: "oauth.device.poll",
+        message: "OpenAI Codex device auth failed with status \(response.statusCode): \(body)",
+        causeDescription: body)
     }
   }
 
@@ -322,7 +333,7 @@ public struct OpenAICodexOAuthClient: Sendable {
     return OAuthCredential(
       accessToken: token.accessToken,
       refreshToken: token.refreshToken,
-      expiresAt: Date().addingTimeInterval(TimeInterval(token.expiresIn)),
+      expiresAt: clock.now().addingTimeInterval(TimeInterval(token.expiresIn)),
       metadata: ["accountID": accountID]
     )
   }

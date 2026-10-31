@@ -257,8 +257,8 @@ struct OpenAICodexOAuthTests {
       )
       Issue.record("malformed OpenAI refresh response was accepted")
     } catch let error as ProviderRuntimeFailure {
-      #expect(error.code == .authorizationFailed)
-      #expect(error.operation == "credential.refresh")
+      #expect(error.code == .invalidResponse)
+      #expect(error.operation == "oauth.token.refresh")
     } catch {
       Issue.record("unexpected refresh error: \(error)")
     }

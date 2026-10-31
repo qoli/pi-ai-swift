@@ -25,7 +25,9 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
               .transportFailed,
               request,
               "openrouter-images.response",
-              "OpenRouter image request failed (HTTP \(response.statusCode))",
+              ProviderErrorText.http(
+                status: response.statusCode, body: String(data: data, encoding: .utf8) ?? "",
+                emptyMessage: "OpenRouter image request failed (HTTP \(response.statusCode))"),
               cause: String(data: data, encoding: .utf8)
             )
           }
@@ -110,13 +112,22 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> [String: JSONValue] {
-    guard request.messages.count == 1, case .user(let input) = request.messages[0] else {
+    let input: [ProviderUserContent]
+    guard request.messages.count == 1 else {
       throw failure(
         .invalidRequest,
         request,
         "openrouter-images.request.messages",
         "OpenRouter image generation requires exactly one user input message"
       )
+    }
+    switch request.messages[0] {
+    case .user(let content): input = content
+    case .userMessage(let message): input = message.content
+    default:
+      throw failure(
+        .invalidRequest, request, "openrouter-images.request.messages",
+        "OpenRouter image generation requires exactly one user input message")
     }
     let reserved: Set<String> = ["model", "messages", "stream", "modalities"]
     let collisions = Set(request.options.providerOptions.keys).intersection(reserved)

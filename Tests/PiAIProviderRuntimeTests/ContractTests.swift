@@ -436,9 +436,10 @@ struct ContractTests {
       from: Data(contentsOf: mappingURL)
     )
     #expect(mapping.schemaVersion == 3)
-    #expect(mapping.areas.count == 67)
+    #expect(mapping.areas.count == 68)
     #expect(mapping.areas.contains { $0.id == "provider-client-identity" })
     #expect(mapping.areas.contains { $0.id == "optional-client-identity-and-login" })
+    #expect(mapping.areas.contains { $0.id == "unchanged-upstream-conformance" })
     #expect(mapping.areas.allSatisfy { !$0.dependsOn.contains($0.id) })
   }
 }

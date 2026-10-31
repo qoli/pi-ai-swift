@@ -21,7 +21,9 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
               .transportFailed,
               providerID: request.providerID,
               operation: "openai-completions.response",
-              message: "OpenAI Completions request failed (HTTP \(response.statusCode))",
+              message: ProviderErrorText.http(
+                status: response.statusCode, body: body,
+                emptyMessage: "OpenAI Completions request failed (HTTP \(response.statusCode))"),
               cause: body
             )
           }

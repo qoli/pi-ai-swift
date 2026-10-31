@@ -7,6 +7,10 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
     client = OpenAICodexOAuthClient(transport: transport)
   }
 
+  init(transport: any ProviderHTTPTransport, clock: any ProviderOAuthClock) {
+    client = OpenAICodexOAuthClient(transport: transport, clock: clock)
+  }
+
   func authorize(
     _ operation: AuthorizationOperation,
     interaction: @escaping AuthorizationInteraction,

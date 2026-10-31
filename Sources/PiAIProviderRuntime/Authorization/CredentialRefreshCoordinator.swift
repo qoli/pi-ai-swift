@@ -73,6 +73,8 @@ actor CredentialRefreshCoordinator {
           refreshed = try await refresh(credential)
         } catch is CancellationError {
           throw CancellationError()
+        } catch let error as ProviderRuntimeFailure {
+          throw error
         } catch {
           throw Self.failure(
             .authorizationFailed,
@@ -101,6 +103,9 @@ actor CredentialRefreshCoordinator {
       } catch is CancellationError {
         await self?.clearFlight(providerID: providerID, flightID: flightID)
         throw CancellationError()
+      } catch let error as ProviderRuntimeFailure {
+        await self?.clearFlight(providerID: providerID, flightID: flightID)
+        throw error
       } catch {
         await self?.clearFlight(providerID: providerID, flightID: flightID)
         throw Self.failure(

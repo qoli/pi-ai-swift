@@ -15,6 +15,21 @@ def run(command, *, cwd, env=None):
     subprocess.run(command, cwd=cwd, env=env, check=True)
 
 
+def evidence_digests(repo):
+    digests = {}
+    for name, root, recursive in [
+        ("swiftSourceSHA256", repo / "Sources/PiAIProviderRuntime", True),
+        ("harnessSHA256", repo / "Scripts/Conformance", False),
+    ]:
+        digest = hashlib.sha256()
+        for path in sorted(root.rglob("*") if recursive else root.iterdir()):
+            if path.is_file():
+                relative = path.relative_to(repo) if recursive else path.name
+                digest.update(str(relative).encode() + b"\0" + path.read_bytes() + b"\0")
+        digests[name] = digest.hexdigest()
+    return digests
+
+
 def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()):
     cases = []
     upstream_cases = {}
@@ -87,6 +102,21 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
     swift_names = Counter(
         (str(upstream / case["upstreamTest"]), case["name"]) for case in cases
     )
+    for key, count in (baseline_names - swift_names).items():
+        file, name = key
+        for original in upstream_cases[key][swift_names[key]:swift_names[key] + count]:
+            cases.append({
+                "caseID": f"{Path(file).relative_to(upstream)}#missing:{len(cases)}:{name}",
+                "upstreamTest": str(Path(file).relative_to(upstream)), "name": name,
+                "upstreamStatus": original["status"], "status": "missing",
+                "swiftInvocations": 0, "upstreamOperations": [], "upstreamProtocols": [],
+                "swiftDispatchProtocols": [], "missingSwiftProtocols": [], "unexpectedSwiftProtocols": [],
+                "missingSwiftOperations": [], "protocols": [], "failures": [], "nativeFailures": [],
+                "unrepresentedCapabilities": [],
+                "assertionFailures": ["The reference case was not collected by the Swift run; inspect suiteResults for setup/import failures"],
+                "conformanceStatus": ("not_executed" if original["status"] in ["pending", "skipped"] else
+                                      "bridge_gap" if original["status"] == "passed" else "upstream_failure"),
+            })
     conformant = (
         all(code == 0 for code in exit_codes.values()) and bool(cases)
         and baseline_names == swift_names
@@ -99,6 +129,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--upstream", type=Path)
     parser.add_argument("--test", action="append", dest="tests")
+    parser.add_argument("--case", dest="case_pattern")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
@@ -116,6 +147,7 @@ def main():
     if revision != lock["revision"]:
         raise SystemExit(f"Upstream revision mismatch: {revision}")
     run(["git", "diff", "--quiet", "HEAD", "--", "packages/ai/src", "packages/ai/test"], cwd=upstream)
+    identities = evidence_digests(repo)
     build = (args.output or repo / ".build/conformance").resolve()
     build.mkdir(parents=True, exist_ok=True)
     (build / "report.json").unlink(missing_ok=True)
@@ -138,7 +170,7 @@ def main():
     run(["xcrun", "swiftc", "-parse-as-library", "-g", "-enable-testing",
          "-import-objc-header", str(repo / "Scripts/Conformance/HeapObserver.h"),
          "-I", str(modules),
-         str(repo / "Scripts/Conformance/SwiftProbe.swift"),
+         *map(str, sorted((repo / "Scripts/Conformance").glob("*.swift"))),
          *map(str, objects), str(heap_object), "-o", str(probe)], cwd=repo)
     environment = {
         key: value for key, value in os.environ.items()
@@ -149,12 +181,15 @@ def main():
         "PI_CONFORMANCE_UPSTREAM": str(upstream),
         "PI_CONFORMANCE_PROBE": str(probe),
         "PI_CONFORMANCE_OUTPUT": str(build),
+        "PI_NO_LOCAL_LLM": "1",
     })
     command = [
         "node", str(upstream / "node_modules/vitest/vitest.mjs"), "run",
         "--config", str(repo / "Scripts/Conformance/vitest.config.mjs"),
         *[f"test/{name}" for name in suites],
     ]
+    if args.case_pattern:
+        command.extend(["--testNamePattern", args.case_pattern])
     reports = {}
     exit_codes = {}
     (build / "upstream-invocations.jsonl").write_text("")
@@ -169,23 +204,24 @@ def main():
     invocations = [json.loads(line) for line in (build / "swift-invocations.jsonl").read_text().splitlines()]
     upstream_invocations = [json.loads(line) for line in (build / "upstream-invocations.jsonl").read_text().splitlines()]
     conformant, cases = evaluate(upstream, reports, invocations, exit_codes, upstream_invocations)
-    swift_digest = hashlib.sha256()
-    for path in sorted((repo / "Sources/PiAIProviderRuntime").rglob("*")):
-        if path.is_file():
-            swift_digest.update(str(path.relative_to(repo)).encode() + b"\0" + path.read_bytes() + b"\0")
-    harness_digest = hashlib.sha256()
-    for path in sorted((repo / "Scripts/Conformance").iterdir()):
-        if path.is_file():
-            harness_digest.update(path.name.encode() + b"\0" + path.read_bytes() + b"\0")
+    source_stable = identities == evidence_digests(repo)
+    conformant = conformant and source_stable
     report = {
         "schemaVersion": 1,
         "upstreamRevision": revision,
-        "swiftSourceSHA256": swift_digest.hexdigest(),
-        "harnessSHA256": harness_digest.hexdigest(),
+        **identities,
+        "sourceStableDuringRun": source_stable,
         "conformant": conformant,
         "exitCodes": exit_codes,
         "scope": "unchanged upstream test files listed in suites",
-        "bridgeBoundary": "Swift ProviderRuntimeKernel, wire adapters and catalog; upstream transcript assembly, fixture credentials and SDK transports remain test infrastructure; general SDK retry policies and authorization lifecycle are not covered",
+        "reviewedInventoryCounts": {
+            "adoptedByManifest": len(manifest["suites"]),
+            "outsideScope": sum(reason.startswith("Outside") for reason in manifest["excludedSuites"].values()),
+            "notYetAdopted": sum(not reason.startswith("Outside") for reason in manifest["excludedSuites"].values()),
+        },
+        "casePattern": args.case_pattern,
+        "offlineConditions": "External sockets are blocked, credential environment variables are removed, test/oauth.ts resolves no persisted credentials, and upstream PI_NO_LOCAL_LLM=1 disables local model downloads and service launches; upstream mocks and loopback fixture servers remain available",
+        "bridgeBoundary": "Swift ProviderRuntimeKernel, wire adapters, catalog, and represented OAuth login/refresh adapters; upstream transcript assembly, fixture credentials, host login UI, SDK transports, and unbridged exports remain test infrastructure; general SDK retry policies are not covered",
         "mismatchMeaning": "An original assertion differs across the bridge; ownership and bridge triage are required before classifying it as a Swift runtime defect",
         "suites": [{
             "path": f"packages/ai/test/{suite}",
@@ -204,7 +240,11 @@ def main():
         "unrepresentedCapabilityCases": sum(bool(case["unrepresentedCapabilities"]) for case in cases),
         "notAdoptedSuites": [{
             "path": str(path.relative_to(upstream)),
-            "reason": manifest["excludedSuites"].get(path.name, "Not yet adopted by the Swift conformance bridge"),
+            "disposition": ("not_selected_in_this_run" if path.name in manifest["suites"] else
+                            "outside_scope" if manifest["excludedSuites"][path.name].startswith("Outside") else
+                            "not_yet_adopted"),
+            "reason": manifest["excludedSuites"].get(path.name, "Adopted by the manifest but not selected in this focused run"),
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         } for path in sorted((upstream / "packages/ai/test").glob("*.test.ts")) if path.name not in suites],
         "cases": cases,
     }

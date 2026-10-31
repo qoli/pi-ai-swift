@@ -480,6 +480,7 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
   public let outputModality: ProviderOutputModality
   public let sessionID: String?
   public let cacheRetention: ProviderCacheRetention
+  var cacheRetentionIsExplicit: Bool?
   public let serviceTier: String?
   public let toolChoice: JSONValue?
   public let thinkingBudgets: [ProviderReasoningEffort: Int]?
@@ -495,7 +496,7 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
     providerOptions: [String: JSONValue],
     outputModality: ProviderOutputModality = .text,
     sessionID: String? = nil,
-    cacheRetention: ProviderCacheRetention = .short,
+    cacheRetention: ProviderCacheRetention,
     serviceTier: String? = nil,
     toolChoice: JSONValue? = nil,
     thinkingBudgets: [ProviderReasoningEffort: Int]? = nil,
@@ -511,11 +512,37 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
     self.outputModality = outputModality
     self.sessionID = sessionID
     self.cacheRetention = cacheRetention
+    self.cacheRetentionIsExplicit = true
     self.serviceTier = serviceTier
     self.toolChoice = toolChoice
     self.thinkingBudgets = thinkingBudgets
     self.textVerbosity = textVerbosity
     self.environment = environment
+  }
+
+  public init(
+    maximumOutputTokens: Int?,
+    temperature: Double?,
+    reasoningEffort: ProviderReasoningEffort?,
+    reasoningSummary: String? = nil,
+    responseSchema: JSONValue?,
+    providerOptions: [String: JSONValue],
+    outputModality: ProviderOutputModality = .text,
+    sessionID: String? = nil,
+    serviceTier: String? = nil,
+    toolChoice: JSONValue? = nil,
+    thinkingBudgets: [ProviderReasoningEffort: Int]? = nil,
+    textVerbosity: String? = nil,
+    environment: [String: String]? = nil
+  ) {
+    self.init(
+      maximumOutputTokens: maximumOutputTokens, temperature: temperature,
+      reasoningEffort: reasoningEffort, reasoningSummary: reasoningSummary,
+      responseSchema: responseSchema, providerOptions: providerOptions,
+      outputModality: outputModality, sessionID: sessionID, cacheRetention: .short,
+      serviceTier: serviceTier, toolChoice: toolChoice, thinkingBudgets: thinkingBudgets,
+      textVerbosity: textVerbosity, environment: environment)
+    cacheRetentionIsExplicit = false
   }
 }
 

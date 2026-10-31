@@ -2,6 +2,7 @@ import copy
 import importlib.util
 from pathlib import Path
 import unittest
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -11,6 +12,17 @@ SPEC.loader.exec_module(CONFORMANCE)
 
 
 class ConformanceReportingTests(unittest.TestCase):
+    def test_evidence_identity_detects_source_changes_between_build_and_report(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "Sources/PiAIProviderRuntime/Test.swift"
+            source.parent.mkdir(parents=True)
+            source.write_text("let value = 1")
+            (root / "Scripts/Conformance").mkdir(parents=True)
+            before = CONFORMANCE.evidence_digests(root)
+            source.write_text("let value = 2")
+            self.assertNotEqual(before, CONFORMANCE.evidence_digests(root))
+
     def setUp(self):
         self.upstream = Path("/fixture-upstream")
         self.file = str(self.upstream / "packages/ai/test/schema.test.ts")
@@ -69,6 +81,21 @@ class ConformanceReportingTests(unittest.TestCase):
     def test_duplicate_original_case_cannot_disappear(self):
         self.reports["upstream"]["testResults"][0]["assertionResults"].append(copy.deepcopy(self.case))
         self.assertFalse(self.evaluate([self.call]))
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream"}]
+        _, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [self.call], {"upstream": 0, "swift": 0}, original)
+        self.assertEqual(len(cases), 2)
+        self.assertEqual(cases[-1]["status"], "missing")
+        self.assertEqual(cases[-1]["conformanceStatus"], "bridge_gap")
+
+    def test_catalog_lookup_cannot_substitute_for_reasoning_metadata_computation(self):
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": operation}
+                    for operation in ["catalog", "catalog.reasoning"]]
+        call = {**self.call, "operation": "catalog"}
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [call], {"upstream": 0, "swift": 0}, original)
+        self.assertFalse(conformant)
+        self.assertEqual(cases[0]["missingSwiftOperations"], ["catalog.reasoning"])
 
     def test_skipped_failed_or_unrepresentable_cases_are_not_passes(self):
         for implementation, status in [("upstream", "failed"), ("swift", "skipped")]:

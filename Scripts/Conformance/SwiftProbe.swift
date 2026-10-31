@@ -38,6 +38,100 @@ struct SwiftConformanceProbe {
 
   private static func execute(_ data: Data, interactive: Bool) async throws {
     let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
+    if envelope.string("operation") == "authorization" {
+      try await AuthorizationConformanceProbe.run(envelope)
+      return
+    }
+    if envelope.string("operation") == "tool.arguments.complete" {
+      let call = ProviderToolCall.parsing(
+        id: "fixture", name: "fixture", input: try envelope.required("text"))
+      var result = ["arguments": call.arguments]
+      result["argumentsError"] = call.argumentsError.map(JSONValue.string)
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return
+    }
+    if envelope.string("operation") == "usage.openrouter-cost" {
+      let raw = envelope.object("usage") ?? [:]
+      let cost = try JSONDecoder().decode(
+        ProviderUsageCost.self, from: JSONEncoder().encode(raw["cost"]))
+      let usage = ProviderUsage(
+        inputTokens: raw.int("input") ?? 0, outputTokens: raw.int("output") ?? 0,
+        reasoningTokens: nil, cachedInputTokens: raw.int("cacheRead") ?? 0,
+        cacheWriteTokens: raw.int("cacheWrite") ?? 0, totalTokens: raw.int("totalTokens") ?? 0,
+        providerMetadata: [:], cost: cost)
+      FileHandle.standardOutput.write(
+        try JSONEncoder().encode(
+          usage.applyingOpenRouterCost(envelope.object("reported") ?? [:], enabled: true).cost))
+      return
+    }
+    if envelope.string("operation") == "usage.calculate" {
+      let raw = envelope.object("usage") ?? [:]
+      guard
+        let pricing = try ProviderUsagePricing.parse(
+          metadata: envelope.object("model") ?? [:], providerID: "fixture",
+          operation: "conformance.usage.calculate")
+      else {
+        throw ProbeError.unsupported("model pricing")
+      }
+      FileHandle.standardOutput.write(
+        try JSONEncoder().encode(
+          pricing.cost(
+            input: raw.int("input") ?? 0, output: raw.int("output") ?? 0,
+            cacheRead: raw.int("cacheRead") ?? 0, cacheWrite: raw.int("cacheWrite") ?? 0,
+            cacheWrite1h: raw.int("cacheWrite1h") ?? 0)))
+      return
+    }
+    if envelope.string("operation") == "sampling.strict" {
+      let projection = try ProviderConstrainedSamplingResolver.jsonSchema(
+        for: toolDefinition(envelope["tool"] ?? .null),
+        supportsStrictMode: envelope.bool("supportsStrictMode") ?? true,
+        providerID: "fixture", operation: "conformance.sampling.strict")
+      FileHandle.standardOutput.write(
+        try JSONEncoder().encode(projection.strict == true ? projection.schema : .null))
+      return
+    }
+    if envelope.string("operation") == "sampling.grammar-buffer" {
+      var buffer = try GrammarToolInputJSONBuffer(
+        property: try envelope.required("property"), initialInput: "")
+      var result: String?
+      do {
+        for action in envelope.array("actions") ?? [] {
+          let raw = action.objectValue ?? [:]
+          result =
+            try raw.string("kind") == "append"
+            ? buffer.append(raw.string("value") ?? "") : buffer.close(raw.string("value"))
+        }
+      } catch {
+        throw ProviderRuntimeFailure(
+          code: .invalidResponse, message: String(describing: error), providerID: "fixture",
+          operation: "conformance.grammar-buffer", causeDescription: nil)
+      }
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return
+    }
+    if envelope.string("operation") == "error.format" {
+      let result = ProviderErrorText.format(
+        status: envelope.int("status"), body: envelope.string("body"),
+        message: envelope.string("message") ?? "",
+        messageCarriesBody: envelope.bool("messageCarriesBody") ?? false,
+        prefix: envelope.string("prefix"))
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return
+    }
+    if envelope.string("operation") == "error.truncate" {
+      let result = ProviderErrorText.truncate(
+        try envelope.required("text"), maximumCharacters: envelope.int("maximumCharacters")!)
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return
+    }
+    if envelope.string("operation") == "google-tools" {
+      let projection = try GoogleToolProjection.declarations(
+        (envelope.array("tools") ?? []).map(toolDefinition),
+        supportsStrictMode: envelope.bool("supportsStrictMode") ?? true, providerID: "google")
+      FileHandle.standardOutput.write(
+        Data(try ordered(projection.tools ?? .null).encodedString().utf8))
+      return
+    }
     if envelope.string("operation") == "catalog" {
       let registry = try BuiltinProviderRegistry.load()
       var catalog: [String: [String: JSONValue]] = [:]
@@ -63,6 +157,9 @@ struct SwiftConformanceProbe {
     let provider = try model.required("provider")
     let modelID = try model.required("id")
     let options = input.options
+    if api != "mistral-conversations", (options.object("headers") ?? [:]).values.contains(.null) {
+      throw ProbeError.unrepresentable("null-header-suppression")
+    }
     if envelope.string("operation") == "google-thinking-level" {
       let rawEffort = try options.required("reasoningEffort")
       guard let effort = ProviderReasoningEffort(rawValue: rawEffort) else {
@@ -79,7 +176,7 @@ struct SwiftConformanceProbe {
       capabilities: .init(
         textInput: true, imageInput: model.array("input")?.contains(.string("image")) == true,
         toolCalling: true, reasoning: model.bool("reasoning") == true,
-        structuredOutput: true, imageGeneration: false),
+        structuredOutput: true, imageGeneration: api == "openrouter-images"),
       contextWindow: model.int("contextWindow"), maximumOutputTokens: model.int("maxTokens"),
       supportedReasoningEfforts: try ProviderReasoning.supportedEfforts(
         reasoning: model.bool("reasoning") == true, metadata: model,
@@ -132,29 +229,31 @@ struct SwiftConformanceProbe {
     if usesRawCompletionsOptions {
       providerOptions["reasoningEffort"] = options["reasoningEffort"] ?? .null
     }
+    var generationOptions = ProviderGenerationOptions(
+      maximumOutputTokens: options.int("maxTokens"),
+      temperature: options["temperature"].flatMap(number),
+      reasoningEffort: effort.flatMap(ProviderReasoningEffort.init(rawValue:)),
+      reasoningSummary: options.string("reasoningSummary"),
+      responseSchema: options["responseSchema"], providerOptions: providerOptions,
+      outputModality: api == "openrouter-images" ? .image : .text,
+      sessionID: options.string("sessionId"),
+      cacheRetention: options.string("cacheRetention").flatMap(
+        ProviderCacheRetention.init(rawValue:)) ?? .short,
+      serviceTier: options.string("serviceTier"), toolChoice: options["toolChoice"],
+      thinkingBudgets: options.object("thinkingBudgets").map {
+        Dictionary(
+          uniqueKeysWithValues: $0.compactMap { key, value -> (ProviderReasoningEffort, Int)? in
+            guard let effort = ProviderReasoningEffort(rawValue: key),
+              case .integer(let budget) = value
+            else { return nil }
+            return (effort, Int(budget))
+          })
+      },
+      textVerbosity: options.string("textVerbosity"))
+    generationOptions.cacheRetentionIsExplicit = options["cacheRetention"] != nil
     let request = ProviderRequest(
       id: "upstream-conformance", providerID: provider, modelID: modelID,
-      messages: messages, tools: tools,
-      options: .init(
-        maximumOutputTokens: options.int("maxTokens"),
-        temperature: options["temperature"].flatMap(number),
-        reasoningEffort: effort.flatMap(ProviderReasoningEffort.init(rawValue:)),
-        reasoningSummary: options.string("reasoningSummary"),
-        responseSchema: options["responseSchema"], providerOptions: providerOptions,
-        sessionID: options.string("sessionId"),
-        cacheRetention: options.string("cacheRetention").flatMap(
-          ProviderCacheRetention.init(rawValue:)) ?? .short,
-        serviceTier: options.string("serviceTier"), toolChoice: options["toolChoice"],
-        thinkingBudgets: options.object("thinkingBudgets").map {
-          Dictionary(
-            uniqueKeysWithValues: $0.compactMap { key, value -> (ProviderReasoningEffort, Int)? in
-              guard let effort = ProviderReasoningEffort(rawValue: key),
-                case .integer(let budget) = value
-              else { return nil }
-              return (effort, Int(budget))
-            })
-        },
-        textVerbosity: options.string("textVerbosity")),
+      messages: messages, tools: tools, options: generationOptions,
       connectionOptions: .init(
         azureOpenAIResponses: api == "azure-openai-responses"
           ? .init(
@@ -258,8 +357,9 @@ struct SwiftConformanceProbe {
           baseURL: baseURL,
           headers: (model.object("headers") ?? [:]).compactMapValues(\.stringValue),
           modelConfigurations: [
-            .init(modelID: modelID, outputModality: .text): .init(
-              protocolID: api, baseURL: nil, headers: headers, metadata: model)
+            .init(modelID: modelID, outputModality: api == "openrouter-images" ? .image : .text):
+              .init(
+                protocolID: api, baseURL: nil, headers: headers, metadata: model)
           ],
           credentialRequirement: credential == nil ? .none : .required,
           endpointPolicy: .httpOrHTTPS,
@@ -323,13 +423,14 @@ struct SwiftConformanceProbe {
     }
     let requests = await fixtureTransport.requests
     let captured = requests.last
-    let output = ProbeOutput(
+    var output = ProbeOutput(
       request: try captured.map {
         .init(
           url: $0.url!.absoluteString, headers: $0.allHTTPHeaderFields ?? [:],
           body: try JSONDecoder().decode(JSONValue.self, from: $0.httpBody ?? Data("null".utf8)))
       }, pending: requests.count > responses.count && input.aborted != true, events: events,
       failure: failure)
+    if input.measureHeap == true { output.allocatedBytes = pi_heap_allocated_bytes() }
     FileHandle.standardOutput.write(try JSONEncoder().encode(output))
   }
 
@@ -465,6 +566,9 @@ struct SwiftConformanceProbe {
     guard let raw else { return nil }
     switch try raw.required("type") {
     case "json_schema":
+      guard raw.string("strict") != nil else {
+        throw ProbeError.unrepresentable("implicit-json-schema-strict-preference")
+      }
       return .jsonSchema(strict: ProviderStrictPreference(rawValue: try raw.required("strict"))!)
     case "grammar":
       return .grammar(variants: (raw.object("variants") ?? [:]).compactMapValues(\.stringValue))
@@ -478,6 +582,14 @@ struct SwiftConformanceProbe {
     case .number(let value): return value
     default: return nil
     }
+  }
+
+  private static func ordered(_ value: JSONValue) -> ProviderOrderedJSON {
+    if let object = value.objectValue {
+      return .object((value.objectPropertyNames ?? []).map { ($0, ordered(object[$0]!)) })
+    }
+    if case .array(let values) = value { return .array(values.map(ordered)) }
+    return .scalar(value)
   }
 }
 
@@ -518,6 +630,7 @@ private struct ProbeOutput: Encodable {
   let pending: Bool
   let events: [ProviderEvent]
   let failure: [String: JSONValue]?
+  var allocatedBytes: UInt64? = nil
   struct Request: Encodable {
     let url: String
     let headers: [String: String]
