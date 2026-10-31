@@ -105,6 +105,11 @@ struct WireProtocolContext: Sendable {
   let modelConfiguration: ProviderModelConfiguration
   var usesHeaderAuthentication = false
   var wireObserver: ProviderWireObserver? = nil
+  var webSocketTransport: (any ProviderWebSocketTransport)? = nil
+  var codexSessions = CodexWebSocketSessions()
+  var clock: any ProviderOAuthClock = SystemProviderOAuthClock()
+  var isFederatedCloudAuthorization = false
+  var usesVertexCollectionScope = false
 }
 
 protocol WireProtocolAdapter: Sendable {
@@ -126,6 +131,11 @@ struct ProviderRuntimeKernel: ProviderRuntime {
   private let transport: any ProviderHTTPStreamingTransport
   private let wireObserver: ProviderWireObserver?
   private let identityHost: ProviderIdentityHost
+  private let webSocketTransport: (any ProviderWebSocketTransport)?
+  private let codexSessions: CodexWebSocketSessions
+  private let clock: any ProviderOAuthClock
+  private let cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?
+  private let cloudCredentialSources: ProviderCloudCredentialSources
 
   init(
     catalogRevision: String,
@@ -134,7 +144,12 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     credentialStore: any ProviderCredentialStore,
     transport: any ProviderHTTPStreamingTransport,
     wireObserver: ProviderWireObserver? = nil,
-    identityHost: ProviderIdentityHost = .init()
+    identityHost: ProviderIdentityHost = .init(),
+    webSocketTransport: (any ProviderWebSocketTransport)? = nil,
+    codexSessions: CodexWebSocketSessions = .init(),
+    clock: any ProviderOAuthClock = SystemProviderOAuthClock(),
+    cloudAuthorizationResolver: ProviderCloudAuthorizationResolver? = nil,
+    cloudCredentialSources: ProviderCloudCredentialSources = .init()
   ) throws {
     self.catalogRevision = catalogRevision
     self.providers = try Self.uniqueProviders(providers)
@@ -146,6 +161,11 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     self.transport = transport
     self.wireObserver = wireObserver
     self.identityHost = identityHost
+    self.webSocketTransport = webSocketTransport
+    self.codexSessions = codexSessions
+    self.clock = clock
+    self.cloudAuthorizationResolver = cloudAuthorizationResolver
+    self.cloudCredentialSources = cloudCredentialSources
   }
 
   func catalog() async throws -> ProviderCatalog {
@@ -229,21 +249,12 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         message: "model \(request.modelID) does not support reasoning effort \(effort.rawValue)"
       )
     }
-    let credential = try await provider.authorization.resolveCredential(
+    var credential = try await provider.authorization.resolveCredential(
       providerID: request.providerID,
       credentialStore: credentialStore,
       refreshCoordinator: refreshCoordinator
     )
-    if provider.credentialRequirement == .required, credential == nil {
-      throw failure(
-        .missingCredential,
-        providerID: request.providerID,
-        operation: "stream.resolve-credential",
-        message: "provider credential is missing: \(request.providerID)"
-      )
-    }
-
-    let requestAuthorization = try provider.authorization.requestAuthorization(for: credential)
+    var requestAuthorization = try provider.authorization.requestAuthorization(for: credential)
 
     let route = ProviderModelRoute(
       modelID: model.id,
@@ -266,6 +277,31 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         message: "wire protocol is not implemented: \(modelConfiguration.protocolID)"
       )
     }
+    var cloudAuthorization: ProviderCloudPlan.Authorization?
+    if let options = request.connectionOptions.cloud,
+      let declaredBaseURL = modelConfiguration.baseURL ?? provider.baseURL
+    {
+      var cloudHeaders = requestAuthorization.headers
+      cloudHeaders.merge(request.connectionOptions.headers ?? [:]) { _, value in value }
+      if let plan = try ProviderCloudPlan.resolve(
+        protocolID: modelConfiguration.protocolID,
+        providerID: request.providerID, modelID: request.modelID, baseURL: declaredBaseURL,
+        credential: requestAuthorization.credential, headers: cloudHeaders, options: options)
+      {
+        let resolved = try await plan.authorization(
+          providerID: request.providerID, resolver: cloudAuthorizationResolver,
+          sources: cloudCredentialSources)
+        cloudAuthorization = resolved
+        credential = resolved.credential
+        requestAuthorization = .init(
+          credential: resolved.credential, headers: resolved.headers.mapValues { Optional($0) })
+      }
+    }
+    if provider.credentialRequirement == .required, credential == nil, cloudAuthorization == nil {
+      throw failure(
+        .missingCredential, providerID: request.providerID, operation: "stream.resolve-credential",
+        message: "provider credential is missing: \(request.providerID)")
+    }
     if request.connectionOptions.azureOpenAIResponses != nil,
       modelConfiguration.protocolID != "azure-openai-responses",
       !(request.providerID == "azure" && modelConfiguration.protocolID == "openai-completions")
@@ -283,7 +319,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     case .oauth(let credential): credentialMetadata = credential.metadata
     case nil: credentialMetadata = [:]
     }
-    let declaredModelBaseURL = modelConfiguration.baseURL ?? provider.baseURL
+    let declaredModelBaseURL =
+      cloudAuthorization?.baseURL ?? modelConfiguration.baseURL ?? provider.baseURL
     let baseURLTemplate: String
     if modelConfiguration.protocolID == "azure-openai-responses" || request.providerID == "azure" {
       baseURLTemplate = try ResolvedAzureOpenAIResponsesConfiguration.resolve(
@@ -332,7 +369,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     headers.merge(provider.headers) { _, providerValue in providerValue }
     if [
       "google-generative-ai", "google-vertex", "openrouter-images",
-      "openai-completions", "openai-responses", "anthropic-messages", "mistral-conversations",
+      "openai-completions", "openai-responses", "openai-codex-responses", "anthropic-messages",
+      "mistral-conversations",
     ].contains(modelConfiguration.protocolID) {
       // These adapters project provider headers case-insensitively upstream.
       // Preserve model-scope precedence before dictionary ordering is lost.
@@ -340,6 +378,10 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       headers = headers.filter { !modelNames.contains($0.key.lowercased()) }
     }
     headers.merge(modelConfiguration.headers) { _, modelValue in modelValue }
+    for (name, value) in request.connectionOptions.headers ?? [:] {
+      headers = headers.filter { $0.key.caseInsensitiveCompare(name) != .orderedSame }
+      if let value { headers[name] = value }
+    }
 
     return wireProtocol.stream(
       request,
@@ -351,7 +393,12 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         credential: requestAuthorization.credential,
         modelConfiguration: modelConfiguration,
         usesHeaderAuthentication: requestAuthorization.usesHeaderAuthentication,
-        wireObserver: wireObserver
+        wireObserver: wireObserver,
+        webSocketTransport: webSocketTransport,
+        codexSessions: codexSessions,
+        clock: clock,
+        isFederatedCloudAuthorization: cloudAuthorization?.federated ?? false,
+        usesVertexCollectionScope: cloudAuthorization?.vertexCollectionScope ?? false
       ),
       transport: transport
     )

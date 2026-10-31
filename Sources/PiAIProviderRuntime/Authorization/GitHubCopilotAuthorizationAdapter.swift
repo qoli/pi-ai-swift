@@ -13,6 +13,16 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
   private let transport: any ProviderHTTPTransport
   private let clock: any ProviderOAuthClock
 
+  func requestAuthorization(for credential: ProviderCredential?) throws
+    -> ProviderRequestAuthorization
+  {
+    guard case .oauth(let value) = credential else {
+      return .init(credential: credential, headers: [:])
+    }
+    return .init(
+      credential: .apiKey(.init(key: value.accessToken, metadata: value.metadata)), headers: [:])
+  }
+
   init(
     transport: any ProviderHTTPTransport,
     clock: any ProviderOAuthClock = SystemProviderOAuthClock()
@@ -118,9 +128,11 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       let userCode = body.string("user_code"), !userCode.isEmpty,
       let verification = body.string("verification_uri"),
       let verificationURL = URL(string: verification),
-      ["https", "http"].contains(verificationURL.scheme ?? ""),
       let expiresIn = body.int("expires_in"), expiresIn > 0
     else { throw failure("GitHub device authorization response is malformed") }
+    guard ["https", "http"].contains(verificationURL.scheme ?? "") else {
+      throw failure("Untrusted verification_uri in device code response")
+    }
     let interval = body.int("interval") ?? 5
     guard interval > 0 else { throw failure("GitHub device polling interval is invalid") }
     return Device(
@@ -133,9 +145,11 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
   }
 
   private func poll(domain: String, device: Device) async throws -> String {
-    var interval = device.interval
-    while clock.now() < device.expiresAt {
-      try await clock.sleep(for: .seconds(interval))
+    try await ProviderDeviceCodePolling.poll(
+      intervalSeconds: Double(device.interval),
+      expiresInSeconds: device.expiresAt.timeIntervalSince(clock.now()),
+      waitBeforeFirstPoll: true, clock: clock
+    ) {
       var request = try oauthFormRequest(
         url: URL(string: "https://\(domain)/login/oauth/access_token")!,
         fields: [
@@ -154,21 +168,14 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
         providerID: Self.providerID,
         operation: "copilot.oauth.device.poll"
       )
-      if let token = body.string("access_token"), !token.isEmpty { return token }
+      if let token = body.string("access_token"), !token.isEmpty { return .complete(token) }
       switch body.string("error") {
-      case "authorization_pending": continue
-      case "slow_down":
-        if let reported = body.int("interval") {
-          guard reported > 0 else { throw failure("GitHub slow_down interval is invalid") }
-          interval = reported
-        } else {
-          interval += 5
-        }
+      case "authorization_pending": return .pending
+      case "slow_down": return .slowDown(intervalSeconds: body.int("interval").map(Double.init))
       case let error?: throw failure("GitHub device flow failed: \(error)")
       case nil: throw failure("GitHub device token response is malformed")
       }
     }
-    throw failure("GitHub device authorization timed out")
   }
 
   private func exchangeCopilotToken(
@@ -225,16 +232,24 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard let data = body.array("data") else {
       throw failure("GitHub Copilot models response is malformed")
     }
-    return data.compactMap { item in
+    let candidates = data.compactMap { item -> [String: JSONValue]? in
       guard let model = item.objectValue, let id = model.string("id"),
-        model.bool("model_picker_enabled") == true,
-        model.object("policy")?.string("state") != "disabled"
+        !id.isEmpty, model.object("capabilities")?.object("supports")?.bool("tool_calls") != false
       else { return nil }
-      return id
-    }.sorted()
+      return model
+    }
+    let picker = candidates.filter {
+      $0.bool("model_picker_enabled") == true && $0.object("policy")?.string("state") != "disabled"
+    }.compactMap { $0.string("id") }
+    if picker.isEmpty, baseURL.absoluteString == "https://api.individual.githubcopilot.com" {
+      return candidates.filter { $0.object("policy")?.string("state") == "enabled" }.compactMap {
+        $0.string("id")
+      }
+    }
+    return picker
   }
 
-  private func copilotBaseURL(
+  func copilotBaseURL(
     token: String,
     enterpriseDomain: String?
   ) throws -> URL {
@@ -250,10 +265,10 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     {
       return url
     }
-    throw failure("GitHub Copilot token is missing proxy endpoint")
+    return URL(string: "https://api.individual.githubcopilot.com")!
   }
 
-  private func normalizedDomain(_ input: String) throws -> String? {
+  func normalizedDomain(_ input: String) throws -> String? {
     let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !trimmed.isEmpty else { return nil }
     let value = trimmed.contains("://") ? trimmed : "https://\(trimmed)"

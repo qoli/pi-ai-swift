@@ -18,9 +18,14 @@ class ConformanceReportingTests(unittest.TestCase):
             source = root / "Sources/PiAIProviderRuntime/Test.swift"
             source.parent.mkdir(parents=True)
             source.write_text("let value = 1")
+            (root / "Package.swift").write_text("// fixture package")
+            (root / "Package.resolved").write_text('{"pins": []}')
             (root / "Scripts/Conformance").mkdir(parents=True)
             before = CONFORMANCE.evidence_digests(root)
             source.write_text("let value = 2")
+            self.assertNotEqual(before, CONFORMANCE.evidence_digests(root))
+            before = CONFORMANCE.evidence_digests(root)
+            (root / "Package.resolved").write_text('{"pins": [{"revision": "changed"}]}')
             self.assertNotEqual(before, CONFORMANCE.evidence_digests(root))
 
     def setUp(self):
@@ -37,6 +42,20 @@ class ConformanceReportingTests(unittest.TestCase):
 
     def test_original_test_pass_with_swift_execution_is_accepted(self):
         self.assertTrue(self.evaluate([self.call]))
+
+    def test_transport_assertion_caught_by_provider_cannot_count_as_conformance(self):
+        assertion = {**self.call, "operation": "assertion", "failure": {
+            "code": "bridgeAssertion", "operation": "conformance.fixture.assertion",
+            "message": "expected request header was missing",
+        }}
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream"}]
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [self.call, assertion],
+            {"upstream": 0, "swift": 0}, original)
+        self.assertFalse(conformant)
+        self.assertEqual(cases[0]["conformanceStatus"], "mismatch")
+        self.assertEqual(cases[0]["nativeFailures"], [])
+        self.assertEqual(cases[0]["bridgeFailures"], [assertion["failure"]])
 
     def test_typescript_pass_through_is_not_swift_conformance(self):
         self.assertFalse(self.evaluate([]))

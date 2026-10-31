@@ -28,7 +28,7 @@ struct OpenAIRequestBranchClosureTests {
     } catch is ProviderRuntimeFailure {}
     let sent = try #require(await transport.request())
     let body = try decodeJSONObject(
-      try #require(sent.httpBody), providerID: "azure", operation: "test.mid-system")
+      try fixtureHTTPBody(sent), providerID: "azure", operation: "test.mid-system")
     #expect(
       body["messages"] == (try expectedRequestBody("azure-completions.mid-system"))["messages"])
   }
@@ -328,7 +328,7 @@ struct OpenAIRequestBranchClosureTests {
       } else {
         let sent = try #require(await transport.request())
         let actual = try decodeJSONObject(
-          try #require(sent.httpBody), providerID: "fixture", operation: "azure.strict.capture")
+          try fixtureHTTPBody(sent), providerID: "fixture", operation: "azure.strict.capture")
         #expect(actual["tools"] == expected.object("requestBody")?["tools"], Comment(rawValue: id))
       }
     }
@@ -607,7 +607,7 @@ struct OpenAIRequestBranchClosureTests {
       #expect(sent.url?.host == expectedHost)
       #expect(sent.url?.path == "/openai/v1/responses")
       let body = try decodeJSONObject(
-        try #require(sent.httpBody), providerID: "fixture", operation: "azure.config.capture")
+        try fixtureHTTPBody(sent), providerID: "fixture", operation: "azure.config.capture")
       #expect(body.string("model") == expectedModel)
     }
 
@@ -998,7 +998,7 @@ struct OpenAIRequestBranchClosureTests {
     } catch is ProviderRuntimeFailure {}
     let defaultRequest = try #require(await defaultTransport.request())
     let defaultBody = try decodeJSONObject(
-      try #require(defaultRequest.httpBody), providerID: "fixture",
+      try fixtureHTTPBody(defaultRequest), providerID: "fixture",
       operation: "codex.default-instructions")
     #expect(defaultBody.string("instructions") == "You are a helpful assistant.")
   }
@@ -1153,7 +1153,7 @@ private func capture(
   }
   let sent = try #require(await transport.request())
   return try decodeJSONObject(
-    try #require(sent.httpBody), providerID: "fixture", operation: "branch.capture")
+    try fixtureHTTPBody(sent), providerID: "fixture", operation: "branch.capture")
 }
 
 private func captureDeferred(
@@ -1210,7 +1210,7 @@ private func captureDeferred(
   } catch is ProviderRuntimeFailure {}
   let sent = try #require(await transport.request())
   return try decodeJSONObject(
-    try #require(sent.httpBody), providerID: "fixture", operation: "deferred.capture")
+    try fixtureHTTPBody(sent), providerID: "fixture", operation: "deferred.capture")
 }
 
 private func captureCompatTranscript(
@@ -1255,7 +1255,7 @@ private func captureCompatTranscript(
   } catch is ProviderRuntimeFailure {}
   let sent = try #require(await transport.request())
   return try decodeJSONObject(
-    try #require(sent.httpBody), providerID: "fixture", operation: "compat.capture")
+    try fixtureHTTPBody(sent), providerID: "fixture", operation: "compat.capture")
 }
 
 private func captureReplay(
@@ -1323,7 +1323,7 @@ private func captureReplay(
   } catch is ProviderRuntimeFailure {}
   let sent = try #require(await transport.request())
   return try decodeJSONObject(
-    try #require(sent.httpBody), providerID: "fixture", operation: "replay.capture")
+    try fixtureHTTPBody(sent), providerID: "fixture", operation: "replay.capture")
 }
 
 private func responseToolNames(_ body: [String: JSONValue]) -> [String] {

@@ -33,7 +33,8 @@ struct ProviderVerticalSliceTests {
       let runtime = try BuiltinProviderRuntime(
         credentialStore: store,
         streamingTransport: transport,
-        authorizationTransport: ProviderVerticalUnusedHTTPTransport()
+        authorizationTransport: ProviderVerticalUnusedHTTPTransport(),
+        webSocketTransport: ProviderVerticalUnavailableWebSocketTransport()
       )
       let request = ProviderRequest(
         id: "vertical-\(providerID)",
@@ -69,6 +70,12 @@ struct ProviderVerticalSliceTests {
       #expect(sent.url?.absoluteString.contains("{") == false)
       #expect(sent.httpMethod == "POST")
     }
+  }
+}
+
+private struct ProviderVerticalUnavailableWebSocketTransport: ProviderWebSocketTransport {
+  func connect(_ request: URLRequest) async throws -> any ProviderWebSocketConnection {
+    throw URLError(.notConnectedToInternet)
   }
 }
 
@@ -158,7 +165,7 @@ private actor ProviderVerticalTransport: ProviderHTTPStreamingTransport {
       )
     }
     let body = try decodeJSONObject(
-      request.httpBody ?? Data(),
+      try fixtureHTTPBody(request),
       providerID: "vertical",
       operation: "vertical.decode"
     )

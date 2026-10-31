@@ -2,13 +2,18 @@ import Foundation
 
 struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
   private let client: OpenAICodexOAuthClient
+  private let agentName: String
 
   init(transport: any ProviderHTTPTransport) {
     client = OpenAICodexOAuthClient(transport: transport)
+    agentName = "pi"
   }
 
-  init(transport: any ProviderHTTPTransport, clock: any ProviderOAuthClock) {
+  init(
+    transport: any ProviderHTTPTransport, clock: any ProviderOAuthClock, agentName: String = "pi"
+  ) {
     client = OpenAICodexOAuthClient(transport: transport, clock: clock)
+    self.agentName = agentName
   }
 
   func authorize(
@@ -25,11 +30,14 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
       return .disconnected(providerID: providerID)
     case .login(let providerID, let methodID):
       guard providerID == OpenAICodexOAuthClient.providerID,
-        methodID == "oauth"
+        ["oauth", "oauth-browser"].contains(methodID)
       else {
         throw failure("unsupported OpenAI Codex authorization request")
       }
-      let credential = try await client.login(interaction: interaction)
+      let credential =
+        try await methodID == "oauth-browser"
+        ? client.loginWithBrowser(agentName: agentName, interaction: interaction)
+        : client.login(interaction: interaction)
       _ = try await credentialStore.modify(providerID: providerID) { _ in
         .oauth(credential)
       }

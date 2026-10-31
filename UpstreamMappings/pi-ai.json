@@ -92,7 +92,10 @@
         "Sources/PiAIProviderRuntime/JSONValue.swift",
         "Sources/PiAIProviderRuntime/ProviderRequest.swift",
         "Sources/PiAIProviderRuntime/ProviderEvent.swift",
-        "Sources/PiAIProviderRuntime/ProviderWireObserver.swift"
+        "Sources/PiAIProviderRuntime/ProviderWireObserver.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -135,7 +138,17 @@
         "Tests/PiAIProviderRuntimeTests/ProviderResponseBranchClosureTests.swift#googleWireObserversMatchPinnedSourceAcrossFlavors",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleNativeWireObserverMatchesPinnedSourceAcrossFlavors",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#bedrockWireObservationsMatchPinnedSourceBeforeNormalizationAndSigning",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockNativeWireObserverMatchesPinnedSource",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Fixtures/Differential/Cases/cloud-authorization.json",
+        "Fixtures/Differential/Oracle/cloud-authorization.json",
+        "Scripts/pi-ai-cloud-authorization-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -191,7 +204,10 @@
         "Sources/PiAIProviderRuntime/Authorization/KeychainProviderCredentialStore.swift",
         "Sources/PiAIProviderRuntime/Authorization/CredentialRefreshCoordinator.swift",
         "Sources/PiAIProviderRuntime/Authorization/OAuthUtilities.swift",
-        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift"
+        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderDeviceCodePolling.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -224,7 +240,19 @@
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
         "Fixtures/Differential/Cases/cloudflare-auth.json",
         "Fixtures/Differential/Oracle/cloudflare-auth.json",
-        "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#preservesNormalizedProviderRefreshFailure"
+        "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#preservesNormalizedProviderRefreshFailure",
+        "Scripts/Conformance/AuthorizationProbe.swift",
+        "Scripts/Conformance/authorization.mjs",
+        "Scripts/Conformance/RetryProbe.swift",
+        "Scripts/Conformance/device-code.mjs",
+        "Fixtures/Differential/Cases/cloud-authorization.json",
+        "Fixtures/Differential/Oracle/cloud-authorization.json",
+        "Scripts/pi-ai-cloud-authorization-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -338,10 +366,12 @@
     },
     {
       "id": "http-transport",
-      "responsibility": "Buffered and incremental URLSession transport with cancellation and injectable fixtures.",
+      "responsibility": "Buffered and incremental URLSession HTTP/WebSocket transport, cancellation and injectable fixtures; opt-in Source request retries default to zero.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/ProviderHTTPTransport.swift"
+        "Sources/PiAIProviderRuntime/ProviderHTTPTransport.swift",
+        "Sources/PiAIProviderRuntime/ProviderWebSocketTransport.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -356,7 +386,9 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#streamingTransportPreservesStatusHeadersAndAllArbitrarilyFragmentedBytes",
         "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#cancellingBodyConsumerCancelsTheUnderlyingURLSessionTask",
-        "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#urlSessionErrorsRemainTheThrownCauseAndAreNotRetried"
+        "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#urlSessionErrorsRemainTheThrownCauseAndAreNotRetried",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/SwiftProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -405,11 +437,12 @@
     {
       "id": "openai-codex-oauth",
       "providerID": "openai-codex",
-      "responsibility": "OpenAI Codex device authorization, token exchange, account identity, refresh, and credential state.",
+      "responsibility": "OpenAI Codex browser and device authorization, token exchange, account identity, refresh, and credential state; browser callback delivery is host-owned.",
       "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Authorization/OpenAICodexAuthorizationAdapter.swift",
-        "Sources/PiAIProviderRuntime/OpenAICodexOAuth.swift"
+        "Sources/PiAIProviderRuntime/OpenAICodexOAuth.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -445,7 +478,8 @@
       "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -463,7 +497,15 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
+        "Fixtures/Differential/Cases/cloud-authorization.json",
+        "Fixtures/Differential/Oracle/cloud-authorization.json",
+        "Scripts/pi-ai-cloud-authorization-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -512,7 +554,9 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
-        "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift"
+        "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -535,7 +579,17 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#anthropicPKCELoginValidatesStateAndStoresRotatingOAuth"
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#anthropicPKCELoginValidatesStateAndStoresRotatingOAuth",
+        "Scripts/Conformance/authorization.mjs",
+        "Scripts/Conformance/AuthorizationProbe.swift",
+        "Fixtures/Differential/Cases/cloud-authorization.json",
+        "Fixtures/Differential/Oracle/cloud-authorization.json",
+        "Scripts/pi-ai-cloud-authorization-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -813,7 +867,8 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts",
-        "packages/ai/test/github-copilot-oauth.test.ts"
+        "packages/ai/test/github-copilot-oauth.test.ts",
+        "packages/ai/test/github-copilot-anthropic.test.ts"
       ],
       "dependsOn": [
         "builtin-provider-registry",
@@ -826,13 +881,20 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
         "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#githubCopilotDeviceFlowDerivesProxyEndpointAndAccountModels",
-        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#copilotDynamicHeadersReflectInitiatorAndVision"
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#copilotDynamicHeadersReflectInitiatorAndVision",
+        "Scripts/Conformance/AuthorizationProbe.swift",
+        "Scripts/Conformance/authorization.mjs",
+        "Scripts/Conformance/device-code.mjs"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRun"
+      "liveVerificationStatus": "notRun",
+      "conformanceGaps": [
+        "Source enables account model policies during login with bounded HTTP 429 retries; this remote account-policy mutation requires its own explicit approval.",
+        "Foundation URL serializes a literal closing bracket after an escaped control character differently from WHATWG URL in the verification URI fixture."
+      ]
     },
     {
       "id": "provider-google",
@@ -874,7 +936,8 @@
       "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -892,7 +955,15 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
+        "Fixtures/Differential/Cases/cloud-authorization.json",
+        "Fixtures/Differential/Oracle/cloud-authorization.json",
+        "Scripts/pi-ai-cloud-authorization-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -1390,7 +1461,8 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
-        "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift"
+        "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -1413,7 +1485,9 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#openRouterPKCEExchangesPermanentKeyWithoutInventingRefresh"
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#openRouterPKCEExchangesPermanentKeyWithoutInventingRefresh",
+        "Scripts/Conformance/authorization.mjs",
+        "Scripts/Conformance/AuthorizationProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -1553,7 +1627,9 @@
         "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#deviceOAuthStoresGatewayAndHandlesPendingPolling",
         "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#expiredOAuthRefreshesBeforeDynamicCatalogRequest",
         "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#dynamicCatalogRoutesStreamAndReloadsPersistedModelsOffline",
-        "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#invalidNetworkRefreshFailsWithoutServingPersistedModels"
+        "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#invalidNetworkRefreshFailsWithoutServingPersistedModels",
+        "Scripts/Conformance/authorization.mjs",
+        "Scripts/Conformance/AuthorizationProbe.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -2005,7 +2081,11 @@
       "responsibility": "Anthropic Messages request encoding, SSE decoding, thinking signatures, images, tools, usage, and stop reasons.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/Anthropic/AnthropicMessagesAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/Anthropic/AnthropicMessagesAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2024,7 +2104,8 @@
         "packages/ai/test/anthropic-error-tool-result-images.test.ts",
         "packages/ai/test/anthropic-strict-tool-schema.test.ts",
         "packages/ai/test/openrouter-cost.test.ts",
-        "packages/ai/test/opencode-provider-headers.test.ts"
+        "packages/ai/test/opencode-provider-headers.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2087,14 +2168,32 @@
         "Fixtures/Differential/Oracle/strict-fallback-inline.json",
         "Tests/PiAIProviderRuntimeTests/AnthropicInlineToolDifferentialTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInlineToolValuesMatchPinnedSource",
-        "Tests/PiAIProviderRuntimeTests/SourceLogicalPayloadCapture.swift"
+        "Tests/PiAIProviderRuntimeTests/SourceLogicalPayloadCapture.swift",
+        "Scripts/Conformance/provider-retry.mjs",
+        "Scripts/Conformance/RetryProbe.swift",
+        "Tests/PiAIProviderRuntimeTests/FixtureHTTPBody.swift",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Scripts/Conformance/memory-observer.mjs",
+        "Fixtures/Differential/Cases/cloud-authorization.json",
+        "Fixtures/Differential/Oracle/cloud-authorization.json",
+        "Scripts/pi-ai-cloud-authorization-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource",
+        "Scripts/Conformance/CloudProbe.swift",
+        "Scripts/Conformance/cloud-authorization.mjs",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testFederationReusesTheNativeCredentialSource",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource"
       ],
       "requiredGates": [
         "swift-test",
         "ios-simulator-source-fixtures"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRequired"
+      "liveVerificationStatus": "notRequired",
+      "cloudCredentialBoundary": "Explicit request environment snapshots select the pinned primary authentication plan. Native retains only the current federation credential source and replaces it when its configuration changes. Opt-in host sources own cloud SDK/config-file access and SDK token-cache behavior. Source failures propagate without selecting another authentication source; Native owns endpoint/header/signing projection."
     },
     {
       "id": "wire-azure-openai-responses",
@@ -2187,7 +2286,10 @@
         "Sources/PiAIProviderRuntime/Wire/Bedrock/AWSEventStream.swift",
         "Sources/PiAIProviderRuntime/Wire/Bedrock/AWSSignatureV4.swift",
         "Sources/PiAIProviderRuntime/Wire/Bedrock/BedrockConverseStreamAdapter.swift",
-        "Sources/PiAIProviderRuntime/Wire/Bedrock/BedrockFailure.swift"
+        "Sources/PiAIProviderRuntime/Wire/Bedrock/BedrockFailure.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2201,7 +2303,11 @@
         "packages/ai/test/bedrock-cache-write-1h-cost.test.ts",
         "packages/ai/test/bedrock-convert-messages.test.ts",
         "packages/ai/test/bedrock-stream-state.test.ts",
-        "packages/ai/test/bedrock-error-metadata.test.ts"
+        "packages/ai/test/bedrock-error-metadata.test.ts",
+        "packages/ai/test/bedrock-custom-headers.test.ts",
+        "packages/ai/test/bedrock-response-headers.test.ts",
+        "packages/ai/test/bedrock-endpoint-resolution.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2258,17 +2364,37 @@
         "Scripts/Conformance/memory-observer.mjs",
         "Scripts/tests/test_native_heap_observer.py",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#bedrockFailureDiagnosticsMatchPinnedHTTPAndStreamErrors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockFailureDiagnosticsMatchPinnedHTTPAndStreamErrors"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockFailureDiagnosticsMatchPinnedHTTPAndStreamErrors",
+        "Fixtures/Differential/Cases/bedrock-signing-region.json",
+        "Fixtures/Differential/Oracle/bedrock-signing-region.json",
+        "Scripts/pi-ai-bedrock-region-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/BedrockConverseStreamAdapterTests.swift#signingRegionMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockSigningRegionMatchesPinnedSource",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Fixtures/Differential/Cases/cloud-authorization.json",
+        "Fixtures/Differential/Oracle/cloud-authorization.json",
+        "Scripts/pi-ai-cloud-authorization-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource",
+        "Scripts/Conformance/CloudProbe.swift",
+        "Scripts/Conformance/cloud-authorization.mjs",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testFederationReusesTheNativeCredentialSource",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRequired"
+      "liveVerificationStatus": "notRequired",
+      "cloudCredentialBoundary": "Explicit request environment snapshots select the pinned primary authentication plan. Native retains only the current federation credential source and replaces it when its configuration changes. Opt-in host sources own cloud SDK/config-file access and SDK token-cache behavior. Source failures propagate without selecting another authentication source; Native owns endpoint/header/signing projection."
     },
     {
       "id": "wire-common",
-      "responsibility": "Shared provider wire helpers, final tool argument parsing, sampling projection, exact strict-preference downgrade transition, SSE and explicit failures; no general automatic retries.",
+      "responsibility": "Shared wire projection, immutable incremental JSON snapshots and tool changes, Source error normalization, optional request retries defaulting to zero, strict-preference transitions, SSE and explicit failures; caller transcript assembly stays outside Native ownership.",
       "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/ProviderConstrainedSamplingResolver.swift",
@@ -2282,7 +2408,11 @@
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderOrderedJSON.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderSamplingParameters.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderSessionHeaders.swift",
-        "Sources/PiAIProviderRuntime/Wire/Common/ServerSentEvents.swift"
+        "Sources/PiAIProviderRuntime/Wire/Common/ServerSentEvents.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderToolDeclarationMode.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2371,7 +2501,21 @@
         "Tests/PiAIProviderRuntimeTests/StrictFallbackDifferentialTests.swift#sourceDerivedPreferredStrictRetriesPreserveRequiredAndFailureBoundaries",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPreferredStrictFallbackDiagnosticsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#bedrockWireObservationsMatchPinnedSourceBeforeNormalizationAndSigning",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockNativeWireObserverMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testBedrockNativeWireObserverMatchesPinnedSource",
+        "Fixtures/Differential/Cases/streaming-json.json",
+        "Fixtures/Differential/Oracle/streaming-json.json",
+        "Scripts/pi-ai-streaming-json-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/StreamingJSONTests.swift",
+        "Fixtures/Differential/Cases/provider-errors.json",
+        "Fixtures/Differential/Oracle/provider-errors.json",
+        "Scripts/pi-ai-provider-errors-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderErrorTextTests.swift",
+        "Scripts/Conformance/StreamingJSONExports.swift",
+        "Scripts/Conformance/StreamingJSONBridge.cc",
+        "Scripts/Conformance/streaming-json.mjs",
+        "Scripts/Conformance/provider-retry.mjs",
+        "Scripts/Conformance/RetryProbe.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testIncrementalJSONChangesMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2385,7 +2529,9 @@
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for google-generative-ai.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/Google/GoogleGenerativeAIAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/Google/GoogleGenerativeAIAdapter.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2400,7 +2546,8 @@
         "packages/ai/test/google-thinking-level-map.test.ts",
         "packages/ai/test/google-thinking-signature.test.ts",
         "packages/ai/test/opencode-provider-headers.test.ts",
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2443,7 +2590,9 @@
         "Fixtures/Differential/Oracle/client-identity.json",
         "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleSignedToolCallMatchesStreamAndSnapshot"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleSignedToolCallMatchesStreamAndSnapshot",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Scripts/Conformance/memory-observer.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2457,7 +2606,10 @@
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for google-vertex.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/Google/GoogleGenerativeAIAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/Google/GoogleGenerativeAIAdapter.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2471,7 +2623,8 @@
         "packages/ai/test/google-shared-signed-empty-blocks.test.ts",
         "packages/ai/test/google-thinking-level-map.test.ts",
         "packages/ai/test/google-thinking-signature.test.ts",
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2511,13 +2664,28 @@
         "Fixtures/Differential/Oracle/client-identity.json",
         "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleSignedToolCallMatchesStreamAndSnapshot"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleSignedToolCallMatchesStreamAndSnapshot",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Scripts/Conformance/memory-observer.mjs",
+        "Fixtures/Differential/Cases/cloud-authorization.json",
+        "Fixtures/Differential/Oracle/cloud-authorization.json",
+        "Scripts/pi-ai-cloud-authorization-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource",
+        "Scripts/Conformance/CloudProbe.swift",
+        "Scripts/Conformance/cloud-authorization.mjs",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testFederationReusesTheNativeCredentialSource",
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRequired"
+      "liveVerificationStatus": "notRequired",
+      "cloudCredentialBoundary": "Explicit request environment snapshots select the pinned primary authentication plan. Native retains only the current federation credential source and replaces it when its configuration changes. Opt-in host sources own cloud SDK/config-file access and SDK token-cache behavior. Source failures propagate without selecting another authentication source; Native owns endpoint/header/signing projection."
     },
     {
       "id": "wire-mistral-conversations",
@@ -2525,7 +2693,9 @@
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for mistral-conversations.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/Mistral/MistralConversationsAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/Mistral/MistralConversationsAdapter.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2537,7 +2707,8 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts",
-        "packages/ai/test/mistral-http-transport.test.ts"
+        "packages/ai/test/mistral-http-transport.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2595,7 +2766,9 @@
         "Fixtures/Differential/Cases/client-identity.json",
         "Fixtures/Differential/Oracle/client-identity.json",
         "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Scripts/Conformance/memory-observer.mjs"
       ],
       "requiredGates": [
         "swift-test",
@@ -2610,7 +2783,10 @@
       "responsibility": "ChatGPT Codex subscription SSE transport, account headers, prompt-cache affinity, streaming events, and explicit terminal aliases.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/CodexWebSocketSessions.swift",
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/CodexRequestCompression.swift",
+        "Sources/PiAIProviderRuntime/ProviderWebSocketTransport.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2670,13 +2846,44 @@
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responseBlockLifecycleAndProvisionalPhasesMatchSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors",
+        "Fixtures/Differential/Cases/codex-transport.json",
+        "Fixtures/Differential/Oracle/codex-transport.json",
+        "Scripts/pi-ai-codex-transport-oracle.mjs",
+        "Tests/PiAIProviderRuntimeTests/CodexTransportTests.swift",
+        "Tests/PiAIProviderRuntimeTests/CodexTransportFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/FixtureHTTPBody.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCodexTransportEdgesMatchPinnedSource",
+        "Scripts/Conformance/codex.mjs",
+        "Scripts/Conformance/native-session.mjs",
+        "Scripts/Conformance/native-clock.mjs",
+        "Scripts/Conformance/WireServer.swift",
+        "Package.swift",
+        "Package.resolved",
+        "Tests/PiAIProviderRuntimeTests/CodexTransportTests.swift#toolCallbackFailureNeverSelectsAnotherTransport",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCodexToolCallbackFailureDoesNotSelectSSE"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRequired"
+      "liveVerificationStatus": "notRequired",
+      "authorizedExecutionModeException": {
+        "sourceRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+        "mode": "auto",
+        "condition": "WebSocket transport failure before any provider output",
+        "recovery": "SSE with the same provider, model, endpoint and authorization",
+        "authorization": "explicit user approval in the maintenance conversation",
+        "excludes": [
+          "websocket mode",
+          "websocket-cached continuation recovery to SSE",
+          "observer callback failure",
+          "failure after output"
+        ]
+      },
+      "conformanceGaps": [
+        "Pinned websocket-cached missing-continuation recovery requires a separate explicit exception before its second pre-output transport failure may switch to SSE."
+      ]
     },
     {
       "id": "wire-openai-completions",
@@ -2686,7 +2893,11 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsCompatibility.swift",
-        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsReasoningDetails.swift"
+        "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsReasoningDetails.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderToolDeclarationMode.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2711,7 +2922,9 @@
         "packages/ai/test/opencode-provider-headers.test.ts",
         "packages/ai/test/openrouter-cost.test.ts",
         "packages/ai/test/provider-error-body-regression.test.ts",
-        "packages/ai/test/sampling-options.test.ts"
+        "packages/ai/test/sampling-options.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts",
+        "packages/ai/test/transcript-tool-changes.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2791,7 +3004,12 @@
         "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#completionsSDKErrorsDoNotReachRawEventCallback",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsSDKErrorsStayOutsideRawObserver"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCompletionsSDKErrorsStayOutsideRawObserver",
+        "Scripts/Conformance/provider-retry.mjs",
+        "Scripts/Conformance/RetryProbe.swift",
+        "Tests/PiAIProviderRuntimeTests/FixtureHTTPBody.swift",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Scripts/Conformance/memory-observer.mjs"
       ],
       "requiredGates": [
         "swift-test",
@@ -2809,7 +3027,11 @@
       "responsibility": "OpenAI Responses request encoding, streaming decoding, tool and reasoning replay, usage, and terminal event rules.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderToolDeclarationMode.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2824,7 +3046,9 @@
         "packages/ai/test/openai-responses-tool-result-images.test.ts",
         "packages/ai/test/openai-responses-mid-convo-effort.test.ts",
         "packages/ai/test/sampling-options.test.ts",
-        "packages/ai/test/opencode-provider-headers.test.ts"
+        "packages/ai/test/opencode-provider-headers.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts",
+        "packages/ai/test/transcript-tool-changes.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2882,7 +3106,12 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesBlockLifecycleAndPhasesMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#indexedDeltaPayloadBytesScaleWithIncomingFragments",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponseEventBranchTests.swift#responsesWireCallbacksMatchPinnedSourceAcrossFlavors",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesNativeWireObserverMatchesPinnedSourceAcrossFlavors",
+        "Scripts/Conformance/provider-retry.mjs",
+        "Scripts/Conformance/RetryProbe.swift",
+        "Tests/PiAIProviderRuntimeTests/FixtureHTTPBody.swift",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Scripts/Conformance/memory-observer.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -2896,7 +3125,8 @@
       "responsibility": "OpenRouter image-generation request encoding, response decoding, assets, usage, errors, and cancellation.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/OpenRouterImages/OpenRouterImagesAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/OpenRouterImages/OpenRouterImagesAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2928,7 +3158,10 @@
         "Tests/PiAIProviderRuntimeTests/CompletedToolArgumentsTests.swift",
         "Fixtures/Differential/Cases/tool-arguments.json",
         "Fixtures/Differential/Oracle/tool-arguments.json",
-        "Scripts/pi-ai-tool-arguments-oracle.mjs"
+        "Scripts/pi-ai-tool-arguments-oracle.mjs",
+        "Scripts/Conformance/provider-retry.mjs",
+        "Scripts/Conformance/RetryProbe.swift",
+        "Tests/PiAIProviderRuntimeTests/FixtureHTTPBody.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -2942,7 +3175,9 @@
       "responsibility": "Request encoding, streaming decoding, normalized events, usage, errors, and cancellation for pi-messages.",
       "status": "landed",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Wire/PiMessages/PiMessagesAdapter.swift"
+        "Sources/PiAIProviderRuntime/Wire/PiMessages/PiMessagesAdapter.swift",
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2951,7 +3186,8 @@
       ],
       "upstreamTestPaths": [
         "packages/ai/test/pi-messages.test.ts",
-        "packages/ai/test/stream.test.ts"
+        "packages/ai/test/stream.test.ts",
+        "packages/ai/test/streaming-tool-arguments.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2971,7 +3207,9 @@
         "Fixtures/Differential/Oracle/tool-arguments.json",
         "Scripts/pi-ai-tool-arguments-oracle.mjs",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPiTerminalEventsWithoutStartMatchPinnedSource",
-        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#preservesUnspecifiedAndExplicitCacheRetentionAcrossCoding"
+        "Tests/PiAIProviderRuntimeTests/PiMessagesAdapterTests.swift#preservesUnspecifiedAndExplicitCacheRetentionAcrossCoding",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Scripts/Conformance/memory-observer.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -3026,9 +3264,14 @@
     },
     {
       "id": "optional-client-identity-and-login",
-      "responsibility": "Missing optional client identity merge facade, OpenAI ChatGPT login and Anthropic copy-code/federation selection; provider identity header projection is tracked separately.",
-      "status": "missing",
-      "swiftPaths": [],
+      "responsibility": "Native client identity merge, Anthropic copy-code/browser request semantics and optional host-resolved federation selection exist; OpenAI ChatGPT OAuth remains unimplemented.",
+      "status": "partial",
+      "swiftPaths": [
+        "Sources/PiAIProviderRuntime/Runtime/ProviderClientIdentity.swift",
+        "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift",
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
+      ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/utils/identity.ts",
@@ -3044,7 +3287,10 @@
         "provider-client-identity"
       ],
       "evidence": [
-        "Docs/UPSTREAM_GATES.md"
+        "Docs/UPSTREAM_GATES.md",
+        "Scripts/Conformance/identity.mjs",
+        "Scripts/Conformance/authorization.mjs",
+        "Scripts/Conformance/AuthorizationProbe.swift"
       ],
       "requiredGates": [
         "optional-identity-auth-seam-design",
@@ -3069,7 +3315,8 @@
       "upstreamTestPaths": [
         "packages/ai/test/azure-openai-base-url.test.ts",
         "packages/ai/test/google-raw-stop-reason.test.ts",
-        "packages/ai/test/mistral-http-transport.test.ts"
+        "packages/ai/test/mistral-http-transport.test.ts",
+        "packages/ai/test/identity.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos"
@@ -3079,7 +3326,10 @@
         "Fixtures/Differential/Cases/client-identity.json",
         "Fixtures/Differential/Oracle/client-identity.json",
         "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
+        "Scripts/Conformance/identity.mjs",
+        "Scripts/Conformance/bridge.mjs",
+        "Scripts/Conformance/SwiftProbe.swift"
       ],
       "requiredGates": [
         "swift-test",
@@ -3245,7 +3495,9 @@
         "packages/ai/test/xiaomi-models.test.ts",
         "packages/ai/test/xiaomi-token-plan-ams-anthropic-empty-signature-smoke.test.ts",
         "packages/ai/test/zai-coding-plan-models.test.ts",
-        "packages/ai/test/zen.test.ts"
+        "packages/ai/test/zen.test.ts",
+        "packages/ai/test/streaming-json.test.ts",
+        "packages/ai/test/oauth-device-code.test.ts"
       ],
       "dependsOn": [
         "differential-fixture-harness"
@@ -3279,7 +3531,22 @@
         "Scripts/Conformance/suites.json",
         "Scripts/Conformance/upstream-trace.mjs",
         "Scripts/Conformance/vitest.config.mjs",
-        "Scripts/tests/test_conformance_reporting.py"
+        "Scripts/tests/test_conformance_reporting.py",
+        "Scripts/Conformance/RetryProbe.swift",
+        "Scripts/Conformance/StreamLifetime.swift",
+        "Scripts/Conformance/StreamingJSONBridge.cc",
+        "Scripts/Conformance/StreamingJSONExports.swift",
+        "Scripts/Conformance/WireServer.swift",
+        "Scripts/Conformance/codex.mjs",
+        "Scripts/Conformance/device-code.mjs",
+        "Scripts/Conformance/identity.mjs",
+        "Scripts/Conformance/native-clock.mjs",
+        "Scripts/Conformance/native-session.mjs",
+        "Scripts/Conformance/opencode-headers.mjs",
+        "Scripts/Conformance/provider-retry.mjs",
+        "Scripts/Conformance/streaming-json.mjs",
+        "Scripts/Conformance/CloudProbe.swift",
+        "Scripts/Conformance/cloud-authorization.mjs"
       ],
       "requiredGates": [
         "unchanged-upstream-conformance",

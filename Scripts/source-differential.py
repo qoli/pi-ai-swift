@@ -220,6 +220,21 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-cloud-authorization-oracle.mjs',
+             'Fixtures/Differential/Cases/cloud-authorization.json',
+             'Fixtures/Differential/Oracle/cloud-authorization.json', 'cloud primary authorization selection'),
+            ('pi-ai-streaming-json-oracle.mjs',
+             'Fixtures/Differential/Cases/streaming-json.json',
+             'Fixtures/Differential/Oracle/streaming-json.json', 'incremental JSON changes and immutable snapshots'),
+            ('pi-ai-provider-errors-oracle.mjs',
+             'Fixtures/Differential/Cases/provider-errors.json',
+             'Fixtures/Differential/Oracle/provider-errors.json', 'provider error shape priorities'),
+            ('pi-ai-codex-transport-oracle.mjs',
+             'Fixtures/Differential/Cases/codex-transport.json',
+             'Fixtures/Differential/Oracle/codex-transport.json', 'Codex transport edge projection'),
+            ('pi-ai-bedrock-region-oracle.mjs',
+             'Fixtures/Differential/Cases/bedrock-signing-region.json',
+             'Fixtures/Differential/Oracle/bedrock-signing-region.json', 'Bedrock signing region priority'),
             ('pi-ai-auth-url-oracle.mjs',
              'Fixtures/Differential/Cases/auth-verification-urls.json',
              'Fixtures/Differential/Oracle/auth-verification-urls.json', 'OAuth verification URL acceptance'),

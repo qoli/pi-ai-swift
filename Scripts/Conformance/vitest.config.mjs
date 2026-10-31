@@ -29,7 +29,7 @@ export default defineConfig({
     alias: [
       { find: /^@earendil-works\/pi-telemetry$/, replacement: path.join(upstream, "packages/telemetry/src/index.ts") },
       { find: /^vitest$/, replacement: path.join(path.dirname(require.resolve("vitest/package.json")), "dist/index.js") },
-      ...["openai", "@anthropic-ai/sdk", "@google/genai", "@aws-sdk/client-bedrock-runtime", "@smithy/core/event-streams"].map(name => ({
+      ...["openai", "@anthropic-ai/sdk", "@google/genai", "@aws-sdk/client-bedrock-runtime", "@smithy/core/event-streams", "@smithy/node-http-handler"].map(name => ({
         find: name, replacement: require.resolve(name),
       })),
     ],
@@ -39,6 +39,21 @@ export default defineConfig({
     enforce: "pre",
     transform(code, id) {
       if (implementation !== "upstream" || !id.startsWith(path.join(upstream, "packages/ai/src/"))) return;
+      if (id.endsWith("/utils/streaming-json.ts")) {
+        const wrappers = [];
+        for (const [name, prefix, methods] of [
+          ["StreamingJsonParser", "tool.json-parser", ["append", "snapshot"]],
+          ["ToolCallArgumentsStream", "tool.arguments-stream", ["append", "replace", "finish"]],
+        ]) {
+          code = code.replace(`export class ${name}`, `class __piOriginal_${name}`);
+          wrappers.push(`export class ${name} extends __piOriginal_${name} {\n`
+            + `constructor(...args) { __piParserTrace(${JSON.stringify(prefix + ".create")}, () => super(...args)); }\n`
+            + methods.map(method => `${method}(...args) { return __piParserTrace(${JSON.stringify(prefix + "." + method)}, () => super.${method}(...args)); }`).join("\n")
+            + (name === "ToolCallArgumentsStream" ? `\nget text() { return __piParserTrace("tool.arguments-stream.text", () => super.text); }` : "")
+            + "\n}");
+        }
+        return { code: `import {traceParser as __piParserTrace} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n` + code + "\n" + wrappers.join("\n"), map: null };
+      }
       if (id.startsWith(path.join(upstream, "packages/ai/src/auth/oauth/"))) {
         const provider = path.basename(id, ".ts");
         const name = oauthExports[provider];
@@ -48,6 +63,12 @@ export default defineConfig({
             + code.replace(new RegExp(`export const ${name}\\b`), `const __piOriginal_${name}`)
             + `\nexport const ${name} = __piAuth(${JSON.stringify(provider)}, __piOriginal_${name});`, map: null,
         };
+        if (provider === "device-code") {
+          const operation = "oauth.device-poll";
+          return { code: `import {trace as __piTrace} from ${traceModule};\n`
+            + code.replace("export async function pollOAuthDeviceCodeFlow", "async function __piOriginal_pollOAuthDeviceCodeFlow")
+            + `\nexport function pollOAuthDeviceCodeFlow(...args) { return __piTrace(${JSON.stringify(operation)}, undefined, () => __piOriginal_pollOAuthDeviceCodeFlow(...args)); }`, map: null };
+        }
         if (provider === "radius") return {
           code: `import {authorization as __piAuth} from ${traceModule};\n`
             + code.replace("export function createRadiusOAuth", "function __piOriginal_createRadiusOAuth")
@@ -59,9 +80,17 @@ export default defineConfig({
         getBuiltinImageModel: "catalog.images", getBuiltinImageModels: "catalog.images",
         getBuiltinClassifierModel: "catalog.classifiers", getBuiltinClassifierModels: "catalog.classifiers",
         getAllBuiltinModels: "catalog.all-models",
+      } : id.endsWith("/providers/opencode-headers.ts") ? {
+        withOpenCodeSessionHeader: "headers.open-code",
+      } : id.endsWith("/utils/identity.ts") ? {
+        getClientVersion: "identity.version", formatUserAgent: "identity.user-agent",
+        mergeClientIdentity: "identity.merge", getAttributionHeaders: "identity.attribution",
+        getIdentityHeaders: "identity.headers", getOpenCodeSessionHeaders: "identity.session-headers",
       } : id.endsWith("/models.ts") ? {
         getSupportedThinkingLevels: "catalog.reasoning",
         calculateCost: "usage.calculate",
+      } : id.endsWith("/utils/provider-retry.ts") ? {
+        retryProviderRequest: "provider.retry",
       } : id.endsWith("/utils/error-body.ts") ? {
         normalizeProviderError: "error.normalize-sdk-object",
         formatProviderError: "error.format",
@@ -113,7 +142,13 @@ export default defineConfig({
         return path.join(upstream, "packages/ai/src/auth/oauth", source.split("/").at(-1) + ".ts");
       }
       if (source === "pi-conformance:upstream-compat") return path.join(upstream, "packages/ai/src/compat.ts");
+      if (source === "pi-conformance:upstream-codex") return path.join(upstream, "packages/ai/src/api/openai-codex-responses.ts");
+      if (source === "pi-conformance:upstream-streaming-json") return path.join(upstream, "packages/ai/src/utils/streaming-json.ts");
       if (source === "pi-conformance:upstream-models") return path.join(upstream, "packages/ai/src/models.ts");
+      if (source === "pi-conformance:upstream-identity") return path.join(upstream, "packages/ai/src/utils/identity.ts");
+      if (source === "pi-conformance:upstream-device-code") return path.join(upstream, "packages/ai/src/auth/oauth/device-code.ts");
+      if (source.startsWith("pi-conformance:native-oauth/")) return "\0pi-native-oauth/" + source.split("/").at(-1);
+      if (source === "pi-conformance:upstream-oauth-load") return path.join(upstream, "packages/ai/src/auth/oauth/load.ts");
       if (source === "pi-conformance:upstream-providers") return path.join(upstream, "packages/ai/src/providers/all.ts");
       if (source === "pi-conformance:upstream-google-shared") return path.join(upstream, "packages/ai/src/api/google-shared.ts");
       if (source === "pi-conformance:upstream-responses-shared") return path.join(upstream, "packages/ai/src/api/openai-responses-shared.ts");
@@ -156,6 +191,23 @@ export default defineConfig({
       }
       if (!importer) return;
       const absolute = path.resolve(path.dirname(importer), source);
+      if (absolute === path.join(upstream, "packages/ai/src/providers/opencode-headers.ts")) return path.join(directory, "opencode-headers.mjs");
+      if (absolute === path.join(upstream, "packages/ai/src/auth/oauth/load.ts")) return "\0pi-native-oauth-load";
+      if (absolute === path.join(upstream, "packages/ai/src/utils/provider-retry.ts")) {
+        return path.join(directory, "provider-retry.mjs");
+      }
+      if (absolute === path.join(upstream, "packages/ai/src/auth/oauth/device-code.ts")) {
+        return path.join(directory, "device-code.mjs");
+      }
+      if (absolute === path.join(upstream, "packages/ai/src/utils/identity.ts")) {
+        return path.join(directory, "identity.mjs");
+      }
+      if (absolute === path.join(upstream, "packages/ai/src/utils/streaming-json.ts")) {
+        return path.join(directory, "streaming-json.mjs");
+      }
+      if (absolute === path.join(upstream, "packages/ai/src/api/openai-codex-responses.ts")) {
+        return path.join(directory, "codex.mjs");
+      }
       if (absolute.startsWith(path.join(upstream, "packages/ai/src/auth/oauth/"))) {
         const provider = path.basename(absolute, ".ts");
         if (oauthExports[provider] || provider === "radius") return "\0pi-native-oauth/" + provider;
@@ -169,6 +221,13 @@ export default defineConfig({
       }
     },
     load(id) {
+      if (id === "\0pi-native-oauth-load") {
+        const names = { anthropic: "Anthropic", "openai-codex": "OpenAICodex", "openai-chatgpt": "OpenAIChatGPT",
+          "github-copilot": "GitHubCopilot", openrouter: "OpenRouter", "kimi-coding": "KimiCoding", meta: "Meta", xai: "Xai" };
+        return `export * from "pi-conformance:upstream-oauth-load";\n`
+          + Object.entries(names).map(([provider, suffix]) => `import {${oauthExports[provider]} as ${suffix}} from ${JSON.stringify("pi-conformance:native-oauth/" + provider)}; export const load${suffix}OAuth = async () => ${suffix};`).join("\n")
+          + `\nimport {createRadiusOAuth} from "pi-conformance:native-oauth/radius"; export const loadRadiusOAuth = async options => createRadiusOAuth(options);`;
+      }
       if (!id.startsWith("\0pi-native-oauth/")) return;
       const provider = id.split("/").at(-1);
       const source = JSON.stringify("pi-conformance:upstream-oauth/" + provider);

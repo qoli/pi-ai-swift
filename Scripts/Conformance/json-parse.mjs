@@ -6,7 +6,4 @@ export function parseToolCallArguments(text) {
   return result;
 }
 
-export function parseStreamingJson() {
-  recordNative("tool.arguments.preview", "*", undefined, ["native-partial-tool-arguments-parser"]);
-  throw new Error("Native partial tool argument previews are not represented");
-}
+export { parseStreamingJson } from "./streaming-json.mjs";

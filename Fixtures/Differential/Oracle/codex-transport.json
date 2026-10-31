@@ -1,0 +1,85 @@
+{
+  "cases": [
+    {
+      "id": "suppressed-originator",
+      "requests": [
+        {
+          "headers": {
+            "accept": "text/event-stream",
+            "content-type": "application/json",
+            "openai-beta": "responses=experimental"
+          },
+          "transport": "sse"
+        }
+      ],
+      "stopReason": "stop"
+    },
+    {
+      "id": "sse-required-headers",
+      "requests": [
+        {
+          "headers": {
+            "accept": "text/event-stream",
+            "content-type": "application/json",
+            "openai-beta": "responses=experimental",
+            "originator": "pi"
+          },
+          "transport": "sse"
+        }
+      ],
+      "stopReason": "stop"
+    },
+    {
+      "id": "payload-envelope-type",
+      "requests": [
+        {
+          "headers": {
+            "openai-beta": "responses_websockets=2026-02-06",
+            "originator": "pi"
+          },
+          "transport": "websocket",
+          "type": "fixture.create"
+        }
+      ],
+      "stopReason": "stop"
+    },
+    {
+      "errorMessage": "Failed after retries",
+      "id": "negative-retry-budget",
+      "requests": [],
+      "stopReason": "error"
+    },
+    {
+      "id": "mid-conversation-instructions",
+      "requests": [
+        {
+          "headers": {
+            "accept": "text/event-stream",
+            "content-type": "application/json",
+            "openai-beta": "responses=experimental",
+            "originator": "pi"
+          },
+          "input": [
+            {
+              "content": [
+                {
+                  "text": "synthetic question",
+                  "type": "input_text"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "content": "later instructions",
+              "role": "system"
+            }
+          ],
+          "instructions": "initial instructions",
+          "transport": "sse"
+        }
+      ],
+      "stopReason": "stop"
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

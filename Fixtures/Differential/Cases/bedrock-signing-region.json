@@ -1,0 +1,10 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    { "id": "arn-overrides-configured-region", "modelID": "arn:aws:bedrock:us-west-2:123456789012:application-inference-profile/example", "region": "us-east-1", "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com" },
+    { "id": "govcloud-arn", "modelID": "arn:aws-us-gov:bedrock:us-gov-west-1:123456789012:application-inference-profile/example", "region": "us-east-1", "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com" },
+    { "id": "china-arn", "modelID": "arn:aws-cn:bedrock:cn-north-1:123456789012:application-inference-profile/example", "region": "us-east-1", "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com" },
+    { "id": "configured-region", "modelID": "fixture-model", "region": "us-west-2", "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com" },
+    { "id": "endpoint-region", "modelID": "fixture-model", "endpoint": "https://bedrock-runtime.eu-central-1.amazonaws.com" }
+  ]
+}

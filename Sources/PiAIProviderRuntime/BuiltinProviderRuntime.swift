@@ -7,7 +7,12 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
   private let credentialStore: any ProviderCredentialStore
   private let streamingTransport: any ProviderHTTPStreamingTransport
   private let authorizationTransport: any ProviderHTTPTransport
+  private let authorizationConfiguration: ProviderAuthorizationConfiguration
   private let wireObserver: ProviderWireObserver?
+  private let webSocketTransport: any ProviderWebSocketTransport
+  private let cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?
+  private let cloudCredentialSources = ProviderCloudCredentialSources()
+  private let codexSessions = CodexWebSocketSessions()
   private let radiusAuthorization: RadiusOAuthAuthorizationAdapter
   private let radiusRefreshCoordinator: CredentialRefreshCoordinator
 
@@ -17,14 +22,20 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       URLSessionProviderHTTPStreamingTransport(),
     authorizationTransport: any ProviderHTTPTransport = URLSessionProviderHTTPTransport(),
     radiusCatalogPersistenceURL: URL? = nil,
-    wireObserver: ProviderWireObserver? = nil
+    wireObserver: ProviderWireObserver? = nil,
+    webSocketTransport: any ProviderWebSocketTransport = URLSessionProviderWebSocketTransport(),
+    authorizationConfiguration: ProviderAuthorizationConfiguration = .init(),
+    cloudAuthorizationResolver: ProviderCloudAuthorizationResolver? = nil
   ) throws {
     let registry = try BuiltinProviderRegistry.load()
     self.registry = registry
     self.credentialStore = credentialStore
     self.streamingTransport = streamingTransport
     self.authorizationTransport = authorizationTransport
+    self.authorizationConfiguration = authorizationConfiguration
     self.wireObserver = wireObserver
+    self.webSocketTransport = webSocketTransport
+    self.cloudAuthorizationResolver = cloudAuthorizationResolver
     radiusAuthorization = RadiusOAuthAuthorizationAdapter(
       transport: authorizationTransport
     )
@@ -40,7 +51,12 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       credentialStore: credentialStore,
       streamingTransport: streamingTransport,
       authorizationTransport: authorizationTransport,
-      wireObserver: wireObserver
+      wireObserver: wireObserver,
+      webSocketTransport: webSocketTransport,
+      codexSessions: codexSessions,
+      authorizationConfiguration: authorizationConfiguration,
+      cloudAuthorizationResolver: cloudAuthorizationResolver,
+      cloudCredentialSources: cloudCredentialSources
     )
   }
 
@@ -134,7 +150,12 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       credentialStore: credentialStore,
       streamingTransport: streamingTransport,
       authorizationTransport: authorizationTransport,
-      wireObserver: wireObserver
+      wireObserver: wireObserver,
+      webSocketTransport: webSocketTransport,
+      codexSessions: codexSessions,
+      authorizationConfiguration: authorizationConfiguration,
+      cloudAuthorizationResolver: cloudAuthorizationResolver,
+      cloudCredentialSources: cloudCredentialSources
     )
   }
 
@@ -168,7 +189,12 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     credentialStore: any ProviderCredentialStore,
     streamingTransport: any ProviderHTTPStreamingTransport,
     authorizationTransport: any ProviderHTTPTransport,
-    wireObserver: ProviderWireObserver?
+    wireObserver: ProviderWireObserver?,
+    webSocketTransport: any ProviderWebSocketTransport,
+    codexSessions: CodexWebSocketSessions,
+    authorizationConfiguration: ProviderAuthorizationConfiguration,
+    cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?,
+    cloudCredentialSources: ProviderCloudCredentialSources
   ) throws -> ProviderRuntimeKernel {
     // Keep newly inventoried providers out of the runtime until their complete
     // authorization and vertical-slice evidence is landed.
@@ -178,7 +204,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     }.map {
       try makeDefinition(
         $0,
-        authorizationTransport: authorizationTransport
+        authorizationTransport: authorizationTransport,
+        configuration: authorizationConfiguration
       )
     }
     return try ProviderRuntimeKernel(
@@ -187,15 +214,20 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       wireProtocols: StandardWireProtocols.make(),
       credentialStore: credentialStore,
       transport: streamingTransport,
-      wireObserver: wireObserver
+      wireObserver: wireObserver,
+      webSocketTransport: webSocketTransport,
+      codexSessions: codexSessions,
+      cloudAuthorizationResolver: cloudAuthorizationResolver,
+      cloudCredentialSources: cloudCredentialSources
     )
   }
 
   private static func makeDefinition(
     _ record: BuiltinProviderRecord,
-    authorizationTransport: any ProviderHTTPTransport
+    authorizationTransport: any ProviderHTTPTransport,
+    configuration: ProviderAuthorizationConfiguration
   ) throws -> ProviderDefinition {
-    let methods = record.authorizationMethodIDs.map { methodID in
+    var methods = record.authorizationMethodIDs.map { methodID in
       switch methodID {
       case "apiKey":
         AuthorizationMethodDescriptor(
@@ -217,6 +249,12 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
         )
       }
     }
+    if record.id == OpenAICodexOAuthClient.providerID {
+      methods.append(.init(id: "oauth-browser", kind: .oauth, label: "Browser login"))
+    }
+    if record.id == AnthropicOAuthAuthorizationAdapter.providerID {
+      methods.append(.init(id: "oauth-copy-code", kind: .oauth, label: "Copy authorization code"))
+    }
     var adapters: [String: any ProviderAuthorizationAdapter] = [:]
     for method in methods {
       switch method.id {
@@ -229,17 +267,24 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
           methodID: method.id,
           label: method.label
         )
-      case "oauth" where record.id == OpenAICodexOAuthClient.providerID:
+      case let methodID
+      where record.id == OpenAICodexOAuthClient.providerID
+        && ["oauth", "oauth-browser"].contains(methodID):
         adapters[method.id] = OpenAICodexAuthorizationAdapter(
-          transport: authorizationTransport
+          transport: authorizationTransport, clock: SystemProviderOAuthClock(),
+          agentName: configuration.agentName
         )
       case "oauth" where record.id == KimiCodingOAuthAuthorizationAdapter.providerID:
         adapters[method.id] = KimiCodingOAuthAuthorizationAdapter(
           transport: authorizationTransport
         )
-      case "oauth" where record.id == AnthropicOAuthAuthorizationAdapter.providerID:
+      case let methodID
+      where record.id == AnthropicOAuthAuthorizationAdapter.providerID
+        && ["oauth", "oauth-copy-code"].contains(methodID):
         adapters[method.id] = AnthropicOAuthAuthorizationAdapter(
-          transport: authorizationTransport
+          transport: authorizationTransport,
+          callbackURL: configuration.callbackURLs[record.id] ?? URL(
+            string: "http://localhost:53692/callback")!
         )
       case "oauth" where record.id == GitHubCopilotOAuthAuthorizationAdapter.providerID:
         adapters[method.id] = GitHubCopilotOAuthAuthorizationAdapter(
@@ -247,7 +292,9 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
         )
       case "oauth" where record.id == OpenRouterOAuthAuthorizationAdapter.providerID:
         adapters[method.id] = OpenRouterOAuthAuthorizationAdapter(
-          transport: authorizationTransport
+          transport: authorizationTransport,
+          callbackURL: configuration.callbackURLs[record.id] ?? URL(
+            string: "pi-ai-swift://oauth/openrouter")!
         )
       case "oauth" where record.id == XAIOAuthAuthorizationAdapter.providerID:
         adapters[method.id] = XAIOAuthAuthorizationAdapter(

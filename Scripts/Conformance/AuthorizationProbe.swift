@@ -14,8 +14,15 @@ enum AuthorizationConformanceProbe {
         let adapter: any ProviderAuthorizationAdapter
         switch provider {
         case "anthropic":
-          adapter = AnthropicOAuthAuthorizationAdapter(transport: transport, now: { clock.now() })
-        case "openrouter": adapter = OpenRouterOAuthAuthorizationAdapter(transport: transport)
+          adapter = AnthropicOAuthAuthorizationAdapter(
+            transport: transport, now: { clock.now() },
+            callbackURL: URL(
+              string: input.string("callbackURL") ?? "http://localhost:53692/callback")!)
+        case "openrouter":
+          adapter = OpenRouterOAuthAuthorizationAdapter(
+            transport: transport,
+            callbackURL: URL(
+              string: input.string("callbackURL") ?? "pi-ai-swift://oauth/openrouter")!)
         case "github-copilot":
           adapter = GitHubCopilotOAuthAuthorizationAdapter(transport: transport, clock: clock)
         case "kimi-coding":
@@ -24,7 +31,8 @@ enum AuthorizationConformanceProbe {
             oauthBaseURL: URL(string: input.string("oauthHost") ?? "https://auth.kimi.com")!,
             clock: clock)
         case "openai-codex":
-          adapter = OpenAICodexAuthorizationAdapter(transport: transport, clock: clock)
+          adapter = OpenAICodexAuthorizationAdapter(
+            transport: transport, clock: clock, agentName: input.string("agentName") ?? "pi")
         case "xai": adapter = XAIOAuthAuthorizationAdapter(transport: transport, clock: clock)
         case "radius": adapter = RadiusOAuthAuthorizationAdapter(transport: transport, clock: clock)
         default:
@@ -48,6 +56,15 @@ enum AuthorizationConformanceProbe {
             if let value = input.string(key) ?? raw.string(key) { metadata[key] = value }
           }
           if let accountID = raw.string("accountId") { metadata["accountID"] = accountID }
+          if let enterprise = raw.string("enterpriseUrl"), provider == "github-copilot" {
+            metadata["enterpriseDomain"] = try GitHubCopilotOAuthAuthorizationAdapter(
+              transport: transport
+            ).normalizedDomain(enterprise)
+            metadata["enterpriseUrl"] = enterprise
+          }
+          if provider == "openrouter", let expires = raw.int("expires") {
+            metadata["expirationMilliseconds"] = String(expires)
+          }
           stored = .oauth(
             .init(
               accessToken: raw.string("access") ?? "", refreshToken: raw.string("refresh") ?? "",
@@ -59,9 +76,35 @@ enum AuthorizationConformanceProbe {
         }
         let store = InMemoryProviderCredentialStore(
           credentials: stored.map { [provider: $0] } ?? [:])
+        if action == "toAuth" {
+          let projected = try adapter.requestAuthorization(for: stored)
+          var auth: [String: JSONValue] = [:]
+          switch projected.credential {
+          case .oauth(let value): auth["apiKey"] = .string(value.accessToken)
+          case .apiKey(let value): auth["apiKey"] = .string(value.key)
+          case nil: break
+          }
+          if !projected.headers.isEmpty {
+            auth["headers"] = .object(
+              projected.headers.compactMapValues { $0 }.mapValues(JSONValue.string))
+          }
+          if provider == "github-copilot", case .oauth(let value) = stored {
+            auth["baseUrl"] = .string(
+              try GitHubCopilotOAuthAuthorizationAdapter(transport: transport).copilotBaseURL(
+                token: value.accessToken, enterpriseDomain: value.metadata["enterpriseDomain"]
+              ).absoluteString)
+          }
+          try rpc.write("authFinished", ["auth": .object(auth)])
+          return
+        }
         if action == "login" {
           _ = try await adapter.authorize(
-            .login(providerID: provider, methodID: "oauth"),
+            .login(
+              providerID: provider,
+              methodID: input.string("method") == "browser" && provider == "openai-codex"
+                ? "oauth-browser"
+                : input.string("method") == "copy_code" && provider == "anthropic"
+                  ? "oauth-copy-code" : "oauth"),
             interaction: { challenge in
               var payload: [String: JSONValue] = [:]
               switch challenge {
@@ -113,7 +156,9 @@ enum AuthorizationConformanceProbe {
             "credential": .object([
               "type": .string("oauth"), "access": .string(credential.accessToken),
               "refresh": .string(credential.refreshToken),
-              "expires": .integer(Int64(credential.expiresAt.timeIntervalSince1970 * 1_000)),
+              "expires": .integer(
+                credential.metadata["expirationMilliseconds"].flatMap(Int64.init)
+                  ?? Int64(credential.expiresAt.timeIntervalSince1970 * 1_000)),
               "metadata": .object(credential.metadata.mapValues(JSONValue.string)),
             ])
           ])

@@ -233,6 +233,21 @@ struct SubscriptionAuthorizationAdaptersTests {
 
   @Test
   func copilotDynamicHeadersReflectInitiatorAndVision() throws {
+    let projection = try GitHubCopilotOAuthAuthorizationAdapter(
+      transport: SubscriptionQueueTransport([])
+    )
+    .requestAuthorization(
+      for: .oauth(
+        .init(
+          accessToken: "fixture-copilot", refreshToken: "fixture-refresh",
+          expiresAt: .distantFuture,
+          metadata: ["baseURL": "https://api.individual.githubcopilot.com"])))
+    guard case .apiKey(let requestCredential) = projection.credential else {
+      Issue.record("Copilot toAuth must project the stored OAuth token as a request API key")
+      return
+    }
+    #expect(requestCredential.key == "fixture-copilot")
+    #expect(requestCredential.metadata["baseURL"] == "https://api.individual.githubcopilot.com")
     var request = URLRequest(url: URL(string: "https://fixture.invalid")!)
     applyGitHubCopilotHeaders(
       providerID: "github-copilot",

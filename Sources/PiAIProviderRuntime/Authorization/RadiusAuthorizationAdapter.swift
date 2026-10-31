@@ -308,6 +308,21 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     gateway: URL,
     operation: String
   ) throws -> OAuthCredential {
+    if !(200..<300).contains(response.statusCode) {
+      let text = String(decoding: response.body, as: UTF8.self)
+      let parsed = try? JSONValue(jsonData: response.body)
+      let error = parsed?.objectValue?.string("error").flatMap { $0.isEmpty ? nil : $0 }
+      let description = parsed == nil ? text : parsed?.objectValue?.string("error_description")
+      let detail: String
+      if let error {
+        detail = description.flatMap { $0.isEmpty ? nil : $0 }.map { error + ": " + $0 } ?? error
+      } else {
+        detail = description.flatMap { $0.isEmpty ? nil : $0 } ?? String(response.statusCode)
+      }
+      throw oauthFailure(
+        .authorizationFailed, providerID: Self.providerID, operation: operation,
+        message: "Radius OAuth token request failed: " + detail)
+    }
     let body = try oauthResponseObject(
       response,
       providerID: Self.providerID,

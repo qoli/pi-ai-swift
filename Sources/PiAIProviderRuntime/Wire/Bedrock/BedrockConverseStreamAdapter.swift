@@ -69,6 +69,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
             for message in try decoder.append(chunk) {
               observeResponse(message)
               for event in try await reducer.reduce(message, observation: observation) {
+                try await observation.toolEvent(event)
                 continuation.yield(event)
               }
             }
@@ -76,10 +77,12 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           for message in try decoder.finish() {
             observeResponse(message)
             for event in try await reducer.reduce(message, observation: observation) {
+              try await observation.toolEvent(event)
               continuation.yield(event)
             }
           }
           for event in try reducer.finish() {
+            try await observation.toolEvent(event)
             continuation.yield(event)
           }
           continuation.finish()
@@ -148,7 +151,7 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
       forHTTPHeaderField: "Accept"
     )
     urlRequest.setValue("application/json", forHTTPHeaderField: "x-amzn-bedrock-accept")
-    for (name, value) in context.headers where !isReservedHeader(name) {
+    for (name, value) in Self.customHeaders(context.headers) {
       urlRequest.setValue(value, forHTTPHeaderField: name)
     }
     urlRequest.httpBody = try encodeJSONObject(
@@ -221,21 +224,13 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     return urlRequest
   }
 
-  private func resolvedRegion(
+  func resolvedRegion(
     request: ProviderRequest,
     endpoint: URL,
     metadata: [String: String]
   ) throws -> String {
+    if let region = ProviderCloudPlan.arnRegion(request.modelID) { return region }
     if let region = metadata["region"], !region.isEmpty { return region }
-    let arnParts = request.modelID.split(
-      separator: ":",
-      omittingEmptySubsequences: false
-    )
-    if arnParts.count > 3, arnParts[0] == "arn", arnParts[1] == "aws",
-      !arnParts[3].isEmpty
-    {
-      return String(arnParts[3])
-    }
     if let host = endpoint.host {
       let parts = host.split(separator: ".")
       if parts.count >= 4, parts[0] == "bedrock-runtime", !parts[1].isEmpty {
@@ -911,9 +906,11 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
     return String(sanitized.prefix(64))
   }
 
-  private func isReservedHeader(_ name: String) -> Bool {
-    let value = name.lowercased()
-    return value == "authorization" || value == "host" || value.hasPrefix("x-amz-")
+  static func customHeaders(_ headers: [String: String]) -> [String: String] {
+    headers.filter { name, _ in
+      let value = name.lowercased()
+      return value != "authorization" && value != "host" && !value.hasPrefix("x-amz-")
+    }
   }
 
   private func endpointURL(baseURL: URL, modelID: String) throws -> URL {
@@ -1109,7 +1106,7 @@ private struct BedrockEventReducer {
         return first ? [.reasoningDelta("[Reasoning redacted]")] : []
       }
       if let input = delta.object("toolUse")?.string("input") {
-        guard var tool = tools[index] else {
+        guard let tool = tools[index] else {
           throw invalid("Bedrock tool delta has no matching tool start")
         }
         tool.input += input

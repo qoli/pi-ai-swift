@@ -1,0 +1,82 @@
+{
+  "cases": [
+    {
+      "formatted": "Provider (403): {\"error\":\"blocked by gateway WAF\"}",
+      "id": "mistral",
+      "normalized": {
+        "body": "{\"error\":\"blocked by gateway WAF\"}",
+        "message": "Mistral request failed",
+        "messageCarriesBody": false,
+        "status": 403
+      }
+    },
+    {
+      "formatted": "Provider (403): {\"error\":\"blocked by gateway WAF\"}",
+      "id": "openai",
+      "normalized": {
+        "body": "{\"error\":\"blocked by gateway WAF\"}",
+        "message": "403 status code (no body)",
+        "messageCarriesBody": false,
+        "status": 403
+      }
+    },
+    {
+      "formatted": "Provider (403): {\"message\":\"blocked by gateway WAF\"}",
+      "id": "bedrock",
+      "normalized": {
+        "body": "{\"message\":\"blocked by gateway WAF\"}",
+        "message": "UnknownError",
+        "messageCarriesBody": false,
+        "status": 403
+      }
+    },
+    {
+      "formatted": "Provider (502): server unavailable",
+      "id": "status-precedence",
+      "normalized": {
+        "body": "server unavailable",
+        "message": "failed",
+        "messageCarriesBody": false,
+        "status": 502
+      }
+    },
+    {
+      "formatted": "Provider (403): failed",
+      "id": "empty-string-precedence",
+      "normalized": {
+        "message": "failed",
+        "messageCarriesBody": true,
+        "status": 403
+      }
+    },
+    {
+      "formatted": "Provider (403): {\"message\":\"first\"}",
+      "id": "body-precedence",
+      "normalized": {
+        "body": "{\"message\":\"first\"}",
+        "message": "failed",
+        "messageCarriesBody": false,
+        "status": 403
+      }
+    },
+    {
+      "formatted": "Provider (500): 500: upstream exploded",
+      "id": "message-carries-body",
+      "normalized": {
+        "body": "upstream exploded",
+        "message": "500: upstream exploded",
+        "messageCarriesBody": true,
+        "status": 500
+      }
+    },
+    {
+      "formatted": "{\"reason\":\"boom\"}",
+      "id": "non-error",
+      "normalized": {
+        "message": "{\"reason\":\"boom\"}",
+        "messageCarriesBody": false
+      }
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

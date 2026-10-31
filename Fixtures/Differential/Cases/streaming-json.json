@@ -1,0 +1,13 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    { "id": "object-pieces", "chunks": ["{\"a\":\"he", "llo\",\"b\":[1,", "2],\"c\":tr", "ue}"] },
+    { "id": "unicode-escape", "chunks": ["{\"text\":\"caf\\u00", "e9 \\url", "\"}"] },
+    { "id": "pending-exponent", "chunks": ["{\"n\":1e", "+", "2", "}"] },
+    { "id": "duplicate-key", "chunks": ["{\"a\":1,\"b\":2,", "\"a\":3}", "ignored"] },
+    { "id": "missing-punctuation", "chunks": ["{\"a\" 1 \"b\":", "\"x\n", "y\"}"] },
+    { "id": "root-literal", "chunks": ["f", "al", "se", " "] },
+    { "id": "unknown-words", "chunks": ["{\"a\":NaN,", "\"b\":Infinity,\"c\":", "null}"] },
+    { "id": "array-pieces", "chunks": ["[", "{\"a\":1}", ",\"x", "y\"]"] }
+  ]
+}

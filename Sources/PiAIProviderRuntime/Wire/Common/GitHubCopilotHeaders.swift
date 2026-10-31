@@ -9,9 +9,10 @@ func applyGitHubCopilotHeaders(
     return
   }
   let initiator: String
-  if case .user? = messages.last {
+  switch messages.last {
+  case nil, .user?, .userMessage?:
     initiator = "user"
-  } else {
+  default:
     initiator = "agent"
   }
   request.setValue(initiator, forHTTPHeaderField: "X-Initiator")

@@ -75,6 +75,34 @@ public struct OpenAICodexOAuthClient: Sendable {
     return try await waitForCredential(authorization)
   }
 
+  public func loginWithBrowser(
+    agentName: String = "pi",
+    interaction: @escaping AuthorizationInteraction
+  ) async throws -> OAuthCredential {
+    let pkce = try OAuthPKCE.make()
+    let redirectURI = "http://localhost:1455/auth/callback"
+    var url = URLComponents(
+      url: authBaseURL.appending(path: "oauth/authorize"), resolvingAgainstBaseURL: false)!
+    url.queryItems = [
+      .init(name: "response_type", value: "code"),
+      .init(name: "client_id", value: Self.clientID),
+      .init(name: "redirect_uri", value: redirectURI),
+      .init(name: "scope", value: "openid profile email offline_access"),
+      .init(name: "code_challenge", value: pkce.challenge),
+      .init(name: "code_challenge_method", value: "S256"),
+      .init(name: "state", value: pkce.state),
+      .init(name: "id_token_add_organizations", value: "true"),
+      .init(name: "codex_cli_simplified_flow", value: "true"),
+      .init(name: "originator", value: agentName),
+    ]
+    let response = try await interaction(
+      .openURL(providerID: Self.providerID, url: url.url!, callbackScheme: nil))
+    let code = try oauthAuthorizationCode(
+      response, expectedState: pkce.state, providerID: Self.providerID, requireState: false)
+    return try await exchangeAuthorizationCode(
+      code: code, verifier: pkce.verifier, redirectURI: redirectURI)
+  }
+
   public func startDeviceAuthorization() async throws
     -> OpenAICodexDeviceAuthorization
   {
@@ -279,7 +307,8 @@ public struct OpenAICodexOAuthClient: Sendable {
 
   func exchangeAuthorizationCode(
     code: String,
-    verifier: String
+    verifier: String,
+    redirectURI: String? = nil
   ) async throws -> OAuthCredential {
     let endpoint = authBaseURL.appending(path: "oauth/token")
     var request = URLRequest(url: endpoint)
@@ -296,7 +325,7 @@ public struct OpenAICodexOAuthClient: Sendable {
       URLQueryItem(name: "code_verifier", value: verifier),
       URLQueryItem(
         name: "redirect_uri",
-        value: authBaseURL.appending(path: "deviceauth/callback").absoluteString
+        value: redirectURI ?? authBaseURL.appending(path: "deviceauth/callback").absoluteString
       ),
     ]
     guard let form = components.percentEncodedQuery else {
@@ -374,7 +403,7 @@ public struct OpenAICodexOAuthClient: Sendable {
     }
   }
 
-  private func extractAccountID(from accessToken: String) throws -> String {
+  func extractAccountID(from accessToken: String) throws -> String {
     let parts = accessToken.split(separator: ".", omittingEmptySubsequences: false)
     guard parts.count == 3 else {
       throw failure(

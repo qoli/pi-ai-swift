@@ -1,0 +1,250 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "vertex-marker-0",
+      "api": "google-vertex",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "apiKey": "<authenticated>",
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "ambient": {}
+    },
+    {
+      "id": "vertex-marker-1",
+      "api": "google-vertex",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "apiKey": "gcp-vertex-credentials",
+        "project": "fixture-project",
+        "location": "us-central1"
+      },
+      "ambient": {}
+    },
+    {
+      "id": "vertex-real-key",
+      "api": "google-vertex",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "apiKey": "fixture-api-key"
+      },
+      "ambient": {}
+    },
+    {
+      "id": "vertex-adc-proxy",
+      "api": "google-vertex",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "project": "fixture-project",
+        "location": "global",
+        "env": {
+          "GOOGLE_APPLICATION_CREDENTIALS": "/fixture/credentials.json"
+        }
+      },
+      "ambient": {},
+      "baseURL": "https://proxy.invalid"
+    },
+    {
+      "id": "vertex-adc-versioned-proxy",
+      "api": "google-vertex",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "project": "fixture-project",
+        "location": "global"
+      },
+      "ambient": {},
+      "baseURL": "https://proxy.invalid/v1/projects/fixture-project/locations/global"
+    },
+    {
+      "id": "vertex-key-proxy",
+      "api": "google-vertex",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "apiKey": "fixture-api-key"
+      },
+      "ambient": {},
+      "baseURL": "https://proxy.invalid"
+    },
+    {
+      "id": "bedrock-configured-region",
+      "api": "bedrock-converse-stream",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        }
+      },
+      "ambient": {
+        "AWS_REGION": "us-east-2"
+      }
+    },
+    {
+      "id": "bedrock-eu-endpoint",
+      "api": "bedrock-converse-stream",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        }
+      },
+      "ambient": {},
+      "baseURL": "https://bedrock-runtime.eu-central-1.amazonaws.com"
+    },
+    {
+      "id": "bedrock-explicit-profile",
+      "api": "bedrock-converse-stream",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "profile": "fixture-profile"
+      },
+      "ambient": {
+        "AWS_ACCESS_KEY_ID": "FIXTURE_ACCESS",
+        "AWS_SECRET_ACCESS_KEY": "fixture-secret"
+      }
+    },
+    {
+      "id": "bedrock-scoped-profile",
+      "api": "bedrock-converse-stream",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "env": {
+          "AWS_PROFILE": "scoped-profile"
+        }
+      },
+      "ambient": {
+        "AWS_ACCESS_KEY_ID": "FIXTURE_ACCESS",
+        "AWS_SECRET_ACCESS_KEY": "fixture-secret"
+      }
+    },
+    {
+      "id": "bedrock-ambient-profile",
+      "api": "bedrock-converse-stream",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        }
+      },
+      "ambient": {
+        "AWS_PROFILE": "ambient-profile"
+      }
+    },
+    {
+      "id": "bedrock-ambient-profile-and-keys",
+      "api": "bedrock-converse-stream",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        }
+      },
+      "ambient": {
+        "AWS_PROFILE": "ambient-profile",
+        "AWS_ACCESS_KEY_ID": "FIXTURE_ACCESS",
+        "AWS_SECRET_ACCESS_KEY": "fixture-secret"
+      }
+    },
+    {
+      "id": "bedrock-arn-region",
+      "api": "bedrock-converse-stream",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        }
+      },
+      "ambient": {
+        "AWS_REGION": "us-east-1"
+      },
+      "modelID": "arn:aws-us-gov:bedrock:us-gov-west-1:123456789012:application-inference-profile/example"
+    },
+    {
+      "id": "bedrock-api-key",
+      "api": "bedrock-converse-stream",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "apiKey": "fixture-bearer"
+      },
+      "ambient": {}
+    },
+    {
+      "id": "anthropic-federation",
+      "api": "anthropic-messages",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "env": {
+          "ANTHROPIC_FEDERATION_RULE_ID": "fixture-rule",
+          "ANTHROPIC_ORGANIZATION_ID": "fixture-org",
+          "ANTHROPIC_IDENTITY_TOKEN_FILE": "/fixture/identity.jwt"
+        }
+      },
+      "ambient": {}
+    },
+    {
+      "id": "anthropic-federation-service-account",
+      "api": "anthropic-messages",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "env": {
+          "ANTHROPIC_FEDERATION_RULE_ID": "fixture-rule",
+          "ANTHROPIC_ORGANIZATION_ID": "fixture-org",
+          "ANTHROPIC_IDENTITY_TOKEN_FILE": "/fixture/identity.jwt",
+          "ANTHROPIC_SERVICE_ACCOUNT_ID": "fixture-service",
+          "ANTHROPIC_WORKSPACE_ID": "fixture-workspace"
+        }
+      },
+      "ambient": {}
+    },
+    {
+      "id": "anthropic-explicit-key-wins",
+      "api": "anthropic-messages",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud"
+        },
+        "apiKey": "fixture-key",
+        "env": {
+          "ANTHROPIC_FEDERATION_RULE_ID": "fixture-rule",
+          "ANTHROPIC_ORGANIZATION_ID": "fixture-org",
+          "ANTHROPIC_IDENTITY_TOKEN_FILE": "/fixture/identity.jwt"
+        }
+      },
+      "ambient": {}
+    },
+    {
+      "id": "anthropic-header-wins",
+      "api": "anthropic-messages",
+      "options": {
+        "headers": {
+          "User-Agent": "fixture-cloud",
+          "Authorization": "Bearer fixture-header"
+        },
+        "env": {
+          "ANTHROPIC_FEDERATION_RULE_ID": "fixture-rule",
+          "ANTHROPIC_ORGANIZATION_ID": "fixture-org",
+          "ANTHROPIC_IDENTITY_TOKEN_FILE": "/fixture/identity.jwt"
+        }
+      },
+      "ambient": {}
+    }
+  ]
+}

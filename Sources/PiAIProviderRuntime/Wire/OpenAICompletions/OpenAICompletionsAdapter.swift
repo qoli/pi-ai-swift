@@ -12,9 +12,9 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
       let task = Task {
         do {
           let observation = ProviderWireObservation(request: request, wire: context)
-          let response = try await transport.stream(
-            try await observation.payload(makeURLRequest(request, context: context))
-          )
+          let response = try await ProviderRequestRetry.stream(
+            observation.payload(makeURLRequest(request, context: context)),
+            request: request, context: context, transport: transport)
           guard (200..<300).contains(response.statusCode) else {
             let body = try await collectErrorBody(from: response.body)
             throw failure(
@@ -47,6 +47,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
               for normalized in try await reducer.reduce(event, observation: observation) {
+                try await observation.toolEvent(normalized)
                 continuation.yield(normalized)
               }
               if reducer.terminal { break readStream }
@@ -55,11 +56,13 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           if !reducer.terminal {
             for event in try decoder.finish() {
               for normalized in try await reducer.reduce(event, observation: observation) {
+                try await observation.toolEvent(normalized)
                 continuation.yield(normalized)
               }
             }
           }
           for event in try reducer.finish() {
+            try await observation.toolEvent(event)
             continuation.yield(event)
           }
           try reducer.validateTerminal()
@@ -420,7 +423,22 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         let supportsDeveloper = compat.bool("supportsDeveloperRole") != false
         let role =
           context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
-        result.append(.object(["role": .string(role), "content": .string(text)]))
+        if ProviderToolDeclarationMode.resolve(protocolID: protocolID, compatibility: compat)
+          == .additions,
+          !value.toolsAdded.isEmpty
+        {
+          result.append(
+            .object([
+              "role": .string("system"),
+              "tools": .array(
+                try value.toolsAdded.map {
+                  try completionTool($0, compat: compat, providerID: context.provider.id)
+                }),
+            ]))
+        }
+        if !text.isEmpty {
+          result.append(.object(["role": .string(role), "content": .string(text)]))
+        }
       case .user(let content):
         if compat.bool("requiresAssistantAfterToolResult") == true,
           result.last?.objectValue?.string("role") == "tool"

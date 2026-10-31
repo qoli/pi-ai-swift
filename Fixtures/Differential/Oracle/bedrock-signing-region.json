@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {
+      "id": "arn-overrides-configured-region",
+      "region": "us-west-2"
+    },
+    {
+      "id": "govcloud-arn",
+      "region": "us-gov-west-1"
+    },
+    {
+      "id": "china-arn",
+      "region": "cn-north-1"
+    },
+    {
+      "id": "configured-region",
+      "region": "us-west-2"
+    },
+    {
+      "id": "endpoint-region",
+      "region": "eu-central-1"
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

@@ -1,12 +1,29 @@
 import Foundation
 
 enum ProviderSessionHeaders {
+  static func openCodeHeaders(sessionID: String?, headers: [String: String?]?) -> (
+    headers: [String: String?]?, changed: Bool
+  ) {
+    guard let sessionID, !sessionID.isEmpty,
+      headers?.keys.contains(where: {
+        $0.caseInsensitiveCompare("x-opencode-session") == .orderedSame
+      }) != true
+    else { return (headers, false) }
+    var headers = headers ?? [:]
+    headers["x-opencode-session"] = sessionID
+    return (headers, true)
+  }
+
   static func applyOpenCode(request: ProviderRequest, to urlRequest: inout URLRequest) {
     guard
       ["opencode", "opencode-go"].contains(request.providerID),
       let sessionID = request.options.sessionID, !sessionID.isEmpty
     else { return }
-    setDefault(sessionID, forHTTPHeaderField: "x-opencode-session", to: &urlRequest)
+    let projection = openCodeHeaders(
+      sessionID: sessionID, headers: request.connectionOptions.headers)
+    if projection.changed {
+      setDefault(sessionID, forHTTPHeaderField: "x-opencode-session", to: &urlRequest)
+    }
   }
 
   static func applyAnthropicAffinity(

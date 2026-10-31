@@ -1,0 +1,13 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    { "id": "mistral", "isError": true, "message": "Mistral request failed", "statusCode": 403, "body": " {\"error\":\"blocked by gateway WAF\"} " },
+    { "id": "openai", "isError": true, "message": "403 status code (no body)", "status": 403, "error": { "error": "blocked by gateway WAF" } },
+    { "id": "bedrock", "isError": true, "message": "UnknownError", "$metadata": { "httpStatusCode": 403 }, "$response": { "statusCode": 400, "body": "{\"message\":\"blocked by gateway WAF\"}" } },
+    { "id": "status-precedence", "isError": true, "message": "failed", "statusCode": 502, "status": 403, "$metadata": { "httpStatusCode": 400 }, "$response": { "statusCode": 401, "body": "server unavailable" } },
+    { "id": "empty-string-precedence", "isError": true, "message": "failed", "status": 403, "body": " \ufeff\t", "error": { "message": "must not replace the first body" } },
+    { "id": "body-precedence", "isError": true, "message": "failed", "status": 403, "error": { "message": "first" }, "$response": { "body": "second" } },
+    { "id": "message-carries-body", "isError": true, "message": "500: upstream exploded", "statusCode": 500, "body": "upstream exploded" },
+    { "id": "non-error", "isError": false, "value": { "reason": "boom" } }
+  ]
+}

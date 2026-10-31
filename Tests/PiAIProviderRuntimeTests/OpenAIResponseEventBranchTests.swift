@@ -506,7 +506,7 @@ struct OpenAIResponseEventBranchTests {
       #expect(await capture.requestIDs.allSatisfy { $0 == request.id })
       let sent = try #require(await transport.sent)
       let body = try decodeJSONObject(
-        try #require(sent.httpBody), providerID: request.providerID,
+        try fixtureHTTPBody(sent), providerID: request.providerID,
         operation: "responses.observer.sent")
       #expect(body["temperature"] == .number(0.75))
     }
@@ -572,7 +572,7 @@ struct OpenAIResponseEventBranchTests {
       #expect(await capture.status == 200)
       let sent = try #require(await transport.sent)
       let body = try decodeJSONObject(
-        try #require(sent.httpBody), providerID: "fixture", operation: "wire-observer.sent")
+        try fixtureHTTPBody(sent), providerID: "fixture", operation: "wire-observer.sent")
       #expect(body["temperature"] == .number(0.75))
       #expect(snapshot?.content == [.text(.init(text: "hello", signature: nil))])
     }
@@ -898,7 +898,7 @@ struct OpenAIResponseEventBranchTests {
         #expect(failure?.message == thrown, Comment(rawValue: name))
       } else {
         let body = try decodeJSONObject(
-          try #require(sent?.httpBody),
+          try fixtureHTTPBody(sent),
           providerID: "fixture", operation: "grammar-history.body")
         #expect(body.array("input") == expected.array("input"), Comment(rawValue: name))
         #expect(body["grammarToolInputProperties"] == nil, Comment(rawValue: name))

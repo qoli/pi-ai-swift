@@ -15,13 +15,25 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
         do {
           let observation = ProviderWireObservation(request: request, wire: context)
           let response = try await PreferredStrictToolFallback.response(
-            request: request, api: .anthropic, transport: transport,
+            request: request, api: .anthropic,
+            transport: RetryingProviderHTTPTransport(
+              request: request, context: context, transport: transport),
             onDowngrade: { diagnostics.append($0) },
             makeRequest: { current in
               let wire = try makeRequest(current, context: context)
               preparedThinkingLevel = managedThinkingLevel(request: current, context: context)
               let observed = try await observation.payload(wire, forceStreamingReplacement: true)
-              return try httpRequest(observed, providerID: request.providerID)
+              var result = try httpRequest(observed, providerID: request.providerID)
+              if context.isFederatedCloudAuthorization {
+                var features =
+                  result.value(forHTTPHeaderField: "anthropic-beta")?.split(separator: ",").map {
+                    $0.trimmingCharacters(in: .whitespaces)
+                  } ?? []
+                if !features.contains("oauth-2025-04-20") { features.append("oauth-2025-04-20") }
+                result.setValue(
+                  features.joined(separator: ","), forHTTPHeaderField: "anthropic-beta")
+              }
+              return result
             })
           try await observation.response(response)
           var reducer = AnthropicEventReducer(
@@ -42,16 +54,21 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
               for normalized in try await reducer.reduce(event, observation: observation) {
+                try await observation.toolEvent(normalized)
                 continuation.yield(normalized)
               }
             }
           }
           for event in try decoder.finish() {
             for normalized in try await reducer.reduce(event, observation: observation) {
+              try await observation.toolEvent(normalized)
               continuation.yield(normalized)
             }
           }
-          for event in try reducer.finish() { continuation.yield(event) }
+          for event in try reducer.finish() {
+            try await observation.toolEvent(event)
+            continuation.yield(event)
+          }
           continuation.finish()
         } catch let error as ProviderRuntimeFailure {
           if preparedThinkingLevel != nil || !diagnostics.isEmpty {
@@ -93,9 +110,16 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     urlRequest.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
     urlRequest.setValue("true", forHTTPHeaderField: "anthropic-dangerous-direct-browser-access")
     let isOAuth = isOAuthCredential(context.credential)
-    let betaFeatures = betaFeatures(
-      request: request, compat: compat, isOAuth: isOAuth, headers: context.headers,
-      reasoning: context.model.capabilities.reasoning)
+    let suppressBeta =
+      request.connectionOptions.headers?.contains {
+        $0.key.caseInsensitiveCompare("anthropic-beta") == .orderedSame && $0.value == nil
+      } == true
+    let betaFeatures =
+      suppressBeta
+      ? []
+      : betaFeatures(
+        request: request, compat: compat, isOAuth: isOAuth, headers: context.headers,
+        reasoning: context.model.capabilities.reasoning)
     if isOAuth {
       urlRequest.setValue("claude-cli/2.1.280", forHTTPHeaderField: "User-Agent")
       urlRequest.setValue("cli", forHTTPHeaderField: "x-app")
@@ -1062,7 +1086,12 @@ private struct AnthropicEventReducer {
         guard let id = block.string("id"), let name = block.string("name") else {
           throw invalid("tool_use block is missing id or name")
         }
-        toolBlocks[index] = ToolBlock(id: id, name: name, partialJSON: "")
+        let initial = block["input"] ?? .object([:])
+        let initialText =
+          initial.objectValue?.isEmpty == false
+          ? String(decoding: try JSONEncoder().encode(initial), as: UTF8.self) : ""
+        toolBlocks[index] = ToolBlock(id: id, name: name, partialJSON: initialText)
+        try await observation.startToolArguments(id: id, initial: initial, seedText: initialText)
         return [.toolCallStarted(id: id, name: name)]
       }
       if blockType == "text" {
@@ -1112,7 +1141,7 @@ private struct AnthropicEventReducer {
         reasoningBlocks[index] = block
         return [.reasoningSignatureDelta(signature)]
       case "input_json_delta":
-        guard let partial = delta.string("partial_json"), var block = toolBlocks[index] else {
+        guard let partial = delta.string("partial_json"), let block = toolBlocks[index] else {
           throw invalid("tool input delta has no matching tool block")
         }
         block.partialJSON += partial

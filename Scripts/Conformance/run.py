@@ -22,6 +22,9 @@ def evidence_digests(repo):
         ("harnessSHA256", repo / "Scripts/Conformance", False),
     ]:
         digest = hashlib.sha256()
+        if name == "swiftSourceSHA256":
+            for package_file in (repo / "Package.swift", repo / "Package.resolved"):
+                digest.update(package_file.name.encode() + b"\0" + package_file.read_bytes() + b"\0")
         for path in sorted(root.rglob("*") if recursive else root.iterdir()):
             if path.is_file():
                 relative = path.relative_to(repo) if recursive else path.name
@@ -74,7 +77,10 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 "protocols": sorted({call["protocol"] for call in calls if call["protocol"] != "*"}),
                 "failures": sorted({call["failure"]["operation"] for call in calls
                                     if call.get("failure", {}).get("operation")}),
-                "nativeFailures": [call["failure"] for call in calls if call.get("failure")],
+                "nativeFailures": [call["failure"] for call in calls if call.get("failure")
+                                   and call["failure"].get("code") != "bridgeAssertion"],
+                "bridgeFailures": [call["failure"] for call in calls
+                                   if call.get("failure", {}).get("code") == "bridgeAssertion"],
                 "unrepresentedCapabilities": sorted({
                     capability for call in calls for capability in call.get("unrepresentedCapabilities", [])
                 }),
@@ -90,7 +96,7 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 item["conformanceStatus"] = "bridge_gap"
             elif missing_protocols or unexpected_protocols:
                 item["conformanceStatus"] = "dispatch_mismatch"
-            elif item["status"] != "passed":
+            elif item["status"] != "passed" or item["bridgeFailures"]:
                 item["conformanceStatus"] = "mismatch"
             else:
                 item["conformanceStatus"] = "passed"
@@ -152,9 +158,10 @@ def main():
     build.mkdir(parents=True, exist_ok=True)
     (build / "report.json").unlink(missing_ok=True)
     scratch = repo / ".build/conformance/swift"
-    run(["swift", "build", "--scratch-path", str(scratch)], cwd=repo)
+    swift_build = ["swift", "build", "-c", "release", "-Xswiftc", "-enable-testing", "--scratch-path", str(scratch)]
+    run(swift_build, cwd=repo)
     bin_path = Path(subprocess.check_output(
-        ["swift", "build", "--scratch-path", str(scratch), "--show-bin-path"],
+        [*swift_build, "--show-bin-path"],
         cwd=repo, text=True).strip())
     probe = bin_path / "swift-conformance-probe"
     objects = sorted((bin_path / "PiAIProviderRuntime.build").glob("*.o"))
@@ -164,14 +171,32 @@ def main():
         modules = bin_path
     if not objects:
         raise SystemExit("Swift provider-runtime object files were not produced")
+    zstd_objects = [bin_path / "libzstd.o"] if (bin_path / "libzstd.o").is_file() else sorted(
+        (bin_path / "libzstd.build").glob("*.o"))
+    if not zstd_objects:
+        raise SystemExit("Native zstd object files were not produced")
+    objects.extend(zstd_objects)
+    dependency_flags = ["-Xcc", "-fmodule-map-file=" + str(scratch / "checkouts/zstd/lib/module.modulemap")]
     heap_object = bin_path / "heap-observer.o"
     run(["xcrun", "clang", "-std=c11", "-c",
          str(repo / "Scripts/Conformance/HeapObserver.c"), "-o", str(heap_object)], cwd=repo)
     run(["xcrun", "swiftc", "-parse-as-library", "-g", "-enable-testing",
          "-import-objc-header", str(repo / "Scripts/Conformance/HeapObserver.h"),
-         "-I", str(modules),
+         "-I", str(modules), *dependency_flags,
          *map(str, sorted((repo / "Scripts/Conformance").glob("*.swift"))),
          *map(str, objects), str(heap_object), "-o", str(probe)], cwd=repo)
+    native_library = bin_path / "libConformanceStreamingJSON.dylib"
+    run(["xcrun", "swiftc", "-parse-as-library", "-O", "-emit-library", "-enable-testing",
+         "-I", str(modules), *dependency_flags, str(repo / "Scripts/Conformance/StreamingJSONExports.swift"),
+         *map(str, objects), "-o", str(native_library)], cwd=repo)
+    node = Path(subprocess.check_output(["node", "-p", "process.execPath"], text=True).strip()).resolve()
+    node_include = node.parent.parent / "include/node"
+    if not (node_include / "node_api.h").is_file():
+        raise SystemExit(f"Installed Node headers are required for the Native parser bridge: {node_include}")
+    native_module = bin_path / "streaming-json.node"
+    run(["xcrun", "clang++", "-std=c++17", "-O2", "-bundle", "-undefined", "dynamic_lookup",
+         "-I", str(node_include), str(repo / "Scripts/Conformance/StreamingJSONBridge.cc"),
+         str(heap_object), str(native_library), "-o", str(native_module)], cwd=repo)
     environment = {
         key: value for key, value in os.environ.items()
         if not re.search(r"TOKEN|API_KEY|SECRET|ACCESS_KEY|CREDENTIAL|PROXY$", key, re.IGNORECASE)
@@ -181,6 +206,7 @@ def main():
         "PI_CONFORMANCE_UPSTREAM": str(upstream),
         "PI_CONFORMANCE_PROBE": str(probe),
         "PI_CONFORMANCE_OUTPUT": str(build),
+        "PI_CONFORMANCE_JSON_MODULE": str(native_module),
         "PI_NO_LOCAL_LLM": "1",
     })
     command = [

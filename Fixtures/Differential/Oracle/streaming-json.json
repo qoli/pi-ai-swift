@@ -1,0 +1,428 @@
+{
+  "cases": [
+    {
+      "id": "object-pieces",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": {}
+            },
+            {
+              "kind": "set",
+              "path": [
+                "a"
+              ],
+              "value": "he"
+            }
+          ],
+          "snapshot": {
+            "a": "he"
+          }
+        },
+        {
+          "changes": [
+            {
+              "kind": "append",
+              "path": [
+                "a"
+              ],
+              "text": "llo"
+            },
+            {
+              "kind": "set",
+              "path": [
+                "b"
+              ],
+              "value": []
+            },
+            {
+              "kind": "set",
+              "path": [
+                "b",
+                0
+              ],
+              "value": 1
+            }
+          ],
+          "snapshot": {
+            "a": "hello",
+            "b": [
+              1
+            ]
+          }
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                "b",
+                1
+              ],
+              "value": 2
+            }
+          ],
+          "snapshot": {
+            "a": "hello",
+            "b": [
+              1,
+              2
+            ],
+            "c": true
+          }
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                "c"
+              ],
+              "value": true
+            }
+          ],
+          "snapshot": {
+            "a": "hello",
+            "b": [
+              1,
+              2
+            ],
+            "c": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "unicode-escape",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": {}
+            },
+            {
+              "kind": "set",
+              "path": [
+                "text"
+              ],
+              "value": "caf"
+            }
+          ],
+          "snapshot": {
+            "text": "caf"
+          }
+        },
+        {
+          "changes": [
+            {
+              "kind": "append",
+              "path": [
+                "text"
+              ],
+              "text": "é \\url"
+            }
+          ],
+          "snapshot": {
+            "text": "café \\url"
+          }
+        },
+        {
+          "changes": [],
+          "snapshot": {
+            "text": "café \\url"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pending-exponent",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": {}
+            }
+          ],
+          "snapshot": {
+            "n": 1
+          }
+        },
+        {
+          "changes": [],
+          "snapshot": {
+            "n": 1
+          }
+        },
+        {
+          "changes": [],
+          "snapshot": {
+            "n": 100
+          }
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                "n"
+              ],
+              "value": 100
+            }
+          ],
+          "snapshot": {
+            "n": 100
+          }
+        }
+      ]
+    },
+    {
+      "id": "duplicate-key",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": {}
+            },
+            {
+              "kind": "set",
+              "path": [
+                "a"
+              ],
+              "value": 1
+            },
+            {
+              "kind": "set",
+              "path": [
+                "b"
+              ],
+              "value": 2
+            }
+          ],
+          "snapshot": {
+            "a": 1,
+            "b": 2
+          }
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                "a"
+              ],
+              "value": 3
+            }
+          ],
+          "snapshot": {
+            "a": 3,
+            "b": 2
+          }
+        },
+        {
+          "changes": [],
+          "snapshot": {
+            "a": 3,
+            "b": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "missing-punctuation",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": {}
+            },
+            {
+              "kind": "set",
+              "path": [
+                "a"
+              ],
+              "value": 1
+            }
+          ],
+          "snapshot": {
+            "a": 1
+          }
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                "b"
+              ],
+              "value": "x\n"
+            }
+          ],
+          "snapshot": {
+            "a": 1,
+            "b": "x\n"
+          }
+        },
+        {
+          "changes": [
+            {
+              "kind": "append",
+              "path": [
+                "b"
+              ],
+              "text": "y"
+            }
+          ],
+          "snapshot": {
+            "a": 1,
+            "b": "x\ny"
+          }
+        }
+      ]
+    },
+    {
+      "id": "root-literal",
+      "observations": [
+        {
+          "changes": [],
+          "snapshot": false
+        },
+        {
+          "changes": [],
+          "snapshot": false
+        },
+        {
+          "changes": [],
+          "snapshot": false
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": false
+            }
+          ],
+          "snapshot": false
+        }
+      ]
+    },
+    {
+      "id": "unknown-words",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": {}
+            }
+          ],
+          "snapshot": {}
+        },
+        {
+          "changes": [],
+          "snapshot": {}
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                "c"
+              ],
+              "value": null
+            }
+          ],
+          "snapshot": {
+            "c": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "array-pieces",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": []
+            }
+          ],
+          "snapshot": []
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                0
+              ],
+              "value": {}
+            },
+            {
+              "kind": "set",
+              "path": [
+                0,
+                "a"
+              ],
+              "value": 1
+            }
+          ],
+          "snapshot": [
+            {
+              "a": 1
+            }
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                1
+              ],
+              "value": "x"
+            }
+          ],
+          "snapshot": [
+            {
+              "a": 1
+            },
+            "x"
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "append",
+              "path": [
+                1
+              ],
+              "text": "y"
+            }
+          ],
+          "snapshot": [
+            {
+              "a": 1
+            },
+            "xy"
+          ]
+        }
+      ]
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

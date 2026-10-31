@@ -36,8 +36,21 @@ private func rewriteGoogleConst(_ value: JSONValue, nameMap: Bool = false) -> JS
 }
 
 enum GoogleToolProjection {
+  private static func openAPI(_ schema: JSONValue) -> JSONValue {
+    guard let object = schema.objectValue else { return schema }
+    let metadata: Set<String> = [
+      "$schema", "$id", "$anchor", "$dynamicAnchor", "$vocabulary", "$comment", "$defs",
+      "definitions",
+    ]
+    return .orderedObject(
+      (schema.objectPropertyNames ?? []).filter { !metadata.contains($0) }.map {
+        .init($0, openAPI(object[$0]!))
+      })
+  }
+
   static func declarations(
-    _ tools: [ProviderToolDefinition], supportsStrictMode: Bool, providerID: String
+    _ tools: [ProviderToolDefinition], supportsStrictMode: Bool, providerID: String,
+    useParameters: Bool = false
   ) throws -> (tools: JSONValue?, usesStrictMode: Bool) {
     guard !tools.isEmpty else { return (nil, false) }
     var usesStrictMode = false
@@ -48,7 +61,9 @@ enum GoogleToolProjection {
       usesStrictMode = usesStrictMode || resolved.strict == true
       return .orderedObject([
         .init("name", .string(tool.name)), .init("description", .string(tool.description)),
-        .init("parametersJsonSchema", rewriteGoogleConst(resolved.schema)),
+        .init(
+          useParameters ? "parameters" : "parametersJsonSchema",
+          useParameters ? openAPI(resolved.schema) : rewriteGoogleConst(resolved.schema)),
       ])
     }
     return (.array([.object(["functionDeclarations": .array(declarations)])]), usesStrictMode)
@@ -132,6 +147,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
               for normalized in try await reducer.reduce(event, observation: observation) {
+                try await observation.toolEvent(normalized)
                 continuation.yield(normalized)
               }
             }
@@ -139,10 +155,12 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
           try Task.checkCancellation()
           for event in try decoder.finish() {
             for normalized in try await reducer.reduce(event, observation: observation) {
+              try await observation.toolEvent(normalized)
               continuation.yield(normalized)
             }
           }
           for normalized in try reducer.finish() {
+            try await observation.toolEvent(normalized)
             continuation.yield(normalized)
           }
           continuation.finish()
@@ -179,7 +197,13 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         .appending(path: "\(request.modelID):streamGenerateContent")
     case .vertex:
       let base = vertexAPIBaseURL(context.baseURL)
+      let collectionScope: Bool
       if case .apiKey = context.credential {
+        collectionScope = true
+      } else {
+        collectionScope = context.usesVertexCollectionScope
+      }
+      if collectionScope {
         endpoint =
           base
           .appending(path: "publishers")

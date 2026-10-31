@@ -87,7 +87,7 @@ struct OpenAIResponsesAdapterTests {
     #expect(sent.url?.absoluteString == "https://api.openai.com/v1/responses")
     #expect(sent.value(forHTTPHeaderField: "Authorization") == "Bearer sk-fixture")
     let body = try decodeJSONObject(
-      try #require(sent.httpBody),
+      try fixtureHTTPBody(sent),
       providerID: "fixture",
       operation: "fixture"
     )
@@ -124,7 +124,7 @@ struct OpenAIResponsesAdapterTests {
       {}
       let sent = try #require(await transport.request())
       let body = try decodeJSONObject(
-        try #require(sent.httpBody), providerID: "fixture", operation: "fixture")
+        try fixtureHTTPBody(sent), providerID: "fixture", operation: "fixture")
       #expect(body.object("reasoning")?.string("effort") == expected)
     }
   }
@@ -265,7 +265,7 @@ struct OpenAIResponsesAdapterTests {
     #expect(sent.value(forHTTPHeaderField: "session-id") == clampedSessionID)
     #expect(sent.value(forHTTPHeaderField: "x-client-request-id") == clampedSessionID)
     let body = try decodeJSONObject(
-      try #require(sent.httpBody),
+      try fixtureHTTPBody(sent),
       providerID: "fixture",
       operation: "fixture"
     )

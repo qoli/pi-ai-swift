@@ -59,16 +59,44 @@ public struct ProviderRequest: Sendable, Equatable, Codable {
 }
 
 public struct ProviderConnectionOptions: Sendable, Equatable, Codable {
+  public enum Transport: String, Sendable, Codable {
+    case auto, sse, websocket
+    case websocketCached = "websocket-cached"
+  }
+
   public let azureOpenAIResponses: AzureOpenAIResponsesConnectionOptions?
+  /// `nil` values suppress a header supplied by client identity or the model.
+  public let headers: [String: String?]?
+  public let transport: Transport?
+  public let timeoutMilliseconds: Double?
+  public let webSocketConnectTimeoutMilliseconds: Double?
+  public let maximumRetries: Int?
+  public let maximumRetryDelayMilliseconds: Double?
+  public let cloud: ProviderCloudConnectionOptions?
 
   public init(
-    azureOpenAIResponses: AzureOpenAIResponsesConnectionOptions? = nil
+    azureOpenAIResponses: AzureOpenAIResponsesConnectionOptions? = nil,
+    headers: [String: String?]? = nil,
+    transport: Transport? = nil,
+    timeoutMilliseconds: Double? = nil,
+    webSocketConnectTimeoutMilliseconds: Double? = nil,
+    maximumRetries: Int? = nil,
+    maximumRetryDelayMilliseconds: Double? = nil,
+    cloud: ProviderCloudConnectionOptions? = nil
   ) {
     self.azureOpenAIResponses = azureOpenAIResponses
+    self.headers = headers
+    self.transport = transport
+    self.timeoutMilliseconds = timeoutMilliseconds
+    self.webSocketConnectTimeoutMilliseconds = webSocketConnectTimeoutMilliseconds
+    self.maximumRetries = maximumRetries
+    self.maximumRetryDelayMilliseconds = maximumRetryDelayMilliseconds
+    self.cloud = cloud
   }
 
   private enum CodingKeys: String, CodingKey, CaseIterable {
-    case azureOpenAIResponses
+    case azureOpenAIResponses, headers, transport, timeoutMilliseconds
+    case webSocketConnectTimeoutMilliseconds, maximumRetries, maximumRetryDelayMilliseconds, cloud
   }
 
   public init(from decoder: any Decoder) throws {
@@ -83,6 +111,15 @@ public struct ProviderConnectionOptions: Sendable, Equatable, Codable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     azureOpenAIResponses = try container.decodeIfPresent(
       AzureOpenAIResponsesConnectionOptions.self, forKey: .azureOpenAIResponses)
+    headers = try container.decodeIfPresent([String: String?].self, forKey: .headers)
+    transport = try container.decodeIfPresent(Transport.self, forKey: .transport)
+    timeoutMilliseconds = try container.decodeIfPresent(Double.self, forKey: .timeoutMilliseconds)
+    webSocketConnectTimeoutMilliseconds = try container.decodeIfPresent(
+      Double.self, forKey: .webSocketConnectTimeoutMilliseconds)
+    maximumRetries = try container.decodeIfPresent(Int.self, forKey: .maximumRetries)
+    maximumRetryDelayMilliseconds = try container.decodeIfPresent(
+      Double.self, forKey: .maximumRetryDelayMilliseconds)
+    cloud = try container.decodeIfPresent(ProviderCloudConnectionOptions.self, forKey: .cloud)
   }
 }
 

@@ -41,6 +41,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
               for normalized in try await reducer.reduce(event, observation: observation) {
+                try await observation.toolEvent(normalized)
                 continuation.yield(normalized)
               }
               if reducer.isTerminal {
@@ -51,6 +52,7 @@ struct PiMessagesAdapter: WireProtocolAdapter {
           }
           for event in try decoder.finish() {
             for normalized in try await reducer.reduce(event, observation: observation) {
+              try await observation.toolEvent(normalized)
               continuation.yield(normalized)
             }
             if reducer.isTerminal {
@@ -600,15 +602,13 @@ private struct PiMessagesEventReducer {
         let name = object.string("toolName"),
         toolStates[index] == nil
       else { throw invalid("pi-messages tool-call start is malformed") }
-      toolStates[index] = ToolState(id: id, name: name, arguments: "")
+      toolStates[index] = ToolState(id: id, name: name)
       return [.toolCallStarted(id: id, name: name)]
     case "toolcall_delta":
       try requireStarted(type)
       guard let index = object.int("contentIndex"),
-        let delta = object.string("delta"), var tool = toolStates[index]
+        let delta = object.string("delta"), let tool = toolStates[index]
       else { throw invalid("pi-messages tool-call delta has no matching start") }
-      tool.arguments += delta
-      toolStates[index] = tool
       return [.toolInputDelta(id: tool.id, delta: delta)]
     case "toolcall_end":
       try requireStarted(type)
@@ -733,6 +733,5 @@ private struct PiMessagesEventReducer {
   private struct ToolState {
     let id: String
     let name: String
-    var arguments: String
   }
 }

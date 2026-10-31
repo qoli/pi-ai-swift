@@ -1,0 +1,58 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "suppressed-originator",
+      "transport": "sse",
+      "headers": {
+        "originator": null
+      }
+    },
+    {
+      "id": "sse-required-headers",
+      "transport": "sse",
+      "headers": {
+        "accept": "text/plain",
+        "content-type": "text/plain",
+        "OpenAI-Beta": "fixture-beta"
+      }
+    },
+    {
+      "id": "payload-envelope-type",
+      "transport": "websocket",
+      "payload": {
+        "type": "fixture.create"
+      }
+    },
+    {
+      "id": "negative-retry-budget",
+      "transport": "sse",
+      "maxRetries": -1
+    },
+    {
+      "id": "mid-conversation-instructions",
+      "transport": "sse",
+      "compat": {
+        "supportsMidConvoSystemMessages": true
+      },
+      "captureInstructions": true,
+      "messages": [
+        {
+          "role": "system",
+          "content": "initial instructions",
+          "timestamp": 0
+        },
+        {
+          "role": "user",
+          "content": "synthetic question",
+          "timestamp": 1
+        },
+        {
+          "role": "system",
+          "content": "later instructions",
+          "timestamp": 2
+        }
+      ]
+    }
+  ]
+}

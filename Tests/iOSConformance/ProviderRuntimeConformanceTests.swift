@@ -5,6 +5,167 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testFederationReusesTheNativeCredentialSource() async throws {
+    let count = try await CloudAuthorizationFixtures.repeatedFederationSourceCount()
+    XCTAssertEqual(count, 1)
+  }
+
+  func testCloudPrimaryAuthorizationMatchesPinnedSource() throws {
+    let fixture = try load("Differential/Cases/cloud-authorization.json")
+    let oracle = try load("Differential/Oracle/cloud-authorization.json")
+    let cases = try XCTUnwrap(fixture.array("cases"))
+    let expected = try XCTUnwrap(oracle.array("cases"))
+    XCTAssertEqual(cases.count, expected.count)
+    for (item, expected) in zip(cases, expected) {
+      let spec = try XCTUnwrap(item.objectValue)
+      let config = try XCTUnwrap(expected.objectValue?.object("configuration"))
+      XCTAssertEqual(
+        try CloudAuthorizationFixtures.differences(spec, expected: config), [],
+        spec.string("id") ?? "")
+    }
+  }
+
+  func testCloudResolverProjectsNativeWire() async throws {
+    let vertex = try await CloudAuthorizationFixtures.replay(
+      api: "google-vertex",
+      baseURL: "https://proxy.invalid/v1/projects/fixture-project/locations/global",
+      cloud: .init(project: "fixture-project", location: "global"))
+    let google = try XCTUnwrap(vertex.requests.first)
+    XCTAssertEqual(
+      google.url?.path,
+      "/v1/projects/fixture-project/locations/global/publishers/google/models/fixture-model:streamGenerateContent"
+    )
+    XCTAssertEqual(google.value(forHTTPHeaderField: "Authorization"), "Bearer fixture-cloud-token")
+    XCTAssertEqual(
+      vertex.resolutions,
+      [
+        .googleApplicationDefaultCredentials(
+          project: "fixture-project", location: "global", keyFilename: nil)
+      ])
+    let aws = try await CloudAuthorizationFixtures.replay(
+      api: "bedrock-converse-stream",
+      baseURL: "https://bedrock-runtime.us-east-1.amazonaws.com",
+      cloud: .init(ambientEnvironment: ["AWS_PROFILE": "fixture-profile"]))
+    let bedrock = try XCTUnwrap(aws.requests.first)
+    XCTAssertEqual(bedrock.url?.host, "bedrock-runtime.eu-west-1.amazonaws.com")
+    XCTAssertTrue(
+      bedrock.value(forHTTPHeaderField: "Authorization")?.contains(
+        "/eu-west-1/bedrock/aws4_request") == true)
+    XCTAssertEqual(aws.resolutions, [.awsCredentials(profile: "fixture-profile", region: nil)])
+    let fed = try await CloudAuthorizationFixtures.replay(
+      api: "anthropic-messages", baseURL: "https://api.anthropic.com",
+      cloud: .init(environment: [
+        "ANTHROPIC_FEDERATION_RULE_ID": "fixture-rule", "ANTHROPIC_ORGANIZATION_ID": "fixture-org",
+        "ANTHROPIC_IDENTITY_TOKEN_FILE": "/fixture/identity.jwt",
+      ]))
+    let anthropic = try XCTUnwrap(fed.requests.first)
+    XCTAssertEqual(
+      anthropic.value(forHTTPHeaderField: "Authorization"), "Bearer fixture-cloud-token")
+    XCTAssertNil(anthropic.value(forHTTPHeaderField: "x-api-key"))
+    XCTAssertTrue(
+      anthropic.value(forHTTPHeaderField: "anthropic-beta")?.contains("oauth-2025-04-20") == true)
+    XCTAssertNotEqual(
+      fed.payloads.first?.array("betas")?.contains(.string("oauth-2025-04-20")), true)
+  }
+
+  func testCloudResolverFailureDoesNotSelectAnotherCredentialSource() async throws {
+    for mode in [CloudAuthorizationFixtures.ResolverMode.absent, .failure] {
+      let value = try await CloudAuthorizationFixtures.replay(
+        api: "google-vertex", baseURL: "https://proxy.invalid",
+        cloud: .init(project: "fixture-project", location: "global"), mode: mode)
+      XCTAssertTrue(value.requests.isEmpty)
+      XCTAssertEqual(
+        value.failure?.operation, mode == .absent ? "cloud.resolve-credential" : "fixture.resolver")
+    }
+  }
+
+  func testCodexToolCallbackFailureDoesNotSelectSSE() async throws {
+    let output = try await CodexTransportFixtures.replay(
+      ["id": .string("reject-tool-callback")],
+      rejectToolCallback: true)
+    let result = try XCTUnwrap(output.objectValue)
+    XCTAssertEqual(result.string("stopReason"), "error")
+    XCTAssertEqual(result.string("errorMessage"), "fixture callback failure")
+    let requests = try XCTUnwrap(result.array("requests"))
+    XCTAssertEqual(requests.count, 1)
+    XCTAssertEqual(requests.first?.objectValue?.string("transport"), "websocket")
+  }
+
+  func testBedrockSigningRegionMatchesPinnedSource() throws {
+    let fixture = try load("Differential/Cases/bedrock-signing-region.json")
+    let oracle = try load("Differential/Oracle/bedrock-signing-region.json")
+    let cases = try XCTUnwrap(fixture.array("cases"))
+    let expected = try XCTUnwrap(oracle.array("cases"))
+    XCTAssertEqual(cases.count, expected.count)
+    for (item, expected) in zip(cases, expected) {
+      let spec = try XCTUnwrap(item.objectValue)
+      let actual = try BedrockConverseStreamAdapter().resolvedRegion(
+        request: .init(
+          id: spec.string("id")!, providerID: "amazon-bedrock",
+          modelID: spec.string("modelID")!, messages: [], tools: [],
+          options: .init(
+            maximumOutputTokens: nil, temperature: nil, reasoningEffort: nil,
+            responseSchema: nil, providerOptions: [:])),
+        endpoint: URL(string: spec.string("endpoint")!)!,
+        metadata: spec.string("region").map { ["region": $0] } ?? [:])
+      XCTAssertEqual(actual, expected.objectValue?.string("region"), spec.string("id") ?? "")
+    }
+  }
+
+  func testCodexTransportEdgesMatchPinnedSource() async throws {
+    let fixture = try load("Differential/Cases/codex-transport.json")
+    let oracle = try load("Differential/Oracle/codex-transport.json")
+    let cases = try XCTUnwrap(fixture.array("cases"))
+    let expected = try XCTUnwrap(oracle.array("cases"))
+    XCTAssertEqual(cases.count, expected.count)
+    for (item, expected) in zip(cases, expected) {
+      let spec = try XCTUnwrap(item.objectValue)
+      let actual = try await CodexTransportFixtures.replay(spec)
+      XCTAssertEqual(actual, expected, spec.string("id") ?? "")
+    }
+  }
+
+  func testIncrementalJSONChangesMatchPinnedSource() throws {
+    let fixture = try load("Differential/Cases/streaming-json.json")
+    let oracle = try load("Differential/Oracle/streaming-json.json")
+    let cases = try XCTUnwrap(fixture.array("cases"))
+    let expected = try XCTUnwrap(oracle.array("cases"))
+    XCTAssertEqual(cases.count, expected.count)
+    func canonical(_ value: JSONValue) throws -> JSONValue {
+      try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(value))
+    }
+    for (item, expected) in zip(cases, expected) {
+      let spec = try XCTUnwrap(item.objectValue)
+      let observations = try XCTUnwrap(expected.objectValue?.array("observations"))
+      let parser = ProviderStreamingJSONParser()
+      var kept: [(ProviderJSONNode, JSONValue)] = []
+      for (chunk, observation) in zip(try XCTUnwrap(spec.array("chunks")), observations) {
+        let changes = parser.append(try XCTUnwrap(chunk.stringValue))
+        let projected = changes.map { change -> JSONValue in
+          let path = change.path.map { component -> JSONValue in
+            switch component {
+            case .key(let key): .string(String(decoding: key, as: UTF16.self))
+            case .index(let index): .integer(Int64(index))
+            }
+          }
+          return .object([
+            "kind": .string(change.isAppend ? "append" : "set"), "path": .array(path),
+            change.isAppend ? "text" : "value": change.value.jsonValue,
+          ])
+        }
+        let expected = try XCTUnwrap(observation.objectValue)
+        XCTAssertEqual(
+          try canonical(.array(projected)), expected["changes"], spec.string("id") ?? "")
+        let snapshot = parser.snapshot()
+        XCTAssertEqual(
+          try snapshot.map { try canonical($0.jsonValue) }, expected["snapshot"],
+          spec.string("id") ?? "")
+        if let snapshot { kept.append((snapshot, snapshot.jsonValue)) }
+      }
+      for (snapshot, frozen) in kept { XCTAssertEqual(snapshot.jsonValue, frozen) }
+    }
+  }
+
   func testCompletionsTerminationMatchesPinnedSource() async throws {
     let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
     let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
@@ -243,7 +404,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
         XCTAssertEqual(failure?.message, thrown, name)
       } else {
         let body = try decodeJSONObject(
-          try XCTUnwrap(sent?.httpBody),
+          try fixtureHTTPBody(sent),
           providerID: "fixture", operation: "ios.grammar-history.body")
         XCTAssertEqual(body.array("input"), expected.array("input"), name)
         XCTAssertNil(body["grammarToolInputProperties"], name)
@@ -297,7 +458,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       }
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name),
+        try fixtureHTTPBody(sent),
         providerID: "fixture", operation: "ios.template.body")
       let projection = Dictionary(
         uniqueKeysWithValues:
@@ -402,7 +563,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       }
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name),
+        try fixtureHTTPBody(sent),
         providerID: "fixture", operation: "ios.mistral.options.body")
       let projected = Dictionary(
         uniqueKeysWithValues:
@@ -716,7 +877,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: provider, operation: "ios.signature.body")
+        try fixtureHTTPBody(sent), providerID: provider, operation: "ios.signature.body")
       let fields = try XCTUnwrap(spec.array("projectFields"))
       let actual = Dictionary(
         uniqueKeysWithValues: fields.compactMap { value -> (String, JSONValue)? in
@@ -891,7 +1052,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
         XCTAssertNil(sent, name)
       } else {
         let body = try decodeJSONObject(
-          try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+          try fixtureHTTPBody(sent), providerID: "fixture",
           operation: "ios.azure.strict.body")
         XCTAssertEqual(body["tools"], expected.object("requestBody")?["tools"], name)
       }
@@ -937,7 +1098,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+        try fixtureHTTPBody(sent), providerID: "fixture",
         operation: "ios.bedrock.raw.body")
       let fields = try XCTUnwrap(spec.array("projectFields")).compactMap(\.stringValue)
       let actual = Dictionary(
@@ -1001,7 +1162,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+        try fixtureHTTPBody(sent), providerID: "fixture",
         operation: "ios.completions.tools.body")
       let fields = try XCTUnwrap(spec.array("projectFields")).compactMap(\.stringValue)
       let actual = Dictionary(
@@ -1045,7 +1206,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+        try fixtureHTTPBody(sent), providerID: "fixture",
         operation: "ios.anthropic.sampling.body")
       XCTAssertEqual(body, oracle.object("cases")?.object(name)?.object("requestBody"), name)
     }
@@ -1081,7 +1242,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: "fixture",
+        try fixtureHTTPBody(sent), providerID: "fixture",
         operation: "ios.completions.raw.body")
       XCTAssertEqual(body, oracle.object("cases")?.object(name)?.object("requestBody"), name)
     }
@@ -1142,7 +1303,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: provider,
+        try fixtureHTTPBody(sent), providerID: provider,
         operation: "ios.completions.replay.body")
       XCTAssertEqual(
         body["messages"], oracle.object("cases")?.object(name)?.object("requestBody")?["messages"],
@@ -1201,7 +1362,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: "anthropic",
+        try fixtureHTTPBody(sent), providerID: "anthropic",
         operation: "ios.anthropic.images.body")
       XCTAssertEqual(
         body["messages"], oracle.object("cases")?.object(name)?.object("requestBody")?["messages"],
@@ -1349,7 +1510,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: provider,
+        try fixtureHTTPBody(sent), providerID: provider,
         operation: "ios.completions.structured.body")
       XCTAssertEqual(
         body["messages"], oracle.object("cases")?.object(name)?.object("requestBody")?["messages"],
@@ -1472,7 +1633,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: "amazon-bedrock",
+        try fixtureHTTPBody(sent), providerID: "amazon-bedrock",
         operation: "ios.bedrock.input-interop")
       XCTAssertEqual(body["messages"], oracle.object("cases")?[name], name)
     }
@@ -1542,7 +1703,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: "amazon-bedrock",
+        try fixtureHTTPBody(sent), providerID: "amazon-bedrock",
         operation: "ios.bedrock.blank.body")
       XCTAssertEqual(
         body["messages"], oracle.object("cases")?.object(name)?.object("requestBody")?["messages"],
@@ -1703,7 +1864,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       } catch is ProviderRuntimeFailure {}
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody, name), providerID: provider,
+        try fixtureHTTPBody(sent), providerID: provider,
         operation: "ios.ordered.schema")
       let actual = Dictionary(
         uniqueKeysWithValues: try XCTUnwrap(spec.array("projectFields")).compactMap {
@@ -1941,7 +2102,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       XCTAssertEqual(ids, Array(repeating: request.id, count: chunks.count + 2))
       let sent = await transport.sent
       let encoded = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody), providerID: "fixture", operation: "ios.wire-observer")
+        try fixtureHTTPBody(sent), providerID: "fixture", operation: "ios.wire-observer")
       XCTAssertEqual(encoded["temperature"], .number(0.75))
       XCTAssertEqual(snapshot?.content, [.text(.init(text: "hello", signature: nil))])
     }
@@ -2008,7 +2169,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       XCTAssertEqual(ids, Array(repeating: request.id, count: stages.count), name)
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody), providerID: "anthropic", operation: "ios.observer")
+        try fixtureHTTPBody(sent), providerID: "anthropic", operation: "ios.observer")
       XCTAssertEqual(body["stream"], expected["stream"], name)
     }
   }
@@ -2073,7 +2234,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       XCTAssertEqual(ids, Array(repeating: request.id, count: stages.count), name)
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody), providerID: request.providerID,
+        try fixtureHTTPBody(sent), providerID: request.providerID,
         operation: "ios.responses.observer")
       XCTAssertEqual(body["temperature"], .number(0.75), name)
     }
@@ -2134,7 +2295,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       XCTAssertEqual(ids, Array(repeating: request.id, count: stages.count), name)
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody), providerID: "mistral", operation: "ios.mistral.observer")
+        try fixtureHTTPBody(sent), providerID: "mistral", operation: "ios.mistral.observer")
       XCTAssertEqual(body["temperature"], expected["wireTemperature"], name)
       XCTAssertEqual(body["max_tokens"], expected["wireMaxTokens"], name)
     }
@@ -2191,7 +2352,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
         spec.object("sourceOutcome")?.object("terminalReplay")?.array("content"), api)
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody), providerID: provider, operation: "ios.google.observer")
+        try fixtureHTTPBody(sent), providerID: provider, operation: "ios.google.observer")
       XCTAssertEqual(body.object("generationConfig")?["temperature"], wire["temperature"], api)
     }
   }
@@ -2258,7 +2419,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       XCTAssertEqual(ids, Array(repeating: request.id, count: stages.count), name)
       let sent = await transport.sent
       let body = try decodeJSONObject(
-        try XCTUnwrap(sent?.httpBody), providerID: "amazon-bedrock",
+        try fixtureHTTPBody(sent), providerID: "amazon-bedrock",
         operation: "ios.bedrock.observer")
       XCTAssertEqual(body.object("inferenceConfig")?["temperature"], wire["temperature"], name)
       XCTAssertNil(body["modelId"], name)
@@ -2291,7 +2452,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     } catch let failure as ProviderRuntimeFailure { XCTAssertEqual(failure.code, .transportFailed) }
     let sent = await transport.sent
     let body = try decodeJSONObject(
-      try XCTUnwrap(sent?.httpBody), providerID: "azure", operation: "ios.mid-system")
+      try fixtureHTTPBody(sent), providerID: "azure", operation: "ios.mid-system")
     XCTAssertEqual(body["messages"], expected["messages"])
   }
 

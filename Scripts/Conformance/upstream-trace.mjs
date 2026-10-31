@@ -1,9 +1,21 @@
 import { appendFileSync } from "node:fs";
 import path from "node:path";
-import { expect } from "vitest";
+import { afterEach, expect } from "vitest";
 import { AsyncLocalStorage } from "node:async_hooks";
 
 const invocation = new AsyncLocalStorage();
+const parserCalls = new Map();
+
+export function traceParser(operation, run) {
+  if (invocation.getStore()) return run();
+  parserCalls.set(operation, (parserCalls.get(operation) ?? 0) + 1);
+  return invocation.run({ operation }, run);
+}
+
+afterEach(() => {
+  for (const [operation] of parserCalls) trace(operation, undefined, () => {});
+  parserCalls.clear();
+});
 
 export function trace(operation, protocol, run) {
   const parent = invocation.getStore();

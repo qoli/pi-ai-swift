@@ -154,9 +154,16 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       let task = Task {
         do {
           let observation = ProviderWireObservation(request: request, wire: context)
-          let response = try await transport.stream(
-            try await observation.payload(makeURLRequest(request, context: context))
-          )
+          if flavor == .codex {
+            try await streamCodex(
+              request, context: context, transport: transport,
+              observation: observation, continuation: continuation)
+            continuation.finish()
+            return
+          }
+          let response = try await ProviderRequestRetry.stream(
+            observation.payload(makeURLRequest(request, context: context)),
+            request: request, context: context, transport: transport)
           if flavor == .codex { try await observation.response(response) }
           guard (200..<300).contains(response.statusCode) else {
             let body = try await collectErrorBody(from: response.body)
@@ -185,21 +192,30 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
             flavor: flavor,
             providerThinkingLevel: configurationUpdateEffort(request, context: context)
           )
-          for try await chunk in response.body {
+          streamChunks: for try await chunk in response.body {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
               for normalized in try await reducer.reduce(event, observation: observation) {
+                try await observation.toolEvent(normalized)
                 continuation.yield(normalized)
               }
+              if flavor == .codex, reducer.isTerminal { break streamChunks }
             }
           }
+          try Task.checkCancellation()
           for event in try decoder.finish() {
             for normalized in try await reducer.reduce(event, observation: observation) {
+              try await observation.toolEvent(normalized)
               continuation.yield(normalized)
             }
           }
-          for event in try reducer.finish() { continuation.yield(event) }
+          for event in try reducer.finish() {
+            try await observation.toolEvent(event)
+            continuation.yield(event)
+          }
           continuation.finish()
+        } catch let error as CodexStreamCallbackError {
+          continuation.finish(throwing: error.underlying)
         } catch let error as ProviderRuntimeFailure {
           continuation.finish(
             throwing: ProviderRuntimeFailure(
@@ -213,6 +229,311 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       }
       continuation.onTermination = { _ in task.cancel() }
     }
+  }
+
+  private func codexReducer(_ request: ProviderRequest, context: WireProtocolContext) throws
+    -> OpenAIResponsesReducer
+  {
+    OpenAIResponsesReducer(
+      providerID: request.providerID, protocolID: protocolID, requestedModelID: request.modelID,
+      acceptsCodexTerminalAliases: true,
+      grammarInputProperties: try grammarInputProperties(request, context: context),
+      pricing: try ProviderUsagePricing.parse(
+        metadata: context.modelConfiguration.metadata, providerID: request.providerID,
+        operation: "openai-responses.usage.pricing"),
+      requestedServiceTier: request.options.serviceTier, flavor: .codex,
+      providerThinkingLevel: configurationUpdateEffort(request, context: context))
+  }
+
+  private func codexTimeoutValue(_ value: Double?) throws -> Double? {
+    guard let value else { return nil }
+    guard value.isFinite, value >= 0 else {
+      throw failure(
+        .invalidRequest, providerID: nil, operation: "codex.timeout",
+        message: "Invalid timeoutMs: \(value)")
+    }
+    return floor(value)
+  }
+
+  private func streamCodex(
+    _ request: ProviderRequest, context: WireProtocolContext,
+    transport: any ProviderHTTPStreamingTransport, observation: ProviderWireObservation,
+    continuation: AsyncThrowingStream<ProviderEvent, any Error>.Continuation
+  ) async throws {
+    let urlRequest = try await observation.payload(makeURLRequest(request, context: context))
+    let body = try decodeJSONObject(
+      urlRequest.httpBody ?? Data(),
+      providerID: request.providerID, operation: "codex.request")
+    let mode = request.connectionOptions.transport ?? .auto
+    let timeout = try codexTimeoutValue(request.connectionOptions.timeoutMilliseconds)
+    let connectTimeout = try codexTimeoutValue(
+      request.connectionOptions.webSocketConnectTimeoutMilliseconds)
+    let session = request.options.cacheRetention == .none ? nil : request.options.sessionID
+    let cachedContext = mode == .auto || mode == .websocketCached
+    let sessions = context.codexSessions
+    let fallbackActive = await sessions.isFallbackActive(session)
+    let disabled = mode == .auto && fallbackActive
+    if disabled { await sessions.recordFallback(session: session) }
+    if mode != .sse && !disabled {
+      var retriedLimit = false
+      var retriedContinuation = false
+      websocketAttempts: while true {
+        var lease: CodexWebSocketSessions.Lease?
+        var started = false
+        var apiFailure = false
+        var apiCode: String?
+        do {
+          var socketRequest = urlRequest
+          var components = URLComponents(url: urlRequest.url!, resolvingAgainstBaseURL: false)!
+          components.scheme = components.scheme == "http" ? "ws" : "wss"
+          socketRequest.url = components.url
+          socketRequest.httpBody = nil
+          for name in ["Accept", "Content-Type", "OpenAI-Beta"] {
+            socketRequest.setValue(nil, forHTTPHeaderField: name)
+          }
+          socketRequest.setValue(
+            "responses_websockets=2026-02-06", forHTTPHeaderField: "OpenAI-Beta")
+          let requestID = codexSessionID(request.options) ?? UUID().uuidString.lowercased()
+          socketRequest.setValue(requestID, forHTTPHeaderField: "session-id")
+          socketRequest.setValue(requestID, forHTTPHeaderField: "x-client-request-id")
+          let acquired = try await sessions.acquire(
+            request: socketRequest, session: session,
+            account: urlRequest.value(forHTTPHeaderField: "chatgpt-account-id") ?? "",
+            transport: context.webSocketTransport, clock: context.clock,
+            connectTimeout: connectTimeout)
+          lease = acquired
+          var projected = await sessions.requestBody(
+            body, lease: acquired, session: session, cachedContext: cachedContext)
+          if projected["type"] == nil { projected["type"] = .string("response.create") }
+          let encoded = try encodeJSONObject(
+            projected, providerID: request.providerID,
+            operation: "codex.websocket.encode")
+          try await acquired.socket.send(String(decoding: encoded, as: UTF8.self))
+          var reducer = try codexReducer(request, context: context)
+          while !reducer.isTerminal {
+            let text = try await codexTimeout(
+              milliseconds: timeout, clock: context.clock,
+              message: "WebSocket idle timeout after \(Int(timeout ?? 0))ms"
+            ) { try await acquired.socket.receive() }
+            try Task.checkCancellation()
+            let object = try decodeJSONObject(
+              Data(text.utf8), providerID: request.providerID,
+              operation: "codex.websocket.decode")
+            apiFailure = ["error", "response.failed"].contains(object.string("type") ?? "")
+            apiCode =
+              object.string("code") ?? object.object("error")?.string("code")
+              ?? object.object("response")?.object("error")?.string("code")
+            let events = try await reducer.reduce(
+              .init(event: nil, data: text, id: nil), observation: observation)
+            if object.string("type") != nil { started = true }
+            for event in events {
+              try await observation.toolEvent(event)
+              continuation.yield(event)
+            }
+          }
+          try Task.checkCancellation()
+          let final = try reducer.finish()
+          var responseID: String?
+          var responseItems: [JSONValue] = []
+          for event in final {
+            if case .responseSnapshot(let snapshot) = event, cachedContext {
+              responseID = snapshot.responseID
+              if responseID != nil {
+                responseItems = try makeInput(
+                  [.assistantMessage(try snapshot.replayAssistantMessage())], includeSystem: false,
+                  context: context,
+                  grammarInputProperties: grammarInputProperties(request, context: context),
+                  deferredTools: [:], deferredToolsMode: nil, supportsStrictMode: true
+                )
+                .filter {
+                  !["function_call_output", "custom_tool_call_output"].contains(
+                    $0.objectValue?.string("type") ?? "")
+                }
+              }
+            }
+          }
+          await sessions.release(
+            acquired, keep: true, body: body, responseID: responseID,
+            responseItems: responseItems, cachedContext: cachedContext, clock: context.clock)
+          lease = nil
+          for event in final {
+            try await observation.toolEvent(event)
+            continuation.yield(event)
+          }
+          return
+        } catch {
+          if let lease {
+            await sessions.release(
+              lease, keep: false, body: body,
+              cachedContext: cachedContext, clock: context.clock)
+          }
+          try Task.checkCancellation()
+          if error is CodexStreamCallbackError { throw error }
+          if apiCode == "previous_response_not_found", !retriedContinuation {
+            retriedContinuation = true
+            continue websocketAttempts
+          }
+          if apiCode == "websocket_connection_limit_reached", !started, !retriedLimit {
+            retriedLimit = true
+            continue websocketAttempts
+          }
+          let runtimeFailure = error as? ProviderRuntimeFailure
+          if apiFailure || runtimeFailure?.code == .invalidResponse
+            || runtimeFailure?.operation == "conformance.observer"
+            || runtimeFailure?.operation == "wire-observer.stream-event"
+          {
+            throw error
+          }
+          let message = runtimeFailure?.message ?? String(describing: error)
+          await sessions.recordFailure(session: session, message: message)
+          guard mode == .auto, !started else { throw error }
+          await sessions.recordFallback(session: session)
+          break websocketAttempts
+        }
+      }
+    }
+    let response = try await codexSSEResponse(
+      urlRequest, request: request, context: context, transport: transport,
+      observation: observation, timeout: timeout)
+    var reducer = try codexReducer(request, context: context)
+    var decoder = ServerSentEventDecoder()
+    responseChunks: for try await chunk in response.body {
+      try Task.checkCancellation()
+      for raw in try decoder.append(chunk) {
+        for event in try await reducer.reduce(raw, observation: observation) {
+          try await observation.toolEvent(event)
+          continuation.yield(event)
+        }
+        if reducer.isTerminal { break responseChunks }
+      }
+    }
+    try Task.checkCancellation()
+    if !reducer.isTerminal {
+      for raw in try decoder.finish() {
+        for event in try await reducer.reduce(raw, observation: observation) {
+          try await observation.toolEvent(event)
+          continuation.yield(event)
+        }
+      }
+    }
+    for event in try reducer.finish() {
+      try await observation.toolEvent(event)
+      continuation.yield(event)
+    }
+  }
+
+  private struct CodexRetryDelayExceeded: Error {
+    let message: String
+  }
+
+  private func codexSSEResponse(
+    _ urlRequest: URLRequest, request: ProviderRequest, context: WireProtocolContext,
+    transport: any ProviderHTTPStreamingTransport, observation: ProviderWireObservation,
+    timeout: Double?
+  ) async throws -> ProviderHTTPStreamingResponse {
+    var compressedRequest = urlRequest
+    compressedRequest.httpBody = try CodexRequestCompression.compress(urlRequest.httpBody ?? Data())
+    compressedRequest.setValue("zstd", forHTTPHeaderField: "Content-Encoding")
+    let urlRequest = compressedRequest
+    let retries = request.connectionOptions.maximumRetries ?? 0
+    guard retries >= 0 else {
+      throw failure(
+        .transportFailed, providerID: request.providerID,
+        operation: "codex.sse.retry", message: "Failed after retries")
+    }
+    var attempt = 0
+    while true {
+      try Task.checkCancellation()
+      do {
+        let response = try await codexTimeout(
+          milliseconds: timeout, clock: context.clock,
+          message: "Codex SSE response headers timed out after \(Int(timeout ?? 0))ms"
+        ) { try await transport.stream(urlRequest) }
+        try await observation.response(response)
+        if (200..<300).contains(response.statusCode) { return response }
+        let text = try await collectErrorBody(from: response.body) ?? ""
+        let terminal =
+          text.range(
+            of:
+              "GoUsageLimitError|FreeUsageLimitError|Monthly usage limit reached|available balance|insufficient_quota|out of budget|quota exceeded|billing",
+            options: .regularExpression.union(.caseInsensitive)) != nil
+        let retryable =
+          !(response.statusCode == 429 && terminal)
+          && ([429, 500, 502, 503, 504].contains(response.statusCode)
+            || text.range(
+              of:
+                "rate.?limit|overloaded|service.?unavailable|upstream.?connect|connection.?refused",
+              options: .regularExpression.union(.caseInsensitive)) != nil)
+        if attempt < retries && retryable {
+          let headers = Dictionary(
+            response.headers.map { ($0.key.lowercased(), $0.value) },
+            uniquingKeysWith: { _, value in value })
+          let serverDelay = codexRetryDelay(headers, now: context.clock.now())
+          let delay = serverDelay ?? 1_000 * pow(2, Double(attempt))
+          let limit = request.connectionOptions.maximumRetryDelayMilliseconds ?? 60_000
+          if serverDelay != nil, limit > 0, delay > limit {
+            throw CodexRetryDelayExceeded(
+              message:
+                "Server requested \(Int(ceil(delay / 1_000)))s retry delay (max: \(Int(ceil(limit / 1_000)))s)"
+            )
+          }
+          try await context.clock.sleep(for: .milliseconds(delay))
+          attempt += 1
+          continue
+        }
+        throw failure(
+          .transportFailed, providerID: request.providerID,
+          operation: "codex.sse.response",
+          message: codexHTTPError(text, status: response.statusCode, now: context.clock.now()))
+      } catch let error as CodexRetryDelayExceeded {
+        throw failure(
+          .transportFailed, providerID: request.providerID,
+          operation: "codex.sse.retry", message: error.message)
+      } catch {
+        try Task.checkCancellation()
+        let message = (error as? ProviderRuntimeFailure)?.message ?? String(describing: error)
+        guard attempt < retries, !message.contains("usage limit") else { throw error }
+        try await context.clock.sleep(for: .milliseconds(1_000 * pow(2, Double(attempt))))
+        attempt += 1
+      }
+    }
+  }
+
+  private func codexRetryDelay(_ headers: [String: String], now: Date) -> Double? {
+    if let text = headers["retry-after-ms"], let number = Double(text), number.isFinite {
+      return max(0, number)
+    }
+    guard let text = headers["retry-after"], !text.isEmpty else { return nil }
+    if let number = Double(text), number.isFinite { return max(0, number * 1_000) }
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = TimeZone(secondsFromGMT: 0)
+    formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+    return formatter.date(from: text).map { max(0, $0.timeIntervalSince(now) * 1_000) }
+  }
+
+  private func codexHTTPError(_ text: String, status: Int, now: Date) -> String {
+    guard
+      let object = try? decodeJSONObject(
+        Data(text.utf8), providerID: "openai-codex",
+        operation: "codex.sse.error"), let error = object.object("error")
+    else {
+      return text.isEmpty ? "Request failed" : text
+    }
+    let code = error.string("code") ?? error.string("type") ?? ""
+    if status == 429
+      || code.range(
+        of: "usage_limit_reached|usage_not_included|rate_limit_exceeded",
+        options: .regularExpression.union(.caseInsensitive)) != nil
+    {
+      let plan = error.string("plan_type").map { " (\($0.lowercased()) plan)" } ?? ""
+      let when =
+        error.int("resets_at").map {
+          " Try again in ~\(max(0, Int(floor((Double($0) - now.timeIntervalSince1970) / 60 + 0.5)))) min."
+        } ?? ""
+      return "You have hit your ChatGPT usage limit\(plan).\(when)"
+    }
+    return error.string("message").flatMap { $0.isEmpty ? nil : $0 } ?? text
   }
 
   private func usageLimitMessage(_ message: String) -> String {
@@ -269,7 +590,11 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     _ request: ProviderRequest,
     context: WireProtocolContext
   ) throws -> URLRequest {
-    try request.validateSingleSystemMessage(operation: "openai-responses.request.system")
+    if context.modelConfiguration.metadata.object("compat")?.bool("supportsMidConvoSystemMessages")
+      != true
+    {
+      try request.validateSingleSystemMessage(operation: "openai-responses.request.system")
+    }
     var urlRequest = URLRequest(url: try endpoint(request, context: context))
     urlRequest.httpMethod = "POST"
     urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -302,8 +627,16 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         )
       }
       urlRequest.setValue(accountID, forHTTPHeaderField: "chatgpt-account-id")
-      urlRequest.setValue("pi", forHTTPHeaderField: "originator")
+      let suppressOriginator =
+        request.connectionOptions.headers?.contains {
+          $0.key.caseInsensitiveCompare("originator") == .orderedSame && $0.value == nil
+        } == true
+      if urlRequest.value(forHTTPHeaderField: "originator") == nil, !suppressOriginator {
+        urlRequest.setValue("pi", forHTTPHeaderField: "originator")
+      }
       urlRequest.setValue("responses=experimental", forHTTPHeaderField: "OpenAI-Beta")
+      urlRequest.setValue("text/event-stream", forHTTPHeaderField: "Accept")
+      urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
       if let sessionID = codexSessionID(request.options) {
         urlRequest.setValue(sessionID, forHTTPHeaderField: "session-id")
         urlRequest.setValue(sessionID, forHTTPHeaderField: "x-client-request-id")
@@ -473,8 +806,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     }()
     let supportsGrammarTools = compat.bool("supportsOpenAIGrammarTools") == true
     let usesInitialToolItem =
-      compat.bool("supportsMidConvoSystemMessages") == true
-      && compat.bool("supportsAdditionalTools") == true
+      ProviderToolDeclarationMode.resolve(protocolID: protocolID, compatibility: compat) == .changes
     let toolPlacement:
       (immediate: [ProviderToolDefinition], deferred: [String: ProviderToolDefinition]) =
         (usesInitialToolItem ? [] : request.tools, [:])
@@ -522,6 +854,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       "store": .bool(false),
     ]
     if usesInitialToolItem, !request.tools.isEmpty,
+      !request.messages.contains(where: { $0.systemPayload?.toolsAdded.isEmpty == false }),
       case .array(var input)? = body["input"]
     {
       input.insert(
@@ -536,12 +869,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         ]), at: 0)
       body["input"] = .array(input)
     }
-    let instructions = request.messages.compactMap { message -> String? in
-      return message.systemPayload?.content
-    }
-    if flavor == .codex, !instructions.isEmpty {
-      body["instructions"] = .string(instructions.joined(separator: "\n\n"))
-    }
+    let instructions = request.messages.first?.systemPayload?.content ?? ""
     if flavor != .codex, !omitUnsupportedFields, compat.bool("supportsMaxOutputTokens") != false,
       let maximum = request.options.maximumOutputTokens
         ?? context.model.maximumOutputTokens
@@ -653,7 +981,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       body["instructions"] = .string(
         instructions.isEmpty
           ? "You are a helpful assistant."
-          : instructions.joined(separator: "\n\n")
+          : instructions
       )
       body["text"] = .object(["verbosity": .string(request.options.textVerbosity ?? "low")])
       body["include"] = .array([.string("reasoning.encrypted_content")])
@@ -738,11 +1066,85 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     var result: [JSONValue] = []
     var replayMessageIndex = 0
     var normalizedToolIDs: [String: String] = [:]
+    let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    let toolMode = ProviderToolDeclarationMode.resolve(
+      protocolID: protocolID, compatibility: compat)
+    var declaredAdditionalTools = false
+    var unavailableTools: [String] = []
+    func appendToolChanges(_ value: ProviderSystemMessage, role: String, messageIndex: Int) throws
+      -> String
+    {
+      guard toolMode != .none else { return value.content }
+      let added = Set(value.toolsAdded.map(\.name))
+      unavailableTools.removeAll { added.contains($0) }
+      if !value.toolsAdded.isEmpty {
+        if toolMode == .changes, declaredAdditionalTools {
+          var notice =
+            "This is an incremental tools update. Previously declared tools remain available unless explicitly marked unavailable. A tool declared again here is available again, and its latest definition replaces the earlier one."
+          if !unavailableTools.isEmpty {
+            notice += "\nStill unavailable: " + unavailableTools.joined(separator: ", ") + "."
+          }
+          result.append(.object(["role": .string(role), "content": .string(notice)]))
+        }
+        if toolMode == .changes { declaredAdditionalTools = true }
+        var grammars: [String: ProviderConstrainedSamplingResolver.Grammar] = [:]
+        for tool in value.toolsAdded {
+          if let grammar = try ProviderConstrainedSamplingResolver.grammar(
+            for: tool, supportsGrammarTools: compat.bool("supportsOpenAIGrammarTools") == true,
+            providerID: context.provider.id, operation: "openai-responses.request.grammar-tool")
+          {
+            grammars[tool.name] = grammar
+          }
+        }
+        let tools = try value.toolsAdded.map {
+          try responseTool(
+            $0, grammarTools: grammars, supportsStrictMode: supportsStrictMode,
+            providerID: context.provider.id, deferLoading: toolMode == .additions)
+        }
+        if toolMode == .changes {
+          result.append(
+            .object([
+              "type": .string("additional_tools"), "role": .string("developer"),
+              "tools": .array(tools),
+            ]))
+        } else {
+          let names = value.toolsAdded.map(\.name)
+          let callID =
+            "pi_tool_load_"
+            + responsesShortHash("system:\(messageIndex):" + names.joined(separator: ","))
+          result.append(
+            .object([
+              "type": .string("tool_search_call"), "call_id": .string(callID),
+              "execution": .string("client"), "status": .string("completed"),
+              "arguments": .object([
+                "query": .string(names.joined(separator: " ")),
+                "limit": .integer(Int64(names.count)),
+              ]),
+            ]))
+          result.append(
+            .object([
+              "type": .string("tool_search_output"), "call_id": .string(callID),
+              "execution": .string("client"), "status": .string("completed"),
+              "tools": .array(tools),
+            ]))
+        }
+      }
+      let removed = value.toolsRemoved.filter { !added.contains($0) }
+      for name in removed where !unavailableTools.contains(name) { unavailableTools.append(name) }
+      guard !removed.isEmpty else { return value.content }
+      let notice =
+        "The following tools are no longer available. Do not call them:\n"
+        + removed.map { "- " + $0 }.joined(separator: "\n")
+      return [value.content, notice].filter { !$0.isEmpty }.joined(separator: "\n\n")
+    }
+    var sourceIndex = 0
     for message in messages {
+      let isLeadingSystem = sourceIndex == 0 && message.systemPayload != nil
+      sourceIndex += 1
       let messageIndex = replayMessageIndex
       switch message {
       case .system(let text):
-        if includeSystem {
+        if includeSystem || !isLeadingSystem {
           let supportsDeveloper =
             context.modelConfiguration.metadata.object("compat")?
             .bool("supportsDeveloperRole") != false
@@ -750,17 +1152,19 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
             context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
           result.append(.object(["role": .string(role), "content": .string(text)]))
         }
+        if !isLeadingSystem { replayMessageIndex += 1 }
         continue
       case .systemMessage(let value):
-        let text = value.content
-        if includeSystem {
-          let supportsDeveloper =
-            context.modelConfiguration.metadata.object("compat")?
-            .bool("supportsDeveloperRole") != false
-          let role =
-            context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
-          result.append(.object(["role": .string(role), "content": .string(text)]))
+        let role =
+          context.model.capabilities.reasoning && compat.bool("supportsDeveloperRole") != false
+          ? "developer" : "system"
+        let text = try appendToolChanges(value, role: role, messageIndex: messageIndex)
+        if includeSystem || !isLeadingSystem {
+          if !text.isEmpty {
+            result.append(.object(["role": .string(role), "content": .string(text)]))
+          }
         }
+        if !isLeadingSystem { replayMessageIndex += 1 }
         continue
       case .user(let content):
         result.append(
@@ -1168,6 +1572,9 @@ private struct OpenAIResponsesReducer {
   private var blockSlots: [Int?: (kind: String, index: Int)] = [:]
   private var nextContentIndex = 0
   private var provisionalFinishReason: ProviderFinishReason?
+  private var endTurn: Bool?
+
+  var isTerminal: Bool { terminal }
 
   init(
     providerID: String,
@@ -1204,19 +1611,25 @@ private struct OpenAIResponsesReducer {
       event.event == "error"
       || object["error"].map { ProviderOrderedJSON.scalar($0).isTruthy } == true
     if flavor == .codex || !sdkError { try await observation.streamEvent(.object(object)) }
-    do { return try reduceObject(object, eventName: event.event, eventData: event.data) } catch let
+    do {
+      return try await reduceObject(
+        object, eventName: event.event, eventData: event.data, observation: observation)
+    } catch let
       error
       as GrammarToolInputJSONError
     { throw invalid(error.description) }
   }
 
   private mutating func reduceObject(
-    _ object: [String: JSONValue], eventName: String?, eventData: String
-  ) throws -> [ProviderEvent] {
+    _ object: [String: JSONValue], eventName: String?, eventData: String,
+    observation: ProviderWireObservation
+  ) async throws -> [ProviderEvent] {
     guard let type = object.string("type") ?? eventName else {
       throw invalid("Responses event is missing type")
     }
     switch type {
+    case "codex.rate_limits" where flavor == .codex:
+      return []
     case "response.created", "response.in_progress":
       guard !started else { return [] }
       guard let response = object.object("response"), let id = response.string("id") else {
@@ -1284,7 +1697,7 @@ private struct OpenAIResponsesReducer {
       guard ["function_call", "custom_tool_call"].contains(item.string("type") ?? "") else {
         return []
       }
-      return try startTool(item, at: object.int("output_index"))
+      return try await startTool(item, at: object.int("output_index"), observation: observation)
     case "response.function_call_arguments.delta":
       guard
         let id = toolIDsByOutputIndex[object.int("output_index")],
@@ -1374,7 +1787,9 @@ private struct OpenAIResponsesReducer {
       guard ["function_call", "custom_tool_call"].contains(itemType) else { return [] }
       let index = object.int("output_index")
       var events: [ProviderEvent] = []
-      if toolIDsByOutputIndex[index] == nil { events += try startTool(item, at: index) }
+      if toolIDsByOutputIndex[index] == nil {
+        events += try await startTool(item, at: index, observation: observation)
+      }
       guard let id = toolIDsByOutputIndex[index], let state = tools[id]
       else { throw invalid("completed function call has no matching item") }
       guard (itemType == "function_call") == (state.customInputProperty == nil) else {
@@ -1409,6 +1824,7 @@ private struct OpenAIResponsesReducer {
         throw invalid("terminal event is missing response")
       }
       terminal = true
+      if flavor == .codex { endTurn = response.bool("end_turn") }
       try backfillReasoningSignatures(from: response)
       var events: [ProviderEvent] = []
       if let usage = response.object("usage") {
@@ -1597,6 +2013,7 @@ private struct OpenAIResponsesReducer {
       providerThinkingLevel.map { ["providerThinkingLevel": JSONValue.string($0)] }
       ?? [:]
     if let terminalErrorMessage { metadata["errorMessage"] = .string(terminalErrorMessage) }
+    if let endTurn { metadata["endTurn"] = .bool(endTurn) }
     return .responseSnapshot(
       ProviderResponseSnapshot(
         responseID: responseID,
@@ -1638,7 +2055,9 @@ private struct OpenAIResponsesReducer {
     }
   }
 
-  private mutating func startTool(_ item: [String: JSONValue], at index: Int?) throws
+  private mutating func startTool(
+    _ item: [String: JSONValue], at index: Int?, observation: ProviderWireObservation
+  ) async throws
     -> [ProviderEvent]
   {
     guard let id = responseToolID(item), let name = item.string("name") else {
@@ -1653,6 +2072,11 @@ private struct OpenAIResponsesReducer {
     tools[id] = try ToolState(
       name: name, arguments: item.string("arguments") ?? item.string("input") ?? "",
       customInputProperty: customProperty, namespace: item.string("namespace"))
+    try await observation.startToolArguments(
+      id: id,
+      initial: customProperty.map { .object([$0: .string(item.string("input") ?? "")]) }
+        ?? .object([:]),
+      seedText: customProperty == nil ? item.string("arguments") : nil)
     return [.toolCallStarted(id: id, name: name)]
   }
 

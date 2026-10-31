@@ -16,9 +16,9 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
             metadata: context.modelConfiguration.metadata,
             providerID: request.providerID,
             operation: "openrouter-images.usage.pricing")
-          let response = try await transport.stream(
-            try makeURLRequest(request, context: context)
-          )
+          let response = try await ProviderRequestRetry.stream(
+            makeURLRequest(request, context: context), request: request, context: context,
+            transport: transport)
           let data = try await collect(response.body, request: request)
           guard (200..<300).contains(response.statusCode) else {
             throw failure(

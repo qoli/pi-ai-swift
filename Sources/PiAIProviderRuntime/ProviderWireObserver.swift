@@ -1,5 +1,9 @@
 import Foundation
 
+struct CodexStreamCallbackError: Error {
+  let underlying: any Error
+}
+
 /// Callbacks can run concurrently for different request IDs.
 public struct ProviderWireObserver: Sendable {
   public struct Context: Sendable, Equatable, Codable {
@@ -27,31 +31,39 @@ public struct ProviderWireObserver: Sendable {
   public typealias PayloadCallback = @Sendable (inout Payload, Context) async throws -> Payload?
   public typealias ResponseCallback = @Sendable (Response, Context) async throws -> Void
   public typealias StreamEventCallback = @Sendable (JSONValue, Context) async throws -> Void
+  public typealias ToolArgumentsCallback =
+    @Sendable (ProviderToolArgumentsUpdate, Context) async throws -> Void
 
   /// Mutate in place or return a replacement; `nil` preserves in-place edits.
   public let onPayload: PayloadCallback?
   public let onResponse: ResponseCallback?
   /// Awaited after protocol parsing and before response normalization.
   public let onProviderStreamEvent: StreamEventCallback?
+  /// Decoded partial arguments, awaited before the corresponding tool event.
+  public let onToolArguments: ToolArgumentsCallback?
 
   public init(
     onPayload: PayloadCallback? = nil,
     onResponse: ResponseCallback? = nil,
-    onProviderStreamEvent: StreamEventCallback? = nil
+    onProviderStreamEvent: StreamEventCallback? = nil,
+    onToolArguments: ToolArgumentsCallback? = nil
   ) {
     self.onPayload = onPayload
     self.onResponse = onResponse
     self.onProviderStreamEvent = onProviderStreamEvent
+    self.onToolArguments = onToolArguments
   }
 }
 
 struct ProviderWireObservation: Sendable {
   let observer: ProviderWireObserver?
   let context: ProviderWireObserver.Context
+  private let toolArguments: ProviderToolArgumentObservation?
 
   init(request: ProviderRequest, wire: WireProtocolContext) {
     observer = wire.wireObserver
     context = .init(requestID: request.id, model: wire.model)
+    toolArguments = wire.wireObserver?.onToolArguments == nil ? nil : .init()
   }
 
   func payload(_ original: URLRequest, forceStreamingReplacement: Bool = false) async throws
@@ -85,6 +97,45 @@ struct ProviderWireObservation: Sendable {
   }
 
   func streamEvent(_ event: JSONValue) async throws {
-    try await observer?.onProviderStreamEvent?(event, context)
+    do { try await observer?.onProviderStreamEvent?(event, context) } catch {
+      if context.model.protocolID == "openai-codex-responses" {
+        throw CodexStreamCallbackError(underlying: error)
+      }
+      throw error
+    }
+  }
+
+  func startToolArguments(id: String, initial: JSONValue = .object([:]), seedText: String? = nil)
+    async throws
+  {
+    guard let callback = observer?.onToolArguments,
+      let update = await toolArguments?.start(id: id, initial: initial, seedText: seedText)
+    else { return }
+    try await toolUpdate(update, callback: callback)
+  }
+
+  func toolEvent(_ event: ProviderEvent) async throws {
+    guard let callback = observer?.onToolArguments else { return }
+    switch event {
+    case .toolCallStarted(let id, _): try await startToolArguments(id: id)
+    case .toolInputDelta(let id, let delta):
+      if let update = await toolArguments?.append(id: id, text: delta) {
+        try await toolUpdate(update, callback: callback)
+      }
+    case .toolCallCompleted(let call): await toolArguments?.finish(id: call.id)
+    default: break
+    }
+  }
+
+  private func toolUpdate(
+    _ update: ProviderToolArgumentsUpdate,
+    callback: ProviderWireObserver.ToolArgumentsCallback
+  ) async throws {
+    do { try await callback(update, context) } catch {
+      if context.model.protocolID == "openai-codex-responses" {
+        throw CodexStreamCallbackError(underlying: error)
+      }
+      throw error
+    }
   }
 }

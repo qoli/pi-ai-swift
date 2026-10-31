@@ -1,8 +1,17 @@
 import Foundation
 
+enum ProviderClockSleepPurpose: String, Sendable { case timeout, background }
+
 protocol ProviderOAuthClock: Sendable {
   func now() -> Date
   func sleep(for duration: Duration) async throws
+  func sleep(for duration: Duration, purpose: ProviderClockSleepPurpose) async throws
+}
+
+extension ProviderOAuthClock {
+  func sleep(for duration: Duration, purpose: ProviderClockSleepPurpose) async throws {
+    try await sleep(for: duration)
+  }
 }
 
 struct SystemProviderOAuthClock: ProviderOAuthClock {
@@ -11,6 +20,14 @@ struct SystemProviderOAuthClock: ProviderOAuthClock {
 }
 
 struct KimiCodingOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
+  func requestAuthorization(for credential: ProviderCredential?) throws
+    -> ProviderRequestAuthorization
+  {
+    guard case .oauth(let value) = credential else {
+      return .init(credential: credential, headers: [:])
+    }
+    return .init(credential: nil, headers: ["Authorization": "Bearer \(value.accessToken)"])
+  }
   static let providerID = "kimi-coding"
   private static let clientID = "17e5f671-d194-4dfb-9706-5516cb48c098"
 

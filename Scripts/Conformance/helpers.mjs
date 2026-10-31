@@ -53,11 +53,7 @@ export function requiresToolCallId(modelId) {
 }
 
 export function convertTools(tools, useParameters = false, supportsStrictMode = true) {
-  if (useParameters && tools.length) {
-    recordNative("google.tools", "google-generative-ai", undefined, ["legacy-sdk-openapi-parameters"]);
-    throw new Error("Legacy SDK parameters are not used by either pinned Google provider");
-  }
-  const result = invokeNative({ operation: "google-tools", tools, supportsStrictMode });
+  const result = invokeNative({ operation: "google-tools", tools, supportsStrictMode, useParameters });
   recordNative("google.tools", "google-generative-ai", result?.failure);
   if (result?.failure) throw new Error(result.failure.message);
   return result ?? undefined;

@@ -55,6 +55,7 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
             try Task.checkCancellation()
             for event in try decoder.append(chunk) {
               for normalized in try await reducer.reduce(event, observation: observation) {
+                try await observation.toolEvent(normalized)
                 continuation.yield(normalized)
               }
               if reducer.sawDone { break readStream }
@@ -63,12 +64,14 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
           if !reducer.sawDone {
             for event in try decoder.finish() {
               for normalized in try await reducer.reduce(event, observation: observation) {
+                try await observation.toolEvent(normalized)
                 continuation.yield(normalized)
               }
               if reducer.sawDone { break }
             }
           }
           for normalized in try reducer.finalize() {
+            try await observation.toolEvent(normalized)
             continuation.yield(normalized)
           }
           continuation.finish()

@@ -1,0 +1,213 @@
+{
+  "cases": [
+    {
+      "configuration": {
+        "apiVersion": "v1",
+        "httpOptions": {
+          "headers": {
+            "User-Agent": "fixture-cloud"
+          }
+        },
+        "location": "us-central1",
+        "project": "fixture-project",
+        "vertexai": true
+      },
+      "id": "vertex-marker-0"
+    },
+    {
+      "configuration": {
+        "apiVersion": "v1",
+        "httpOptions": {
+          "headers": {
+            "User-Agent": "fixture-cloud"
+          }
+        },
+        "location": "us-central1",
+        "project": "fixture-project",
+        "vertexai": true
+      },
+      "id": "vertex-marker-1"
+    },
+    {
+      "configuration": {
+        "apiKey": "fixture-api-key",
+        "apiVersion": "v1",
+        "httpOptions": {
+          "headers": {
+            "User-Agent": "fixture-cloud"
+          }
+        },
+        "vertexai": true
+      },
+      "id": "vertex-real-key"
+    },
+    {
+      "configuration": {
+        "apiVersion": "v1",
+        "googleAuthOptions": {
+          "keyFilename": "/fixture/credentials.json"
+        },
+        "httpOptions": {
+          "baseUrl": "https://proxy.invalid",
+          "baseUrlResourceScope": "COLLECTION",
+          "headers": {
+            "User-Agent": "fixture-cloud"
+          }
+        },
+        "location": "global",
+        "project": "fixture-project",
+        "vertexai": true
+      },
+      "id": "vertex-adc-proxy"
+    },
+    {
+      "configuration": {
+        "apiVersion": "v1",
+        "httpOptions": {
+          "apiVersion": "",
+          "baseUrl": "https://proxy.invalid/v1/projects/fixture-project/locations/global",
+          "baseUrlResourceScope": "COLLECTION",
+          "headers": {
+            "User-Agent": "fixture-cloud"
+          }
+        },
+        "location": "global",
+        "project": "fixture-project",
+        "vertexai": true
+      },
+      "id": "vertex-adc-versioned-proxy"
+    },
+    {
+      "configuration": {
+        "apiKey": "fixture-api-key",
+        "apiVersion": "v1",
+        "httpOptions": {
+          "baseUrl": "https://proxy.invalid",
+          "baseUrlResourceScope": "COLLECTION",
+          "headers": {
+            "User-Agent": "fixture-cloud"
+          }
+        },
+        "vertexai": true
+      },
+      "id": "vertex-key-proxy"
+    },
+    {
+      "configuration": {
+        "region": "us-east-2"
+      },
+      "id": "bedrock-configured-region"
+    },
+    {
+      "configuration": {
+        "endpoint": "https://bedrock-runtime.eu-central-1.amazonaws.com",
+        "region": "eu-central-1"
+      },
+      "id": "bedrock-eu-endpoint"
+    },
+    {
+      "configuration": {
+        "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "profile": "fixture-profile",
+        "region": "us-east-1"
+      },
+      "id": "bedrock-explicit-profile"
+    },
+    {
+      "configuration": {
+        "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "profile": "scoped-profile",
+        "region": "us-east-1"
+      },
+      "id": "bedrock-scoped-profile"
+    },
+    {
+      "configuration": {
+        "profile": "ambient-profile"
+      },
+      "id": "bedrock-ambient-profile"
+    },
+    {
+      "configuration": {
+        "credentials": {
+          "accessKeyId": "FIXTURE_ACCESS",
+          "secretAccessKey": "fixture-secret"
+        },
+        "profile": "ambient-profile"
+      },
+      "id": "bedrock-ambient-profile-and-keys"
+    },
+    {
+      "configuration": {
+        "region": "us-gov-west-1"
+      },
+      "id": "bedrock-arn-region"
+    },
+    {
+      "configuration": {
+        "authSchemePreference": [
+          "httpBearerAuth"
+        ],
+        "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com",
+        "region": "us-east-1",
+        "token": {
+          "token": "fixture-bearer"
+        }
+      },
+      "id": "bedrock-api-key"
+    },
+    {
+      "configuration": {
+        "apiKey": null,
+        "authToken": null,
+        "config": {
+          "authentication": {
+            "federation_rule_id": "fixture-rule",
+            "identity_token": {
+              "path": "/fixture/identity.jwt",
+              "source": "file"
+            },
+            "type": "oidc_federation"
+          },
+          "organization_id": "fixture-org"
+        }
+      },
+      "id": "anthropic-federation"
+    },
+    {
+      "configuration": {
+        "apiKey": null,
+        "authToken": null,
+        "config": {
+          "authentication": {
+            "federation_rule_id": "fixture-rule",
+            "identity_token": {
+              "path": "/fixture/identity.jwt",
+              "source": "file"
+            },
+            "service_account_id": "fixture-service",
+            "type": "oidc_federation"
+          },
+          "organization_id": "fixture-org",
+          "workspace_id": "fixture-workspace"
+        }
+      },
+      "id": "anthropic-federation-service-account"
+    },
+    {
+      "configuration": {
+        "apiKey": "fixture-key",
+        "authToken": null
+      },
+      "id": "anthropic-explicit-key-wins"
+    },
+    {
+      "configuration": {
+        "apiKey": null,
+        "authToken": null
+      },
+      "id": "anthropic-header-wins"
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

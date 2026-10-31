@@ -22,9 +22,13 @@ let package = Package(
       targets: ["PiAILiveProbe"]
     ),
   ],
+  dependencies: [
+    .package(url: "https://github.com/facebook/zstd.git", exact: "1.5.7")
+  ],
   targets: [
     .target(
       name: "PiAIProviderRuntime",
+      dependencies: [.product(name: "libzstd", package: "zstd")],
       resources: [.process("Resources")]
     ),
     .executableTarget(

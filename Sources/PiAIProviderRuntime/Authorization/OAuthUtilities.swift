@@ -31,18 +31,17 @@ func oauthFormRequest(
   url: URL,
   fields: [String: String]
 ) throws -> URLRequest {
-  var components = URLComponents()
-  components.queryItems = fields.sorted { $0.key < $1.key }.map {
-    URLQueryItem(name: $0.key, value: $0.value)
+  func encode(_ value: String) -> String {
+    value.utf8.map { byte in
+      switch byte {
+      case 65...90, 97...122, 48...57, 42, 45, 46, 95: String(UnicodeScalar(byte))
+      case 32: "+"
+      default: String(format: "%%%02X", byte)
+      }
+    }.joined()
   }
-  guard let encoded = components.percentEncodedQuery else {
-    throw oauthFailure(
-      .invalidRequest,
-      providerID: nil,
-      operation: "oauth.form",
-      message: "OAuth form could not be encoded"
-    )
-  }
+  let encoded = fields.sorted { $0.key < $1.key }.map { encode($0.key) + "=" + encode($0.value) }
+    .joined(separator: "&")
   var request = URLRequest(url: url)
   request.httpMethod = "POST"
   request.setValue("application/json", forHTTPHeaderField: "Accept")
@@ -93,7 +92,8 @@ func oauthResponseObject(
 func oauthAuthorizationCode(
   _ response: AuthorizationResponse,
   expectedState: String?,
-  providerID: String
+  providerID: String,
+  requireState: Bool = true
 ) throws -> String {
   let code: String?
   let state: String?
@@ -112,6 +112,10 @@ func oauthAuthorizationCode(
       let values = value.split(separator: "#", maxSplits: 1).map(String.init)
       code = values.first
       state = values.count == 2 ? values[1] : nil
+    } else if value.contains("code=") {
+      let components = URLComponents(string: "?" + value)
+      code = components?.queryItems?.first { $0.name == "code" }?.value
+      state = components?.queryItems?.first { $0.name == "state" }?.value
     } else {
       code = value
       state = nil
@@ -128,7 +132,7 @@ func oauthAuthorizationCode(
       message: "OAuth callback is missing authorization code"
     )
   }
-  if let expectedState {
+  if let expectedState, requireState || state != nil {
     guard state == expectedState else {
       throw oauthFailure(
         .authorizationFailed,

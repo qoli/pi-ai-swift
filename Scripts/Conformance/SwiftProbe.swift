@@ -5,12 +5,21 @@ import Foundation
 @main
 struct SwiftConformanceProbe {
   static func main() async throws {
+    if CommandLine.arguments.contains("--server") {
+      await WireConformanceServer.run()
+      return
+    }
     let interactive = CommandLine.arguments.contains("--stream")
     let data =
       interactive
       ? Data((readLine() ?? "").utf8) : FileHandle.standardInput.readDataToEndOfFile()
     do {
-      try await execute(data, interactive: interactive)
+      if var output = try await execute(data, interactive: interactive) {
+        output.lifetime = await ProbeStreamLifetime.shared.afterScope()
+        FileHandle.standardOutput.write(try JSONEncoder().encode(output))
+      } else if interactive, let lifetime = await ProbeStreamLifetime.shared.afterScope() {
+        try ProbeChannel().write("lifetime", lifetime)
+      }
     } catch let error as ProviderRuntimeFailure {
       if interactive {
         try ProbeChannel().write("finished", project(error))
@@ -36,11 +45,85 @@ struct SwiftConformanceProbe {
     }
   }
 
-  private static func execute(_ data: Data, interactive: Bool) async throws {
+  static func execute(
+    _ data: Data, interactive: Bool, incoming: AsyncStream<[String: JSONValue]>? = nil,
+    wireServer: WireConformanceServer? = nil,
+    lifetime: ProbeStreamLifetime = .shared
+  ) async throws -> ProbeOutput? {
     let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
+    if envelope.string("operation") == "headers.bedrock" {
+      let projected = BedrockConverseStreamAdapter.customHeaders(
+        (envelope.object("headers") ?? [:]).compactMapValues(\.stringValue))
+      FileHandle.standardOutput.write(try JSONEncoder().encode(projected))
+      return nil
+    }
+    if envelope.string("operation") == "headers.open-code" {
+      let projection = ProviderSessionHeaders.openCodeHeaders(
+        sessionID: envelope.string("sessionID"),
+        headers: envelope.object("headers")?.mapValues(\.stringValue))
+      var result: [String: JSONValue] = ["changed": .bool(projection.changed)]
+      if let headers = projection.headers {
+        result["headers"] = .object(headers.mapValues { $0.map(JSONValue.string) ?? .null })
+      }
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return nil
+    }
+    if envelope.string("operation") == "tool-support" {
+      let model = envelope.object("model") ?? [:]
+      let mode = ProviderToolDeclarationMode.resolve(
+        protocolID: model.string("api") ?? "",
+        compatibility: model.object("compat") ?? [:])
+      FileHandle.standardOutput.write(try JSONEncoder().encode(mode.rawValue))
+      return nil
+    }
+    if ["provider.retry", "oauth.device-poll"].contains(envelope.string("operation") ?? ""),
+      let incoming, let wireServer
+    {
+      await RetryConformanceProbe.run(envelope, incoming: incoming, server: wireServer)
+      return nil
+    }
     if envelope.string("operation") == "authorization" {
       try await AuthorizationConformanceProbe.run(envelope)
-      return
+      return nil
+    }
+    if let operation = envelope.string("operation"), operation.hasPrefix("identity.") {
+      let identity = envelope.object("identity")
+      let target = envelope.object("target") ?? [:]
+      let host = try JSONDecoder().decode(
+        ProviderIdentityHost.self,
+        from: JSONEncoder().encode(JSONValue.object(envelope.object("host") ?? [:])))
+      let result: JSONValue
+      switch operation {
+      case "identity.version":
+        result = .string(identity?.string("version") ?? ProviderClientIdentity.upstreamVersion)
+      case "identity.user-agent":
+        result = .string(ProviderClientIdentity.userAgent(identity, host: host))
+      case "identity.merge":
+        result =
+          ProviderClientIdentity.merge((envelope.array("sources") ?? []).map(\.objectValue)).map(
+            JSONValue.object) ?? .null
+      case "identity.attribution":
+        result = .object(
+          ProviderClientIdentity.attributionHeaders(
+            providerID: target.string("provider") ?? "", baseURL: target.string("baseUrl") ?? "",
+            identity: identity
+          ).mapValues(JSONValue.string))
+      case "identity.headers":
+        result = .object(
+          ProviderClientIdentity.headers(
+            providerID: target.string("provider") ?? "", baseURL: target.string("baseUrl") ?? "",
+            identity: identity, host: host
+          ).mapValues(JSONValue.string))
+      case "identity.session-headers":
+        result =
+          ProviderClientIdentity.openCodeSessionHeaders(
+            providerID: target.string("provider") ?? "", baseURL: target.string("baseUrl") ?? "",
+            sessionID: envelope.string("sessionID")
+          ).map { .object($0.mapValues(JSONValue.string)) } ?? .null
+      default: throw ProbeError.unsupported(operation)
+      }
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return nil
     }
     if envelope.string("operation") == "tool.arguments.complete" {
       let call = ProviderToolCall.parsing(
@@ -48,7 +131,7 @@ struct SwiftConformanceProbe {
       var result = ["arguments": call.arguments]
       result["argumentsError"] = call.argumentsError.map(JSONValue.string)
       FileHandle.standardOutput.write(try JSONEncoder().encode(result))
-      return
+      return nil
     }
     if envelope.string("operation") == "usage.openrouter-cost" {
       let raw = envelope.object("usage") ?? [:]
@@ -62,7 +145,7 @@ struct SwiftConformanceProbe {
       FileHandle.standardOutput.write(
         try JSONEncoder().encode(
           usage.applyingOpenRouterCost(envelope.object("reported") ?? [:], enabled: true).cost))
-      return
+      return nil
     }
     if envelope.string("operation") == "usage.calculate" {
       let raw = envelope.object("usage") ?? [:]
@@ -79,7 +162,7 @@ struct SwiftConformanceProbe {
             input: raw.int("input") ?? 0, output: raw.int("output") ?? 0,
             cacheRead: raw.int("cacheRead") ?? 0, cacheWrite: raw.int("cacheWrite") ?? 0,
             cacheWrite1h: raw.int("cacheWrite1h") ?? 0)))
-      return
+      return nil
     }
     if envelope.string("operation") == "sampling.strict" {
       let projection = try ProviderConstrainedSamplingResolver.jsonSchema(
@@ -88,7 +171,7 @@ struct SwiftConformanceProbe {
         providerID: "fixture", operation: "conformance.sampling.strict")
       FileHandle.standardOutput.write(
         try JSONEncoder().encode(projection.strict == true ? projection.schema : .null))
-      return
+      return nil
     }
     if envelope.string("operation") == "sampling.grammar-buffer" {
       var buffer = try GrammarToolInputJSONBuffer(
@@ -107,49 +190,82 @@ struct SwiftConformanceProbe {
           operation: "conformance.grammar-buffer", causeDescription: nil)
       }
       FileHandle.standardOutput.write(try JSONEncoder().encode(result))
-      return
+      return nil
     }
     if envelope.string("operation") == "error.format" {
       let result = ProviderErrorText.format(
-        status: envelope.int("status"), body: envelope.string("body"),
-        message: envelope.string("message") ?? "",
-        messageCarriesBody: envelope.bool("messageCarriesBody") ?? false,
+        .init(
+          status: envelope["status"], body: envelope.string("body"),
+          message: envelope.string("message") ?? "",
+          messageCarriesBody: envelope.bool("messageCarriesBody") ?? false),
         prefix: envelope.string("prefix"))
       FileHandle.standardOutput.write(try JSONEncoder().encode(result))
-      return
+      return nil
+    }
+    if envelope.string("operation") == "error.normalize-sdk-object" {
+      func candidate(_ key: String) -> ProviderErrorText.BodyCandidate {
+        let value = envelope.object(key) ?? [:]
+        if let text = value.string("text") { return .text(text) }
+        if value.bool("plain") == true {
+          return .plainObject(
+            serialized: value.string("serialized") ?? value.string("stringValue") ?? "",
+            isEmpty: value.int("ownKeys") == 0, isReadable: value.bool("readable") == true)
+        }
+        return .other
+      }
+      let result = ProviderErrorText.normalize(
+        isError: envelope.bool("isError") == true, message: envelope.string("message") ?? "",
+        serializedValue: envelope.string("serialized"),
+        stringValue: envelope.string("stringValue") ?? "",
+        statusCandidates: envelope.array("statusCandidates") ?? [], body: candidate("body"),
+        error: candidate("error"), responseBody: candidate("responseBody"))
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return nil
     }
     if envelope.string("operation") == "error.truncate" {
-      let result = ProviderErrorText.truncate(
-        try envelope.required("text"), maximumCharacters: envelope.int("maximumCharacters")!)
-      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
-      return
+      let text = try envelope.required("text")
+      let maximum = envelope.int("maximumCharacters")!
+      let before = pi_heap_live_bytes()
+      let result = autoreleasepool {
+        let owned = String(decoding: Array(text.utf8), as: UTF8.self)
+        return ProviderErrorText.truncate(owned, maximumCharacters: maximum)
+      }
+      let retained = Int64(pi_heap_live_bytes()) - Int64(before)
+      FileHandle.standardOutput.write(
+        try JSONEncoder().encode([
+          "value": JSONValue.string(result), "retainedBytes": .integer(retained),
+        ]))
+      return nil
     }
     if envelope.string("operation") == "google-tools" {
       let projection = try GoogleToolProjection.declarations(
         (envelope.array("tools") ?? []).map(toolDefinition),
-        supportsStrictMode: envelope.bool("supportsStrictMode") ?? true, providerID: "google")
+        supportsStrictMode: envelope.bool("supportsStrictMode") ?? true, providerID: "google",
+        useParameters: envelope.bool("useParameters") ?? false)
       FileHandle.standardOutput.write(
         Data(try ordered(projection.tools ?? .null).encodedString().utf8))
-      return
+      return nil
     }
-    if envelope.string("operation") == "catalog" {
+    if ["catalog", "catalog.images"].contains(envelope.string("operation") ?? "") {
       let registry = try BuiltinProviderRegistry.load()
       var catalog: [String: [String: JSONValue]] = [:]
       for provider in registry.providers {
         for model in provider.models {
-          let route = ProviderModelRoute(modelID: model.id, outputModality: .text)
+          let route = ProviderModelRoute(
+            modelID: model.id,
+            outputModality: envelope.string("operation") == "catalog.images" ? .image : .text)
           guard let config = provider.modelConfigurations[route] else { continue }
           var raw = config.metadata
           raw["id"] = .string(model.id)
           raw["name"] = .string(model.name)
           raw["provider"] = .string(provider.id)
-          raw["api"] = .string(model.protocolID)
+          raw["api"] = .string(config.protocolID)
           if let base = config.baseURL ?? provider.baseURL { raw["baseUrl"] = .string(base) }
           catalog[provider.id + "/" + model.id] = raw
         }
       }
       FileHandle.standardOutput.write(try JSONEncoder().encode(catalog))
-      return
+      return nil
     }
     let input = try JSONDecoder().decode(ProbeInput.self, from: data)
     let model = input.model
@@ -157,9 +273,6 @@ struct SwiftConformanceProbe {
     let provider = try model.required("provider")
     let modelID = try model.required("id")
     let options = input.options
-    if api != "mistral-conversations", (options.object("headers") ?? [:]).values.contains(.null) {
-      throw ProbeError.unrepresentable("null-header-suppression")
-    }
     if envelope.string("operation") == "google-thinking-level" {
       let rawEffort = try options.required("reasoningEffort")
       guard let effort = ProviderReasoningEffort(rawValue: rawEffort) else {
@@ -168,7 +281,7 @@ struct SwiftConformanceProbe {
       let resolved = try GoogleGenerativeAIAdapter.resolveThinkingLevel(
         effort: effort, providerID: provider, modelID: modelID, metadata: model)
       FileHandle.standardOutput.write(try JSONEncoder().encode(resolved))
-      return
+      return nil
     }
     let providerModel = ProviderModel(
       id: modelID, providerID: provider, name: model.string("name") ?? modelID,
@@ -185,7 +298,7 @@ struct SwiftConformanceProbe {
     if envelope.string("operation") == "reasoning-levels" {
       FileHandle.standardOutput.write(
         try JSONEncoder().encode(providerModel.supportedReasoningEfforts))
-      return
+      return nil
     }
     var messages: [ProviderMessage] = []
     if let system = input.context.systemPrompt, !system.isEmpty { messages.append(.system(system)) }
@@ -209,6 +322,7 @@ struct SwiftConformanceProbe {
       "thinkingBudgetTokens", "reasoningSummary", "responseSchema", "sessionId", "cacheRetention",
       "serviceTier", "toolChoice", "thinkingBudgets", "textVerbosity", "env",
       "azureBaseUrl", "azureResourceName", "azureApiVersion", "azureDeploymentName", "region",
+      "profile", "bearerToken",
     ]
     var providerOptions = options.filter { !mappedOptions.contains($0.key) }
     providerOptions["identity"] = options["identity"]
@@ -251,6 +365,10 @@ struct SwiftConformanceProbe {
       },
       textVerbosity: options.string("textVerbosity"))
     generationOptions.cacheRetentionIsExplicit = options["cacheRetention"] != nil
+    let cloudOptions =
+      ["google-vertex", "bedrock-converse-stream", "anthropic-messages"].contains(api)
+      ? CloudConformanceProbe.options(options, ambient: envelope.object("cloudEnvironment") ?? [:])
+      : nil
     let request = ProviderRequest(
       id: "upstream-conformance", providerID: provider, modelID: modelID,
       messages: messages, tools: tools, options: generationOptions,
@@ -261,10 +379,17 @@ struct SwiftConformanceProbe {
             azureResourceName: options.string("azureResourceName"),
             azureAPIVersion: options.string("azureApiVersion"),
             azureDeploymentName: options.string("azureDeploymentName"),
-            environment: input.environment) : nil))
-    let headers = (options.object("headers") ?? [:]).compactMapValues(\.stringValue)
+            environment: input.environment) : nil,
+        headers: options.object("headers")?.mapValues(\.stringValue),
+        transport: options.string("transport").flatMap(
+          ProviderConnectionOptions.Transport.init(rawValue:)),
+        timeoutMilliseconds: options["timeoutMs"].flatMap(number),
+        webSocketConnectTimeoutMilliseconds: options["websocketConnectTimeoutMs"].flatMap(number),
+        maximumRetries: options.int("maxRetries"),
+        maximumRetryDelayMilliseconds: options["maxRetryDelayMs"].flatMap(number),
+        cloud: cloudOptions))
     let credential: ProviderCredential?
-    if api == "google-vertex", input.credential.key == nil {
+    if api == "google-vertex", input.credential.key == nil, cloudOptions == nil {
       credential = .oauth(
         .init(
           accessToken: "test", refreshToken: "test", expiresAt: .distantFuture,
@@ -274,6 +399,11 @@ struct SwiftConformanceProbe {
             "location": options.string("location") ?? input.environment["GOOGLE_CLOUD_LOCATION"]
               ?? "",
           ]))
+    } else if api == "openai-codex-responses", let key = input.credential.key {
+      credential = .oauth(
+        .init(
+          accessToken: key, refreshToken: "", expiresAt: .distantFuture,
+          metadata: ["accountID": try OpenAICodexOAuthClient().extractAccountID(from: key)]))
     } else if api == "anthropic-messages", let key = input.credential.key,
       key.contains("sk-ant-oat")
     {
@@ -289,6 +419,27 @@ struct SwiftConformanceProbe {
     let responses = input.responses ?? []
     let fixtureTransport = ProbeTransport(responses: responses, aborted: input.aborted == true)
     let channel = ProbeChannel()
+    let host = try JSONDecoder().decode(
+      ProviderIdentityHost.self,
+      from: JSONEncoder().encode(JSONValue.object(envelope.object("identityHost") ?? [:])))
+    let cloudPlan = try cloudOptions.flatMap { cloud in
+      try ProviderCloudPlan.resolve(
+        protocolID: api, providerID: provider, modelID: modelID,
+        baseURL: model.string("baseUrl") ?? "", credential: credential,
+        headers: options.object("headers")?.mapValues(\.stringValue) ?? [:], options: cloud)
+    }
+    var clientHeaders = ProviderClientIdentity.headers(
+      providerID: provider,
+      baseURL: model.string("baseUrl") ?? "", identity: options.object("identity"), host: host)
+    for source in [(model.object("headers") ?? [:]), (options.object("headers") ?? [:])] {
+      for (name, value) in source {
+        clientHeaders = clientHeaders.filter { $0.key.caseInsensitiveCompare(name) != .orderedSame }
+        if let value = value.stringValue { clientHeaders[name] = value }
+      }
+    }
+    let cloudConfiguration = cloudPlan.map {
+      CloudConformanceProbe.configuration($0, headers: clientHeaders)
+    }
     let azureConfiguration =
       api == "azure-openai-responses"
       ? try? ResolvedAzureOpenAIResponsesConfiguration.resolve(
@@ -297,7 +448,8 @@ struct SwiftConformanceProbe {
       channel: channel,
       azureConfiguration: azureConfiguration.map {
         ["baseURL": .string($0.baseURL), "apiVersion": .string($0.apiVersion)]
-      })
+      }, cloudConfiguration: cloudConfiguration)
+    let toolUpdates = ProbeToolUpdates()
     let transport: any ProviderHTTPStreamingTransport =
       interactive ? liveTransport : fixtureTransport
     let authorization: any ProviderAuthorizationAdapter
@@ -310,9 +462,9 @@ struct SwiftConformanceProbe {
     } else {
       authorization = FixtureAuthorization()
     }
-    let observerFlags = interactive ? envelope.object("wireObserver") ?? [:] : [:]
+    let observerFlags = envelope.object("wireObserver") ?? [:]
     var onPayload: ProviderWireObserver.PayloadCallback?
-    if observerFlags.bool("payload") == true {
+    if interactive && observerFlags.bool("payload") == true {
       onPayload = { payload, context in
         let reply = try await liveTransport.observe("payload", .object(payload), context: context)
         guard let modified = reply.object("payload"), let replaced = reply.bool("replaced") else {
@@ -323,25 +475,38 @@ struct SwiftConformanceProbe {
       }
     }
     var onResponse: ProviderWireObserver.ResponseCallback?
-    if observerFlags.bool("response") == true {
+    if interactive && observerFlags.bool("response") == true {
       onResponse = { response, context in
         let value = try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(response))
         _ = try await liveTransport.observe("response", value, context: context)
       }
     }
     var onEvent: ProviderWireObserver.StreamEventCallback?
-    if observerFlags.bool("event") == true {
+    if interactive && observerFlags.bool("event") == true {
       onEvent = { event, context in
         _ = try await liveTransport.observe("event", event, context: context)
+      }
+    }
+    var onToolArguments: ProviderWireObserver.ToolArgumentsCallback?
+    if observerFlags.bool("toolArguments") == true {
+      let marker = lifetime.marker()
+      onToolArguments = { update, context in
+        defer { withExtendedLifetime(marker) {} }
+        if interactive {
+          _ = try await liveTransport.observe("toolArguments", probeJSON(update), context: context)
+        } else {
+          await toolUpdates.append(update)
+        }
       }
     }
     let wireObserver: ProviderWireObserver? =
       observerFlags.isEmpty
       ? nil
       : .init(
-        onPayload: onPayload, onResponse: onResponse, onProviderStreamEvent: onEvent)
+        onPayload: onPayload, onResponse: onResponse, onProviderStreamEvent: onEvent,
+        onToolArguments: onToolArguments)
     let baseURL: String?
-    if input.requestSource == "api", let literal = model.string("baseUrl"),
+    if input.requestSource == "api", api != "google-vertex", let literal = model.string("baseUrl"),
       let url = URL(string: literal), url.host != nil
     {
       baseURL = url.absoluteString
@@ -359,7 +524,7 @@ struct SwiftConformanceProbe {
           modelConfigurations: [
             .init(modelID: modelID, outputModality: api == "openrouter-images" ? .image : .text):
               .init(
-                protocolID: api, baseURL: nil, headers: headers, metadata: model)
+                protocolID: api, baseURL: nil, headers: [:], metadata: model)
           ],
           credentialRequirement: credential == nil ? .none : .required,
           endpointPolicy: .httpOrHTTPS,
@@ -369,21 +534,56 @@ struct SwiftConformanceProbe {
       credentialStore: InMemoryProviderCredentialStore(
         credentials: credential.map { [provider: $0] } ?? [:]),
       transport: transport, wireObserver: wireObserver,
-      identityHost: try JSONDecoder().decode(
-        ProviderIdentityHost.self,
-        from: JSONEncoder().encode(JSONValue.object(envelope.object("identityHost") ?? [:]))))
+      identityHost: host,
+      webSocketTransport: wireServer.map { ProbeWebSocketTransport(server: $0) },
+      codexSessions: wireServer?.sessions ?? CodexWebSocketSessions(),
+      clock: wireServer.map { $0.clock as any ProviderOAuthClock } ?? SystemProviderOAuthClock(),
+      cloudAuthorizationResolver: { authorizationRequest in
+        if !interactive {
+          return .init {
+            switch authorizationRequest {
+            case .awsCredentials(_, let region):
+              return .aws(
+                .init(
+                  accessKeyID: "synthetic-access", secretAccessKey: "synthetic-secret",
+                  region: region ?? "us-east-1"))
+            default: return .bearerToken("synthetic-cloud-fixture-token")
+            }
+          }
+        }
+        let server = wireServer!
+        let reply = try await server.cloudExchange(
+          "source",
+          value: [
+            "request": try probeJSON(authorizationRequest),
+            "configuration": .object(cloudConfiguration ?? [:]),
+          ])
+        let source = reply.string("source")!
+        return .init { [weak server] in
+          guard let server else { throw CancellationError() }
+          let result = try await server.cloudExchange(
+            "credential", value: ["source": .string(source)])
+          return try JSONDecoder().decode(
+            ProviderCloudCredential.self,
+            from: JSONEncoder().encode(result["credential"] ?? .null))
+        }
+      }, cloudCredentialSources: wireServer?.cloudCredentialSources ?? .init())
     if input.measureHeap == true, pi_heap_begin() != 0 {
       throw ProbeError.unrepresentable("swift-process-heap-observer")
     }
     let execution = Task {
-      var events: [ProviderEvent] = []
+      var events: [JSONValue] = []
       var failure: [String: JSONValue]?
       do {
         for try await event in runtime.stream(request) {
           if interactive {
             try channel.write("event", event)
           } else {
-            events.append(event)
+            if let update = await toolUpdates.next(for: event) {
+              events.append(
+                .object(["toolArgumentsUpdate": .object(["_0": try probeJSON(update)])]))
+            }
+            events.append(try probeJSON(event))
           }
         }
         if interactive && Task.isCancelled { failure = ["code": .string("cancelled")] }
@@ -398,11 +598,28 @@ struct SwiftConformanceProbe {
       }
       return (events, failure)
     }
+    var receiver: Task<Void, Never>?
     if interactive {
-      Task.detached {
-        while let line = readLine() {
+      receiver = Task.detached {
+        let frames: AsyncStream<[String: JSONValue]>
+        if let incoming {
+          frames = incoming
+        } else {
+          frames = AsyncStream { continuation in
+            Task.detached {
+              while let line = readLine() {
+                if let frame = try? probeEncoding({
+                  try JSONDecoder().decode([String: JSONValue].self, from: Data(line.utf8))
+                }) {
+                  continuation.yield(frame)
+                }
+              }
+              continuation.finish()
+            }
+          }
+        }
+        for await frame in frames {
           do {
-            let frame = try JSONDecoder().decode([String: JSONValue].self, from: Data(line.utf8))
             if frame.string("kind") == "cancel" { execution.cancel() }
             try await liveTransport.receive(frame)
           } catch {
@@ -414,12 +631,15 @@ struct SwiftConformanceProbe {
     }
     let (events, failure) = await execution.value
     if interactive {
+      await liveTransport.finish()
+      if let wireServer { try channel.write("codexStats", await wireServer.sessions.debugStats()) }
       if input.measureHeap == true {
         let bytes = pi_heap_allocated_bytes()
         try channel.write("heap", ["allocatedBytes": bytes])
       }
       try channel.write("finished", failure)
-      return
+      if incoming == nil { await receiver?.value }
+      return nil
     }
     let requests = await fixtureTransport.requests
     let captured = requests.last
@@ -427,11 +647,15 @@ struct SwiftConformanceProbe {
       request: try captured.map {
         .init(
           url: $0.url!.absoluteString, headers: $0.allHTTPHeaderFields ?? [:],
-          body: try JSONDecoder().decode(JSONValue.self, from: $0.httpBody ?? Data("null".utf8)))
+          body: $0.value(forHTTPHeaderField: "Content-Encoding") == "zstd"
+            ? .null
+            : try JSONDecoder().decode(JSONValue.self, from: $0.httpBody ?? Data("null".utf8)),
+          rawBody: $0.value(forHTTPHeaderField: "Content-Encoding") == "zstd"
+            ? $0.httpBody?.base64EncodedString() : nil)
       }, pending: requests.count > responses.count && input.aborted != true, events: events,
       failure: failure)
     if input.measureHeap == true { output.allocatedBytes = pi_heap_allocated_bytes() }
-    FileHandle.standardOutput.write(try JSONEncoder().encode(output))
+    return output
   }
 
   private static func project(_ error: ProviderRuntimeFailure) -> [String: JSONValue] {
@@ -566,10 +790,7 @@ struct SwiftConformanceProbe {
     guard let raw else { return nil }
     switch try raw.required("type") {
     case "json_schema":
-      guard raw.string("strict") != nil else {
-        throw ProbeError.unrepresentable("implicit-json-schema-strict-preference")
-      }
-      return .jsonSchema(strict: ProviderStrictPreference(rawValue: try raw.required("strict"))!)
+      return .jsonSchema(strict: raw.string("strict") == "require" ? .require : .prefer)
     case "grammar":
       return .grammar(variants: (raw.object("variants") ?? [:]).compactMapValues(\.stringValue))
     default: throw ProbeError.unsupported("constrained sampling")
@@ -625,40 +846,91 @@ private struct ProbeInput: Decodable {
   }
 }
 
-private struct ProbeOutput: Encodable {
+struct ProbeOutput: Encodable {
   let request: Request?
   let pending: Bool
-  let events: [ProviderEvent]
+  let events: [JSONValue]
   let failure: [String: JSONValue]?
   var allocatedBytes: UInt64? = nil
+  var lifetime: ProbeStreamLifetime.Observation? = nil
   struct Request: Encodable {
     let url: String
     let headers: [String: String]
     let body: JSONValue
     var azureConfiguration: [String: JSONValue]? = nil
+    var rawBody: String? = nil
+    var cloudConfiguration: [String: JSONValue]? = nil
   }
 }
 
-private final class ProbeChannel: @unchecked Sendable {
-  private let lock = NSLock()
+private func probeJSON<T: Encodable>(_ value: T) throws -> JSONValue {
+  try probeEncoding { try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(value)) }
+}
+
+private func probeEncoding<T>(_ operation: () throws -> T) rethrows -> T {
+  pi_heap_pause()
+  defer { pi_heap_resume() }
+  return try operation()
+}
+
+private actor ProbeToolUpdates {
+  private struct Queue {
+    var values: [ProviderToolArgumentsUpdate] = []
+    var index = 0
+  }
+  private var updates: [String: Queue] = [:]
+
+  func append(_ update: ProviderToolArgumentsUpdate) {
+    pi_heap_pause()
+    defer { pi_heap_resume() }
+    updates[update.id, default: .init()].values.append(update)
+  }
+
+  func next(for event: ProviderEvent) -> ProviderToolArgumentsUpdate? {
+    pi_heap_pause()
+    defer { pi_heap_resume() }
+    let id: String
+    switch event {
+    case .toolCallStarted(let value, _), .toolInputDelta(let value, _): id = value
+    default: return nil
+    }
+    guard let queue = updates[id], queue.index < queue.values.count else { return nil }
+    let value = queue.values[queue.index]
+    if queue.index + 1 == queue.values.count {
+      updates.removeValue(forKey: id)
+    } else {
+      updates[id]!.index += 1
+    }
+    return value
+  }
+}
+
+final class ProbeChannel: @unchecked Sendable {
+  private static let lock = NSLock()
 
   private struct Frame<Payload: Encodable>: Encodable {
     let kind: String
     let payload: Payload
+    let id: String?
   }
 
   func write<T: Encodable>(_ kind: String, _ payload: T) throws {
-    var data = try JSONEncoder().encode(Frame(kind: kind, payload: payload))
-    data.append(10)
-    lock.withLock { FileHandle.standardOutput.write(data) }
+    try probeEncoding {
+      var data = try JSONEncoder().encode(
+        Frame(kind: kind, payload: payload, id: WireProbeContext.id))
+      data.append(10)
+      Self.lock.withLock { FileHandle.standardOutput.write(data) }
+    }
   }
 }
 
 private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
   let channel: ProbeChannel
   let azureConfiguration: [String: JSONValue]?
+  let cloudConfiguration: [String: JSONValue]?
   private var response: CheckedContinuation<ProviderHTTPStreamingResponse, any Error>?
-  private var body: AsyncThrowingStream<Data, any Error>.Continuation?
+  private var bodyRead: CheckedContinuation<Data?, any Error>?
+  private var bodyOpen = false
   private var observerReply: CheckedContinuation<[String: JSONValue], any Error>?
 
   private struct Observation: Encodable {
@@ -682,16 +954,26 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
     }
   }
 
-  init(channel: ProbeChannel, azureConfiguration: [String: JSONValue]?) {
+  init(
+    channel: ProbeChannel, azureConfiguration: [String: JSONValue]?,
+    cloudConfiguration: [String: JSONValue]?
+  ) {
     self.channel = channel
     self.azureConfiguration = azureConfiguration
+    self.cloudConfiguration = cloudConfiguration
   }
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
-    let captured = ProbeOutput.Request(
-      url: request.url!.absoluteString, headers: request.allHTTPHeaderFields ?? [:],
-      body: try JSONDecoder().decode(JSONValue.self, from: request.httpBody ?? Data("null".utf8)),
-      azureConfiguration: azureConfiguration)
+    let captured = try probeEncoding {
+      ProbeOutput.Request(
+        url: request.url!.absoluteString, headers: request.allHTTPHeaderFields ?? [:],
+        body: request.value(forHTTPHeaderField: "Content-Encoding") == "zstd"
+          ? .null
+          : try JSONDecoder().decode(JSONValue.self, from: request.httpBody ?? Data("null".utf8)),
+        azureConfiguration: azureConfiguration,
+        rawBody: request.value(forHTTPHeaderField: "Content-Encoding") == "zstd"
+          ? request.httpBody?.base64EncodedString() : nil, cloudConfiguration: cloudConfiguration)
+    }
     return try await withTaskCancellationHandler {
       try await withCheckedThrowingContinuation { continuation in
         response = continuation
@@ -703,7 +985,7 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
   }
 
   private func cancelRequest() {
-    guard response != nil else { return }
+    guard response != nil || bodyOpen else { return }
     do { try channel.write("cancelRequest", [String: JSONValue]()) } catch {
       fail(error)
       return
@@ -711,7 +993,27 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
     fail(CancellationError())
   }
 
+  func finish() {
+    cancelRequest()
+  }
+
+  private func nextChunk() async throws -> Data? {
+    guard bodyOpen else { return nil }
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        pi_heap_pause()
+        defer { pi_heap_resume() }
+        bodyRead = continuation
+        do { try channel.write("readBody", [String: JSONValue]()) } catch { fail(error) }
+      }
+    } onCancel: {
+      Task { await self.cancelRequest() }
+    }
+  }
+
   func receive(_ frame: [String: JSONValue]) throws {
+    pi_heap_pause()
+    defer { pi_heap_resume() }
     switch frame.string("kind") {
     case "observerReply":
       if let error = frame.string("error") {
@@ -724,8 +1026,8 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
       }
       observerReply = nil
     case "response":
-      let (stream, continuation) = AsyncThrowingStream<Data, any Error>.makeStream()
-      body = continuation
+      bodyOpen = true
+      let stream = AsyncThrowingStream<Data, any Error>(unfolding: { try await self.nextChunk() })
       response?.resume(
         returning: .init(
           statusCode: frame.int("status")!,
@@ -736,10 +1038,12 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
       guard let value = frame.string("data"), let data = Data(base64Encoded: value) else {
         throw ProbeError.unsupported("fixture chunk")
       }
-      body?.yield(data)
+      bodyRead?.resume(returning: data)
+      bodyRead = nil
     case "end":
-      body?.finish()
-      body = nil
+      bodyOpen = false
+      bodyRead?.resume(returning: nil)
+      bodyRead = nil
     case "cancel": fail(CancellationError())
     case "failure":
       fail(
@@ -755,8 +1059,9 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
     observerReply = nil
     response?.resume(throwing: error)
     response = nil
-    body?.finish(throwing: error)
-    body = nil
+    bodyOpen = false
+    bodyRead?.resume(throwing: error)
+    bodyRead = nil
   }
 }
 

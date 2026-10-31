@@ -166,6 +166,37 @@ struct BedrockConverseStreamAdapterTests {
   }
 
   @Test
+  func signingRegionMatchesPinnedSource() throws {
+    let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+    func load(_ directory: String) throws -> [JSONValue] {
+      try decodeJSONObject(
+        Data(
+          contentsOf: root.appending(
+            path: "Fixtures/Differential/\(directory)/bedrock-signing-region.json")),
+        providerID: "fixture", operation: "bedrock.region.fixture"
+      ).array("cases")!
+    }
+    let cases = try load("Cases")
+    let expected = try load("Oracle")
+    #expect(cases.count == expected.count)
+    for (value, expected) in zip(cases, expected) {
+      let spec = try #require(value.objectValue)
+      let actual = try BedrockConverseStreamAdapter().resolvedRegion(
+        request: .init(
+          id: spec.string("id")!, providerID: "amazon-bedrock",
+          modelID: spec.string("modelID")!, messages: [], tools: [],
+          options: .init(
+            maximumOutputTokens: nil, temperature: nil, reasoningEffort: nil,
+            responseSchema: nil, providerOptions: [:])),
+        endpoint: URL(string: spec.string("endpoint")!)!,
+        metadata: spec.string("region").map { ["region": $0] } ?? [:])
+      #expect(
+        actual == expected.objectValue?.string("region"), Comment(rawValue: spec.string("id")!))
+    }
+  }
+
+  @Test
   func sigV4SignsExactBodyHeadersRegionAndSessionCredential() async throws {
     let transport = BedrockFixtureTransport(
       chunks: [try bedrockFrames()],

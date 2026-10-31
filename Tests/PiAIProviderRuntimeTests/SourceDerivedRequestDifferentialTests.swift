@@ -156,7 +156,7 @@ struct SourceDerivedRequestDifferentialTests {
       // The capture transport deliberately returns HTTP 418 after retaining the request.
     }
     let captured = try #require(await capture.request())
-    let body = try #require(captured.httpBody)
+    let body = try fixtureHTTPBody(captured)
     return try await payloads.body(
       from: JSONDecoder().decode(JSONValue.self, from: body), protocolID: protocolCase.protocolID)
   }
@@ -368,7 +368,7 @@ struct SourceDerivedRequestDifferentialTests {
       "request was rejected before capture for \(scenario.caseID)/\(protocolCase.protocolID)"
     )
     return try await payloads.body(
-      from: JSONDecoder().decode(JSONValue.self, from: #require(captured.httpBody)),
+      from: JSONDecoder().decode(JSONValue.self, from: fixtureHTTPBody(captured)),
       protocolID: protocolCase.protocolID)
   }
 

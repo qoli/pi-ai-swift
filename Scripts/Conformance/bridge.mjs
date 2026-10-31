@@ -2,19 +2,27 @@ import { spawn, spawnSync } from "node:child_process";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { appendFileSync } from "node:fs";
 import { createInterface } from "node:readline";
+import { zstdDecompressSync } from "node:zlib";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { expect } from "vitest";
+import { expect, afterEach } from "vitest";
 import * as OpenAISDK from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenAI } from "@google/genai";
 import { BedrockRuntimeClient, ConverseStreamCommand } from "@aws-sdk/client-bedrock-runtime";
 import { EventStreamCodec } from "@smithy/core/event-streams";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { mistralSDKPayload, mistralWirePayload } from "./mistral-payload.mjs";
 import { bedrockSDKPayload, bedrockWirePayload } from "./bedrock-payload.mjs";
+import { codexProbeChild } from "./native-session.mjs";
+import { resolveFixtureCloud, FixtureAnthropic } from "./cloud-authorization.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const heapObservations = new AsyncLocalStorage();
+const yieldIO = globalThis.setImmediate;
+const streamLifetimes = [];
+export function takeNativeStreamLifetimes() { return streamLifetimes.splice(0); }
+afterEach(() => { streamLifetimes.length = 0; });
 
 export async function measureNativeAllocatedBytes(operation) {
   const samples = [];
@@ -22,8 +30,14 @@ export async function measureNativeAllocatedBytes(operation) {
   if (!samples.length) throw new Error("No Swift heap measurement was returned");
   return samples.reduce((total, sample) => total + sample, 0);
 }
+
+export function observeNativeAllocatedBytes(bytes) {
+  heapObservations.getStore()?.push(bytes);
+}
+
+export function isObservingNativeHeap() { return !!heapObservations.getStore(); }
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
-const { getCurrentSystemPrompt, getCurrentTools, normalizeContext } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
+const { getCurrentSystemPrompt, getCurrentTools, normalizeContext, resolveTranscriptTools } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
 const { getSystemMessageText, renderSystemMessageUpdate } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/text.ts")));
 const { getEnvApiKey } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/env-api-keys.ts")));
 const { getProviderEnvValue } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/provider-env.ts")));
@@ -54,9 +68,10 @@ export { invoke as invokeNative, record as recordNative, probe as projectNativeR
 
 function fixtureCredential(model, options) {
   const environment = { ...process.env, ...options.env };
+  const environmentKey = model.api === "google-vertex" ? undefined : getEnvApiKey(model.provider, options.env);
   return {
-    key: options.apiKey ?? (model.api === "bedrock-converse-stream" || options.client ? "synthetic-sdk-fixture-key" :
-      model.api === "google-vertex" ? undefined : getEnvApiKey(model.provider, options.env)),
+    key: options.apiKey ?? (options.client ? "synthetic-sdk-fixture-key" :
+      environmentKey === "<authenticated>" ? undefined : environmentKey),
     metadata: Object.fromEntries(Object.entries(environment).filter(([key, value]) =>
       /^(AZURE_OPENAI_|CLOUDFLARE_|AWS_|GOOGLE_|GCLOUD_)/.test(key) && typeof value === "string")
       .concat(options.region ? [["region", options.region]] : environment.AWS_REGION ? [["region", environment.AWS_REGION]] : [])),
@@ -73,18 +88,27 @@ function preserveUTF16(content) {
 }
 
 function fixtureInput(model, context, options, responses, credential, requestSource = "api", generationMode = "raw") {
-  const preservesSystemMessages = ["openai-completions", "anthropic-messages"].includes(model.api)
+  const preservesSystemMessages = ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses"].includes(model.api)
     && model.compat?.supportsMidConvoSystemMessages === true;
+  let toolPlan;
+  if (["openai-completions", "openai-responses", "azure-openai-responses", "openai-codex-responses"].includes(model.api)) {
+    const mode = invoke({ operation: "tool-support", model });
+    record("tool-support", model.api);
+    toolPlan = resolveTranscriptTools(context.messages, mode);
+  }
+  let systemIndex = 0;
   const messages = preservesSystemMessages ? context.messages.map((message, index) => message.role === "system"
-    ? { ...message, content: index === 0 ? getSystemMessageText(message) : renderSystemMessageUpdate(message) }
-    : message).filter(message => model.api === "anthropic-messages" || message.role !== "system" || message.content.length > 0)
+    ? { ...message, content: index === 0 ? getSystemMessageText(message) : renderSystemMessageUpdate(message),
+      ...(toolPlan && systemIndex++ < toolPlan.foldedSystemMessages ? { toolsAdded: [], toolsRemoved: [] } : {}) }
+    : message).filter(message => model.api === "anthropic-messages" || message.role !== "system"
+      || message.content.length > 0 || message.toolsAdded?.length || message.toolsRemoved?.length)
     : context.messages.filter(message => message.role !== "system");
   return {
     model, requestSource, generationMode,
     identityHost: { platform: process.platform, arch: process.arch, node: process.versions.node, bun: process.versions.bun, version: process.version },
     context: {
       systemPrompt: preservesSystemMessages ? undefined : getCurrentSystemPrompt(context.messages),
-      tools: getCurrentTools(context.messages),
+      tools: toolPlan?.requestTools ?? getCurrentTools(context.messages),
       messages: messages.map(message => ["user", "assistant"].includes(message.role)
         ? { ...message, content: preserveUTF16(message.content) } : message),
     },
@@ -97,10 +121,11 @@ function fixtureInput(model, context, options, responses, credential, requestSou
     credential,
     environment: Object.fromEntries(Object.entries(process.env).filter(([key]) =>
       key.startsWith("AZURE_OPENAI_") || ["GOOGLE_CLOUD_PROJECT", "GOOGLE_CLOUD_LOCATION"].includes(key))),
+    cloudEnvironment: Object.fromEntries(Object.entries(process.env).filter(([key]) => /^(AWS_|GOOGLE_|GCLOUD_|ANTHROPIC_)/.test(key))),
     responses,
     aborted: options.signal?.aborted ?? false,
-    ...(hasNativeWireObserver(model) && (model.api === "anthropic-messages" || options.onPayload || options.onResponse || options.onProviderStreamEvent)
-      ? { wireObserver: { payload: model.api === "anthropic-messages" || !!options.onPayload, response: !!options.onResponse, event: !!options.onProviderStreamEvent } } : {}),
+    ...(hasNativeWireObserver(model)
+      ? { wireObserver: { payload: model.api === "anthropic-messages" || !!options.onPayload, response: !!options.onResponse, event: !!options.onProviderStreamEvent, toolArguments: true } } : {}),
   };
 }
 
@@ -112,20 +137,23 @@ function capabilities(options, model) {
   return [
     ...(options.fetch && ["google-generative-ai", "google-vertex"].includes(model.api)
       ? ["google-sdk-custom-fetch-contract"] : []),
-    ...(model.api === "anthropic-messages" && options.env?.ANTHROPIC_FEDERATION_RULE_ID && !options.apiKey
-      ? ["anthropic-workload-identity-federation"] : []),
     ...(options.onProviderStreamEvent && !hasNativeWireObserver(model) ? ["raw-provider-stream-event-hook"] : []),
     ...(options.onResponse && !hasNativeWireObserver(model) ? ["raw-response-hook"] : []),
-    ...(options.timeoutMs !== undefined && model.api !== "mistral-conversations" ? ["request-timeout-option"] : []),
+    ...(options.timeoutMs !== undefined && !["mistral-conversations", "openai-codex-responses"].includes(model.api) ? ["request-timeout-option"] : []),
   ];
 }
 
 function probe(model, context, options, responses = [], credential = fixtureCredential(model, options)) {
   const samples = heapObservations.getStore();
   const result = invoke({ ...fixtureInput(model, context, options, responses, credential), measureHeap: !!samples });
+  if (result.request?.rawBody) {
+    expect(new Headers(result.request.headers).get("content-encoding")).toBe("zstd");
+    result.request.body = JSON.parse(zstdDecompressSync(Buffer.from(result.request.rawBody, "base64")).toString("utf8"));
+  }
+  if (result.lifetime) streamLifetimes.push(result.lifetime);
   if (samples && result.allocatedBytes !== undefined) samples.push(result.allocatedBytes);
   record(result.failure?.unrepresentedCapability ? "input" : responses.length ? "decode" : "encode", model.api, result.failure, [
-    ...capabilities(options, model),
+    ...(result.failure?.code === "missingCredential" ? [] : capabilities(options, model)),
     ...(result.failure?.unrepresentedCapability ? [result.failure.unrepresentedCapability] : []),
   ]);
   return result;
@@ -169,7 +197,10 @@ export function resolveGoogleThinkingLevel(model, level) {
 }
 
 export function convertResponsesMessages(model, context, _allowedToolCallProviders, options = {}) {
-  const decoded = probe(model, context, { apiKey: "synthetic-decoder-fixture-key", ...options });
+  const apiKey = model.api === "openai-codex-responses"
+    ? `header.${Buffer.from(JSON.stringify({ "https://api.openai.com/auth": { chatgpt_account_id: "synthetic-codec-account" } })).toString("base64")}.signature`
+    : "synthetic-decoder-fixture-key";
+  const decoded = probe({ ...model, compat: { ...model.compat, ...options } }, context, { apiKey, ...options });
   if (!decoded.request) throw new Error(decoded.failure?.message ?? "Swift did not project Responses input");
   return decoded.request.body.input;
 }
@@ -187,6 +218,16 @@ export async function processResponsesStream(events, partial, output, model, opt
 }
 
 export function stream(model, context, options = {}, requestSource = "api", generationMode = "raw") {
+  const credential = fixtureCredential(model, options);
+  const synchronousAuth = !["google-vertex", "pi-messages", "bedrock-converse-stream", "anthropic-messages"].includes(model.api)
+    || model.api === "anthropic-messages" && generationMode === "simple";
+  if (!credential.key && synchronousAuth) {
+    const result = probe(model, context, options, [], credential);
+    if (result.failure?.code === "missingCredential") {
+      record("encode", model.api, result.failure, [], "stream");
+      throw new Error(`No API key for provider: ${model.provider}`);
+    }
+  }
   const output = new AssistantMessageEventStream();
   (async () => {
     const partial = {
@@ -229,7 +270,9 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
   const heapSamples = heapObservations.getStore();
   const credential = fixtureCredential(model, options);
   const connection = { credential, providerEvents: [] };
-  const child = spawn(process.env.PI_CONFORMANCE_PROBE, ["--stream"], { stdio: ["pipe", "pipe", "pipe"] });
+  const argumentUpdates = new Map();
+  const child = ["openai-codex-responses", "anthropic-messages", "google-vertex", "bedrock-converse-stream"].includes(model.api) || (model.api === "openai-completions" && options.maxRetries !== undefined) ? codexProbeChild()
+    : spawn(process.env.PI_CONFORMANCE_PROBE, ["--stream"], { stdio: ["pipe", "pipe", "pipe"] });
   let stderr = "";
   child.stderr.on("data", data => { stderr += data; });
   const exited = new Promise((resolve, reject) => { child.once("close", resolve); child.once("error", reject); });
@@ -237,6 +280,8 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
   let finished = false;
   let failure;
   let requestController;
+  let requestBodyRead;
+  const transportOperations = [];
   const send = frame => {
     if (!child.stdin.destroyed && !child.stdin.writableEnded) child.stdin.write(JSON.stringify(frame) + "\n");
   };
@@ -249,6 +294,19 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
     const controller = new AbortController();
     requestController = controller;
     const abort = () => controller.abort(options.signal.reason);
+    let readRequested = false;
+    let receiveRead;
+    requestBodyRead = () => {
+      if (receiveRead) { const receive = receiveRead; receiveRead = undefined; receive(); }
+      else readRequested = true;
+    };
+    const waitForRead = async () => {
+      if (readRequested) { readRequested = false; return; }
+      await new Promise(resolve => { receiveRead = resolve; });
+    };
+    const abortRead = () => requestBodyRead?.();
+    controller.signal.addEventListener("abort", abortRead, { once: true });
+    let chunks;
     options.signal?.addEventListener("abort", abort, { once: true });
     try {
       let body = request.body;
@@ -259,25 +317,45 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
       if (replacement !== undefined) body = google ? googleWireBody(replacement) : mistral ? mistralWirePayload(replacement) : replacement;
       if (options.signal?.aborted) { cancel(); return; }
       if (controller.signal.aborted) return;
-      if (options.timeoutMs !== undefined && !mistral) throw new Error("Swift ProviderRequest has no request-timeout option");
-      const response = await mockResponse(model, request, body, { ...options, signal: controller.signal }, connection);
+      if (options.timeoutMs !== undefined && !mistral && model.api !== "openai-codex-responses") throw new Error("Swift ProviderRequest has no request-timeout option");
+      const pendingResponse = mockResponse(model, request, body, { ...options, signal: controller.signal }, connection);
+      child.waiting?.();
+      const response = await pendingResponse;
       if (finished) return;
       send({ kind: "response", status: response.status, headers: response.headers });
-      for await (const data of response.chunks) {
-        if (finished) break;
-        send({ kind: "chunk", data });
+      chunks = (async function* () { yield* response.chunks; })();
+      while (!finished && !controller.signal.aborted) {
+        await waitForRead();
+        if (finished || controller.signal.aborted) break;
+        child.waiting?.();
+        const next = await chunks.next();
+        if (next.done) { send({ kind: "end" }); break; }
+        send({ kind: "chunk", data: next.value });
       }
-      send({ kind: "end" });
     } finally {
+      await chunks?.return();
+      controller.signal.removeEventListener("abort", abortRead);
       options.signal?.removeEventListener("abort", abort);
       requestController = undefined;
+      requestBodyRead = undefined;
     }
   };
   try {
     for await (const line of lines) {
       const frame = JSON.parse(line);
       if (frame.kind === "request") {
-        void serve(frame.payload).catch(error => send({ kind: "failure", message: error.message }));
+        transportOperations.push(serve(frame.payload).catch(error => {
+          if (error.name === "AssertionError") {
+            record("assertion", model.api, {
+              code: "bridgeAssertion", operation: "conformance.fixture.assertion", message: error.message,
+            });
+          }
+          send({ kind: "failure", message: error.message });
+        }));
+      } else if (frame.kind === "cloud") {
+        void resolveFixtureCloud(frame.payload.stage, frame.payload.value, options, connection)
+          .then(value => send({ kind: "cloudReply", value }))
+          .catch(error => send({ kind: "cloudReply", error: error.message }));
       } else if (frame.kind === "observer") {
         void (async () => {
           const { stage, value, context: observedContext } = frame.payload;
@@ -301,12 +379,31 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
             if (original) expect(value).toEqual(original.serialized);
             await options.onProviderStreamEvent(original ? original.reference : value, model);
             send({ kind: "observerReply" });
+          } else if (stage === "toolArguments") {
+            let updates = argumentUpdates.get(value.id);
+            if (!updates) argumentUpdates.set(value.id, updates = []);
+            updates.push(value);
+            send({ kind: "observerReply" });
           } else throw new Error(`Unknown native observer stage: ${stage}`);
-        })().catch(error => send({ kind: "observerReply", error: error.message }));
+        })().catch(error => {
+          if (error.name === "AssertionError") record("assertion", model.api, {
+            code: "bridgeAssertion", operation: "conformance.observer.assertion", message: error.message,
+          });
+          send({ kind: "observerReply", error: error.message });
+        });
       } else if (frame.kind === "cancelRequest") {
         requestController?.abort();
+      } else if (frame.kind === "readBody") {
+        requestBodyRead?.();
       } else if (frame.kind === "event") {
-        emitEvent(frame.payload);
+        const id = frame.payload.toolCallStarted?.id ?? frame.payload.toolInputDelta?.id;
+        if (id) {
+          const update = argumentUpdates.get(id)?.shift();
+          if (update) emitEvent({ toolArgumentsUpdate: { _0: update } });
+        }
+        if (!options.signal?.aborted) emitEvent(frame.payload);
+        // Let the JavaScript consumer cancel before draining the next IPC event.
+        await new Promise(yieldIO);
       } else if (frame.kind === "heap") {
         if (!heapSamples) throw new Error("Unexpected Swift heap measurement");
         heapSamples.push(frame.payload.allocatedBytes);
@@ -314,6 +411,8 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
         appendFileSync(path.join(process.env.PI_CONFORMANCE_OUTPUT, "heap-observations.jsonl"), JSON.stringify({
           file: state.testPath, test: state.currentTestName, protocol: model.api, allocatedBytes: frame.payload.allocatedBytes,
         }) + "\n");
+      } else if (frame.kind === "lifetime") {
+        streamLifetimes.push(frame.payload);
       } else if (frame.kind === "finished") {
         finished = true;
         failure = frame.payload;
@@ -322,7 +421,9 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
       } else throw new Error(`Unknown Swift probe frame: ${frame.kind}`);
     }
     const status = await exited;
+    await Promise.all(transportOperations);
     if (status !== 0 || !finished) throw new Error(`Swift conformance probe failed: ${stderr}`);
+    if (options.signal?.aborted) throw new Error(model.api === "openai-codex-responses" ? "Request was aborted" : "Request aborted");
     if (failure) throw Object.assign(new Error(failure.message ?? failure.code), { providerMetadata: failure.providerMetadata });
   } finally {
     options.signal?.removeEventListener("abort", cancel);
@@ -359,11 +460,30 @@ export function streamSimple(model, context, options = {}, requestSource = "api"
 
 async function mockResponse(model, request, body, options, connection) {
   if (model.api === "bedrock-converse-stream") {
-    const client = connection.client ??= new BedrockRuntimeClient({
+    const client = connection.client ??= new BedrockRuntimeClient({ ...(request.cloudConfiguration ?? {
       endpoint: new URL(request.url).origin,
       region: options.region ?? connection.credential.metadata.AWS_REGION ?? "us-east-1",
       credentials: { accessKeyId: "synthetic-sdk-fixture-key", secretAccessKey: "synthetic-sdk-fixture-secret" },
+    }), ...(options.env?.AWS_BEDROCK_FORCE_HTTP1 === "1" ? { requestHandler: new NodeHttpHandler() } : {}),
     });
+    if (!connection.headersRegistered) {
+      connection.headersRegistered = true;
+      if (options.onResponse) {
+        client.middlewareStack.add(next => async args => {
+          const result = await next(args);
+          connection.rawResponse = result.response;
+          return result;
+        }, { step: "deserialize", name: "pi-ai-response-headers" });
+      }
+      const configured = invoke({ operation: "headers.bedrock", headers: options.headers });
+      record("headers.bedrock", model.api);
+      if (Object.values(options.headers ?? {}).some(value => value !== null && value !== undefined)) {
+        client.middlewareStack.add(next => async args => {
+          if (args.request && typeof args.request === "object" && "headers" in args.request) Object.assign(args.request.headers, configured);
+          return next(args);
+        }, { step: "build", name: "pi-ai-custom-headers", priority: "low" });
+      }
+    }
     let response;
     try {
       response = await client.send(new ConverseStreamCommand({ modelId: bedrockModelID(request.url), ...bedrockSDKPayload(body) }),
@@ -412,26 +532,35 @@ async function mockResponse(model, request, body, options, connection) {
         })).toString("base64");
       }
     })();
-    return { status: response.$metadata.httpStatusCode, chunks,
-      headers: response.$metadata.requestId ? { "x-amzn-requestid": response.$metadata.requestId } : {} };
+    return { status: connection.rawResponse?.statusCode ?? response.$metadata.httpStatusCode, chunks,
+      headers: connection.rawResponse?.headers ??
+        (response.$metadata.requestId ? { "x-amzn-requestid": response.$metadata.requestId } : {}) };
   }
-  if (options.fetch || ["mistral-conversations", "pi-messages"].includes(model.api)) {
+  if (options.fetch || ["mistral-conversations", "pi-messages", "openai-codex-responses"].includes(model.api)) {
     const response = await (options.fetch ?? globalThis.fetch)(request.url, {
-      method: "POST", headers: request.headers, body: JSON.stringify(body), signal: options.signal,
+      method: "POST", headers: model.api === "openai-codex-responses" ? new Headers(request.headers) : request.headers,
+      body: request.rawBody ? new Uint8Array(Buffer.from(request.rawBody, "base64")) : JSON.stringify(body), signal: options.signal,
     });
     return { status: response.status, headers: Object.fromEntries(response.headers), chunks: responseChunks(response, options.signal) };
   }
   const suffix = ["openai-completions", "openrouter-images"].includes(model.api) ? "/chat/completions" :
     model.api === "anthropic-messages" ? "/v1/messages" : "/responses";
   const defaultHeaders = { ...request.headers };
+  for (const [name, value] of Object.entries(options.headers ?? {})) {
+    if (value === null) {
+      expect(new Headers(request.headers).has(name)).toBe(false);
+      defaultHeaders[name] = null;
+    }
+  }
   for (const name of ["Authorization", "x-api-key"]) {
     if (!Object.keys(defaultHeaders).some(key => key.toLowerCase() === name.toLowerCase())) {
       defaultHeaders[name] = null;
     }
   }
   const config = { ...(model.api === "anthropic-messages" ? {
-    apiKey: connection.credential.key?.includes("sk-ant-oat") ? null : connection.credential.key ?? null,
-    authToken: connection.credential.key?.includes("sk-ant-oat") ? connection.credential.key : null,
+    apiKey: new Headers(request.headers).has("x-api-key") ? connection.credential.key ?? null : null,
+    authToken: !new Headers(request.headers).has("x-api-key") && connection.credential.key !== undefined
+      && new Headers(request.headers).get("authorization")?.startsWith("Bearer ") ? connection.credential.key : null,
   } : { apiKey: connection.credential.key }), baseURL: request.url.split(suffix)[0],
     defaultHeaders, dangerouslyAllowBrowser: true };
   if (model.api === "azure-openai-responses") {
@@ -439,7 +568,7 @@ async function mockResponse(model, request, body, options, connection) {
     Object.assign(config, request.azureConfiguration);
   }
   if (model.api === "google-generative-ai" || model.api === "google-vertex") {
-    const client = connection.client ??= new GoogleGenAI({ apiKey: options.apiKey,
+    const client = connection.client ??= new GoogleGenAI(request.cloudConfiguration ?? { apiKey: options.apiKey,
       httpOptions: { headers: request.headers },
       ...(model.api === "google-vertex" ? { vertexai: true, project: options.project, location: options.location } : {}),
     });
@@ -464,9 +593,14 @@ async function mockResponse(model, request, body, options, connection) {
     for (const field of ["betas", "user_profile_id", "workspace_id"]) {
       if (Object.hasOwn(connection.logicalPayload, field)) body[field] = connection.logicalPayload[field];
     }
+    if (connection.federationClient) {
+      expect(new Headers(request.headers).get("authorization")).toBe(connection.federationAuthorization);
+      const headers = Object.fromEntries(Object.entries(defaultHeaders).filter(([name]) => name.toLowerCase() !== "authorization"));
+      connection.client = connection.federationClient.withOptions({ defaultHeaders: headers });
+    }
   }
   const client = connection.client ??= options.client ??
-    (model.api === "anthropic-messages" ? new Anthropic(config) : new OpenAI(config));
+    (model.api === "anthropic-messages" ? new FixtureAnthropic(config) : new OpenAI(config));
   if (model.api === "anthropic-messages" && client.beta?.messages) {
     const response = await client.beta.messages.create(body, { signal: options.signal }).asResponse();
     return { status: response.status, headers: Object.fromEntries(response.headers), chunks: responseChunks(response, options.signal) };
@@ -475,12 +609,12 @@ async function mockResponse(model, request, body, options, connection) {
     ["openai-completions", "openrouter-images"].includes(model.api) ? client.chat.completions : client.responses;
   let reply;
   try {
-    const pending = resource.create(body, { signal: options.signal });
+    const pending = resource.create(body, { signal: options.signal, maxRetries: 0 });
     reply = typeof pending.withResponse === "function" ? await pending.withResponse() :
       { data: await pending, response: { status: 200, headers: new Headers() } };
   } catch (error) {
     if (!Number.isInteger(error.status)) throw error;
-    return { status: error.status, headers: {},
+    return { status: error.status, headers: error.headers instanceof Headers ? Object.fromEntries(error.headers) : error.headers ?? {},
       chunks: [Buffer.from(JSON.stringify(error.error ?? { message: error.message })).toString("base64")] };
   }
   if (model.api === "openrouter-images") return {
@@ -504,7 +638,7 @@ async function mockResponse(model, request, body, options, connection) {
 async function* responseChunks(response, signal) {
   if (!response.body) return;
   const reader = response.body.getReader();
-  const cancel = () => { void reader.cancel(signal.reason); };
+  const cancel = () => { void reader.cancel(signal.reason).catch(() => {}); };
   signal?.addEventListener("abort", cancel, { once: true });
   if (signal?.aborted) cancel();
   try {
@@ -540,11 +674,37 @@ function googleWireBody(payload) {
 }
 
 const indexedBlockPartials = new WeakSet();
+const toolArgumentValues = new WeakMap();
+
+function updateToolArguments(partial, update) {
+  let calls = toolArgumentValues.get(partial);
+  if (!calls) toolArgumentValues.set(partial, calls = new Map());
+  let root = calls.get(update.id) ?? {};
+  const decoded = units => units.reduce((text, unit) => text + String.fromCharCode(unit), "");
+  for (const change of update.changes) {
+    const [kind, value] = Object.entries(change)[0];
+    const path = value.path.map(component => {
+      const [kind, value] = Object.entries(component)[0];
+      return kind === "keyUTF16" ? decoded(value._0) : value._0;
+    });
+    let parent = root;
+    for (const key of path.slice(0, -1)) parent = parent[key];
+    const key = path.at(-1);
+    const replacement = kind === "set" ? value.value : (path.length ? parent[key] : root) + decoded(value.textUTF16);
+    if (!path.length) root = replacement;
+    else Object.defineProperty(parent, key, { value: replacement, writable: true, enumerable: true, configurable: true });
+  }
+  calls.set(update.id, root);
+  const call = partial.content.find(block => block.type === "toolCall" && block.id === update.id);
+  if (call) call.arguments = root;
+}
 
 function emit(event, partial, output) {
   const [type, data] = Object.entries(event)[0];
   const value = data._0;
-  if (type === "responseStarted") {
+  if (type === "toolArgumentsUpdate") {
+    updateToolArguments(partial, value);
+  } else if (type === "responseStarted") {
     if (value.responseID) partial.responseId = value.responseID;
     output.push({ type: "start", partial: structuredClone(partial) });
   } else if (type === "contentBlock") {
@@ -576,7 +736,8 @@ function emit(event, partial, output) {
     partial.content[index][kind] += value;
     output.push({ type: `${kind}_delta`, contentIndex: index, delta: value, partial: structuredClone(partial) });
   } else if (type === "toolCallStarted") {
-    const index = partial.content.push({ type: "toolCall", id: data.id, name: data.name, arguments: {} }) - 1;
+    const index = partial.content.push({ type: "toolCall", id: data.id, name: data.name,
+      arguments: toolArgumentValues.get(partial)?.get(data.id) ?? {} }) - 1;
     output.push({ type: "toolcall_start", contentIndex: index, partial: structuredClone(partial) });
   } else if (type === "reasoningSignatureDelta") {
     if (indexedBlockPartials.has(partial)) return;

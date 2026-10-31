@@ -11,6 +11,28 @@ struct ProviderIdentityHost: Sendable, Equatable, Codable {
 enum ProviderClientIdentity {
   static let upstreamVersion = "1.4.0"
 
+  static func merge(_ sources: [[String: JSONValue]?]) -> [String: JSONValue]? {
+    var result: [String: JSONValue]?
+    for source in sources {
+      guard let source else { continue }
+      if result == nil { result = [:] }
+      for key in ["userAgent", "attribution", "version"] {
+        if let value = source[key] { result?[key] = value }
+      }
+    }
+    return result
+  }
+
+  static func openCodeSessionHeaders(providerID: String, baseURL: String, sessionID: String?)
+    -> [String: String]?
+  {
+    guard let sessionID, !sessionID.isEmpty,
+      ["opencode", "opencode-go"].contains(providerID)
+        || URL(string: baseURL)?.host?.lowercased() == "opencode.ai"
+    else { return nil }
+    return ["x-opencode-session": sessionID]
+  }
+
   static func userAgent(_ identity: [String: JSONValue]?, host: ProviderIdentityHost) -> String {
     if let custom = identity?.object("userAgent")?.string("custom") { return custom }
     if identity?.string("userAgent") == "short" { return "pi" }
