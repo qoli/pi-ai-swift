@@ -1,11 +1,11 @@
 {
   "revision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
-  "scope": "Exact catalog inventory; classifier operations remain missing and are not advertised by ProviderRuntime.",
+  "scope": "Exact classifier catalog inventory with Native request/result routes; unchanged upstream mocks and native fixtures verify the implementation. Live provider accounts are not part of this evidence.",
   "areas": [
     {
       "id": "cloudflare-workers-ai-cloudflare-workers-ai-system-one",
       "providerID": "cloudflare-workers-ai",
-      "status": "missing",
+      "status": "implemented",
       "modelIDs": [
         "@cf/cloudflare/clef",
         "@cf/cloudflare/clef-flash",
@@ -19,12 +19,12 @@
       ],
       "source": "packages/ai/src/providers/cloudflare-workers-ai.ts",
       "upstreamTest": "packages/ai/test/classifier-models.test.ts",
-      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+      "swiftOwnership": "ProviderClassifierRequest, ProviderClassifierResult and Native classifier wire adapters through ProviderRuntime.stream."
     },
     {
       "id": "openai-openai-decisions",
       "providerID": "openai",
-      "status": "missing",
+      "status": "implemented",
       "modelIDs": [
         "gpt-6-luna"
       ],
@@ -35,12 +35,12 @@
       ],
       "source": "packages/ai/src/providers/openai.ts",
       "upstreamTest": "packages/ai/test/classifier-models.test.ts",
-      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+      "swiftOwnership": "ProviderClassifierRequest, ProviderClassifierResult and Native classifier wire adapters through ProviderRuntime.stream."
     },
     {
       "id": "opencode-typesafe-system-one",
       "providerID": "opencode",
-      "status": "missing",
+      "status": "implemented",
       "modelIDs": [
         "jev-1.13",
         "jev-1.13-free"
@@ -51,12 +51,12 @@
       ],
       "source": "packages/ai/src/providers/opencode.ts",
       "upstreamTest": "packages/ai/test/classifier-models.test.ts",
-      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+      "swiftOwnership": "ProviderClassifierRequest, ProviderClassifierResult and Native classifier wire adapters through ProviderRuntime.stream."
     },
     {
       "id": "openrouter-typesafe-system-one",
       "providerID": "openrouter",
-      "status": "missing",
+      "status": "implemented",
       "modelIDs": [
         "~liquid/d1-latest",
         "~liquid/d1-ultra-latest",
@@ -98,12 +98,12 @@
       ],
       "source": "packages/ai/src/providers/openrouter.ts",
       "upstreamTest": "packages/ai/test/classifier-models.test.ts",
-      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+      "swiftOwnership": "ProviderClassifierRequest, ProviderClassifierResult and Native classifier wire adapters through ProviderRuntime.stream."
     },
     {
       "id": "typesafe-typesafe-system-one",
       "providerID": "typesafe",
-      "status": "missing",
+      "status": "implemented",
       "modelIDs": [
         "jev-latest"
       ],
@@ -113,12 +113,12 @@
       ],
       "source": "packages/ai/src/providers/typesafe.ts",
       "upstreamTest": "packages/ai/test/classifier-models.test.ts",
-      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+      "swiftOwnership": "ProviderClassifierRequest, ProviderClassifierResult and Native classifier wire adapters through ProviderRuntime.stream."
     },
     {
       "id": "vercel-ai-gateway-typesafe-system-one",
       "providerID": "vercel-ai-gateway",
-      "status": "missing",
+      "status": "implemented",
       "modelIDs": [
         "baseten/elephant-1",
         "baseten/mammoth-1",
@@ -141,7 +141,7 @@
       ],
       "source": "packages/ai/src/providers/vercel-ai-gateway.ts",
       "upstreamTest": "packages/ai/test/classifier-models.test.ts",
-      "plannedSwiftOwnership": "Separate classifier request/result seam and native wire adapter; no chat substitution."
+      "swiftOwnership": "ProviderClassifierRequest, ProviderClassifierResult and Native classifier wire adapters through ProviderRuntime.stream."
     }
   ]
 }

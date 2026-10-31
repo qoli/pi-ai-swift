@@ -6,7 +6,7 @@ import Testing
 @Suite
 struct SourceDerivedRequestDifferentialTests {
   @Test
-  func everySupportedWireProtocolMatchesPinnedSourceRequestOracle() async throws {
+  func chatAndImageProtocolsMatchPinnedSourceRequestOracle() async throws {
     let repository = repositoryRoot()
     let fixture = try decode(
       RequestCase.self,
@@ -23,7 +23,8 @@ struct SourceDerivedRequestDifferentialTests {
     let expectedRevision = try pinnedRevision(repository: repository)
     #expect(oracle.upstreamRevision == expectedRevision)
 
-    let expectedProtocols = StandardWireProtocols.supportedProtocolIDs
+    let expectedProtocols = StandardWireProtocols.supportedProtocolIDs.subtracting(
+      ProviderClassifierAdapter.protocolIDs)
     #expect(Set(fixture.protocols.map(\.protocolID)) == expectedProtocols)
     #expect(Set(oracle.protocols.keys) == expectedProtocols)
 

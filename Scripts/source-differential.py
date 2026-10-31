@@ -220,6 +220,9 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-provider-adaptation-oracle.mjs',
+             'Fixtures/Differential/Cases/provider-adaptation.json',
+             'Fixtures/Differential/Oracle/provider-adaptation.json', 'classifier and subscription authorization adaptations'),
             ('pi-ai-cloud-authorization-oracle.mjs',
              'Fixtures/Differential/Cases/cloud-authorization.json',
              'Fixtures/Differential/Oracle/cloud-authorization.json', 'cloud primary authorization selection'),

@@ -325,7 +325,10 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               ?? object.object("response")?.object("error")?.string("code")
             let events = try await reducer.reduce(
               .init(event: nil, data: text, id: nil), observation: observation)
-            if object.string("type") != nil { started = true }
+            if let type = object.string("type"), type != "codex.rate_limits" {
+              started = true
+              if let start = reducer.startEvent() { continuation.yield(start) }
+            }
             for event in events {
               try await observation.toolEvent(event)
               continuation.yield(event)
@@ -386,7 +389,8 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           }
           let message = runtimeFailure?.message ?? String(describing: error)
           await sessions.recordFailure(session: session, message: message)
-          guard mode == .auto, !started else { throw error }
+          let allowsSSE = mode == .auto || (mode == .websocketCached && retriedContinuation)
+          guard allowsSSE, !started else { throw error }
           await sessions.recordFallback(session: session)
           break websocketAttempts
         }
@@ -396,6 +400,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       urlRequest, request: request, context: context, transport: transport,
       observation: observation, timeout: timeout)
     var reducer = try codexReducer(request, context: context)
+    if let start = reducer.startEvent() { continuation.yield(start) }
     var decoder = ServerSentEventDecoder()
     responseChunks: for try await chunk in response.body {
       try Task.checkCancellation()
@@ -1554,6 +1559,7 @@ private struct OpenAIResponsesReducer {
   let requestedServiceTier: String?
   let flavor: OpenAIResponsesAdapter.Flavor
   private var started = false
+  private var emittedStart = false
   private var terminal = false
   private var terminalFinishReason: ProviderFinishReason?
   private var rawTerminalFinishReason: String?
@@ -1575,6 +1581,14 @@ private struct OpenAIResponsesReducer {
   private var endTurn: Bool?
 
   var isTerminal: Bool { terminal }
+
+  mutating func startEvent() -> ProviderEvent? {
+    guard !emittedStart else { return nil }
+    emittedStart = true
+    return .responseStarted(
+      .init(
+        responseID: nil, providerID: providerID, modelID: requestedModelID, providerMetadata: [:]))
+  }
 
   init(
     providerID: String,
@@ -1637,16 +1651,7 @@ private struct OpenAIResponsesReducer {
       }
       started = true
       responseID = id
-      return [
-        .responseStarted(
-          ProviderResponseMetadata(
-            responseID: nil,
-            providerID: providerID,
-            modelID: requestedModelID,
-            providerMetadata: [:]
-          )
-        )
-      ]
+      return startEvent().map { [$0] } ?? []
     case "response.output_text.delta":
       guard let delta = object.string("delta") else { throw invalid("text delta is missing delta") }
       guard let slot = blockSlots[object.int("output_index")], slot.kind == "message" else {

@@ -110,6 +110,7 @@ struct WireProtocolContext: Sendable {
   var clock: any ProviderOAuthClock = SystemProviderOAuthClock()
   var isFederatedCloudAuthorization = false
   var usesVertexCollectionScope = false
+  var classifierSessions = ProviderClassifierSessions.shared
 }
 
 protocol WireProtocolAdapter: Sendable {
@@ -297,7 +298,9 @@ struct ProviderRuntimeKernel: ProviderRuntime {
           credential: resolved.credential, headers: resolved.headers.mapValues { Optional($0) })
       }
     }
-    if provider.credentialRequirement == .required, credential == nil, cloudAuthorization == nil {
+    if provider.credentialRequirement == .required, credential == nil, cloudAuthorization == nil,
+      request.options.outputModality != .classification
+    {
       throw failure(
         .missingCredential, providerID: request.providerID, operation: "stream.resolve-credential",
         message: "provider credential is missing: \(request.providerID)")

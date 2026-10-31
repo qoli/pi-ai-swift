@@ -23,6 +23,10 @@ enum StandardWireProtocols {
       PiMessagesAdapter(),
       BedrockConverseStreamAdapter(),
       OpenRouterImagesAdapter(),
+      ProviderClassifierAdapter(protocolID: "typesafe-system-one"),
+      ProviderClassifierAdapter(protocolID: "cloudflare-workers-ai-system-one"),
+      ProviderClassifierAdapter(protocolID: "openai-decisions"),
+      ProviderClassifierAdapter(protocolID: "llama-cpp-classify"),
     ]
   }
 }

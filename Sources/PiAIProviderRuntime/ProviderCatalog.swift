@@ -99,6 +99,7 @@ public struct ProviderCapabilities: Sendable, Equatable, Codable {
   public let reasoning: Bool
   public let structuredOutput: Bool
   public let imageGeneration: Bool
+  public let classification: Bool
 
   public init(
     textInput: Bool,
@@ -106,7 +107,8 @@ public struct ProviderCapabilities: Sendable, Equatable, Codable {
     toolCalling: Bool,
     reasoning: Bool,
     structuredOutput: Bool,
-    imageGeneration: Bool
+    imageGeneration: Bool,
+    classification: Bool = false
   ) {
     self.textInput = textInput
     self.imageInput = imageInput
@@ -114,5 +116,65 @@ public struct ProviderCapabilities: Sendable, Equatable, Codable {
     self.reasoning = reasoning
     self.structuredOutput = structuredOutput
     self.imageGeneration = imageGeneration
+    self.classification = classification
   }
+
+  private enum CodingKeys: String, CodingKey {
+    case textInput, imageInput, toolCalling, reasoning, structuredOutput, imageGeneration,
+      classification
+  }
+  public init(from decoder: any Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    self.init(
+      textInput: try c.decode(Bool.self, forKey: .textInput),
+      imageInput: try c.decode(Bool.self, forKey: .imageInput),
+      toolCalling: try c.decode(Bool.self, forKey: .toolCalling),
+      reasoning: try c.decode(Bool.self, forKey: .reasoning),
+      structuredOutput: try c.decode(Bool.self, forKey: .structuredOutput),
+      imageGeneration: try c.decode(Bool.self, forKey: .imageGeneration),
+      classification: try c.decodeIfPresent(Bool.self, forKey: .classification) ?? false)
+  }
+  public func encode(to encoder: any Encoder) throws {
+    var c = encoder.container(keyedBy: CodingKeys.self)
+    try c.encode(textInput, forKey: .textInput)
+    try c.encode(imageInput, forKey: .imageInput)
+    try c.encode(toolCalling, forKey: .toolCalling)
+    try c.encode(reasoning, forKey: .reasoning)
+    try c.encode(structuredOutput, forKey: .structuredOutput)
+    try c.encode(imageGeneration, forKey: .imageGeneration)
+    if classification { try c.encode(true, forKey: .classification) }
+  }
+}
+
+extension ProviderModel {
+  static func merging(
+    _ existing: ProviderModel,
+    _ incoming: ProviderModel,
+    preferIncomingProtocol: Bool
+  ) -> ProviderModel {
+    let lhs = existing.capabilities
+    let rhs = incoming.capabilities
+    return ProviderModel(
+      id: existing.id,
+      providerID: existing.providerID,
+      name: existing.name,
+      protocolID: preferIncomingProtocol ? incoming.protocolID : existing.protocolID,
+      capabilities: ProviderCapabilities(
+        textInput: lhs.textInput || rhs.textInput,
+        imageInput: lhs.imageInput || rhs.imageInput,
+        toolCalling: lhs.toolCalling || rhs.toolCalling,
+        reasoning: lhs.reasoning || rhs.reasoning,
+        structuredOutput: lhs.structuredOutput || rhs.structuredOutput,
+        imageGeneration: lhs.imageGeneration || rhs.imageGeneration,
+        classification: lhs.classification || rhs.classification
+      ),
+      contextWindow: existing.contextWindow ?? incoming.contextWindow,
+      maximumOutputTokens: existing.maximumOutputTokens
+        ?? incoming.maximumOutputTokens,
+      promptCache: preferIncomingProtocol ? incoming.promptCache : existing.promptCache,
+      supportedReasoningEfforts: preferIncomingProtocol
+        ? incoming.supportedReasoningEfforts : existing.supportedReasoningEfforts
+    )
+  }
+
 }

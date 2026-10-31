@@ -43,6 +43,20 @@ class ConformanceReportingTests(unittest.TestCase):
     def test_original_test_pass_with_swift_execution_is_accepted(self):
         self.assertTrue(self.evaluate([self.call]))
 
+    def test_classifier_requires_its_own_native_operation_and_protocol(self):
+        original = [{"file": self.file, "test": "schema > preserves input",
+                     "operation": "classify", "protocol": "typesafe-system-one"}]
+        for entrypoint, protocol, expected in [
+            ("classify", "typesafe-system-one", "passed"),
+            ("helper", "typesafe-system-one", "dispatch_mismatch"),
+            ("classify", "openai-decisions", "dispatch_mismatch"),
+        ]:
+            call = {**self.call, "operation": "classify", "entrypoint": entrypoint, "protocol": protocol}
+            conformant, cases = CONFORMANCE.evaluate(self.upstream, self.reports, [call],
+                {"upstream": 0, "swift": 0}, original)
+            self.assertEqual(cases[0]["conformanceStatus"], expected)
+            self.assertEqual(conformant, expected == "passed")
+
     def test_transport_assertion_caught_by_provider_cannot_count_as_conformance(self):
         assertion = {**self.call, "operation": "assertion", "failure": {
             "code": "bridgeAssertion", "operation": "conformance.fixture.assertion",

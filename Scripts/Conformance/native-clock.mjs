@@ -30,8 +30,9 @@ export function removeNativeClockCall(call) { active.delete(call); nativeClockCh
 async function idle() {
   while (true) {
     await new Promise(yieldIO);
-    while ([...active].some(call => ["starting", "running", "host", "request"].includes(call.phase))) {
+    if ([...active].some(call => ["starting", "running", "host", "request"].includes(call.phase))) {
       await nextChange();
+      continue;
     }
     if (due()) {
       await enqueue(() => advance(0));

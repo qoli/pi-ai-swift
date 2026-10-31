@@ -24,6 +24,8 @@ codex_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeT
 target.source_build_phase.add_file_reference(codex_helper)
 cloud_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/CloudAuthorizationFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(cloud_helper)
+adaptation_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/ProviderAdaptationFixtures.swift').to_s)
+target.source_build_phase.add_file_reference(adaptation_helper)
 %w[OpenAIRequestBranches Differential AzureOpenAIConfiguration].each do |folder|
   reference = project.main_group.new_file(root.join('Fixtures', folder).to_s)
   reference.last_known_file_type = 'folder'

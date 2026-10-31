@@ -17,3 +17,21 @@ export function getBuiltinImageModel(provider, id) {
   recordNative("catalog.images", provider);
   return structuredClone(images[`${provider}/${id}`]);
 }
+
+let classifiers;
+let allModels;
+export function getAllBuiltinModels(provider) {
+  allModels ??= invokeNative({ operation: "catalog.all-models" });
+  recordNative("catalog.all-models", provider);
+  return structuredClone(allModels[provider] ?? []);
+}
+export function getBuiltinClassifierModels(provider) {
+  classifiers ??= invokeNative({ operation: "catalog.classifiers" });
+  recordNative("catalog.classifiers", provider);
+  return Object.values(classifiers).filter(model => model.provider === provider).map(model => structuredClone(model));
+}
+export function getBuiltinClassifierModel(provider, id) {
+  classifiers ??= invokeNative({ operation: "catalog.classifiers" });
+  recordNative("catalog.classifiers", provider);
+  return structuredClone(classifiers[`${provider}/${id}`]);
+}

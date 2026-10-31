@@ -177,22 +177,43 @@ struct KimiCodingOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
   }
 
   private func refresh(_ credential: OAuthCredential) async throws -> OAuthCredential {
-    let response = try await sendForm(
-      path: "api/oauth/token",
-      fields: [
-        "client_id": Self.clientID,
-        "grant_type": "refresh_token",
-        "refresh_token": credential.refreshToken,
-      ],
-      operation: "kimi.oauth.refresh"
-    )
-    guard (200..<300).contains(response.statusCode) else {
-      throw httpFailure(response, operation: "kimi.oauth.refresh")
+    var lastError: (any Error)?
+    for attempt in 0...3 {
+      if attempt > 0 { try await clock.sleep(for: .seconds(pow(2, Double(attempt - 1)))) }
+      try Task.checkCancellation()
+      let response: ProviderHTTPResponse
+      do {
+        response = try await sendForm(
+          path: "api/oauth/token",
+          fields: [
+            "client_id": Self.clientID, "grant_type": "refresh_token",
+            "refresh_token": credential.refreshToken,
+          ], operation: "kimi.oauth.refresh")
+      } catch {
+        try Task.checkCancellation()
+        lastError = error
+        continue
+      }
+      let json = try? ProviderOrderedJSON(data: response.body)
+      let body = json?.jsonValue.objectValue ?? [:]
+      if (200..<300).contains(response.statusCode) {
+        return try makeCredential(from: body, operation: "refresh")
+      }
+      if [401, 403].contains(response.statusCode) || body.string("error") == "invalid_grant" {
+        let description = body.string("error_description").map { ": " + $0 } ?? ""
+        throw failure(
+          .authorizationFailed,
+          "Kimi Code token refresh unauthorized (status \(response.statusCode))\(description)")
+      }
+      let message = "Kimi Code token refresh failed with status \(response.statusCode)"
+      if response.statusCode == 429 || response.statusCode >= 500, attempt < 3 {
+        lastError = failure(.authorizationFailed, message)
+        continue
+      }
+      let text = try json?.encodedString()
+      throw failure(.authorizationFailed, message + (text.map { ": " + $0 } ?? ""))
     }
-    return try makeCredential(
-      from: decode(response.body, operation: "kimi.oauth.refresh"),
-      operation: "refresh"
-    )
+    throw lastError ?? failure(.authorizationFailed, "Kimi Code token refresh failed")
   }
 
   private func makeCredential(
@@ -219,6 +240,7 @@ struct KimiCodingOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     operation: String
   ) async throws -> ProviderHTTPResponse {
     var request = URLRequest(url: oauthBaseURL.appending(path: path))
+    request.timeoutInterval = 30
     request.httpMethod = "POST"
     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
     request.setValue("application/json", forHTTPHeaderField: "Accept")

@@ -295,6 +295,7 @@ private func responseInput(
 
 private func canonicalResponseEvent(_ event: ProviderEvent) -> JSONValue? {
   switch event {
+  case .classification: return .object(["type": .string("classification")])
   case .contentBlock: return nil
   case .responseStarted(let metadata):
     return .object([

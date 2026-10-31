@@ -131,7 +131,7 @@ enum ProviderRequestRetry {
     return min(0.5 * pow(2, Double(index)), 8) * 1_000 * (1 - random * 0.25)
   }
 
-  private static func parseFloat(_ text: String) -> Double? {
+  static func parseFloat(_ text: String) -> Double? {
     guard
       let range = text.range(
         of: #"^\s*[+-]?(?:Infinity|(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)"#,

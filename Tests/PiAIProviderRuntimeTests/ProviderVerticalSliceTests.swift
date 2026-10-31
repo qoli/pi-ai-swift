@@ -8,14 +8,14 @@ struct ProviderVerticalSliceTests {
   @Test
   func everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice() async throws {
     let excludedForLaterOAuthOrDynamicWork: Set<String> = [
-      "anthropic", "github-copilot", "openrouter", "radius", "xai",
+      "anthropic", "github-copilot", "openrouter", "radius", "xai", "typesafe",
     ]
     let runtimeCatalog = try await BuiltinProviderRuntime(
       credentialStore: InMemoryProviderCredentialStore()
     ).catalog()
     let providerIDs = Set(runtimeCatalog.providers.map(\.id))
       .subtracting(excludedForLaterOAuthOrDynamicWork)
-    #expect(providerIDs.count == 35)
+    #expect(providerIDs.count == 36)
 
     for providerID in providerIDs.sorted() {
       let provider = try #require(
@@ -24,6 +24,7 @@ struct ProviderVerticalSliceTests {
       let model = try #require(
         provider.models.first {
           $0.capabilities.textInput && !$0.capabilities.imageGeneration
+            && !ProviderClassifierAdapter.protocolIDs.contains($0.protocolID)
         } ?? provider.models.first { $0.capabilities.textInput }
       )
       let store = InMemoryProviderCredentialStore(

@@ -7,6 +7,7 @@ enum AuthorizationConformanceProbe {
     let rpc = AuthorizationProbeRPC()
     let clock = AuthorizationProbeClock(milliseconds: input.int("now")!, rpc: rpc)
     let provider = input.string("provider")!
+    let nativeProvider = provider == "openai-chatgpt" ? "openai" : provider
     let action = input.string("action")!
     let transport = AuthorizationProbeTransport(rpc: rpc, clock: clock)
     let execution = Task {
@@ -35,6 +36,11 @@ enum AuthorizationConformanceProbe {
             transport: transport, clock: clock, agentName: input.string("agentName") ?? "pi")
         case "xai": adapter = XAIOAuthAuthorizationAdapter(transport: transport, clock: clock)
         case "radius": adapter = RadiusOAuthAuthorizationAdapter(transport: transport, clock: clock)
+        case "meta": adapter = MetaOAuthAuthorizationAdapter(transport: transport, clock: clock)
+        case "openai-chatgpt":
+          adapter = OpenAIChatGPTAuthorizationAdapter(
+            transport: transport, clock: clock,
+            deviceID: input.string("deviceID"), agentName: input.string("agentName") ?? "Pi")
         default:
           try rpc.write(
             "authFinished",
@@ -56,6 +62,10 @@ enum AuthorizationConformanceProbe {
             if let value = input.string(key) ?? raw.string(key) { metadata[key] = value }
           }
           if let accountID = raw.string("accountId") { metadata["accountID"] = accountID }
+          if let clientID = raw.string("clientId") { metadata["clientID"] = clientID }
+          if let scopes = raw["scopes"] {
+            metadata["scopes"] = String(decoding: try JSONEncoder().encode(scopes), as: UTF8.self)
+          }
           if let enterprise = raw.string("enterpriseUrl"), provider == "github-copilot" {
             metadata["enterpriseDomain"] = try GitHubCopilotOAuthAuthorizationAdapter(
               transport: transport
@@ -75,7 +85,7 @@ enum AuthorizationConformanceProbe {
               metadata: metadata))
         }
         let store = InMemoryProviderCredentialStore(
-          credentials: stored.map { [provider: $0] } ?? [:])
+          credentials: stored.map { [nativeProvider: $0] } ?? [:])
         if action == "toAuth" {
           let projected = try adapter.requestAuthorization(for: stored)
           var auth: [String: JSONValue] = [:]
@@ -100,7 +110,7 @@ enum AuthorizationConformanceProbe {
         if action == "login" {
           _ = try await adapter.authorize(
             .login(
-              providerID: provider,
+              providerID: nativeProvider,
               methodID: input.string("method") == "browser" && provider == "openai-codex"
                 ? "oauth-browser"
                 : input.string("method") == "copy_code" && provider == "anthropic"
@@ -137,17 +147,17 @@ enum AuthorizationConformanceProbe {
           if provider == "openai-codex", case .oauth(let credential) = stored {
             let refreshed = try await OpenAICodexOAuthClient(transport: transport, clock: clock)
               .refresh(credential)
-            _ = try await store.modify(providerID: provider) { _ in .oauth(refreshed) }
+            _ = try await store.modify(providerID: nativeProvider) { _ in .oauth(refreshed) }
           } else {
             let resolved = try await adapter.resolveCredential(
-              providerID: provider, credentialStore: store,
+              providerID: nativeProvider, credentialStore: store,
               refreshCoordinator: CredentialRefreshCoordinator(credentialStore: store))
-            _ = try await store.modify(providerID: provider) { _ in resolved }
+            _ = try await store.modify(providerID: nativeProvider) { _ in resolved }
           }
         } else {
           throw AuthorizationProbeError("Unsupported authorization probe action: " + action)
         }
-        guard case .oauth(let credential) = await store.read(providerID: provider) else {
+        guard case .oauth(let credential) = await store.read(providerID: nativeProvider) else {
           throw AuthorizationProbeError("Native authorization produced no OAuth credential")
         }
         try rpc.write(

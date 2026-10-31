@@ -6,14 +6,15 @@ import Testing
 @Suite
 struct SourceDerivedFailureDifferentialTests {
   @Test
-  func everySupportedWireProtocolMatchesPinnedSourceTypedFailures() async throws {
+  func chatAndImageProtocolsMatchPinnedSourceTypedFailures() async throws {
     let repository = failureRepositoryRoot()
     let requestCase = try failureDecode(
       FailureRequestCase.self,
       at: repository.appending(path: "Fixtures/Differential/Cases/request-rich.json")
     )
     let expectedRevision = try failurePinnedRevision(repository: repository)
-    let expectedProtocols = StandardWireProtocols.supportedProtocolIDs
+    let expectedProtocols = StandardWireProtocols.supportedProtocolIDs.subtracting(
+      ProviderClassifierAdapter.protocolIDs)
     #expect(Set(requestCase.protocols.map(\.protocolID)) == expectedProtocols)
 
     for fixtureName in [
@@ -285,6 +286,7 @@ private struct FailureSourceTerminal: Decodable, Equatable {
 
 private func failureEventType(_ event: ProviderEvent) -> String? {
   switch event {
+  case .classification: "classification"
   case .contentBlock: nil
   case .responseStarted: nil
   case .textDelta: "textDelta"

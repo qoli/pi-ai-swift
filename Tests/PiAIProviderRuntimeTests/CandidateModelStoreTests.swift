@@ -49,7 +49,7 @@ struct CandidateModelStoreTests {
     let store = try ProviderModelStore(bundledData: data, expectedRevision: revision)
     for provider in fixture.providers {
       let expected = provider.models.filter {
-        [nil, "chat", "image"].contains($0.string("type"))
+        [nil, "chat", "image", "classifier"].contains($0.string("type"))
       }
       let records = await store.records(providerID: provider.id)
       #expect(records.count == expected.count)
@@ -60,12 +60,15 @@ struct CandidateModelStoreTests {
         let record = try #require(
           records.first {
             $0.model.id == object.string("id") && $0.model.capabilities.imageGeneration == image
+              && $0.model.capabilities.classification == (object.string("type") == "classifier")
           })
         #expect(record.metadata == object)
         #expect(record.model.protocolID == object.string("api"))
         let baseURL = object.string("baseUrl") ?? provider.baseURL
         #expect(record.baseURL == (baseURL?.isEmpty == true ? nil : baseURL))
-        #expect(record.model.capabilities.toolCalling == !image)
+        #expect(
+          record.model.capabilities.toolCalling == (!image && object.string("type") != "classifier")
+        )
         if image { #expect(!record.model.capabilities.structuredOutput) }
         #expect(record.model.contextWindow == object.int("contextWindow"))
         #expect(record.model.maximumOutputTokens == object.int("maxTokens"))

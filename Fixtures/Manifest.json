@@ -103,7 +103,7 @@
       ],
       "upstreamSourceSHA256": "40a0870f7cb7ce59fc078261fc3bd6c0c53b6bdcee1a24fed995e8b03d30b209",
       "upstreamTestSHA256": "6d214195a956993eed0ab91ed3ce3ad7a1fcc55e6329a5026dc953bdad339f4c",
-      "swiftEvidenceSHA256": "2cbbbc032394852b0e98d557181648f24ade74250c40b000cab11f03b9318a7f"
+      "swiftEvidenceSHA256": "bbc67b316f240397e5666bb4132cc82f311cdc05360a073d594ee9e01882c53a"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -148,7 +148,7 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
         "Scripts/Conformance/bridge.mjs",
         "Scripts/Conformance/SwiftProbe.swift",
-        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#chatAndImageProtocolsMatchPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
@@ -172,7 +172,7 @@
       ],
       "upstreamSourceSHA256": "44f1ffc77bf9899c2e7067280720c0fc5a0b458c0fccd650d3f5739182c2c33f",
       "upstreamTestSHA256": "32bd02c09ad074cb1b498bc752d2e91160d998c39cb5a4e0e07c598ef32a8f4c",
-      "swiftEvidenceSHA256": "0877fd978a3a6ec9601c217c11c9e0cb4be0fb803e5abee02b5a779b1e72a784"
+      "swiftEvidenceSHA256": "a2ed26d034ea87d30c76f01a1bbbabdee214b2a08e59c00b5abb579004d59acf"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -267,7 +267,7 @@
       ],
       "upstreamSourceSHA256": "fcd722758fa9205f6f2633c0445fa6ef36e82c3c5eca2ea959c8af6b2dd6d9f7",
       "upstreamTestSHA256": "e7a06b9de0a57a7a44c5bf5293a21be7f9d50cec2834586443b3303f82c6b83b",
-      "swiftEvidenceSHA256": "c08b764f609cf59214258e970930af616232746403ba179040e723d435af2170"
+      "swiftEvidenceSHA256": "d292544be18b462e90da7a4d98275352b42ba6ae617089d5bd6c65871f3f636b"
     },
     {
       "protocolID": "google-generative-ai",
@@ -311,7 +311,7 @@
         "Scripts/pi-ai-provider-intent-oracle.mjs",
         "Fixtures/Differential/Cases/provider-intent.json",
         "Fixtures/Differential/Oracle/provider-intent.json",
-        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#chatAndImageProtocolsMatchPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
@@ -329,7 +329,7 @@
       ],
       "upstreamSourceSHA256": "20f47dd4749034075eb61695802c2a9587eaa5307442802243b6834d893b3ff0",
       "upstreamTestSHA256": "58851857b8853522661aa8dfb88893583090141e5b46c9b9ceb19883dbebe997",
-      "swiftEvidenceSHA256": "3f277d4e85ec10105836f8a959bd8de19b81418850ad055812d85976da5032f8"
+      "swiftEvidenceSHA256": "a54b40e9a1faea75121cf3a43bd6de5b9da4ec9bceab654ebdcf84ac77128495"
     },
     {
       "protocolID": "google-vertex",
@@ -369,7 +369,7 @@
         "Scripts/pi-ai-provider-intent-oracle.mjs",
         "Fixtures/Differential/Cases/provider-intent.json",
         "Fixtures/Differential/Oracle/provider-intent.json",
-        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#chatAndImageProtocolsMatchPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
@@ -399,7 +399,7 @@
       ],
       "upstreamSourceSHA256": "ab23a583792c46d1da02c82fa55f2a794f92074ca5afcea8839b129ce58818f0",
       "upstreamTestSHA256": "657dae9fc402a75f1815f0c883db050c1dd62cf240b8a3a8125538bb7901e54e",
-      "swiftEvidenceSHA256": "6ac1ffad23988957cd1f4a6702cbb53f27db9ff8eef048329930fff7f7f60d38"
+      "swiftEvidenceSHA256": "847e371495fb4037df4c642bfe60643d6911c530ed716b1fa6aa5e18216dcfd3"
     },
     {
       "protocolID": "mistral-conversations",
@@ -455,7 +455,7 @@
         "Scripts/openai-request-branch-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/mistral-request-options.json",
         "Fixtures/OpenAIRequestBranches/Oracle/mistral-request-options.json",
-        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#chatAndImageProtocolsMatchPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testMistralFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
@@ -473,7 +473,7 @@
       ],
       "upstreamSourceSHA256": "2ea02438b2f7ac650434868b43feee9e07ab32480c01da9587245dd14cece8d5",
       "upstreamTestSHA256": "713563fce21f8848d5226c9ddbb7c76be5540ae3e9d605d6b7310ef6d9f9b626",
-      "swiftEvidenceSHA256": "c688891a095d16c16b86fa80430dbed62090adf4c12c8bb08518331b4fbfda7c"
+      "swiftEvidenceSHA256": "8ad050cc0b5a8a34e86e84236b6ea9aca4510848588399ff198c73cd9de10a41"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -519,7 +519,7 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
         "Scripts/Conformance/bridge.mjs",
         "Scripts/Conformance/SwiftProbe.swift",
-        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#chatAndImageProtocolsMatchPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
@@ -549,7 +549,7 @@
       ],
       "upstreamSourceSHA256": "805ed5c861052c125e0f1fc34b3630b832d615624536f86db4571e88dc3f760d",
       "upstreamTestSHA256": "ad9cce3e861f84c8fec0aa144728a72bf3c56155046187ccfb136a86f7ce1b27",
-      "swiftEvidenceSHA256": "1710d3cb13f628951aaa99dace17039c1f787e2682b1bb6c0f9709b688f5cb78"
+      "swiftEvidenceSHA256": "c0f4124b7af1f250d1f8f12531ce234307c2001ac9518cdccb91d0acd0805347"
     },
     {
       "protocolID": "openai-completions",
@@ -662,7 +662,7 @@
       ],
       "upstreamSourceSHA256": "6b5bcab7327f12ad95c1e6464d8d9254b35bf2e8121ae91cf047195e70850406",
       "upstreamTestSHA256": "19bea417dc5888ff31dd7a702042d2b9d3c984b81db2bd2f35005db46a9b60e5",
-      "swiftEvidenceSHA256": "e6da78d3e5a39500a2ce22ea275341a26e1a7fdf9c32bdeef13b93919e11d1e4"
+      "swiftEvidenceSHA256": "b2c7d0555e43bd3264d2fb373c64c1c681efc36c0a00c8d46aa7331dedd98868"
     },
     {
       "protocolID": "openai-responses",
@@ -722,7 +722,7 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGrammarHistoryMapMatchesPinnedSource",
         "Scripts/Conformance/bridge.mjs",
         "Scripts/Conformance/SwiftProbe.swift",
-        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#everySupportedWireProtocolMatchesPinnedSourceTypedFailures",
+        "Tests/PiAIProviderRuntimeTests/SourceDerivedFailureDifferentialTests.swift#chatAndImageProtocolsMatchPinnedSourceTypedFailures",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testResponsesFailureMetadataMatchesPinnedSource",
         "Scripts/pi-ai-failure-oracle.mjs",
         "Fixtures/Differential/Oracle/failure-provider-declared.json",
@@ -743,7 +743,7 @@
       ],
       "upstreamSourceSHA256": "3d86b728a0041484c20fa100c35cb408a9b408739668f2203f5f6bbaa6e66277",
       "upstreamTestSHA256": "f7931a41336959819aa2c7d88144baffa6ca02781ae9ccba9908e647f381e458",
-      "swiftEvidenceSHA256": "3e5da729479e7157d201d6ec6f1ef4569cbee560d3c3ad547de9e12794179e46"
+      "swiftEvidenceSHA256": "f2afa779d3ffe20a1030ecca028a1131385cd5708e854d02464f38273be96809"
     },
     {
       "protocolID": "openrouter-images",
@@ -778,7 +778,7 @@
       ],
       "upstreamSourceSHA256": "73a586ef871054564f846db11331117924fd117d78e9bcbc186e42474dd6b056",
       "upstreamTestSHA256": "9a8ab6b6156e94356b98e80f058b02bf5f94ae45b50c940ae861a9f2c8384a94",
-      "swiftEvidenceSHA256": "96f2ac6819e779ac25b786402f9564304b11cc17974da7f1adb890b15d268cf7"
+      "swiftEvidenceSHA256": "ab087232c1b7125b3b332796e7a8d96a8b64b5a0f982cca2896acabd9165a407"
     },
     {
       "protocolID": "pi-messages",
@@ -811,7 +811,7 @@
       ],
       "upstreamSourceSHA256": "46d587ce7304d9d5f462da7483c2d7786a08a642ba6fc856a93fb979b864bbb4",
       "upstreamTestSHA256": "e31e3fd556c20926126e78ca58b40154c0d11502925e7594bca081aec7997a58",
-      "swiftEvidenceSHA256": "6535f247a47e7cfff254ddd966454d5644e555461b911a076ecf021e5c1af5e0"
+      "swiftEvidenceSHA256": "a5f3dcec042060b57f22d958a31a1d407fe7da894c8badb6a4f68b96ff86960d"
     }
   ]
 }

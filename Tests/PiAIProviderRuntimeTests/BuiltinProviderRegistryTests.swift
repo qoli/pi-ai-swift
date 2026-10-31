@@ -10,7 +10,7 @@ struct BuiltinProviderRegistryTests {
     let registry = try BuiltinProviderRegistry.load()
     #expect(registry.upstreamRevision == "86dc686cf2fd795b2b24af3d614bb0e1307bcd76")
     #expect(registry.providers.count == 42)
-    #expect(registry.providers.flatMap(\.models).count == 1_656)
+    #expect(registry.providers.flatMap(\.models).count == 1_710)
 
     let kimi = try #require(
       registry.providers.first { $0.id == "kimi-coding" }
@@ -40,8 +40,8 @@ struct BuiltinProviderRegistryTests {
     let openRouter = try #require(
       registry.providers.first { $0.id == "openrouter" }
     )
-    #expect(openRouter.models.count == 452)
-    #expect(openRouter.modelConfigurations.count == 456)
+    #expect(openRouter.models.count == 484)
+    #expect(openRouter.modelConfigurations.count == 488)
     let overlapping = try #require(
       openRouter.models.first { $0.id == "google/gemini-3-pro-image" }
     )
@@ -59,7 +59,7 @@ struct BuiltinProviderRegistryTests {
   }
 
   @Test
-  func schema6PreservesTypedRoutesWithoutAdvertisingClassifiers() throws {
+  func schema6PreservesChatImageAndClassifierRoutes() throws {
     let root = URL(fileURLWithPath: #filePath)
       .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
     let data = try Data(contentsOf: root.appending(path: "Fixtures/Catalog/Schema6/routing.json"))
@@ -69,17 +69,14 @@ struct BuiltinProviderRegistryTests {
 
     for source in fixture.providers {
       let provider = try #require(registry.providers.first { $0.id == source.id })
-      let supported = source.models.filter { $0.string("type") != "classifier" }
+      let supported = source.models
       #expect(provider.modelConfigurations.count == supported.count)
       #expect(Set(provider.models.map(\.id)) == Set(supported.compactMap { $0.string("id") }))
       for object in source.models {
         let id = try #require(object.string("id"))
-        if object.string("type") == "classifier" {
-          #expect(!provider.models.contains { $0.id == id })
-          #expect(!provider.modelConfigurations.keys.contains { $0.modelID == id })
-          continue
-        }
-        let modality: ProviderOutputModality = object.string("type") == "image" ? .image : .text
+        let modality: ProviderOutputModality =
+          object.string("type") == "classifier"
+          ? .classification : object.string("type") == "image" ? .image : .text
         let route = ProviderModelRoute(modelID: id, outputModality: modality)
         let configuration = try #require(provider.modelConfigurations[route])
         #expect(configuration.metadata == object)
@@ -91,6 +88,9 @@ struct BuiltinProviderRegistryTests {
         #expect(
           model.capabilities.imageGeneration == sameID.contains { $0.string("type") == "image" })
         #expect(model.capabilities.toolCalling == (chat != nil))
+        #expect(
+          model.capabilities.classification == sameID.contains { $0.string("type") == "classifier" }
+        )
         #expect(model.protocolID == (chat ?? object).string("api"))
 
         // Project each original record alone as well: merging equal IDs must
@@ -106,6 +106,7 @@ struct BuiltinProviderRegistryTests {
           data: JSONEncoder().encode(isolatedFixture))
         let isolated = try #require(isolatedRegistry.providers.first?.models.first)
         #expect(isolated.capabilities.imageGeneration == (modality == .image))
+        #expect(isolated.capabilities.classification == (modality == .classification))
         #expect(isolated.capabilities.toolCalling == (modality == .text))
         #expect(isolated.capabilities.structuredOutput == (modality == .text))
         #expect(isolated.contextWindow == object.int("contextWindow"))
@@ -129,6 +130,8 @@ struct BuiltinProviderRegistryTests {
       "openai-responses",
       "openrouter-images",
       "pi-messages",
+      "typesafe-system-one", "cloudflare-workers-ai-system-one", "openai-decisions",
+      "llama-cpp-classify",
     ]
     for provider in registry.providers {
       #expect(

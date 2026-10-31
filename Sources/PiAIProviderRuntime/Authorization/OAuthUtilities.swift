@@ -8,6 +8,13 @@ struct OAuthPKCE: Sendable, Equatable {
   let state: String
 
   static func make() throws -> OAuthPKCE {
+    let verifier = try randomValue()
+    let challenge = base64URL(Data(SHA256.hash(data: Data(verifier.utf8))))
+    return OAuthPKCE(
+      verifier: verifier, challenge: challenge, state: UUID().uuidString.lowercased())
+  }
+
+  static func randomValue() throws -> String {
     var bytes = [UInt8](repeating: 0, count: 32)
     guard SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes) == errSecSuccess else {
       throw oauthFailure(
@@ -17,13 +24,7 @@ struct OAuthPKCE: Sendable, Equatable {
         message: "Secure PKCE randomness is unavailable"
       )
     }
-    let verifier = base64URL(Data(bytes))
-    let challenge = base64URL(Data(SHA256.hash(data: Data(verifier.utf8))))
-    return OAuthPKCE(
-      verifier: verifier,
-      challenge: challenge,
-      state: UUID().uuidString.lowercased()
-    )
+    return base64URL(Data(bytes))
   }
 }
 

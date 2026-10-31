@@ -73,7 +73,8 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       let githubToken = try await poll(domain: domain, device: device)
       let credential = try await exchangeCopilotToken(
         githubToken: githubToken,
-        enterpriseDomain: enterpriseDomain
+        enterpriseDomain: enterpriseDomain,
+        loginInteraction: interaction
       )
       _ = try await credentialStore.modify(providerID: providerID) { _ in
         .oauth(credential)
@@ -180,7 +181,8 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
 
   private func exchangeCopilotToken(
     githubToken: String,
-    enterpriseDomain: String?
+    enterpriseDomain: String?,
+    loginInteraction: AuthorizationInteraction? = nil
   ) async throws -> OAuthCredential {
     let domain = enterpriseDomain ?? "github.com"
     var request = URLRequest(
@@ -198,10 +200,35 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       let expiresAt = body.int("expires_at"), expiresAt > 0
     else { throw failure("GitHub Copilot token response is malformed") }
     let baseURL = try copilotBaseURL(token: token, enterpriseDomain: enterpriseDomain)
-    let available = try await fetchAvailableModels(
+    let models = try await fetchAvailableModels(
       token: token,
-      baseURL: baseURL
+      baseURL: baseURL,
+      maximumRetries: loginInteraction == nil ? 0 : 2
     )
+    var available = models.available
+    if let loginInteraction, !models.policy.isEmpty {
+      _ = try await loginInteraction(
+        .progress(providerID: Self.providerID, message: "Enabling models..."))
+      for modelID in models.policy {
+        var request = URLRequest(url: baseURL.appending(path: "models/\(modelID)/policy"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        for (name, value) in Self.headers { request.setValue(value, forHTTPHeaderField: name) }
+        request.setValue("chat-policy", forHTTPHeaderField: "openai-intent")
+        request.setValue("chat-policy", forHTTPHeaderField: "x-interaction-type")
+        request.httpBody = Data(#"{"state":"enabled"}"#.utf8)
+        do {
+          let response = try await rateLimited(request, maximumRetries: 2)
+          if response.statusCode == 429 { break }
+          if (200..<300).contains(response.statusCode) { available.append(modelID) }
+        } catch {
+          try Task.checkCancellation()
+        }
+      }
+      var seen = Set<String>()
+      available = available.filter { seen.insert($0).inserted }
+    }
     var metadata = [
       "baseURL": baseURL.absoluteString,
       "availableModelIDs": available.joined(separator: ","),
@@ -217,15 +244,16 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
 
   private func fetchAvailableModels(
     token: String,
-    baseURL: URL
-  ) async throws -> [String] {
+    baseURL: URL,
+    maximumRetries: Int
+  ) async throws -> (available: [String], policy: [String]) {
     var request = URLRequest(url: baseURL.appending(path: "models"))
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     request.setValue("2026-06-01", forHTTPHeaderField: "X-GitHub-Api-Version")
     for (name, value) in Self.headers { request.setValue(value, forHTTPHeaderField: name) }
     let body = try oauthResponseObject(
-      try await transport.send(request),
+      try await rateLimited(request, maximumRetries: maximumRetries),
       providerID: Self.providerID,
       operation: "copilot.oauth.models"
     )
@@ -233,20 +261,67 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       throw failure("GitHub Copilot models response is malformed")
     }
     let candidates = data.compactMap { item -> [String: JSONValue]? in
-      guard let model = item.objectValue, let id = model.string("id"),
-        !id.isEmpty, model.object("capabilities")?.object("supports")?.bool("tool_calls") != false
+      guard let model = item.objectValue, model.string("id") != nil,
+        model.object("capabilities")?.object("supports")?.bool("tool_calls") != false
       else { return nil }
       return model
     }
     let picker = candidates.filter {
       $0.bool("model_picker_enabled") == true && $0.object("policy")?.string("state") != "disabled"
     }.compactMap { $0.string("id") }
-    if picker.isEmpty, baseURL.absoluteString == "https://api.individual.githubcopilot.com" {
-      return candidates.filter { $0.object("policy")?.string("state") == "enabled" }.compactMap {
+    let policyFallback =
+      picker.isEmpty && baseURL.absoluteString == "https://api.individual.githubcopilot.com"
+    let available =
+      policyFallback
+      ? candidates.filter { $0.object("policy")?.string("state") == "enabled" }.compactMap {
         $0.string("id")
-      }
+      } : picker
+    let unconfigured = candidates.filter {
+      $0.object("policy")?.string("state") == "unconfigured"
+        && ($0.bool("model_picker_enabled") == true || policyFallback)
     }
-    return picker
+    let known =
+      unconfigured.isEmpty
+      ? Set<String>()
+      : Set(
+        try BuiltinProviderRegistry.load().providers.first { $0.id == Self.providerID }?.models.map(
+          \.id) ?? [])
+    return (available, unconfigured.compactMap { $0.string("id") }.filter { known.contains($0) })
+  }
+
+  private func rateLimited(_ original: URLRequest, maximumRetries: Int) async throws
+    -> ProviderHTTPResponse
+  {
+    let deadline = maximumRetries > 0 ? clock.now().addingTimeInterval(5) : nil
+    for retry in 0...maximumRetries {
+      try Task.checkCancellation()
+      var request = original
+      request.timeoutInterval = min(5, deadline?.timeIntervalSince(clock.now()) ?? 5)
+      let response = try await transport.send(request)
+      if response.statusCode != 429 || retry == maximumRetries { return response }
+      var delay = 500 * pow(2, Double(retry))
+      if let text = response.headers.first(where: { $0.key.lowercased() == "retry-after" })?.value,
+        !text.isEmpty
+      {
+        if let seconds = ProviderRequestRetry.parseFloat(text) {
+          delay = seconds * 1_000
+        } else {
+          let format = DateFormatter()
+          format.locale = Locale(identifier: "en_US_POSIX")
+          format.timeZone = TimeZone(secondsFromGMT: 0)
+          format.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+          guard let date = format.date(from: text) ?? ISO8601DateFormatter().date(from: text) else {
+            return response
+          }
+          delay = date.timeIntervalSince(clock.now()) * 1_000
+        }
+        if !delay.isFinite { return response }
+      }
+      delay = max(0, delay)
+      if let deadline, delay >= deadline.timeIntervalSince(clock.now()) * 1_000 { return response }
+      try await clock.sleep(for: .milliseconds(delay))
+    }
+    throw failure("GitHub Copilot rate-limit retry exhausted")
   }
 
   func copilotBaseURL(

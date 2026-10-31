@@ -142,27 +142,33 @@ public struct CustomProviderRuntime: ProviderRuntime {
         )
       }
       let outputModality: ProviderOutputModality =
-        api == "openrouter-images" ? .image : .text
-      models.append(
-        ProviderModel(
-          id: model.id,
-          providerID: provider.id,
-          name: model.name,
-          protocolID: api,
-          capabilities: model.capabilities,
-          contextWindow: model.contextWindow,
-          maximumOutputTokens: model.maximumOutputTokens,
-          supportedReasoningEfforts: try ProviderReasoning.supportedEfforts(
-            reasoning: model.capabilities.reasoning, metadata: model.metadata,
-            protocolID: api, providerID: provider.id, modelID: model.id, modelName: model.name)
-        )
+        ProviderClassifierAdapter.protocolIDs.contains(api)
+        ? .classification : api == "openrouter-images" ? .image : .text
+      let incoming = ProviderModel(
+        id: model.id,
+        providerID: provider.id,
+        name: model.name,
+        protocolID: api,
+        capabilities: model.capabilities,
+        contextWindow: model.contextWindow,
+        maximumOutputTokens: model.maximumOutputTokens,
+        supportedReasoningEfforts: try ProviderReasoning.supportedEfforts(
+          reasoning: model.capabilities.reasoning, metadata: model.metadata,
+          protocolID: api, providerID: provider.id, modelID: model.id, modelName: model.name)
       )
-      configurations[
-        ProviderModelRoute(
-          modelID: model.id,
-          outputModality: outputModality
-        )
-      ] = ProviderModelConfiguration(
+      let route = ProviderModelRoute(modelID: model.id, outputModality: outputModality)
+      guard configurations[route] == nil else {
+        throw configurationFailure(
+          providerID: provider.id,
+          message: "duplicate model route: \(model.id)/\(outputModality.rawValue)")
+      }
+      if let index = models.firstIndex(where: { $0.id == model.id }) {
+        models[index] = ProviderModel.merging(
+          models[index], incoming, preferIncomingProtocol: outputModality == .text)
+      } else {
+        models.append(incoming)
+      }
+      configurations[route] = ProviderModelConfiguration(
         protocolID: api,
         baseURL: model.baseURL?.absoluteString,
         headers: model.headers,
@@ -185,7 +191,9 @@ public struct CustomProviderRuntime: ProviderRuntime {
       baseURL: provider.baseURL?.absoluteString,
       headers: provider.headers,
       modelConfigurations: configurations,
-      credentialRequirement: .required,
+      credentialRequirement: configurations.values.allSatisfy {
+        $0.protocolID == "llama-cpp-classify"
+      } ? .none : .required,
       endpointPolicy: .httpOrHTTPS,
       authorization: APIKeyAuthorizationAdapter(
         providerID: provider.id,

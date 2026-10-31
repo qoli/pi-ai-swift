@@ -266,17 +266,18 @@ actor ProviderModelStore {
       )
     }
     let imageGeneration: Bool
+    let classification = object.string("type") == "classifier"
     switch object.string("type") {
     case "chat":
       imageGeneration = false
     case "image":
       imageGeneration = true
+    case "classifier":
+      imageGeneration = false
     case nil:
       // Accepted catalogs predate typed image records.
       imageGeneration = protocolID == "openrouter-images"
     default:
-      // Keep classifier evidence in the source catalog, outside the supported
-      // chat/image seam. Unknown operation types are not chat models.
       return nil
     }
     let inputs = object.modelStoreStringArray("input")
@@ -308,10 +309,12 @@ actor ProviderModelStore {
         capabilities: ProviderCapabilities(
           textInput: inputs.contains("text"),
           imageInput: inputs.contains("image"),
-          toolCalling: !imageGeneration,
+          toolCalling: !imageGeneration && !classification,
           reasoning: object.bool("reasoning") ?? false,
-          structuredOutput: !imageGeneration && supportsStructuredOutput(protocolID),
-          imageGeneration: imageGeneration
+          structuredOutput: !imageGeneration && !classification
+            && supportsStructuredOutput(protocolID),
+          imageGeneration: imageGeneration,
+          classification: classification
         ),
         contextWindow: contextWindow,
         maximumOutputTokens: maximumOutputTokens,
@@ -526,7 +529,8 @@ actor ProviderModelStore {
   ) throws {
     var routes = Set<String>()
     for record in records {
-      let route = "\(record.model.id)\u{0}\(record.model.capabilities.imageGeneration)"
+      let route =
+        "\(record.model.id)\u{0}\(record.model.capabilities.imageGeneration)\u{0}\(record.model.capabilities.classification)"
       guard routes.insert(route).inserted else {
         throw failure(
           .upstreamDrift,

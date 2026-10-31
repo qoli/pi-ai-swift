@@ -14,20 +14,23 @@ struct BuiltinProviderRuntimeTests {
       authorizationTransport: RuntimeUnusedHTTPTransport()
     )
     let catalog = try await runtime.catalog()
-    #expect(catalog.providers.count == 40)
-    #expect(catalog.providers.flatMap(\.models).count == 1_650)
-    #expect(!catalog.providers.contains { $0.id == "meta" })
+    #expect(catalog.providers.count == 42)
+    #expect(catalog.providers.flatMap(\.models).count == 1_710)
+    #expect(catalog.providers.contains { $0.id == "meta" })
     #expect(
-      catalog.providers.first { $0.id == "openai" }?.authorizationMethods.map(\.id) == ["api-key"])
+      catalog.providers.first { $0.id == "openai" }?.authorizationMethods.map(\.id) == [
+        "api-key", "oauth",
+      ])
 
     do {
       _ = try await runtime.authorize(.login(providerID: "openai", methodID: "oauth")) { _ in
-        Issue.record("unsupported OpenAI login presented a challenge")
+        Issue.record("OpenAI login without a device ID presented a challenge")
         return .acknowledged
       }
-      Issue.record("unsupported OpenAI login succeeded")
+      Issue.record("OpenAI login without a device ID succeeded")
     } catch let error as ProviderRuntimeFailure {
-      #expect(error.code == .unsupportedCapability)
+      #expect(error.code == .authorizationFailed)
+      #expect(error.message.contains("requires a device ID"))
     }
 
     let state = try await runtime.authorize(

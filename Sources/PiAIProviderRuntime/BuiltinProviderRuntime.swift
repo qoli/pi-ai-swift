@@ -196,12 +196,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?,
     cloudCredentialSources: ProviderCloudCredentialSources
   ) throws -> ProviderRuntimeKernel {
-    // Keep newly inventoried providers out of the runtime until their complete
-    // authorization and vertical-slice evidence is landed.
-    let unsupportedProviderIDs: Set<String> = ["meta", "typesafe"]
-    let definitions = try registry.providers.filter {
-      !unsupportedProviderIDs.contains($0.id)
-    }.map {
+    let definitions = try registry.providers.map {
       try makeDefinition(
         $0,
         authorizationTransport: authorizationTransport,
@@ -278,6 +273,12 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
         adapters[method.id] = KimiCodingOAuthAuthorizationAdapter(
           transport: authorizationTransport
         )
+      case "oauth" where record.id == MetaOAuthAuthorizationAdapter.providerID:
+        adapters[method.id] = MetaOAuthAuthorizationAdapter(transport: authorizationTransport)
+      case "oauth" where record.id == OpenAIChatGPTAuthorizationAdapter.providerID:
+        adapters[method.id] = OpenAIChatGPTAuthorizationAdapter(
+          transport: authorizationTransport,
+          deviceID: configuration.deviceID, agentName: configuration.chatGPTAgentName)
       case let methodID
       where record.id == AnthropicOAuthAuthorizationAdapter.providerID
         && ["oauth", "oauth-copy-code"].contains(methodID):
@@ -315,11 +316,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       descriptor: ProviderDescriptor(
         id: record.id,
         name: record.name,
-        authorizationMethods: methods.filter {
-          // The exact catalog inventories this optional login; its native flow
-          // is still an explicit gate, not a supported authorization method.
-          !(record.id == "openai" && $0.id == "oauth")
-        },
+        authorizationMethods: methods,
         models: record.models
       ),
       baseURL: record.baseURL,

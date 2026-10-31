@@ -295,6 +295,7 @@ private func responseBranchInput(
 
 private func canonicalBranchEvent(_ event: ProviderEvent) -> JSONValue? {
   switch event {
+  case .classification: return .object(["type": .string("classification")])
   case .contentBlock: return nil
   case .textDelta(let delta):
     return .object(["type": .string("textDelta"), "delta": .string(delta)])

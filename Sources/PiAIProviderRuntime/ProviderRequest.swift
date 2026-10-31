@@ -8,6 +8,7 @@ public struct ProviderRequest: Sendable, Equatable, Codable {
   public let tools: [ProviderToolDefinition]
   public let options: ProviderGenerationOptions
   public let connectionOptions: ProviderConnectionOptions
+  public let classifier: ProviderClassifierRequest?
 
   public init(
     id: String,
@@ -16,7 +17,8 @@ public struct ProviderRequest: Sendable, Equatable, Codable {
     messages: [ProviderMessage],
     tools: [ProviderToolDefinition],
     options: ProviderGenerationOptions,
-    connectionOptions: ProviderConnectionOptions = .init()
+    connectionOptions: ProviderConnectionOptions = .init(),
+    classifier: ProviderClassifierRequest? = nil
   ) {
     self.id = id
     self.providerID = providerID
@@ -25,10 +27,11 @@ public struct ProviderRequest: Sendable, Equatable, Codable {
     self.tools = tools
     self.options = options
     self.connectionOptions = connectionOptions
+    self.classifier = classifier
   }
 
   private enum CodingKeys: String, CodingKey {
-    case id, providerID, modelID, messages, tools, options, connectionOptions
+    case id, providerID, modelID, messages, tools, options, connectionOptions, classifier
   }
 
   public init(from decoder: any Decoder) throws {
@@ -42,6 +45,7 @@ public struct ProviderRequest: Sendable, Equatable, Codable {
     connectionOptions =
       try container.decodeIfPresent(ProviderConnectionOptions.self, forKey: .connectionOptions)
       ?? .init()
+    classifier = try container.decodeIfPresent(ProviderClassifierRequest.self, forKey: .classifier)
   }
 
   public func encode(to encoder: any Encoder) throws {
@@ -55,6 +59,7 @@ public struct ProviderRequest: Sendable, Equatable, Codable {
     if connectionOptions != .init() {
       try container.encode(connectionOptions, forKey: .connectionOptions)
     }
+    try container.encodeIfPresent(classifier, forKey: .classifier)
   }
 }
 
@@ -592,4 +597,5 @@ public enum ProviderCacheRetention: String, Sendable, Equatable, Codable {
 public enum ProviderOutputModality: String, Sendable, Equatable, Codable {
   case text
   case image
+  case classification
 }

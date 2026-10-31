@@ -54,6 +54,13 @@ export default defineConfig({
         }
         return { code: `import {traceParser as __piParserTrace} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n` + code + "\n" + wrappers.join("\n"), map: null };
       }
+      if (id.endsWith("/providers/opencode-headers.ts")) {
+        return { code: `import {trace as __piTrace} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n`
+          + code.replace("export function withOpenCodeSessionHeader", "function __piOriginal_withOpenCodeSessionHeader")
+          + `\nexport function withOpenCodeSessionHeader(streams) { const wrapped = __piOriginal_withOpenCodeSessionHeader(streams); return { ...wrapped,
+            stream: (...args) => __piTrace("headers.open-code", undefined, () => wrapped.stream(...args)),
+            streamSimple: (...args) => __piTrace("headers.open-code", undefined, () => wrapped.streamSimple(...args)) }; }`, map: null };
+      }
       if (id.startsWith(path.join(upstream, "packages/ai/src/auth/oauth/"))) {
         const provider = path.basename(id, ".ts");
         const name = oauthExports[provider];
@@ -102,7 +109,7 @@ export default defineConfig({
       } : id.endsWith("/images.ts") ? {
         generateImages: "stream",
       } : id.includes("/api/") ? {
-        stream: "stream", streamSimple: "stream", generateImages: "stream", convertMessages: "stream",
+        stream: "stream", streamSimple: "stream", generateImages: "stream", convertMessages: "stream", classify: "classify",
         resolveGoogleThinkingLevel: "stream", processResponsesStream: "stream", convertResponsesMessages: "stream",
         ...(id.endsWith("/google-shared.ts") ? {
           convertTools: "google.tools", requiresToolCallId: "google.tool-call-id",
@@ -114,6 +121,8 @@ export default defineConfig({
           appendGrammarToolInputJsonDelta: "sampling.grammar-buffer", closeGrammarToolInputJson: "sampling.grammar-buffer",
         } : {}),
         ...(id.endsWith("/openai-responses-shared.ts") ? { convertResponsesTools: "sampling.tools" } : {}),
+        ...(id.endsWith("/llama-cpp-classify.ts") ? Object.fromEntries(
+          ["renderQuestion", "labelProbabilities", "peakConfidence", "answerFromProbabilities", "llamaServerRoot"].map(name => [name, "classifier." + name])) : {}),
       } : {};
       const wrappers = [];
       for (const [name, operation] of Object.entries(operations)) {
@@ -123,7 +132,7 @@ export default defineConfig({
           matched = true;
           return `${kind} __piOriginal_${name}`;
         });
-        const protocol = ["stream", "streamSimple", "generateImages"].includes(name) && id.includes("/api/")
+        const protocol = ["stream", "streamSimple", "generateImages", "classify"].includes(name) && id.includes("/api/")
           ? path.basename(id, ".ts") : undefined;
         if (matched) wrappers.push(`export function ${name}(...args) { return __piConformanceTrace(${JSON.stringify(operation)}, ${JSON.stringify(protocol)}, () => __piOriginal_${name}(...args)); }`);
       }
@@ -191,6 +200,10 @@ export default defineConfig({
       }
       if (!importer) return;
       const absolute = path.resolve(path.dirname(importer), source);
+      if (absolute.startsWith(path.join(upstream, "packages/ai/src/api/")) &&
+        ["typesafe-system-one.ts", "cloudflare-workers-ai-system-one.ts", "openai-decisions.ts", "llama-cpp-classify.ts"].includes(path.basename(absolute))) {
+        return "\0pi-native-classifier/" + path.basename(absolute, ".ts");
+      }
       if (absolute === path.join(upstream, "packages/ai/src/providers/opencode-headers.ts")) return path.join(directory, "opencode-headers.mjs");
       if (absolute === path.join(upstream, "packages/ai/src/auth/oauth/load.ts")) return "\0pi-native-oauth-load";
       if (absolute === path.join(upstream, "packages/ai/src/utils/provider-retry.ts")) {
@@ -221,6 +234,13 @@ export default defineConfig({
       }
     },
     load(id) {
+      if (id.startsWith("\0pi-native-classifier/")) {
+        const api = id.split("/").at(-1);
+        return `import {classify as native, helper} from ${JSON.stringify(path.join(directory, "classifier.mjs"))};\n`
+          + `export const classify = (model, context, options) => native(${JSON.stringify(api)}, model, context, options);\n`
+          + (api === "llama-cpp-classify" ? ["renderQuestion", "labelProbabilities", "peakConfidence", "answerFromProbabilities", "llamaServerRoot"]
+            .map(name => `export const ${name} = (...args) => helper(${JSON.stringify(name)}, args);`).join("\n") : "");
+      }
       if (id === "\0pi-native-oauth-load") {
         const names = { anthropic: "Anthropic", "openai-codex": "OpenAICodex", "openai-chatgpt": "OpenAIChatGPT",
           "github-copilot": "GitHubCopilot", openrouter: "OpenRouter", "kimi-coding": "KimiCoding", meta: "Meta", xai: "Xai" };

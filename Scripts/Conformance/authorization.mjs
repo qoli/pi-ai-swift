@@ -205,6 +205,8 @@ async function authorize(provider, action, credential, options, configuration) {
           if (provider === "github-copilot" && metadata.enterpriseDomain) value.enterpriseUrl = metadata.enterpriseUrl ?? metadata.enterpriseDomain;
           if (metadata.availableModelIDs !== undefined) value.availableModelIds = metadata.availableModelIDs ? metadata.availableModelIDs.split(",") : [];
           if (metadata.scope) value.scope = metadata.scope;
+          if (metadata.clientID) value.clientId = metadata.clientID;
+          if (metadata.scopes) value.scopes = JSON.parse(metadata.scopes);
           if (provider === "openrouter" && action === "refresh") {
             expect(value).toEqual(credential);
             resolveResult(credential);
@@ -213,7 +215,8 @@ async function authorize(provider, action, credential, options, configuration) {
       } else throw new Error("Unexpected Native authorization frame: " + kind);
       changed();
     });
-    send({ operation: "authorization", provider, action, credential, method, agentName: configuration.agentName, now: Date.now(),
+    send({ operation: "authorization", provider, action, credential, method, agentName: configuration.agentName,
+      deviceID: configuration.getDeviceId?.(), now: Date.now(),
       gateway: configuration.gateway, oauthHost: process.env.KIMI_CODE_OAUTH_HOST, callbackURL: callback?.redirectUri });
     if (options.signal?.aborted) cancel();
     return await result;

@@ -5,6 +5,26 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testClassifiersAndOAuthMatchPinnedAdaptationOracle() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(path: "Differential/\(folder)/provider-adaptation.json"))
+      ).objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let oracle = try cases("Oracle")
+    XCTAssertEqual(inputs.count, oracle.count)
+    for (input, expected) in zip(inputs, oracle) {
+      let actual = try await ProviderAdaptationFixtures.replay(input.objectValue!)
+      XCTAssertEqual(
+        try ProviderAdaptationFixtures.canonical(actual),
+        try ProviderAdaptationFixtures.canonical(expected.objectValue!),
+        input.objectValue!.string("id")!)
+    }
+  }
+
   func testFederationReusesTheNativeCredentialSource() async throws {
     let count = try await CloudAuthorizationFixtures.repeatedFederationSourceCount()
     XCTAssertEqual(count, 1)

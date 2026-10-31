@@ -53,8 +53,8 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                                 else call.get("operation") for call in calls}
             upstream_protocols = {call["protocol"] for call in original_calls if call.get("protocol")}
             swift_protocols = {call["protocol"] for call in calls
-                               if call.get("entrypoint") == "stream"
-                               and call.get("operation") in ["encode", "decode"]}
+                               if (call.get("entrypoint") == "stream" and call.get("operation") in ["encode", "decode"])
+                               or (call.get("entrypoint") == "classify" and call.get("operation") == "classify")}
             missing_protocols = upstream_protocols - swift_protocols
             unexpected_protocols = swift_protocols - upstream_protocols if upstream_protocols else set()
             key = (file["name"], name)

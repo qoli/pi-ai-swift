@@ -51,6 +51,15 @@ struct SwiftConformanceProbe {
     lifetime: ProbeStreamLifetime = .shared
   ) async throws -> ProbeOutput? {
     let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
+    if envelope.string("operation") == "classifier", let wireServer {
+      try await ClassifierConformanceProbe.run(envelope, server: wireServer, incoming: incoming)
+      return nil
+    }
+    if envelope.string("operation") == "classifier.helper" {
+      FileHandle.standardOutput.write(
+        try JSONEncoder().encode(ClassifierConformanceProbe.helper(envelope)))
+      return nil
+    }
     if envelope.string("operation") == "headers.bedrock" {
       let projected = BedrockConverseStreamAdapter.customHeaders(
         (envelope.object("headers") ?? [:]).compactMapValues(\.stringValue))
@@ -246,18 +255,45 @@ struct SwiftConformanceProbe {
         Data(try ordered(projection.tools ?? .null).encodedString().utf8))
       return nil
     }
-    if ["catalog", "catalog.images"].contains(envelope.string("operation") ?? "") {
+    if envelope.string("operation") == "catalog.all-models" {
+      let registry = try BuiltinProviderRegistry.load()
+      var catalog: [String: [JSONValue]] = [:]
+      for provider in registry.providers {
+        var models: [JSONValue] = []
+        for modality: ProviderOutputModality in [.text, .image, .classification] {
+          for model in provider.models {
+            if let configuration = provider.modelConfigurations[
+              .init(modelID: model.id, outputModality: modality)]
+            {
+              var raw = configuration.metadata
+              if let base = configuration.baseURL ?? provider.baseURL {
+                raw["baseUrl"] = .string(base)
+              }
+              models.append(.object(raw))
+            }
+          }
+        }
+        catalog[provider.id] = models
+      }
+      FileHandle.standardOutput.write(try JSONEncoder().encode(catalog))
+      return nil
+    }
+    if ["catalog", "catalog.images", "catalog.classifiers"].contains(
+      envelope.string("operation") ?? "")
+    {
       let registry = try BuiltinProviderRegistry.load()
       var catalog: [String: [String: JSONValue]] = [:]
       for provider in registry.providers {
         for model in provider.models {
           let route = ProviderModelRoute(
             modelID: model.id,
-            outputModality: envelope.string("operation") == "catalog.images" ? .image : .text)
+            outputModality: envelope.string("operation") == "catalog.images"
+              ? .image
+              : envelope.string("operation") == "catalog.classifiers" ? .classification : .text)
           guard let config = provider.modelConfigurations[route] else { continue }
           var raw = config.metadata
           raw["id"] = .string(model.id)
-          raw["name"] = .string(model.name)
+          raw["name"] = raw["name"] ?? .string(model.name)
           raw["provider"] = .string(provider.id)
           raw["api"] = .string(config.protocolID)
           if let base = config.baseURL ?? provider.baseURL { raw["baseUrl"] = .string(base) }

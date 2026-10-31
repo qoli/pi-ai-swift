@@ -1,0 +1,686 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "system-one-bool",
+      "kind": "classifier",
+      "model": {
+        "api": "typesafe-system-one",
+        "provider": "typesafe",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "system-one-bool",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {
+        "answers": {
+          "approved": {
+            "type": "noul",
+            "noul": 0.8
+          }
+        },
+        "usage": {
+          "input_tokens": 12,
+          "output_tokens": 2
+        }
+      }
+    },
+    {
+      "id": "system-one-images",
+      "kind": "classifier",
+      "model": {
+        "api": "typesafe-system-one",
+        "provider": "typesafe",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "system-one-images",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        },
+        "images": [
+          {
+            "type": "image",
+            "data": "opaque-image",
+            "mimeType": "image/png"
+          }
+        ]
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {
+        "answers": {
+          "approved": {
+            "type": "noul",
+            "noul": 0.8
+          }
+        }
+      }
+    },
+    {
+      "id": "system-one-billed-error",
+      "kind": "classifier",
+      "model": {
+        "api": "typesafe-system-one",
+        "provider": "typesafe",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "system-one-billed-error",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {
+        "answers": {},
+        "usage": {
+          "input_tokens": 12.5,
+          "output_tokens": 2
+        }
+      }
+    },
+    {
+      "id": "cloudflare-nested",
+      "kind": "classifier",
+      "model": {
+        "api": "cloudflare-workers-ai-system-one",
+        "provider": "cloudflare-workers-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "cloudflare-nested",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {
+        "success": true,
+        "result": {
+          "state": "Completed",
+          "result": {
+            "answers": {
+              "approved": {
+                "type": "noul",
+                "noul": 0.8
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "cloudflare-images",
+      "kind": "classifier",
+      "model": {
+        "api": "cloudflare-workers-ai-system-one",
+        "provider": "cloudflare-workers-ai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "@cf/cloudflare/clef",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        },
+        "images": [
+          {
+            "type": "image",
+            "data": "opaque-image",
+            "mimeType": "image/webp"
+          }
+        ]
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {
+        "success": true,
+        "result": {
+          "answers": {
+            "approved": {
+              "type": "noul",
+              "noul": 0.8
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "decisions-state-order",
+      "kind": "classifier",
+      "model": {
+        "api": "openai-decisions",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "decisions-state-order",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {
+        "answers": [
+          {
+            "name": "approved",
+            "type": "predicate",
+            "probability": 0.8
+          }
+        ],
+        "usage": {
+          "input_tokens": 12,
+          "output_tokens": 2
+        }
+      }
+    },
+    {
+      "id": "decisions-504",
+      "kind": "classifier",
+      "model": {
+        "api": "openai-decisions",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "decisions-504",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 2
+      },
+      "response": "<html>timeout</html>",
+      "status": 504
+    },
+    {
+      "id": "decisions-refusal",
+      "kind": "classifier",
+      "model": {
+        "api": "openai-decisions",
+        "provider": "openai",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "decisions-refusal",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {
+        "answers": [
+          {
+            "name": "approved",
+            "type": "refusal"
+          }
+        ],
+        "usage": {
+          "input_tokens": 12,
+          "output_tokens": 2
+        }
+      }
+    },
+    {
+      "id": "llama-choice",
+      "kind": "classifier",
+      "model": {
+        "api": "llama-cpp-classify",
+        "provider": "llama.cpp",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "llama-choice",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "pick": {
+            "type": "choice",
+            "instructions": "Pick",
+            "criteria": {
+              "yes": "Yes",
+              "no": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {}
+    },
+    {
+      "id": "llama-deeper-readout",
+      "kind": "classifier",
+      "model": {
+        "api": "llama-cpp-classify",
+        "provider": "llama.cpp",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "llama-deeper-readout",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {},
+        "questions": {
+          "pick": {
+            "type": "choice",
+            "instructions": "Pick",
+            "criteria": {
+              "yes": "Yes",
+              "no": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {},
+      "readoutEscalation": true
+    },
+    {
+      "id": "meta-refresh",
+      "kind": "oauth",
+      "provider": "meta",
+      "credential": {
+        "type": "oauth",
+        "access": "old",
+        "refresh": "fixture-identity",
+        "expires": 0,
+        "clientId": "fixture-client"
+      },
+      "response": {
+        "api_key": "fixture-minted"
+      },
+      "status": 200
+    },
+    {
+      "id": "meta-failure",
+      "kind": "oauth",
+      "provider": "meta",
+      "credential": {
+        "type": "oauth",
+        "access": "old",
+        "refresh": "fixture-identity",
+        "expires": 0,
+        "clientId": "fixture-client"
+      },
+      "response": {
+        "message": "fixture expired"
+      },
+      "status": 401
+    },
+    {
+      "id": "openai-chatgpt-refresh",
+      "kind": "oauth",
+      "provider": "openai-chatgpt",
+      "credential": {
+        "type": "oauth",
+        "access": "old",
+        "refresh": "fixture-identity",
+        "expires": 0,
+        "clientId": "fixture-client"
+      },
+      "response": {
+        "access_token": "fixture-access",
+        "refresh_token": "fixture-refresh",
+        "expires_in": 3600,
+        "scope": "openid chatgpt.tokens.use.direct"
+      },
+      "status": 200
+    },
+    {
+      "id": "openai-chatgpt-failure",
+      "kind": "oauth",
+      "provider": "openai-chatgpt",
+      "credential": {
+        "type": "oauth",
+        "access": "old",
+        "refresh": "fixture-identity",
+        "expires": 0,
+        "clientId": "fixture-client"
+      },
+      "response": {
+        "access_token": "fixture-access",
+        "expires_in": 3600,
+        "scope": "openid chatgpt.tokens.use.direct"
+      },
+      "status": 200
+    },
+    {
+      "id": "kimi-refresh-retry",
+      "kind": "oauth",
+      "provider": "kimi-coding",
+      "credential": {
+        "type": "oauth",
+        "access": "old",
+        "refresh": "fixture-refresh",
+        "expires": 0
+      },
+      "response": {
+        "access_token": "fixture-access",
+        "refresh_token": "fixture-rotated",
+        "expires_in": 3600
+      },
+      "status": 200,
+      "responseSequence": [
+        {
+          "status": 429,
+          "body": {
+            "error": "temporarily_unavailable"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kimi-invalid-grant",
+      "kind": "oauth",
+      "provider": "kimi-coding",
+      "credential": {
+        "type": "oauth",
+        "access": "old",
+        "refresh": "fixture-refresh",
+        "expires": 0
+      },
+      "response": {
+        "error": "invalid_grant"
+      },
+      "status": 400
+    },
+    {
+      "id": "system-one-invalid-choice-probability",
+      "kind": "classifier",
+      "model": {
+        "api": "typesafe-system-one",
+        "provider": "typesafe",
+        "baseUrl": "https://fixture.invalid/v1",
+        "id": "system-one-invalid-choice-probability",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "choice",
+            "instructions": "Choose",
+            "criteria": {
+              "one": "One"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0
+      },
+      "response": {
+        "answers": {
+          "approved": {
+            "type": "choice",
+            "choice": "one",
+            "probabilities": {
+              "one": "invalid"
+            },
+            "confidence": 1
+          }
+        },
+        "usage": {
+          "input_tokens": 12,
+          "output_tokens": 2
+        }
+      }
+    }
+  ]
+}

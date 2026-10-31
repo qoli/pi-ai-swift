@@ -130,12 +130,12 @@ struct BuiltinProviderRecord: Sendable {
         outputModality = .text
       case "image":
         outputModality = .image
+      case "classifier":
+        outputModality = .classification
       case nil:
         // The accepted legacy catalog predates typed image records.
         outputModality = protocolID == "openrouter-images" ? .image : .text
       default:
-        // Upstream selects chat/image entries by type. Classifier entries stay
-        // in source catalog evidence but cannot be exposed through this seam.
         continue
       }
       let inputs = object.stringArray("input")
@@ -151,7 +151,8 @@ struct BuiltinProviderRecord: Sendable {
           toolCalling: outputModality == .text,
           reasoning: reasoning,
           structuredOutput: outputModality == .text && Self.supportsStructuredOutput(protocolID),
-          imageGeneration: outputModality == .image
+          imageGeneration: outputModality == .image,
+          classification: outputModality == .classification
         ),
         contextWindow: object.int("contextWindow"),
         maximumOutputTokens: object.int("maxTokens"),
@@ -171,7 +172,7 @@ struct BuiltinProviderRecord: Sendable {
         )
       }
       if let existing = parsedModels[modelID] {
-        parsedModels[modelID] = Self.merge(
+        parsedModels[modelID] = ProviderModel.merging(
           existing,
           incoming,
           preferIncomingProtocol: outputModality == .text
@@ -188,35 +189,6 @@ struct BuiltinProviderRecord: Sendable {
     }
     models = parsedModels.values.sorted { $0.id < $1.id }
     modelConfigurations = configurations
-  }
-
-  private static func merge(
-    _ existing: ProviderModel,
-    _ incoming: ProviderModel,
-    preferIncomingProtocol: Bool
-  ) -> ProviderModel {
-    let lhs = existing.capabilities
-    let rhs = incoming.capabilities
-    return ProviderModel(
-      id: existing.id,
-      providerID: existing.providerID,
-      name: existing.name,
-      protocolID: preferIncomingProtocol ? incoming.protocolID : existing.protocolID,
-      capabilities: ProviderCapabilities(
-        textInput: lhs.textInput || rhs.textInput,
-        imageInput: lhs.imageInput || rhs.imageInput,
-        toolCalling: lhs.toolCalling || rhs.toolCalling,
-        reasoning: lhs.reasoning || rhs.reasoning,
-        structuredOutput: lhs.structuredOutput || rhs.structuredOutput,
-        imageGeneration: lhs.imageGeneration || rhs.imageGeneration
-      ),
-      contextWindow: existing.contextWindow ?? incoming.contextWindow,
-      maximumOutputTokens: existing.maximumOutputTokens
-        ?? incoming.maximumOutputTokens,
-      promptCache: preferIncomingProtocol ? incoming.promptCache : existing.promptCache,
-      supportedReasoningEfforts: preferIncomingProtocol
-        ? incoming.supportedReasoningEfforts : existing.supportedReasoningEfforts
-    )
   }
 
   private static func promptCache(

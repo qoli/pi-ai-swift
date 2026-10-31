@@ -7,6 +7,16 @@ indirect enum ProviderOrderedJSON {
   case array([ProviderOrderedJSON])
   case scalar(JSONValue)
 
+  init(_ value: JSONValue) {
+    if let object = value.objectValue {
+      self = .object((value.objectPropertyNames ?? []).map { ($0, .init(object[$0]!)) })
+    } else if case .array(let values) = value {
+      self = .array(values.map(Self.init))
+    } else {
+      self = .scalar(value)
+    }
+  }
+
   init(data: Data) throws {
     _ = try JSONDecoder().decode(JSONValue.self, from: data)
     var parser = Parser(bytes: Array(data))

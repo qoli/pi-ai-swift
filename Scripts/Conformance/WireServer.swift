@@ -15,6 +15,7 @@ actor WireConformanceServer {
   private var sockets: [String: ProbeWebSocket] = [:]
   private var timers: [String: CheckedContinuation<Void, any Error>] = [:]
   private var cloudReplies: [String: CheckedContinuation<[String: JSONValue], any Error>] = [:]
+  private var classifierReplies: [String: CheckedContinuation<[String: JSONValue], any Error>] = [:]
 
   init() { clock = ProbeWireClock() }
 
@@ -76,6 +77,16 @@ actor WireConformanceServer {
       } else {
         cloudReplies.removeValue(forKey: id)?.resume(returning: frame.object("value") ?? [:])
       }
+    case "classifierReply":
+      let pending = classifierReplies.removeValue(forKey: frame.string("requestID") ?? "")
+      if let message = frame.string("error") {
+        pending?.resume(
+          throwing: ProviderRuntimeFailure(
+            code: .transportFailed, message: message,
+            providerID: nil, operation: "conformance.classifier", causeDescription: nil))
+      } else {
+        pending?.resume(returning: frame.object("value") ?? [:])
+      }
     case "closeSessions": await sessions.close(session: frame.string("session"))
     case "resetStats": await sessions.resetStats(session: frame.string("session"))
     default: inputs[id]?.yield(frame)
@@ -84,6 +95,34 @@ actor WireConformanceServer {
 
   private func complete(_ id: String) {
     inputs.removeValue(forKey: id)?.finish()
+  }
+
+  func classifierExchange(_ stage: String, value: [String: JSONValue]) async throws -> [String:
+    JSONValue]
+  {
+    let requestID = UUID().uuidString
+    return try await withTaskCancellationHandler {
+      try Task.checkCancellation()
+      return try await withCheckedThrowingContinuation { continuation in
+        classifierReplies[requestID] = continuation
+        do {
+          try channel.write(
+            "classifierRequest",
+            [
+              "requestID": JSONValue.string(requestID),
+              "stage": .string(stage), "value": .object(value),
+            ])
+        } catch { classifierReplies.removeValue(forKey: requestID)?.resume(throwing: error) }
+      }
+    } onCancel: {
+      Task { await self.cancelClassifier(requestID) }
+    }
+  }
+
+  private func cancelClassifier(_ requestID: String) {
+    guard let continuation = classifierReplies.removeValue(forKey: requestID) else { return }
+    try? channel.write("classifierCancel", ["requestID": requestID])
+    continuation.resume(throwing: CancellationError())
   }
 
   func cloudExchange(_ stage: String, value: [String: JSONValue]) async throws -> [String:

@@ -10,6 +10,7 @@ public enum ProviderEvent: Sendable, Equatable, Codable {
   case toolInputDelta(id: String, delta: String)
   case toolCallCompleted(ProviderToolCall)
   case asset(ProviderAsset)
+  case classification(ProviderClassifierResult)
   case usage(ProviderUsage)
   case responseSnapshot(ProviderResponseSnapshot)
   case completed(ProviderFinishReason)
