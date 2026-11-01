@@ -5,6 +5,30 @@ import Testing
 
 @Suite
 struct SubscriptionAuthorizationAdaptersTests {
+  @Test(arguments: ["anthropic", "openai-codex", "openrouter"])
+  func alreadyCancelledLoginDoesNotInteractOrSend(provider: String) async throws {
+    let transport = SubscriptionQueueTransport([])
+    let adapter: any ProviderAuthorizationAdapter =
+      switch provider {
+      case "anthropic": AnthropicOAuthAuthorizationAdapter(transport: transport)
+      case "openai-codex": OpenAICodexAuthorizationAdapter(transport: transport)
+      default: OpenRouterOAuthAuthorizationAdapter(transport: transport)
+      }
+    let task = Task {
+      withUnsafeCurrentTask { $0?.cancel() }
+      return try await adapter.authorize(
+        .login(providerID: provider, methodID: "oauth"),
+        interaction: { _ in
+          Issue.record("Cancelled login requested interaction")
+          return .acknowledged
+        }, credentialStore: InMemoryProviderCredentialStore())
+    }
+    do {
+      _ = try await task.value
+      Issue.record("Cancelled login succeeded")
+    } catch is CancellationError {}
+    #expect(await transport.requests.isEmpty)
+  }
   @Test
   func anthropicPKCELoginValidatesStateAndStoresRotatingOAuth() async throws {
     let transport = SubscriptionQueueTransport([
@@ -24,6 +48,10 @@ struct SubscriptionAuthorizationAdaptersTests {
     let state = try await adapter.authorize(
       .login(providerID: "anthropic", methodID: "oauth"),
       interaction: { challenge in
+        if case .choice(_, _, _, let options) = challenge {
+          #expect(options.map(\.id) == ["browser", "copy_code"])
+          return .value("browser")
+        }
         guard case .openURL(_, let url, _) = challenge,
           let state = URLComponents(url: url, resolvingAgainstBaseURL: false)?
             .queryItems?.first(where: { $0.name == "state" })?.value

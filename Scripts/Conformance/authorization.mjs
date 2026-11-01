@@ -30,6 +30,14 @@ export function wrapAuthorization(provider, source, configuration = {}) {
   };
 }
 
+export function wrapPrimaryAuthorization(provider, source, variables) {
+  return { ...source,
+    resolve: input => authorize(provider, "primary.resolve", input.credential,
+      { signal: input.signal }, { context: input.ctx, variables, name: source.name }).then(value => value ?? undefined),
+    login: interaction => authorize(provider, "primary.login", undefined, interaction, { name: source.name }),
+  };
+}
+
 async function authorize(provider, action, credential, options, configuration) {
   const call = { phase: "host", deadline: Infinity, cancel: () => {} };
   active.add(call);
@@ -44,27 +52,11 @@ async function authorize(provider, action, credential, options, configuration) {
   let callbackCode;
   try {
     let method;
-    if (action === "login" && ["anthropic", "openai-codex", "radius"].includes(provider)) {
-      method = await options.prompt(provider === "openai-codex" ? {
-        type: "select", message: "Select OpenAI Codex login method:", options: [
-          { id: "browser", label: "Browser login (default)" },
-          { id: "device_code", label: "Device code login (headless)" },
-        ],
-      } : provider === "anthropic" ? {
-        type: "select", message: "Select Anthropic login method:", options: [
-          { id: "browser", label: "Browser login (default)" },
-          { id: "copy_code", label: "Copy code login (headless)" },
-        ],
-      } : { type: "select", message: "Sign in:", options: [
-        { id: "browser", label: "Browser" },
-        { id: provider === "anthropic" ? "copy_code" : provider === "radius" ? "device-code" : "device_code", label: "Code" },
-      ] });
-    }
     let resolveResult;
     let rejectResult;
     const result = new Promise((resolve, reject) => { resolveResult = resolve; rejectResult = reject; });
     result.catch(() => {});
-    if (action === "login" && (provider === "openrouter" || provider === "anthropic" && method === "browser")) {
+    const prepareCallback = async () => {
       let receiveCode, rejectCode;
       callbackCode = new Promise((resolve, reject) => { receiveCode = resolve; rejectCode = reject; });
       callbackCode.catch(() => {});
@@ -87,7 +79,8 @@ async function authorize(provider, action, credential, options, configuration) {
         callback = await startOAuthCallbackServer(callbackOptions);
       }
       callback.wait().catch(rejectCode);
-    }
+    };
+    if (action === "login" && provider === "openrouter" && !options.signal?.aborted) await prepareCallback();
     call.phase = "starting";
     child = spawn(process.env.PI_CONFORMANCE_PROBE, ["--stream"], { stdio: ["pipe", "pipe", "pipe"] });
     let stderr = "";
@@ -125,6 +118,10 @@ async function authorize(provider, action, credential, options, configuration) {
         call.phase = "sleep";
         call.deadline = Date.now() + payload.milliseconds;
         timer = setTimeout(() => reply({}), payload.milliseconds);
+      } else if (kind === "authEnvironment" || kind === "authFileExists") {
+        call.phase = "request";
+        void (async () => reply({ value: kind === "authEnvironment"
+          ? await configuration.context.env(payload.name) : await configuration.context.fileExists(payload.path) }))().catch(fail);
       } else if (kind === "authRequest") {
         call.phase = "request";
         void (async () => {
@@ -142,7 +139,7 @@ async function authorize(provider, action, credential, options, configuration) {
         void (async () => {
           if (payload.type === "device") {
             options.notify({ type: "device_code", userCode: payload.userCode,
-              verificationUri: payload.verificationUri, intervalSeconds: payload.intervalSeconds,
+              verificationUri: new URL(payload.verificationUri).toString(), intervalSeconds: payload.intervalSeconds,
               expiresInSeconds: payload.expiresInSeconds });
             reply({});
           } else if (payload.type === "url") {
@@ -180,12 +177,19 @@ async function authorize(provider, action, credential, options, configuration) {
                 reply({ value: chosen.value });
               } else reply({ value: await answer });
             } finally { manual.abort(); }
+          } else if (payload.type === "select") {
+            method = await options.prompt({ type: "select", message: payload.message, options: payload.options });
+            if (provider === "anthropic" && method === "browser") await prepareCallback();
+            reply({ value: method, callbackURL: callback?.redirectUri });
+          } else if (payload.type === "info") {
+            options.notify({ type: "info", message: payload.message, links: payload.links });
+            reply({});
           } else if (payload.type === "progress") {
             options.notify({ type: "progress", message: payload.message });
             reply({});
           } else if (payload.id === "radius-gateway") reply({ value: configuration.gateway });
           else if (payload.id === "radius-login-method") reply({ value: method });
-          else reply({ value: await options.prompt({ type: "text", message: payload.message }) });
+          else reply({ value: await options.prompt({ type: payload.kind === "secret" ? "secret" : "text", message: payload.message }) });
         })().catch(fail);
       } else if (kind === "authFinished") {
         finished = true;
@@ -196,6 +200,8 @@ async function authorize(provider, action, credential, options, configuration) {
           recordNative(`authorization.${provider}.${action}`, "*", payload.failure,
             payload.failure.capability ? [payload.failure.capability] : []);
           rejectResult(new Error(payload.failure.code === "cancelled" ? "Login cancelled" : payload.failure.message));
+        } else if (Object.hasOwn(payload, "primary")) {
+          resolveResult(payload.primary);
         } else if (payload.auth) {
           resolveResult(payload.auth);
         } else {
@@ -217,6 +223,7 @@ async function authorize(provider, action, credential, options, configuration) {
     });
     send({ operation: "authorization", provider, action, credential, method, agentName: configuration.agentName,
       deviceID: configuration.getDeviceId?.(), now: Date.now(),
+      primaryName: configuration.name, variables: configuration.variables, aborted: options.signal?.aborted,
       gateway: configuration.gateway, oauthHost: process.env.KIMI_CODE_OAUTH_HOST, callbackURL: callback?.redirectUri });
     if (options.signal?.aborted) cancel();
     return await result;

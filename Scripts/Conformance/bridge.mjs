@@ -9,13 +9,14 @@ import { expect, afterEach } from "vitest";
 import * as OpenAISDK from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenAI } from "@google/genai";
-import { BedrockRuntimeClient, ConverseStreamCommand } from "@aws-sdk/client-bedrock-runtime";
+import { BedrockRuntimeClient, BedrockRuntimeServiceException, ConverseStreamCommand } from "@aws-sdk/client-bedrock-runtime";
 import { EventStreamCodec } from "@smithy/core/event-streams";
 import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { mistralSDKPayload, mistralWirePayload } from "./mistral-payload.mjs";
 import { bedrockSDKPayload, bedrockWirePayload } from "./bedrock-payload.mjs";
 import { codexProbeChild } from "./native-session.mjs";
 import { resolveFixtureCloud, FixtureAnthropic } from "./cloud-authorization.mjs";
+import { normalizeProviderError } from "./error-body.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const heapObservations = new AsyncLocalStorage();
@@ -105,6 +106,7 @@ function fixtureInput(model, context, options, responses, credential, requestSou
     : context.messages.filter(message => message.role !== "system");
   return {
     model, requestSource, generationMode,
+    requestTransportOverride: !!options.fetch && options.fetch !== globalThis.fetch,
     identityHost: { platform: process.platform, arch: process.arch, node: process.versions.node, bun: process.versions.bun, version: process.version },
     context: {
       systemPrompt: preservesSystemMessages ? undefined : getCurrentSystemPrompt(context.messages),
@@ -135,8 +137,6 @@ function hasNativeWireObserver(model) {
 
 function capabilities(options, model) {
   return [
-    ...(options.fetch && ["google-generative-ai", "google-vertex"].includes(model.api)
-      ? ["google-sdk-custom-fetch-contract"] : []),
     ...(options.onProviderStreamEvent && !hasNativeWireObserver(model) ? ["raw-provider-stream-event-hook"] : []),
     ...(options.onResponse && !hasNativeWireObserver(model) ? ["raw-response-hook"] : []),
     ...(options.timeoutMs !== undefined && !["mistral-conversations", "openai-codex-responses"].includes(model.api) ? ["request-timeout-option"] : []),
@@ -315,10 +315,16 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
       const payload = model.api === "bedrock-converse-stream" ? { modelId: bedrockModelID(request.url), ...bedrockSDKPayload(body) } : google ? googleSDKPayload(body, model) : mistral ? mistralSDKPayload(body) : body;
       const replacement = hasNativeWireObserver(model) ? undefined : await options.onPayload?.(payload, model);
       if (replacement !== undefined) body = google ? googleWireBody(replacement) : mistral ? mistralWirePayload(replacement) : replacement;
-      if (options.signal?.aborted) { cancel(); return; }
       if (controller.signal.aborted) return;
       if (options.timeoutMs !== undefined && !mistral && model.api !== "openai-codex-responses") throw new Error("Swift ProviderRequest has no request-timeout option");
-      const pendingResponse = mockResponse(model, request, body, { ...options, signal: controller.signal }, connection);
+      const preAborted = options.signal?.aborted;
+      const pendingResponse = mockResponse(model, request, body, { ...options,
+        signal: preAborted ? options.signal : controller.signal }, connection);
+      if (preAborted) {
+        cancel();
+        try { await pendingResponse; } catch (error) { if (error.name === "AssertionError") throw error; }
+        return;
+      }
       child.waiting?.();
       const response = await pendingResponse;
       if (finished) return;
@@ -350,7 +356,7 @@ async function nativeStream(model, context, options, emitEvent, requestSource, g
               code: "bridgeAssertion", operation: "conformance.fixture.assertion", message: error.message,
             });
           }
-          send({ kind: "failure", message: error.message });
+          send({ kind: "failure", message: error.message, providerMetadata: error.providerMetadata });
         }));
       } else if (frame.kind === "cloud") {
         void resolveFixtureCloud(frame.payload.stage, frame.payload.value, options, connection)
@@ -492,9 +498,12 @@ async function mockResponse(model, request, body, options, connection) {
       const status = error.$metadata?.httpStatusCode ?? (error.name === "ValidationException" ? 400 : undefined);
       if (!status) throw error;
       if (typeof error.$response?.body === "string") {
-        record("decode", model.api, undefined, ["parsed-sdk-error-object-versus-raw-http-response"]);
-        return { status, headers: error.$response.headers ?? {},
-          chunks: [Buffer.from(error.$response.body).toString("base64")] };
+        const projected = invoke({ operation: "error.bedrock-format", ...normalizeProviderError(error),
+          exceptionName: error instanceof BedrockRuntimeServiceException ? error.name : undefined,
+          metadataStatus: error.$metadata?.httpStatusCode, errorCode: error instanceof Error ? error.name : undefined,
+          requestID: error.$metadata?.requestId });
+        record("error.bedrock-format", model.api);
+        throw Object.assign(new Error(projected.message), { providerMetadata: projected.providerMetadata });
       }
       return { status, headers: { "x-amzn-errortype": error.name,
         ...(error.$metadata?.requestId ? { "x-amzn-requestid": error.$metadata.requestId } : {}) },

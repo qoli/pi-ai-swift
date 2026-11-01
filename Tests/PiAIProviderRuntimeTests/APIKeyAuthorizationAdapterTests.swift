@@ -5,7 +5,7 @@ import Testing
 @Suite
 struct APIKeyAuthorizationAdapterTests {
   @Test
-  func loginUsesSecretChallengeAndStoresTrimmedKey() async throws {
+  func loginUsesSecretChallengeAndPreservesKey() async throws {
     let store = AuthorizationCredentialStore()
     let adapter = makeAdapter()
 
@@ -38,7 +38,7 @@ struct APIKeyAuthorizationAdapterTests {
         ))
     #expect(
       await store.read(providerID: "provider")
-        == .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:])))
+        == .apiKey(APIKeyCredential(key: "  fixture-key  ", metadata: [:])))
   }
 
   @Test
@@ -64,7 +64,7 @@ struct APIKeyAuthorizationAdapterTests {
   }
 
   @Test
-  func wrongProviderMethodResponseAndEmptyKeyFailExplicitly() async {
+  func wrongProviderMethodAndResponseFailExplicitly() async {
     let store = AuthorizationCredentialStore()
     let adapter = makeAdapter()
 
@@ -88,13 +88,6 @@ struct APIKeyAuthorizationAdapterTests {
       store: store,
       response: .acknowledged,
       code: .authorizationFailed
-    )
-    await expectAuthorizationFailure(
-      adapter,
-      operation: .login(providerID: "provider", methodID: "api-key"),
-      store: store,
-      response: .value(" \n "),
-      code: .invalidCredential
     )
     #expect(await store.read(providerID: "provider") == nil)
   }

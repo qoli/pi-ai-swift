@@ -31,6 +31,7 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     case .login(let providerID, let methodID):
       try require(providerID)
       guard methodID == "oauth" else { throw failure("unsupported authorization method") }
+      try Task.checkCancellation()
       let gateway = try await requestGateway(interaction)
       let method = try await requestLoginMethod(interaction)
       let credential: OAuthCredential
@@ -139,17 +140,18 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     _ interaction: @escaping AuthorizationInteraction
   ) async throws -> String {
     let response = try await interaction(
-      .prompt(
+      .choice(
         providerID: Self.providerID,
         id: "radius-login-method",
-        message: "Radius login method: browser or device-code",
-        kind: .text
+        message: "Sign in:",
+        options: [.init(id: "browser", label: "Browser"), .init(id: "device-code", label: "Code")]
       )
     )
     guard case .value(let method) = response else {
       throw failure("Radius login method prompt did not return a value")
     }
-    return method.trimmingCharacters(in: .whitespacesAndNewlines)
+    try Task.checkCancellation()
+    return method
   }
 
   private func loginWithDeviceCode(

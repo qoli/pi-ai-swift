@@ -25,6 +25,26 @@ public enum AuthorizationChallenge: Sendable, Equatable {
     kind: AuthorizationPromptKind
   )
   case progress(providerID: String, message: String)
+  case choice(providerID: String, id: String, message: String, options: [AuthorizationChoice])
+  case information(providerID: String, message: String, links: [AuthorizationLink])
+}
+
+public struct AuthorizationChoice: Sendable, Equatable, Codable {
+  public let id: String
+  public let label: String
+  public init(id: String, label: String) {
+    self.id = id
+    self.label = label
+  }
+}
+
+public struct AuthorizationLink: Sendable, Equatable, Codable {
+  public let label: String
+  public let url: URL
+  public init(label: String, url: URL) {
+    self.label = label
+    self.url = url
+  }
 }
 
 public enum AuthorizationPromptKind: String, Sendable, Equatable, Codable {
@@ -74,12 +94,41 @@ public enum ProviderCredential: Sendable, Equatable, Codable {
 }
 
 public struct APIKeyCredential: Sendable, Equatable, Codable {
-  public let key: String
+  public let configuredKey: String?
+  public var key: String { configuredKey ?? "" }
+  public let environment: [String: String]?
   public let metadata: [String: String]
 
-  public init(key: String, metadata: [String: String]) {
-    self.key = key
+  public init(key: String, metadata: [String: String], environment: [String: String]? = nil) {
+    self.configuredKey = key
+    self.environment = environment
     self.metadata = metadata
+  }
+
+  public init(environment: [String: String]?, metadata: [String: String] = [:]) {
+    self.configuredKey = nil
+    self.environment = environment
+    self.metadata = metadata
+  }
+
+  private enum CodingKeys: String, CodingKey { case key, metadata, environment }
+  public init(from decoder: any Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    configuredKey = try values.decodeIfPresent(String.self, forKey: .key)
+    metadata = try values.decode([String: String].self, forKey: .metadata)
+    environment = try values.decodeIfPresent([String: String].self, forKey: .environment)
+  }
+  public func encode(to encoder: any Encoder) throws {
+    var values = encoder.container(keyedBy: CodingKeys.self)
+    try values.encodeIfPresent(configuredKey, forKey: .key)
+    try values.encode(metadata, forKey: .metadata)
+    try values.encodeIfPresent(environment, forKey: .environment)
+  }
+}
+
+extension APIKeyCredential {
+  var routingMetadata: [String: String] {
+    metadata.merging(environment ?? [:]) { _, value in value }
   }
 }
 

@@ -5,6 +5,23 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testPrimaryAuthorizationMatchesPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(path: "Differential/\(folder)/primary-authorization.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let oracle = try cases("Oracle")
+    XCTAssertEqual(inputs.count, oracle.count)
+    for (input, expected) in zip(inputs, oracle) {
+      let result = try await PrimaryAuthorizationFixtures.replay(input.objectValue!)
+      XCTAssertEqual(result, expected, input.objectValue!.string("id")!)
+    }
+  }
   func testClassifiersAndOAuthMatchPinnedAdaptationOracle() async throws {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     func cases(_ folder: String) throws -> [JSONValue] {

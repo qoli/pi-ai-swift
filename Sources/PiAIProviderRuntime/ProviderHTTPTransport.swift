@@ -1,5 +1,8 @@
 import Foundation
 
+public typealias ProviderRequestTransportResolver =
+  @Sendable (ProviderRequest) async throws -> (any ProviderHTTPStreamingTransport)?
+
 public struct ProviderHTTPResponse: Sendable, Equatable {
   public let statusCode: Int
   public let headers: [String: String]

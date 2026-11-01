@@ -4,7 +4,28 @@ export {
   getModels as getBuiltinModels,
   getProviders as getBuiltinProviders,
 } from "./bridge.mjs";
-import { invokeNative, recordNative } from "./bridge.mjs";
+import { getModels, invokeNative, recordNative } from "./bridge.mjs";
+import { wrapPrimaryAuthorization } from "./authorization.mjs";
+
+export function projectBuiltinProvider(provider, args) {
+  const result = { ...provider };
+  if (!args.length && !provider.refreshModels) {
+    result.getModels = () => getModels(provider.id);
+    result.getAllModels = () => getAllBuiltinModels(provider.id);
+  }
+  if (provider.auth?.apiKey && ["anthropic", "amazon-bedrock", "google-vertex", "cloudflare-workers-ai", "cloudflare-ai-gateway"].includes(provider.id)) {
+    result.auth = { ...provider.auth, apiKey: wrapPrimaryAuthorization(provider.id, provider.auth.apiKey) };
+  }
+  for (const name of ["filterModels", "filterAllModels"]) {
+    if (!provider[name]) continue;
+    result[name] = (models, credential) => {
+      const selected = invokeNative({ operation: "authorization.availability", provider: provider.id, models, credential });
+      recordNative("provider." + name, provider.id);
+      return selected.map(index => models[index]);
+    };
+  }
+  return result;
+}
 
 let images;
 export function getBuiltinImageModels(provider) {

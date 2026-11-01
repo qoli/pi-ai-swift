@@ -15,17 +15,20 @@ public struct ProviderDescriptor: Sendable, Equatable, Codable {
   public let name: String
   public let authorizationMethods: [AuthorizationMethodDescriptor]
   public let models: [ProviderModel]
+  public let availability: ProviderAvailability?
 
   public init(
     id: String,
     name: String,
     authorizationMethods: [AuthorizationMethodDescriptor],
-    models: [ProviderModel]
+    models: [ProviderModel],
+    availability: ProviderAvailability? = nil
   ) {
     self.id = id
     self.name = name
     self.authorizationMethods = authorizationMethods
     self.models = models
+    self.availability = availability
   }
 }
 

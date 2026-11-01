@@ -1,0 +1,377 @@
+{
+  "cases": [
+    {
+      "environmentReads": [],
+      "fileReads": [],
+      "id": "generic-stored-key",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {
+          "apiKey": "stored"
+        },
+        "env": {},
+        "source": "stored credential"
+      }
+    },
+    {
+      "environmentReads": [
+        "FIRST",
+        "SECOND"
+      ],
+      "fileReads": [],
+      "id": "generic-environment-order",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {
+          "apiKey": "second"
+        },
+        "source": "SECOND"
+      }
+    },
+    {
+      "environmentReads": [
+        "ANTHROPIC_AUTH_TOKEN"
+      ],
+      "fileReads": [],
+      "id": "anthropic-bearer-precedence",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {
+          "headers": {
+            "Authorization": "Bearer fixture-bearer"
+          }
+        },
+        "source": "ANTHROPIC_AUTH_TOKEN"
+      }
+    },
+    {
+      "environmentReads": [
+        "ANTHROPIC_AUTH_TOKEN",
+        "ANTHROPIC_OAUTH_TOKEN"
+      ],
+      "fileReads": [],
+      "id": "anthropic-oauth-before-api",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {
+          "apiKey": "fixture-oauth"
+        },
+        "source": "ANTHROPIC_OAUTH_TOKEN"
+      }
+    },
+    {
+      "environmentReads": [
+        "ANTHROPIC_AUTH_TOKEN",
+        "ANTHROPIC_OAUTH_TOKEN",
+        "ANTHROPIC_API_KEY",
+        "ANTHROPIC_FEDERATION_RULE_ID",
+        "ANTHROPIC_ORGANIZATION_ID",
+        "ANTHROPIC_IDENTITY_TOKEN_FILE",
+        "ANTHROPIC_SERVICE_ACCOUNT_ID",
+        "ANTHROPIC_WORKSPACE_ID"
+      ],
+      "fileReads": [],
+      "id": "anthropic-federation",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {},
+        "env": {
+          "ANTHROPIC_FEDERATION_RULE_ID": "fixture-rule",
+          "ANTHROPIC_IDENTITY_TOKEN_FILE": "/synthetic/token",
+          "ANTHROPIC_ORGANIZATION_ID": "fixture-org",
+          "ANTHROPIC_SERVICE_ACCOUNT_ID": "fixture-service",
+          "ANTHROPIC_WORKSPACE_ID": "fixture-workspace"
+        },
+        "source": "workload identity federation"
+      }
+    },
+    {
+      "environmentReads": [
+        "ANTHROPIC_AUTH_TOKEN",
+        "ANTHROPIC_OAUTH_TOKEN",
+        "ANTHROPIC_API_KEY",
+        "ANTHROPIC_FEDERATION_RULE_ID",
+        "ANTHROPIC_ORGANIZATION_ID"
+      ],
+      "fileReads": [],
+      "id": "anthropic-incomplete-federation",
+      "notices": [],
+      "prompts": [],
+      "result": null
+    },
+    {
+      "environmentReads": [
+        "CLOUDFLARE_ACCOUNT_ID",
+        "CLOUDFLARE_GATEWAY_ID"
+      ],
+      "fileReads": [],
+      "id": "cloudflare-field-merge",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {
+          "headers": {
+            "Authorization": null,
+            "cf-aig-authorization": "Bearer stored",
+            "x-api-key": null
+          }
+        },
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "account",
+          "CLOUDFLARE_GATEWAY_ID": "gateway"
+        },
+        "source": "stored credential"
+      }
+    },
+    {
+      "environmentReads": [
+        "CLOUDFLARE_ACCOUNT_ID",
+        "CLOUDFLARE_GATEWAY_ID"
+      ],
+      "fileReads": [],
+      "id": "cloudflare-explicit-empty",
+      "notices": [],
+      "prompts": [],
+      "result": null
+    },
+    {
+      "environmentReads": [
+        "AWS_BEARER_TOKEN_BEDROCK"
+      ],
+      "fileReads": [],
+      "id": "bedrock-bearer",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {},
+        "source": "AWS_BEARER_TOKEN_BEDROCK"
+      }
+    },
+    {
+      "environmentReads": [
+        "AWS_BEARER_TOKEN_BEDROCK"
+      ],
+      "fileReads": [],
+      "id": "bedrock-stored-profile",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {},
+        "env": {
+          "AWS_PROFILE": "stored-profile"
+        },
+        "source": "stored credential"
+      }
+    },
+    {
+      "environmentReads": [
+        "AWS_BEARER_TOKEN_BEDROCK",
+        "AWS_PROFILE",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI",
+        "AWS_CONTAINER_CREDENTIALS_FULL_URI",
+        "AWS_WEB_IDENTITY_TOKEN_FILE"
+      ],
+      "fileReads": [],
+      "id": "bedrock-web-identity",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {},
+        "source": "web identity token"
+      }
+    },
+    {
+      "environmentReads": [
+        "GOOGLE_CLOUD_API_KEY"
+      ],
+      "fileReads": [],
+      "id": "vertex-api-key",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {
+          "apiKey": "fixture-api"
+        },
+        "source": "GOOGLE_CLOUD_API_KEY"
+      }
+    },
+    {
+      "environmentReads": [
+        "GOOGLE_CLOUD_API_KEY"
+      ],
+      "fileReads": [
+        "/synthetic/adc"
+      ],
+      "id": "vertex-stored-adc",
+      "notices": [],
+      "prompts": [],
+      "result": {
+        "auth": {},
+        "env": {
+          "GOOGLE_APPLICATION_CREDENTIALS": "/synthetic/adc",
+          "GOOGLE_CLOUD_LOCATION": "global",
+          "GOOGLE_CLOUD_PROJECT": "project"
+        },
+        "source": "stored credential"
+      }
+    },
+    {
+      "environmentReads": [
+        "GOOGLE_CLOUD_API_KEY",
+        "GOOGLE_APPLICATION_CREDENTIALS",
+        "GOOGLE_CLOUD_PROJECT",
+        "GOOGLE_CLOUD_LOCATION"
+      ],
+      "fileReads": [
+        "~/.config/gcloud/application_default_credentials.json"
+      ],
+      "id": "vertex-missing-adc",
+      "notices": [],
+      "prompts": [],
+      "result": null
+    },
+    {
+      "environmentReads": [],
+      "fileReads": [],
+      "id": "generic-whitespace-login",
+      "notices": [],
+      "prompts": [
+        {
+          "message": "Enter Fixture key",
+          "type": "secret"
+        }
+      ],
+      "result": {
+        "key": "  fixture-key  ",
+        "type": "api_key"
+      }
+    },
+    {
+      "environmentReads": [],
+      "fileReads": [],
+      "id": "generic-empty-login",
+      "notices": [],
+      "prompts": [
+        {
+          "message": "Enter Fixture key",
+          "type": "secret"
+        }
+      ],
+      "result": {
+        "key": "",
+        "type": "api_key"
+      }
+    },
+    {
+      "environmentReads": [],
+      "fileReads": [],
+      "id": "bedrock-profile-login",
+      "notices": [
+        {
+          "links": [
+            {
+              "label": "AWS credential provider chain",
+              "url": "https://docs.aws.amazon.com/sdkref/latest/guide/standardized-credentials.html"
+            }
+          ],
+          "message": "Amazon Bedrock supports AWS profiles, IAM credentials, and role-based credentials.",
+          "type": "info"
+        }
+      ],
+      "prompts": [
+        {
+          "message": "Select Amazon Bedrock authentication method:",
+          "options": [
+            {
+              "id": "bearer-token",
+              "label": "Bearer token"
+            },
+            {
+              "id": "aws-profile",
+              "label": "AWS profile"
+            },
+            {
+              "id": "credential-chain",
+              "label": "Existing AWS credential chain"
+            }
+          ],
+          "type": "select"
+        },
+        {
+          "message": "Enter AWS profile name",
+          "type": "text"
+        }
+      ],
+      "result": {
+        "env": {
+          "AWS_PROFILE": "fixture-profile"
+        },
+        "type": "api_key"
+      }
+    },
+    {
+      "environmentReads": [],
+      "fileReads": [],
+      "id": "vertex-service-account-login",
+      "notices": [
+        {
+          "links": [
+            {
+              "label": "Application Default Credentials",
+              "url": "https://cloud.google.com/docs/authentication/provide-credentials-adc"
+            }
+          ],
+          "message": "Provide a service account credentials file, project, and location.",
+          "type": "info"
+        }
+      ],
+      "prompts": [
+        {
+          "message": "Select Google Vertex AI authentication method:",
+          "options": [
+            {
+              "id": "api-key",
+              "label": "Google Cloud API key"
+            },
+            {
+              "id": "adc",
+              "label": "Application Default Credentials"
+            },
+            {
+              "id": "service-account",
+              "label": "Service account credentials file"
+            }
+          ],
+          "type": "select"
+        },
+        {
+          "message": "Enter Google Cloud project ID",
+          "type": "text"
+        },
+        {
+          "message": "Enter Google Cloud location",
+          "type": "text"
+        },
+        {
+          "message": "Enter service account credentials file path",
+          "type": "text"
+        }
+      ],
+      "result": {
+        "env": {
+          "GOOGLE_APPLICATION_CREDENTIALS": "/synthetic/service-account",
+          "GOOGLE_CLOUD_LOCATION": "global",
+          "GOOGLE_CLOUD_PROJECT": "project"
+        },
+        "type": "api_key"
+      }
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

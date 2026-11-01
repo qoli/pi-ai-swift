@@ -30,12 +30,16 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
       return .disconnected(providerID: providerID)
     case .login(let providerID, let methodID):
       guard providerID == OpenAICodexOAuthClient.providerID,
-        ["oauth", "oauth-browser"].contains(methodID)
+        ["oauth", "oauth-browser", "oauth-device-code"].contains(methodID)
       else {
         throw failure("unsupported OpenAI Codex authorization request")
       }
+      let method =
+        try await methodID == "oauth"
+        ? ProviderOAuthLoginChoice.select(providerID: providerID, interaction: interaction)
+        : methodID == "oauth-browser" ? "browser" : "device_code"
       let credential =
-        try await methodID == "oauth-browser"
+        try await method == "browser"
         ? client.loginWithBrowser(agentName: agentName, interaction: interaction)
         : client.login(interaction: interaction)
       _ = try await credentialStore.modify(providerID: providerID) { _ in

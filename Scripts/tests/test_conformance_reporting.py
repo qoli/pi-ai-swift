@@ -57,6 +57,22 @@ class ConformanceReportingTests(unittest.TestCase):
             self.assertEqual(cases[0]["conformanceStatus"], expected)
             self.assertEqual(conformant, expected == "passed")
 
+    def test_caller_identity_assembly_remains_visible_without_requiring_a_duplicate_native_call(self):
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream",
+                     "protocol": "anthropic-messages"},
+                    {"file": self.file, "test": "schema > preserves input", "operation": "identity.merge",
+                     "ownership": "caller"}]
+        call = {**self.call, "entrypoint": "stream"}
+        conformant, cases = CONFORMANCE.evaluate(self.upstream, self.reports, [call],
+            {"upstream": 0, "swift": 0}, original)
+        self.assertTrue(conformant)
+        self.assertEqual(cases[0]["upstreamCallerOperations"], ["identity.merge"])
+        for operation in ["identity.merge", "stream"]:
+            required = {**original[1], "operation": operation,
+                        "ownership": "provider" if operation == "identity.merge" else "caller"}
+            self.assertFalse(CONFORMANCE.evaluate(self.upstream, self.reports, [],
+                {"upstream": 0, "swift": 0}, [required])[0])
+
     def test_transport_assertion_caught_by_provider_cannot_count_as_conformance(self):
         assertion = {**self.call, "operation": "assertion", "failure": {
             "code": "bridgeAssertion", "operation": "conformance.fixture.assertion",

@@ -137,6 +137,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
   private let clock: any ProviderOAuthClock
   private let cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?
   private let cloudCredentialSources: ProviderCloudCredentialSources
+  private let authenticationContext: ProviderAuthenticationContext?
+  private let requestTransportResolver: ProviderRequestTransportResolver?
 
   init(
     catalogRevision: String,
@@ -150,7 +152,9 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     codexSessions: CodexWebSocketSessions = .init(),
     clock: any ProviderOAuthClock = SystemProviderOAuthClock(),
     cloudAuthorizationResolver: ProviderCloudAuthorizationResolver? = nil,
-    cloudCredentialSources: ProviderCloudCredentialSources = .init()
+    cloudCredentialSources: ProviderCloudCredentialSources = .init(),
+    authenticationContext: ProviderAuthenticationContext? = nil,
+    requestTransportResolver: ProviderRequestTransportResolver? = nil
   ) throws {
     self.catalogRevision = catalogRevision
     self.providers = try Self.uniqueProviders(providers)
@@ -167,13 +171,39 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     self.clock = clock
     self.cloudAuthorizationResolver = cloudAuthorizationResolver
     self.cloudCredentialSources = cloudCredentialSources
+    self.authenticationContext = authenticationContext
+    self.requestTransportResolver = requestTransportResolver
   }
 
   func catalog() async throws -> ProviderCatalog {
-    ProviderCatalog(
-      revision: catalogRevision,
-      providers: providers.values.map(\.descriptor).sorted { $0.id < $1.id }
-    )
+    var descriptors: [ProviderDescriptor] = []
+    for provider in providers.values.sorted(by: { $0.descriptor.id < $1.descriptor.id }) {
+      let descriptor = provider.descriptor
+      guard let authenticationContext else {
+        descriptors.append(descriptor)
+        continue
+      }
+      let credential = try await credentialStore.read(providerID: descriptor.id)
+      let resolved = try await ProviderPrimaryAuthorization.resolve(
+        providerID: descriptor.id, credential: credential, context: authenticationContext)
+      let routes = provider.modelConfigurations.keys.map {
+        ProviderAvailableModel(modelID: $0.modelID, outputModality: $0.outputModality)
+      }.sorted {
+        ($0.modelID, $0.outputModality.rawValue) < ($1.modelID, $1.outputModality.rawValue)
+      }
+      let available =
+        resolved == nil
+        ? []
+        : ProviderPrimaryAuthorization.availableModels(
+          routes, providerID: descriptor.id, credential: credential)
+      descriptors.append(
+        .init(
+          id: descriptor.id, name: descriptor.name,
+          authorizationMethods: descriptor.authorizationMethods, models: descriptor.models,
+          availability: .init(
+            configured: resolved != nil, source: resolved?.source, models: available)))
+    }
+    return ProviderCatalog(revision: catalogRevision, providers: descriptors)
   }
 
   func authorize(
@@ -250,13 +280,6 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         message: "model \(request.modelID) does not support reasoning effort \(effort.rawValue)"
       )
     }
-    var credential = try await provider.authorization.resolveCredential(
-      providerID: request.providerID,
-      credentialStore: credentialStore,
-      refreshCoordinator: refreshCoordinator
-    )
-    var requestAuthorization = try provider.authorization.requestAuthorization(for: credential)
-
     let route = ProviderModelRoute(
       modelID: model.id,
       outputModality: request.options.outputModality
@@ -278,8 +301,65 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         message: "wire protocol is not implemented: \(modelConfiguration.protocolID)"
       )
     }
+    let override = try await requestTransportResolver?(request)
+    if override != nil,
+      ["google-generative-ai", "google-vertex"].contains(modelConfiguration.protocolID)
+    {
+      throw failure(
+        .unsupportedCapability, providerID: request.providerID,
+        operation: "stream.resolve-transport",
+        message:
+          "Custom fetch is not supported by the Google \(modelConfiguration.protocolID == "google-vertex" ? "Vertex" : "Generative AI") adapter"
+      )
+    }
+    var primary: ProviderPrimaryAuthorization?
+    let credential: ProviderCredential?
+    if let authenticationContext {
+      let stored = try await credentialStore.read(providerID: request.providerID)
+      if case .oauth = stored {
+        credential = try await provider.authorization.resolveCredential(
+          providerID: request.providerID, credentialStore: credentialStore,
+          refreshCoordinator: refreshCoordinator)
+      } else if case .apiKey(let key) = stored, key.metadata["authentication"] == "sigv4" {
+        credential = stored
+      } else {
+        primary = try await ProviderPrimaryAuthorization.resolve(
+          providerID: request.providerID, credential: stored, context: authenticationContext)
+        credential = primary?.credential
+      }
+    } else {
+      credential = try await provider.authorization.resolveCredential(
+        providerID: request.providerID, credentialStore: credentialStore,
+        refreshCoordinator: refreshCoordinator)
+    }
+    var resolvedCredential = credential
+    var requestAuthorization = try provider.authorization.requestAuthorization(for: credential)
+    if let primary {
+      requestAuthorization = .init(
+        credential: requestAuthorization.credential,
+        headers: requestAuthorization.headers.merging(primary.headers) { _, value in value })
+    }
     var cloudAuthorization: ProviderCloudPlan.Authorization?
-    if let options = request.connectionOptions.cloud,
+    var cloudOptions = request.connectionOptions.cloud
+    if let primary,
+      ["google-vertex", "bedrock-converse-stream", "anthropic-messages"].contains(
+        modelConfiguration.protocolID)
+    {
+      let old = cloudOptions ?? .init()
+      cloudOptions = .init(
+        environment: primary.connectionEnvironment.merging(old.environment) { _, explicit in
+          explicit
+        },
+        ambientEnvironment: old.ambientEnvironment, region: old.region, profile: old.profile,
+        bearerToken: old.bearerToken, project: old.project, location: old.location)
+    } else if case .apiKey(let key) = credential, let environment = key.environment {
+      let old = cloudOptions ?? .init()
+      cloudOptions = .init(
+        environment: environment.merging(old.environment) { _, explicit in explicit },
+        ambientEnvironment: old.ambientEnvironment, region: old.region, profile: old.profile,
+        bearerToken: old.bearerToken, project: old.project, location: old.location)
+    }
+    if let options = cloudOptions,
       let declaredBaseURL = modelConfiguration.baseURL ?? provider.baseURL
     {
       var cloudHeaders = requestAuthorization.headers
@@ -293,12 +373,14 @@ struct ProviderRuntimeKernel: ProviderRuntime {
           providerID: request.providerID, resolver: cloudAuthorizationResolver,
           sources: cloudCredentialSources)
         cloudAuthorization = resolved
-        credential = resolved.credential
+        resolvedCredential = resolved.credential
         requestAuthorization = .init(
           credential: resolved.credential, headers: resolved.headers.mapValues { Optional($0) })
       }
     }
-    if provider.credentialRequirement == .required, credential == nil, cloudAuthorization == nil,
+    if provider.credentialRequirement == .required, resolvedCredential == nil,
+      cloudAuthorization == nil,
+      !requestAuthorization.usesHeaderAuthentication,
       request.options.outputModality != .classification
     {
       throw failure(
@@ -317,8 +399,8 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       )
     }
     let credentialMetadata: [String: String]
-    switch credential {
-    case .apiKey(let credential): credentialMetadata = credential.metadata
+    switch resolvedCredential {
+    case .apiKey(let credential): credentialMetadata = credential.routingMetadata
     case .oauth(let credential): credentialMetadata = credential.metadata
     case nil: credentialMetadata = [:]
     }
@@ -344,17 +426,17 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     let resolvedBaseURLTemplate = GoogleVertexConfiguration.resolveBaseURLTemplate(
       baseURLTemplate,
       protocolID: modelConfiguration.protocolID,
-      credential: credential
+      credential: resolvedCredential
     )
     let baseURL = try resolveURLTemplate(
       resolvedBaseURLTemplate,
-      credential: credential,
+      credential: resolvedCredential,
       providerID: request.providerID,
       endpointPolicy: provider.endpointPolicy
     )
     let identity = request.options.providerOptions.object("identity")
     var headers: [String: String]
-    if modelConfiguration.protocolID == "anthropic-messages", case .oauth = credential {
+    if modelConfiguration.protocolID == "anthropic-messages", case .oauth = resolvedCredential {
       headers = [:]
     } else if modelConfiguration.protocolID == "bedrock-converse-stream" {
       headers = ProviderClientIdentity.attributionHeaders(
@@ -403,7 +485,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         isFederatedCloudAuthorization: cloudAuthorization?.federated ?? false,
         usesVertexCollectionScope: cloudAuthorization?.vertexCollectionScope ?? false
       ),
-      transport: transport
+      transport: override ?? transport
     )
   }
 
@@ -413,24 +495,16 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     providerID: String,
     endpointPolicy: ProviderEndpointPolicy
   ) throws -> URL {
-    var value = template
     let metadata: [String: String]
     switch credential {
-    case .apiKey(let credential): metadata = credential.metadata
+    case .apiKey(let credential): metadata = credential.routingMetadata
     case .oauth(let credential): metadata = credential.metadata
     case nil: metadata = [:]
     }
-    for (key, replacement) in metadata {
-      value = value.replacingOccurrences(of: "{\(key)}", with: replacement)
-      value = value.replacingOccurrences(
-        of: "{\(key.uppercased())}",
-        with: replacement
-      )
-      value = value.replacingOccurrences(
-        of: "{\(key.lowercased())}",
-        with: replacement
-      )
-    }
+    let value =
+      CloudflareAuthorizationAdapter.providerIDs.contains(providerID)
+      ? ProviderEndpointTemplate.cloudflare(template, environment: metadata)
+      : ProviderEndpointTemplate.materialize(template, metadata: metadata)
     guard !value.contains("{") && !value.contains("}") else {
       throw failure(
         .invalidCredential,

@@ -51,6 +51,36 @@ struct SwiftConformanceProbe {
     lifetime: ProbeStreamLifetime = .shared
   ) async throws -> ProbeOutput? {
     let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
+    if envelope.string("operation") == "endpoint.cloudflare" {
+      let value = ProviderEndpointTemplate.cloudflare(
+        envelope.string("template")!,
+        environment: envelope.object("environment")?.compactMapValues(\.stringValue))
+      FileHandle.standardOutput.write(try JSONEncoder().encode(value))
+      return nil
+    }
+    if envelope.string("operation") == "authorization.availability" {
+      let models = envelope.array("models")!.map { $0.objectValue! }
+      let routes = models.map {
+        ProviderAvailableModel(
+          modelID: $0.string("id")!,
+          outputModality: $0.string("type") == "classifier"
+            ? .classification : $0.string("type") == "image" ? .image : .text)
+      }
+      let selected = ProviderPrimaryAuthorization.availableModels(
+        routes, providerID: envelope.string("provider")!,
+        credential: try AuthorizationConformanceProbe.primaryCredential(
+          envelope.object("credential")))
+      let indices = routes.indices.filter { selected.contains(routes[$0]) }
+      FileHandle.standardOutput.write(try JSONEncoder().encode(indices))
+      return nil
+    }
+    if envelope.string("operation") == "usage.is-openrouter" {
+      let model = envelope.object("model") ?? [:]
+      let result = OpenAICompletionsCompatibility.isOpenRouter(
+        provider: model.string("provider") ?? "", baseURL: model.string("baseUrl") ?? "")
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return nil
+    }
     if envelope.string("operation") == "classifier", let wireServer {
       try await ClassifierConformanceProbe.run(envelope, server: wireServer, incoming: incoming)
       return nil
@@ -201,14 +231,28 @@ struct SwiftConformanceProbe {
       FileHandle.standardOutput.write(try JSONEncoder().encode(result))
       return nil
     }
-    if envelope.string("operation") == "error.format" {
+    if ["error.format", "error.bedrock-format"].contains(envelope.string("operation") ?? "") {
       let result = ProviderErrorText.format(
         .init(
           status: envelope["status"], body: envelope.string("body"),
           message: envelope.string("message") ?? "",
           messageCarriesBody: envelope.bool("messageCarriesBody") ?? false),
         prefix: envelope.string("prefix"))
-      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      if envelope.string("operation") == "error.bedrock-format" {
+        var output: [String: JSONValue] = [
+          "message": .string(
+            BedrockFailure.message(result, exceptionName: envelope.string("exceptionName")))
+        ]
+        if let diagnostic = BedrockFailure.diagnostic(
+          status: envelope.int("metadataStatus"), errorCode: envelope.string("errorCode"),
+          requestID: envelope.string("requestID"))
+        {
+          output["providerMetadata"] = .object(["diagnostics": .array([diagnostic])])
+        }
+        FileHandle.standardOutput.write(try JSONEncoder().encode(output))
+      } else {
+        FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      }
       return nil
     }
     if envelope.string("operation") == "error.normalize-sdk-object" {
@@ -489,10 +533,12 @@ struct SwiftConformanceProbe {
     let transport: any ProviderHTTPStreamingTransport =
       interactive ? liveTransport : fixtureTransport
     let authorization: any ProviderAuthorizationAdapter
-    if input.requestSource == "provider",
-      CloudflareAuthorizationAdapter.providerIDs.contains(provider),
-      options.string("apiKey")?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false,
-      options.object("headers")?.string("cf-aig-authorization") == nil
+    if CloudflareAuthorizationAdapter.providerIDs.contains(provider),
+      (input.requestSource == "provider"
+        && options.string("apiKey")?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+          != false
+        && options.object("headers")?.string("cf-aig-authorization") == nil)
+        || options.object("headers")?.string("cf-aig-authorization") != nil
     {
       authorization = CloudflareAuthorizationAdapter(providerID: provider, methodID: "api-key")
     } else {
@@ -603,7 +649,9 @@ struct SwiftConformanceProbe {
             ProviderCloudCredential.self,
             from: JSONEncoder().encode(result["credential"] ?? .null))
         }
-      }, cloudCredentialSources: wireServer?.cloudCredentialSources ?? .init())
+      }, cloudCredentialSources: wireServer?.cloudCredentialSources ?? .init(),
+      requestTransportResolver: envelope.bool("requestTransportOverride") == true
+        ? { @Sendable _ in transport } : nil)
     if input.measureHeap == true, pi_heap_begin() != 0 {
       throw ProbeError.unrepresentable("swift-process-heap-observer")
     }
@@ -1085,7 +1133,8 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
       fail(
         ProviderRuntimeFailure(
           code: .transportFailed, message: frame.string("message") ?? "fixture transport failed",
-          providerID: nil, operation: "conformance.transport", causeDescription: nil))
+          providerID: nil, operation: "conformance.transport", causeDescription: nil,
+          providerMetadata: frame.object("providerMetadata")))
     default: throw ProbeError.unsupported("fixture frame")
     }
   }

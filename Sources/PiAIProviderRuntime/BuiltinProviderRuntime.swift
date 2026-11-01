@@ -11,6 +11,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
   private let wireObserver: ProviderWireObserver?
   private let webSocketTransport: any ProviderWebSocketTransport
   private let cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?
+  private let requestTransportResolver: ProviderRequestTransportResolver?
   private let cloudCredentialSources = ProviderCloudCredentialSources()
   private let codexSessions = CodexWebSocketSessions()
   private let radiusAuthorization: RadiusOAuthAuthorizationAdapter
@@ -25,7 +26,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     wireObserver: ProviderWireObserver? = nil,
     webSocketTransport: any ProviderWebSocketTransport = URLSessionProviderWebSocketTransport(),
     authorizationConfiguration: ProviderAuthorizationConfiguration = .init(),
-    cloudAuthorizationResolver: ProviderCloudAuthorizationResolver? = nil
+    cloudAuthorizationResolver: ProviderCloudAuthorizationResolver? = nil,
+    requestTransportResolver: ProviderRequestTransportResolver? = nil
   ) throws {
     let registry = try BuiltinProviderRegistry.load()
     self.registry = registry
@@ -36,6 +38,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     self.wireObserver = wireObserver
     self.webSocketTransport = webSocketTransport
     self.cloudAuthorizationResolver = cloudAuthorizationResolver
+    self.requestTransportResolver = requestTransportResolver
     radiusAuthorization = RadiusOAuthAuthorizationAdapter(
       transport: authorizationTransport
     )
@@ -56,7 +59,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       codexSessions: codexSessions,
       authorizationConfiguration: authorizationConfiguration,
       cloudAuthorizationResolver: cloudAuthorizationResolver,
-      cloudCredentialSources: cloudCredentialSources
+      cloudCredentialSources: cloudCredentialSources,
+      requestTransportResolver: requestTransportResolver
     )
   }
 
@@ -155,7 +159,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       codexSessions: codexSessions,
       authorizationConfiguration: authorizationConfiguration,
       cloudAuthorizationResolver: cloudAuthorizationResolver,
-      cloudCredentialSources: cloudCredentialSources
+      cloudCredentialSources: cloudCredentialSources,
+      requestTransportResolver: requestTransportResolver
     )
   }
 
@@ -194,7 +199,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     codexSessions: CodexWebSocketSessions,
     authorizationConfiguration: ProviderAuthorizationConfiguration,
     cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?,
-    cloudCredentialSources: ProviderCloudCredentialSources
+    cloudCredentialSources: ProviderCloudCredentialSources,
+    requestTransportResolver: ProviderRequestTransportResolver?
   ) throws -> ProviderRuntimeKernel {
     let definitions = try registry.providers.map {
       try makeDefinition(
@@ -213,7 +219,9 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       webSocketTransport: webSocketTransport,
       codexSessions: codexSessions,
       cloudAuthorizationResolver: cloudAuthorizationResolver,
-      cloudCredentialSources: cloudCredentialSources
+      cloudCredentialSources: cloudCredentialSources,
+      authenticationContext: authorizationConfiguration.authenticationContext,
+      requestTransportResolver: requestTransportResolver
     )
   }
 

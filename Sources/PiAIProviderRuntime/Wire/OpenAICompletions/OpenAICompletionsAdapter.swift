@@ -39,8 +39,8 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
               metadata: context.modelConfiguration.metadata,
               providerID: request.providerID,
               operation: "openai-completions.usage.pricing"),
-            isOpenRouter: request.providerID == "openrouter"
-              || context.baseURL.absoluteString.contains("openrouter.ai")
+            isOpenRouter: OpenAICompletionsCompatibility.isOpenRouter(
+              provider: request.providerID, baseURL: context.baseURL.absoluteString)
           )
           continuation.yield(reducer.startEvent())
           readStream: for try await chunk in response.body {

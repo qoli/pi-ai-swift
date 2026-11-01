@@ -4,13 +4,17 @@ public struct ProviderAuthorizationConfiguration: Sendable {
   public let callbackURLs: [String: URL]
   public let agentName: String
   public let deviceID: String?
+  public let authenticationContext: ProviderAuthenticationContext?
   let chatGPTAgentName: String
 
-  public init(callbackURLs: [String: URL] = [:], agentName: String? = nil, deviceID: String? = nil)
-  {
+  public init(
+    callbackURLs: [String: URL] = [:], agentName: String? = nil, deviceID: String? = nil,
+    authenticationContext: ProviderAuthenticationContext? = nil
+  ) {
     self.callbackURLs = callbackURLs
     self.agentName = agentName ?? "pi"
     self.chatGPTAgentName = agentName ?? "Pi"
     self.deviceID = deviceID
+    self.authenticationContext = authenticationContext
   }
 }

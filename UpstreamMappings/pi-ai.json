@@ -214,7 +214,12 @@
         "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift",
         "Sources/PiAIProviderRuntime/Authorization/ProviderDeviceCodePolling.swift",
         "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift",
-        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderEnvironmentKeys.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryAuthorization.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryLogin.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderOAuthLoginChoice.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -229,7 +234,11 @@
         "packages/ai/src/auth/types.ts",
         "packages/ai/src/env-api-keys.ts",
         "packages/ai/src/utils/abort.ts",
-        "packages/ai/src/auth/oauth/callback-server.ts"
+        "packages/ai/src/auth/oauth/callback-server.ts",
+        "packages/ai/src/providers/amazon-bedrock.ts",
+        "packages/ai/src/providers/anthropic.ts",
+        "packages/ai/src/providers/google-vertex.ts",
+        "packages/ai/src/providers/cloudflare-auth.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/oauth-auth.test.ts",
@@ -259,7 +268,14 @@
         "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource",
+        "Scripts/pi-ai-primary-authorization-oracle.mjs",
+        "Fixtures/Differential/Cases/primary-authorization.json",
+        "Fixtures/Differential/Oracle/primary-authorization.json",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift",
+        "Tests/PiAIProviderRuntimeTests/AuthenticationContextTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPrimaryAuthorizationMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -395,7 +411,9 @@
         "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#cancellingBodyConsumerCancelsTheUnderlyingURLSessionTask",
         "Tests/PiAIProviderRuntimeTests/ProviderHTTPTransportTests.swift#urlSessionErrorsRemainTheThrownCauseAndAreNotRetried",
         "Scripts/Conformance/bridge.mjs",
-        "Scripts/Conformance/SwiftProbe.swift"
+        "Scripts/Conformance/SwiftProbe.swift",
+        "Tests/PiAIProviderRuntimeTests/AuthenticationContextTests.swift",
+        "Scripts/Conformance/authorization.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -493,7 +511,10 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
-        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryAuthorization.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryLogin.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -519,7 +540,10 @@
         "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPrimaryAuthorizationMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -570,7 +594,10 @@
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
         "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift",
         "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift",
-        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryAuthorization.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryLogin.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -603,7 +630,10 @@
         "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPrimaryAuthorizationMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -721,7 +751,11 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
-        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift"
+        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift",
+        "Sources/PiAIProviderRuntime/Runtime/ProviderEndpointTemplate.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryAuthorization.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryLogin.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -747,7 +781,11 @@
         "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
         "Fixtures/Differential/Cases/cloudflare-auth.json",
-        "Fixtures/Differential/Oracle/cloudflare-auth.json"
+        "Fixtures/Differential/Oracle/cloudflare-auth.json",
+        "Scripts/Conformance/cloudflare-stream.mjs",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPrimaryAuthorizationMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -763,7 +801,11 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
-        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift"
+        "Sources/PiAIProviderRuntime/Authorization/CloudflareAuthorizationAdapter.swift",
+        "Sources/PiAIProviderRuntime/Runtime/ProviderEndpointTemplate.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryAuthorization.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryLogin.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -787,7 +829,11 @@
         "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
         "Fixtures/Differential/Cases/cloudflare-auth.json",
-        "Fixtures/Differential/Oracle/cloudflare-auth.json"
+        "Fixtures/Differential/Oracle/cloudflare-auth.json",
+        "Scripts/Conformance/cloudflare-stream.mjs",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPrimaryAuthorizationMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -951,7 +997,10 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
-        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryAuthorization.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryLogin.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -977,7 +1026,10 @@
         "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudPrimaryAuthorizationMatchesPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverProjectsNativeWire",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCloudResolverFailureDoesNotSelectAnotherCredentialSource",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPrimaryAuthorizationMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -1970,7 +2022,8 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/ProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/ProviderRuntimeFailure.swift",
-        "Sources/PiAIProviderRuntime/ProviderReasoningEffort.swift"
+        "Sources/PiAIProviderRuntime/ProviderReasoningEffort.swift",
+        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2000,7 +2053,8 @@
         "Scripts/Conformance/bridge.mjs",
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
-        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json"
+        "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
+        "Tests/PiAIProviderRuntimeTests/AuthenticationContextTests.swift"
       ],
       "requiredGates": [
         "swift-test"
@@ -2014,7 +2068,8 @@
       "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
+        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift",
+        "Sources/PiAIProviderRuntime/Runtime/ProviderEndpointTemplate.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2047,7 +2102,8 @@
         "Fixtures/Differential/Cases/client-identity.json",
         "Fixtures/Differential/Oracle/client-identity.json",
         "Tests/PiAIProviderRuntimeTests/ClientIdentityDifferentialTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
+        "Scripts/Conformance/cloudflare-stream.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -3604,7 +3660,9 @@
         "Scripts/Conformance/cloud-authorization.mjs",
         "Scripts/Conformance/ClassifierProbe.swift",
         "Scripts/Conformance/classifier.mjs",
-        "Scripts/tests/test_native_clock.py"
+        "Scripts/tests/test_native_clock.py",
+        "Scripts/Conformance/auth-helpers.mjs",
+        "Scripts/Conformance/cloudflare-stream.mjs"
       ],
       "requiredGates": [
         "unchanged-upstream-conformance",

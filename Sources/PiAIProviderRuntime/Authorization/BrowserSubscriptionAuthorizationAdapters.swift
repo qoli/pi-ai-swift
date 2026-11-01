@@ -32,11 +32,15 @@ struct AnthropicOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       return .disconnected(providerID: providerID)
     case .login(let providerID, let methodID):
       try require(providerID)
-      guard ["oauth", "oauth-copy-code"].contains(methodID) else {
+      guard ["oauth", "oauth-browser", "oauth-copy-code"].contains(methodID) else {
         throw failure("unsupported authorization method")
       }
+      let method =
+        try await methodID == "oauth"
+        ? ProviderOAuthLoginChoice.select(providerID: providerID, interaction: interaction)
+        : methodID == "oauth-copy-code" ? "copy_code" : "browser"
       let redirectURI =
-        methodID == "oauth-copy-code"
+        method == "copy_code"
         ? "https://platform.claude.com/oauth/code/callback" : callbackURL.absoluteString
       let pkce = try OAuthPKCE.make()
       var components = URLComponents(string: "https://claude.ai/oauth/authorize")!
@@ -171,6 +175,7 @@ struct OpenRouterOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     case .login(let providerID, let methodID):
       try require(providerID)
       guard methodID == "oauth" else { throw failure("unsupported authorization method") }
+      try Task.checkCancellation()
       let pkce = try OAuthPKCE.make()
       var components = URLComponents(string: "https://openrouter.ai/auth")!
       components.queryItems = [

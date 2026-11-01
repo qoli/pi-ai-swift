@@ -1,4 +1,8 @@
 enum OpenAICompletionsCompatibility {
+  static func isOpenRouter(provider: String, baseURL: String) -> Bool {
+    provider == "openrouter" || baseURL.contains("openrouter.ai")
+  }
+
   static func resolve(_ context: WireProtocolContext) -> [String: JSONValue] {
     let provider = context.model.providerID
     let baseURL = context.baseURL.absoluteString
@@ -11,7 +15,7 @@ enum OpenAICompletionsCompatibility {
     let isMoonshot =
       provider == "moonshotai" || provider == "moonshotai-cn"
       || baseURL.contains("api.moonshot.")
-    let isOpenRouter = provider == "openrouter" || baseURL.contains("openrouter.ai")
+    let isOpenRouter = isOpenRouter(provider: provider, baseURL: baseURL)
     let isCloudflareWorkers =
       provider == "cloudflare-workers-ai" || baseURL.contains("api.cloudflare.com")
     let isCloudflareGateway =

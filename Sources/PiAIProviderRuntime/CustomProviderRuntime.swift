@@ -73,7 +73,9 @@ public struct CustomProviderRuntime: ProviderRuntime {
       URLSessionProviderHTTPStreamingTransport(),
     wireObserver: ProviderWireObserver? = nil,
     webSocketTransport: any ProviderWebSocketTransport = URLSessionProviderWebSocketTransport(),
-    cloudAuthorizationResolver: ProviderCloudAuthorizationResolver? = nil
+    cloudAuthorizationResolver: ProviderCloudAuthorizationResolver? = nil,
+    authenticationContext: ProviderAuthenticationContext? = nil,
+    requestTransportResolver: ProviderRequestTransportResolver? = nil
   ) throws {
     let definitions = try providers.map(Self.makeDefinition)
     kernel = try ProviderRuntimeKernel(
@@ -84,7 +86,9 @@ public struct CustomProviderRuntime: ProviderRuntime {
       transport: streamingTransport,
       wireObserver: wireObserver,
       webSocketTransport: webSocketTransport,
-      cloudAuthorizationResolver: cloudAuthorizationResolver
+      cloudAuthorizationResolver: cloudAuthorizationResolver,
+      authenticationContext: authenticationContext,
+      requestTransportResolver: requestTransportResolver
     )
   }
 

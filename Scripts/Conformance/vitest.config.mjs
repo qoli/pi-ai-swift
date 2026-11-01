@@ -1,4 +1,5 @@
 import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -9,6 +10,9 @@ const { defineConfig } = await import(pathToFileURL(require.resolve("vitest/conf
 const directory = path.dirname(fileURLToPath(import.meta.url));
 const bridge = path.join(directory, "bridge.mjs");
 const implementation = process.env.PI_CONFORMANCE_IMPLEMENTATION ?? "swift";
+const builtinFactories = new Map([...readFileSync(path.join(upstream, "packages/ai/src/providers/all.ts"), "utf8")
+  .matchAll(/import \{ (\w+Provider) \} from "\.\/([^"]+)";/g)]
+  .map(([, name, relative]) => [path.join(upstream, "packages/ai/src/providers", relative), name]));
 const oauthExports = {
   anthropic: "anthropicOAuth", "openai-codex": "openaiCodexOAuth", openrouter: "openRouterOAuth",
   "github-copilot": "githubCopilotOAuth", "kimi-coding": "kimiCodingOAuth", xai: "xaiOAuth",
@@ -38,7 +42,25 @@ export default defineConfig({
     name: "swift-provider-implementation",
     enforce: "pre",
     transform(code, id) {
+      const factory = builtinFactories.get(id);
+      if (factory) {
+        const module = implementation === "upstream" ? "upstream-trace.mjs" : "providers.mjs";
+        const wrapper = implementation === "upstream" ? "traceBuiltinProvider" : "projectBuiltinProvider";
+        return { code: `import {${wrapper} as __piProvider} from ${JSON.stringify(path.join(directory, module))};\n`
+          + code.replace(`export function ${factory}`, `function __piOriginal_${factory}`)
+          + `\nexport function ${factory}(...args) { return __piProvider(__piOriginal_${factory}(...args), args); }`, map: null };
+      }
       if (implementation !== "upstream" || !id.startsWith(path.join(upstream, "packages/ai/src/"))) return;
+      if (id.endsWith("/auth/helpers.ts")) {
+        return { code: `import {tracePrimaryAuthorization as __piPrimary} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n`
+          + code.replace("export function envApiKeyAuth", "function __piOriginal_envApiKeyAuth")
+          + `\nexport function envApiKeyAuth(...args) { return __piPrimary(__piOriginal_envApiKeyAuth(...args)); }`, map: null };
+      }
+      if (id.endsWith("/models.ts")) {
+        code = `import {traceCallerModels as __piCallerModels} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n`
+          + code.replace("export function createModels", "function __piOriginal_createModels")
+          + `\nexport function createModels(...args) { return __piCallerModels(__piOriginal_createModels(...args)); }`;
+      }
       if (id.endsWith("/utils/streaming-json.ts")) {
         const wrappers = [];
         for (const [name, prefix, methods] of [
@@ -87,6 +109,8 @@ export default defineConfig({
         getBuiltinImageModel: "catalog.images", getBuiltinImageModels: "catalog.images",
         getBuiltinClassifierModel: "catalog.classifiers", getBuiltinClassifierModels: "catalog.classifiers",
         getAllBuiltinModels: "catalog.all-models",
+      } : id.endsWith("/providers/cloudflare-stream.ts") ? {
+        resolveCloudflareModel: "endpoint.cloudflare",
       } : id.endsWith("/providers/opencode-headers.ts") ? {
         withOpenCodeSessionHeader: "headers.open-code",
       } : id.endsWith("/utils/identity.ts") ? {
@@ -105,7 +129,7 @@ export default defineConfig({
       } : id.endsWith("/utils/json-parse.ts") ? {
         parseToolCallArguments: "tool.arguments.complete", parseStreamingJson: "tool.arguments.preview",
       } : id.endsWith("/utils/openrouter-cost.ts") ? {
-        applyOpenRouterReportedCost: "usage.openrouter-cost",
+        applyOpenRouterReportedCost: "usage.openrouter-cost", isOpenRouterModel: "usage.is-openrouter",
       } : id.endsWith("/images.ts") ? {
         generateImages: "stream",
       } : id.includes("/api/") ? {
@@ -147,6 +171,9 @@ export default defineConfig({
         return path.join(directory, "offline-credentials.mjs");
       }
       if (implementation !== "swift") return;
+      if (source === "pi-conformance:upstream-auth-helpers") return path.join(upstream, "packages/ai/src/auth/helpers.ts");
+      if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/providers/cloudflare-stream.ts")) return path.join(directory, "cloudflare-stream.mjs");
+      if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/auth/helpers.ts")) return path.join(directory, "auth-helpers.mjs");
       if (source.startsWith("pi-conformance:upstream-oauth/")) {
         return path.join(upstream, "packages/ai/src/auth/oauth", source.split("/").at(-1) + ".ts");
       }

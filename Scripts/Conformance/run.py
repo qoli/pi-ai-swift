@@ -48,7 +48,12 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
             calls = [call for call in invocations if call.get("file") == file["name"] and call.get("test") == name]
             original_calls = [call for call in upstream_invocations
                               if call.get("file") == file["name"] and call.get("test") == name]
-            operations = {call["operation"] for call in original_calls}
+            caller_operations = {call["operation"] for call in original_calls
+                                 if call.get("ownership") == "caller"
+                                 and call["operation"] in ["identity.merge", "identity.session-headers"]}
+            operations = {call["operation"] for call in original_calls
+                          if not (call.get("ownership") == "caller"
+                                  and call["operation"] in ["identity.merge", "identity.session-headers"])}
             swift_operations = {"stream" if call.get("operation") in ["encode", "decode"]
                                 else call.get("operation") for call in calls}
             upstream_protocols = {call["protocol"] for call in original_calls if call.get("protocol")}
@@ -69,6 +74,7 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 "status": case["status"],
                 "swiftInvocations": len(calls),
                 "upstreamOperations": sorted(operations),
+                "upstreamCallerOperations": sorted(caller_operations),
                 "upstreamProtocols": sorted(upstream_protocols),
                 "swiftDispatchProtocols": sorted(swift_protocols),
                 "missingSwiftProtocols": sorted(missing_protocols),
@@ -115,7 +121,7 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 "caseID": f"{Path(file).relative_to(upstream)}#missing:{len(cases)}:{name}",
                 "upstreamTest": str(Path(file).relative_to(upstream)), "name": name,
                 "upstreamStatus": original["status"], "status": "missing",
-                "swiftInvocations": 0, "upstreamOperations": [], "upstreamProtocols": [],
+                "swiftInvocations": 0, "upstreamOperations": [], "upstreamCallerOperations": [], "upstreamProtocols": [],
                 "swiftDispatchProtocols": [], "missingSwiftProtocols": [], "unexpectedSwiftProtocols": [],
                 "missingSwiftOperations": [], "protocols": [], "failures": [], "nativeFailures": [],
                 "unrepresentedCapabilities": [],

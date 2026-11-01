@@ -232,6 +232,7 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     var metadata = [
       "baseURL": baseURL.absoluteString,
       "availableModelIDs": available.joined(separator: ","),
+      "availableModelIDsJSON": String(decoding: try JSONEncoder().encode(available), as: UTF8.self),
     ]
     if let enterpriseDomain { metadata["enterpriseDomain"] = enterpriseDomain }
     return OAuthCredential(

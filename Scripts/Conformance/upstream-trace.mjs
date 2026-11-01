@@ -19,14 +19,31 @@ afterEach(() => {
 
 export function trace(operation, protocol, run) {
   const parent = invocation.getStore();
-  if (parent && !(operation === "stream" && protocol && protocol !== parent.protocol)) return run();
+  if (parent?.operation && !(operation === "stream" && protocol && protocol !== parent.protocol)) return run();
+  const ownership = parent?.ownership === "caller" && ["identity.merge", "identity.session-headers"].includes(operation)
+    ? "caller" : "provider";
   return invocation.run({ operation, protocol }, () => {
     const state = expect.getState();
     appendFileSync(path.join(process.env.PI_CONFORMANCE_OUTPUT, "upstream-invocations.jsonl"), JSON.stringify({
-      file: state.testPath, test: state.currentTestName, operation, protocol,
+      file: state.testPath, test: state.currentTestName, operation, protocol, ownership,
     }) + "\n");
     return run();
   });
+}
+
+export function traceCallerModels(models) {
+  return new Proxy(models, { get(target, name) {
+    const value = Reflect.get(target, name);
+    if (typeof value !== "function") return value;
+    return (...args) => invocation.run({ ownership: "caller" }, () => value.apply(target, args));
+  } });
+}
+
+export function tracePrimaryAuthorization(source) {
+  return { ...source,
+    resolve: (...args) => trace("authorization.primary.resolve", undefined, () => source.resolve(...args)),
+    login: (...args) => trace("authorization.primary.login", undefined, () => source.login(...args)),
+  };
 }
 
 export function authorization(provider, source) {
@@ -36,4 +53,18 @@ export function authorization(provider, source) {
     refresh: (...args) => trace(`authorization.${provider}.refresh`, undefined, () => source.refresh(...args)),
     toAuth: (...args) => trace(`authorization.${provider}.toAuth`, undefined, () => source.toAuth(...args)),
   };
+}
+
+export function traceBuiltinProvider(provider, args) {
+  const wrapped = { ...provider };
+  if (provider.auth?.apiKey) wrapped.auth = { ...provider.auth, apiKey: tracePrimaryAuthorization(provider.auth.apiKey) };
+  if (!args.length && !provider.refreshModels) {
+    for (const [name, operation] of [["getModels", "catalog"], ["getAllModels", "catalog.all-models"]]) {
+      if (provider[name]) wrapped[name] = (...values) => trace(operation, undefined, () => provider[name](...values));
+    }
+  }
+  for (const name of ["filterModels", "filterAllModels"]) {
+    if (provider[name]) wrapped[name] = (...values) => trace("provider." + name, undefined, () => provider[name](...values));
+  }
+  return wrapped;
 }

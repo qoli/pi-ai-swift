@@ -1,0 +1,226 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "generic-stored-key",
+      "provider": "generic",
+      "action": "resolve",
+      "environment": {
+        "FIRST": "first",
+        "SECOND": "second"
+      },
+      "files": [],
+      "variables": [
+        "FIRST",
+        "SECOND"
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "stored",
+        "env": {}
+      }
+    },
+    {
+      "id": "generic-environment-order",
+      "provider": "generic",
+      "action": "resolve",
+      "environment": {
+        "FIRST": "",
+        "SECOND": "second"
+      },
+      "files": [],
+      "variables": [
+        "FIRST",
+        "SECOND"
+      ]
+    },
+    {
+      "id": "anthropic-bearer-precedence",
+      "provider": "anthropic",
+      "action": "resolve",
+      "environment": {
+        "ANTHROPIC_AUTH_TOKEN": "fixture-bearer",
+        "ANTHROPIC_OAUTH_TOKEN": "fixture-oauth",
+        "ANTHROPIC_API_KEY": "fixture-api"
+      },
+      "files": []
+    },
+    {
+      "id": "anthropic-oauth-before-api",
+      "provider": "anthropic",
+      "action": "resolve",
+      "environment": {
+        "ANTHROPIC_OAUTH_TOKEN": "fixture-oauth",
+        "ANTHROPIC_API_KEY": "fixture-api"
+      },
+      "files": []
+    },
+    {
+      "id": "anthropic-federation",
+      "provider": "anthropic",
+      "action": "resolve",
+      "environment": {
+        "ANTHROPIC_FEDERATION_RULE_ID": "fixture-rule",
+        "ANTHROPIC_ORGANIZATION_ID": "fixture-org",
+        "ANTHROPIC_IDENTITY_TOKEN_FILE": "/synthetic/token",
+        "ANTHROPIC_WORKSPACE_ID": "fixture-workspace",
+        "ANTHROPIC_SERVICE_ACCOUNT_ID": "fixture-service"
+      },
+      "files": []
+    },
+    {
+      "id": "anthropic-incomplete-federation",
+      "provider": "anthropic",
+      "action": "resolve",
+      "environment": {
+        "ANTHROPIC_FEDERATION_RULE_ID": "fixture-rule"
+      },
+      "files": []
+    },
+    {
+      "id": "cloudflare-field-merge",
+      "provider": "cloudflare-ai-gateway",
+      "action": "resolve",
+      "environment": {
+        "CLOUDFLARE_API_KEY": "ambient",
+        "CLOUDFLARE_ACCOUNT_ID": "account",
+        "CLOUDFLARE_GATEWAY_ID": "gateway"
+      },
+      "files": [],
+      "credential": {
+        "type": "api_key",
+        "key": "stored"
+      }
+    },
+    {
+      "id": "cloudflare-explicit-empty",
+      "provider": "cloudflare-ai-gateway",
+      "action": "resolve",
+      "environment": {
+        "CLOUDFLARE_API_KEY": "ambient",
+        "CLOUDFLARE_ACCOUNT_ID": "account",
+        "CLOUDFLARE_GATEWAY_ID": "gateway"
+      },
+      "files": [],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      }
+    },
+    {
+      "id": "bedrock-bearer",
+      "provider": "amazon-bedrock",
+      "action": "resolve",
+      "environment": {
+        "AWS_BEARER_TOKEN_BEDROCK": "fixture-bearer"
+      },
+      "files": []
+    },
+    {
+      "id": "bedrock-stored-profile",
+      "provider": "amazon-bedrock",
+      "action": "resolve",
+      "environment": {
+        "AWS_PROFILE": "ambient"
+      },
+      "files": [],
+      "credential": {
+        "type": "api_key",
+        "env": {
+          "AWS_PROFILE": "stored-profile"
+        }
+      }
+    },
+    {
+      "id": "bedrock-web-identity",
+      "provider": "amazon-bedrock",
+      "action": "resolve",
+      "environment": {
+        "AWS_WEB_IDENTITY_TOKEN_FILE": "/synthetic/web-identity"
+      },
+      "files": []
+    },
+    {
+      "id": "vertex-api-key",
+      "provider": "google-vertex",
+      "action": "resolve",
+      "environment": {
+        "GOOGLE_CLOUD_API_KEY": "fixture-api"
+      },
+      "files": []
+    },
+    {
+      "id": "vertex-stored-adc",
+      "provider": "google-vertex",
+      "action": "resolve",
+      "environment": {},
+      "files": [
+        "/synthetic/adc"
+      ],
+      "credential": {
+        "type": "api_key",
+        "env": {
+          "GOOGLE_APPLICATION_CREDENTIALS": "/synthetic/adc",
+          "GOOGLE_CLOUD_PROJECT": "project",
+          "GOOGLE_CLOUD_LOCATION": "global"
+        }
+      }
+    },
+    {
+      "id": "vertex-missing-adc",
+      "provider": "google-vertex",
+      "action": "resolve",
+      "environment": {
+        "GOOGLE_CLOUD_PROJECT": "project",
+        "GOOGLE_CLOUD_LOCATION": "global"
+      },
+      "files": []
+    },
+    {
+      "id": "generic-whitespace-login",
+      "provider": "generic",
+      "action": "login",
+      "variables": [
+        "FIRST",
+        "SECOND"
+      ],
+      "name": "Fixture key",
+      "responses": [
+        "  fixture-key  "
+      ]
+    },
+    {
+      "id": "generic-empty-login",
+      "provider": "generic",
+      "action": "login",
+      "variables": [
+        "FIRST",
+        "SECOND"
+      ],
+      "name": "Fixture key",
+      "responses": [
+        ""
+      ]
+    },
+    {
+      "id": "bedrock-profile-login",
+      "provider": "amazon-bedrock",
+      "action": "login",
+      "responses": [
+        "aws-profile",
+        "fixture-profile"
+      ]
+    },
+    {
+      "id": "vertex-service-account-login",
+      "provider": "google-vertex",
+      "action": "login",
+      "responses": [
+        "service-account",
+        "project",
+        "global",
+        "/synthetic/service-account"
+      ]
+    }
+  ]
+}

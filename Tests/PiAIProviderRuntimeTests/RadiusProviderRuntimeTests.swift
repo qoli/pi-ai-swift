@@ -222,6 +222,11 @@ private actor RadiusDeviceInteraction {
 
   func respond(_ challenge: AuthorizationChallenge) throws -> AuthorizationResponse {
     switch challenge {
+    case .choice(_, let id, _, let options):
+      #expect(id == "radius-login-method")
+      #expect(options.map(\.id) == ["browser", "device-code"])
+      promptCount += 1
+      return .value("device-code")
     case .prompt(_, let id, _, _):
       promptCount += 1
       switch id {

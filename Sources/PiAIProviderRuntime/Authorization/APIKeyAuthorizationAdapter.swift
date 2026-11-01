@@ -20,31 +20,10 @@ struct APIKeyAuthorizationAdapter: ProviderAuthorizationAdapter {
           message: "unsupported authorization method: \(requestedMethodID)"
         )
       }
-      let response = try await interaction(
-        .prompt(
-          providerID: providerID,
-          id: methodID,
-          message: label,
-          kind: .secret
-        )
-      )
-      guard case .value(let submittedKey) = response else {
-        throw failure(
-          .authorizationFailed,
-          operation: "api-key.login",
-          message: "API-key authorization was not completed"
-        )
-      }
-      let key = submittedKey.trimmingCharacters(in: .whitespacesAndNewlines)
-      guard !key.isEmpty else {
-        throw failure(
-          .invalidCredential,
-          operation: "api-key.login",
-          message: "API key is empty"
-        )
-      }
+      let credential = try await ProviderPrimaryLogin.credential(
+        providerID: providerID, label: label, interaction: interaction)
       _ = try await credentialStore.modify(providerID: providerID) { _ in
-        .apiKey(APIKeyCredential(key: key, metadata: [:]))
+        .apiKey(credential)
       }
       return .connected(
         ProviderAccount(
