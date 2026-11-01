@@ -42,6 +42,10 @@ export default defineConfig({
     name: "swift-provider-implementation",
     enforce: "pre",
     transform(code, id) {
+      if (implementation === "swift" && id === path.join(upstream, "packages/ai/src/api/bedrock-converse-stream.lazy.ts")) {
+        return { code: `import {stream as __piStream, streamSimple as __piStreamSimple} from ${JSON.stringify(bridge)};\n`
+          + code + `\nsetBedrockProviderModule({stream: __piStream, streamSimple: __piStreamSimple});`, map: null };
+      }
       const factory = builtinFactories.get(id);
       if (factory) {
         const module = implementation === "upstream" ? "upstream-trace.mjs" : "providers.mjs";
