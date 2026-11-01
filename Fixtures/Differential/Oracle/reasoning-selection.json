@@ -1,0 +1,51 @@
+{
+  "cases": [
+    {
+      "clamped": "high",
+      "id": "ordinary-max",
+      "supported": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    {
+      "clamped": "max",
+      "id": "hole-prefers-higher",
+      "supported": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high",
+        "max"
+      ]
+    },
+    {
+      "clamped": "high",
+      "id": "supported-is-unchanged",
+      "supported": [
+        "off",
+        "minimal",
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    {
+      "clamped": "off",
+      "id": "nonreasoning-off",
+      "supported": [
+        "off"
+      ]
+    },
+    {
+      "clamped": "off",
+      "id": "no-supported-levels",
+      "supported": []
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

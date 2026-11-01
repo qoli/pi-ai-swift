@@ -375,6 +375,12 @@ struct SwiftConformanceProbe {
         reasoning: model.bool("reasoning") == true, metadata: model,
         protocolID: api, providerID: provider, modelID: modelID,
         modelName: model.string("name") ?? modelID))
+    if envelope.string("operation") == "reasoning-clamp" {
+      let level = ProviderReasoningEffort(rawValue: envelope.string("level")!)!
+      FileHandle.standardOutput.write(
+        try JSONEncoder().encode(providerModel.clampReasoningEffort(level)))
+      return nil
+    }
     if envelope.string("operation") == "reasoning-levels" {
       FileHandle.standardOutput.write(
         try JSONEncoder().encode(providerModel.supportedReasoningEfforts))

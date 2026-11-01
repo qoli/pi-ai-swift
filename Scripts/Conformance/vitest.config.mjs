@@ -123,6 +123,7 @@ export default defineConfig({
         getIdentityHeaders: "identity.headers", getOpenCodeSessionHeaders: "identity.session-headers",
       } : id.endsWith("/models.ts") ? {
         getSupportedThinkingLevels: "catalog.reasoning",
+        clampThinkingLevel: "catalog.reasoning-clamp",
         calculateCost: "usage.calculate",
       } : id.endsWith("/utils/provider-retry.ts") ? {
         retryProviderRequest: "provider.retry",

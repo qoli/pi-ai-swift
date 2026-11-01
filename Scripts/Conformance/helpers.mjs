@@ -1,12 +1,16 @@
 import { fixtureInput, invokeNative, projectNativeRequest, recordNative } from "./bridge.mjs";
-import { clampThinkingLevel as upstreamClampThinkingLevel } from "pi-conformance:upstream-models";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 const { normalizeContext } = await import(pathToFileURL(path.join(process.env.PI_CONFORMANCE_UPSTREAM, "packages/ai/src/utils/transcript.ts")));
 
-export function clampThinkingLevel(...args) {
-  recordNative("caller.thinking-clamp", args[0].api, undefined, ["caller-thinking-clamp"]);
-  return upstreamClampThinkingLevel(...args);
+export function clampThinkingLevel(model, level) {
+  const result = invokeNative({
+    ...fixtureInput(model, { messages: [] }, {}, [], { key: "fixture", metadata: {} }),
+    operation: "reasoning-clamp", level,
+  });
+  recordNative("catalog.reasoning-clamp", model.api, result?.failure);
+  if (result?.failure) throw new Error(result.failure.message);
+  return result;
 }
 
 export function getSupportedThinkingLevels(model) {

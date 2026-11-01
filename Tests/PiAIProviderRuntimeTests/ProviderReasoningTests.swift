@@ -5,6 +5,24 @@ import Testing
 
 @Suite
 struct ProviderReasoningTests {
+  @Test func explicitSelectionMatchesPinnedSource() async throws {
+    let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(
+            path: "Fixtures/Differential/\(folder)/reasoning-selection.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    #expect(inputs.count == expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      #expect(try await ReasoningSelectionFixtures.replay(input.objectValue!) == oracle)
+    }
+  }
   // Pinned pi 853a80d: models.ts getSupportedThinkingLevels and types.ts ThinkingLevelMap.
   @Test
   func missingNullAndExtendedLevelsHaveDistinctMeanings() throws {
@@ -91,6 +109,7 @@ struct ProviderReasoningTests {
       credentialStore: InMemoryProviderCredentialStore())
     let model = try #require(try await runtime.catalog().providers.first?.models.first)
     #expect(!model.supportedReasoningEfforts.contains(.off))
+    #expect(model.clampReasoningEffort(.max) == .high)
     for effort: ProviderReasoningEffort? in [.off, .max, nil] {
       let request = ProviderRequest(
         id: "fixture", providerID: "fixture", modelID: "model",

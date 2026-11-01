@@ -1,0 +1,53 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "ordinary-max",
+      "requested": "max",
+      "model": {
+        "reasoning": true
+      }
+    },
+    {
+      "id": "hole-prefers-higher",
+      "requested": "xhigh",
+      "model": {
+        "reasoning": true,
+        "thinkingLevelMap": {
+          "xhigh": null,
+          "max": "max"
+        }
+      }
+    },
+    {
+      "id": "supported-is-unchanged",
+      "requested": "high",
+      "model": {
+        "reasoning": true
+      }
+    },
+    {
+      "id": "nonreasoning-off",
+      "requested": "max",
+      "model": {
+        "reasoning": false
+      }
+    },
+    {
+      "id": "no-supported-levels",
+      "requested": "max",
+      "model": {
+        "reasoning": true,
+        "thinkingLevelMap": {
+          "off": null,
+          "minimal": null,
+          "low": null,
+          "medium": null,
+          "high": null,
+          "xhigh": null,
+          "max": null
+        }
+      }
+    }
+  ]
+}

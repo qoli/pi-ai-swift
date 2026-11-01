@@ -28,6 +28,8 @@ adaptation_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRun
 target.source_build_phase.add_file_reference(adaptation_helper)
 primary_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(primary_helper)
+reasoning_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/ReasoningSelectionFixtures.swift').to_s)
+target.source_build_phase.add_file_reference(reasoning_helper)
 %w[OpenAIRequestBranches Differential AzureOpenAIConfiguration].each do |folder|
   reference = project.main_group.new_file(root.join('Fixtures', folder).to_s)
   reference.last_known_file_type = 'folder'

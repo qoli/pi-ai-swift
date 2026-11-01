@@ -11,6 +11,19 @@ public enum ProviderReasoningEffort: String, CaseIterable, Sendable, Hashable, C
   case max
 }
 
+extension ProviderModel {
+  /// An explicit caller selection; stream validation still uses the requested effort.
+  public func clampReasoningEffort(_ requested: ProviderReasoningEffort) -> ProviderReasoningEffort
+  {
+    if supportedReasoningEfforts.contains(requested) { return requested }
+    let levels = ProviderReasoningEffort.allCases
+    let index = levels.firstIndex(of: requested)!
+    return levels[index...].first(where: supportedReasoningEfforts.contains)
+      ?? levels[..<index].reversed().first(where: supportedReasoningEfforts.contains)
+      ?? supportedReasoningEfforts.first ?? .off
+  }
+}
+
 enum ProviderReasoning {
   /// Mirrors the pinned upstream getSupportedThinkingLevels contract, excluding
   /// settings for which the wire protocol cannot represent our explicit-off contract.

@@ -5,6 +5,23 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testExplicitReasoningSelectionMatchesPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(path: "Differential/\(folder)/reasoning-selection.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      let actual = try await ReasoningSelectionFixtures.replay(input.objectValue!)
+      XCTAssertEqual(actual, oracle)
+    }
+  }
   func testPrimaryAuthorizationMatchesPinnedSource() async throws {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     func cases(_ folder: String) throws -> [JSONValue] {

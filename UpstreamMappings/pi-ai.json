@@ -377,7 +377,13 @@
         "Scripts/Conformance/run.py",
         "Scripts/Conformance/suites.json",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift",
-        "Scripts/ios-conformance-project.rb"
+        "Scripts/ios-conformance-project.rb",
+        "Scripts/pi-ai-reasoning-selection-oracle.mjs",
+        "Fixtures/Differential/Cases/reasoning-selection.json",
+        "Fixtures/Differential/Oracle/reasoning-selection.json",
+        "Tests/PiAIProviderRuntimeTests/ReasoningSelectionFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#explicitSelectionMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testExplicitReasoningSelectionMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test",
@@ -2054,7 +2060,13 @@
         "Scripts/openai-response-event-oracle.mjs",
         "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
         "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json",
-        "Tests/PiAIProviderRuntimeTests/AuthenticationContextTests.swift"
+        "Tests/PiAIProviderRuntimeTests/AuthenticationContextTests.swift",
+        "Scripts/pi-ai-reasoning-selection-oracle.mjs",
+        "Fixtures/Differential/Cases/reasoning-selection.json",
+        "Fixtures/Differential/Oracle/reasoning-selection.json",
+        "Tests/PiAIProviderRuntimeTests/ReasoningSelectionFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#explicitSelectionMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testExplicitReasoningSelectionMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
