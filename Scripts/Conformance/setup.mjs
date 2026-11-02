@@ -1,4 +1,9 @@
 import net from "node:net";
+import { beforeEach } from "vitest";
+
+beforeEach(({ task }) => {
+  task.meta.piConformanceInstanceID = task.id;
+});
 
 const fetch = globalThis.fetch;
 globalThis.fetch = function (input, options) {

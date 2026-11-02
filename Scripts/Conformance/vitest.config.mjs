@@ -33,6 +33,7 @@ export default defineConfig({
     alias: [
       { find: /^@earendil-works\/pi-telemetry$/, replacement: path.join(upstream, "packages/telemetry/src/index.ts") },
       { find: /^vitest$/, replacement: path.join(path.dirname(require.resolve("vitest/package.json")), "dist/index.js") },
+      { find: /^@vitest\/runner$/, replacement: require.resolve("@vitest/runner") },
       ...["openai", "@anthropic-ai/sdk", "@google/genai", "@aws-sdk/client-bedrock-runtime", "@smithy/core/event-streams", "@smithy/node-http-handler"].map(name => ({
         find: name, replacement: require.resolve(name),
       })),

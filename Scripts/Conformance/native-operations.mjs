@@ -2,11 +2,13 @@ import { spawnSync } from "node:child_process";
 import { appendFileSync } from "node:fs";
 import path from "node:path";
 import { expect } from "vitest";
+import { getCurrentTest } from "@vitest/runner";
 
 export function recordNative(operation, protocol, failure, unrepresentedCapabilities = [], entrypoint = "helper") {
   const state = expect.getState();
   appendFileSync(path.join(process.env.PI_CONFORMANCE_OUTPUT, "swift-invocations.jsonl"), JSON.stringify({
-    file: state.testPath, test: state.currentTestName, operation, protocol, entrypoint,
+    file: state.testPath, test: state.currentTestName, caseInstanceID: getCurrentTest()?.id,
+    operation, protocol, entrypoint,
     ...(failure ? { failure } : {}),
     ...(unrepresentedCapabilities.length ? { unrepresentedCapabilities } : {}),
   }) + "\n");

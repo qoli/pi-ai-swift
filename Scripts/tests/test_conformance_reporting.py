@@ -137,6 +137,50 @@ class ConformanceReportingTests(unittest.TestCase):
         self.assertEqual(cases[-1]["status"], "missing")
         self.assertEqual(cases[-1]["conformanceStatus"], "bridge_gap")
 
+    def test_duplicate_case_cannot_reuse_another_instances_native_evidence(self):
+        for implementation in ["upstream", "swift"]:
+            self.reports[implementation]["testResults"][0]["assertionResults"] = [
+                {**self.case, "meta": {"piConformanceInstanceID": identity}}
+                for identity in ["first", "second"]
+            ]
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream",
+                     "caseInstanceID": identity} for identity in ["first", "second"]]
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [{**self.call, "caseInstanceID": "first"}],
+            {"upstream": 0, "swift": 0}, original)
+        self.assertFalse(conformant)
+        self.assertEqual([case["conformanceStatus"] for case in cases], ["passed", "bridge_gap"])
+
+    def test_duplicate_case_without_instance_identity_cannot_share_name_only_evidence(self):
+        for implementation in ["upstream", "swift"]:
+            self.reports[implementation]["testResults"][0]["assertionResults"] *= 2
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream"}]
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [self.call], {"upstream": 0, "swift": 0}, original)
+        self.assertFalse(conformant)
+        self.assertEqual([case["conformanceStatus"] for case in cases], ["bridge_gap", "bridge_gap"])
+
+    def test_formal_run_requires_instance_identity_even_for_unique_names(self):
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream"}]
+        conformant, _ = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [self.call], {"upstream": 0, "swift": 0}, original,
+            require_case_instances=True)
+        self.assertFalse(conformant)
+
+    def test_instance_identity_is_local_to_each_implementation(self):
+        self.reports["upstream"]["testResults"][0]["assertionResults"][0]["meta"] = {
+            "piConformanceInstanceID": "source-instance"}
+        self.reports["swift"]["testResults"][0]["assertionResults"][0]["meta"] = {
+            "piConformanceInstanceID": "native-instance"}
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream",
+                     "caseInstanceID": "source-instance"}]
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [{**self.call, "caseInstanceID": "native-instance"}],
+            {"upstream": 0, "swift": 0}, original, require_case_instances=True)
+        self.assertTrue(conformant)
+        self.assertEqual(cases[0]["upstreamCaseInstanceID"], "source-instance")
+        self.assertEqual(cases[0]["swiftCaseInstanceID"], "native-instance")
+
     def test_catalog_lookup_cannot_substitute_for_reasoning_metadata_computation(self):
         original = [{"file": self.file, "test": "schema > preserves input", "operation": operation}
                     for operation in ["catalog", "catalog.reasoning"]]

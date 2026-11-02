@@ -33,21 +33,38 @@ def evidence_digests(repo):
     return digests
 
 
-def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()):
+def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=(), *, require_case_instances=False):
     cases = []
     upstream_cases = {}
     for file in reports["upstream"]["testResults"]:
         for case in file["assertionResults"]:
             name = " > ".join([*case["ancestorTitles"], case["title"]])
             upstream_cases.setdefault((file["name"], name), []).append(case)
+    swift_case_counts = Counter(
+        (file["name"], " > ".join([*case["ancestorTitles"], case["title"]]))
+        for file in reports["swift"]["testResults"] for case in file["assertionResults"]
+    )
     occurrences = Counter()
     for file in reports["swift"]["testResults"]:
         relative = str(Path(file["name"]).relative_to(upstream))
         for index, case in enumerate(file["assertionResults"]):
             name = " > ".join([*case["ancestorTitles"], case["title"]])
-            calls = [call for call in invocations if call.get("file") == file["name"] and call.get("test") == name]
-            original_calls = [call for call in upstream_invocations
-                              if call.get("file") == file["name"] and call.get("test") == name]
+            key = (file["name"], name)
+            matching = upstream_cases.get(key, [])
+            original = matching[occurrences[key]] if occurrences[key] < len(matching) else {}
+            occurrences[key] += 1
+            duplicate_name = len(matching) > 1 or swift_case_counts[key] > 1
+
+            def case_calls(records, test_case):
+                instance = (test_case.get("meta") or {}).get("piConformanceInstanceID")
+                if not instance and (require_case_instances or duplicate_name):
+                    return []
+                return [call for call in records
+                        if call.get("file") == file["name"] and call.get("test") == name
+                        and (not instance or call.get("caseInstanceID") == instance)]
+
+            calls = case_calls(invocations, case)
+            original_calls = case_calls(upstream_invocations, original)
             caller_operations = {call["operation"] for call in original_calls
                                  if call.get("ownership") == "caller"
                                  and call["operation"] in ["identity.merge", "identity.session-headers"]}
@@ -62,12 +79,10 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                                or (call.get("entrypoint") == "classify" and call.get("operation") == "classify")}
             missing_protocols = upstream_protocols - swift_protocols
             unexpected_protocols = swift_protocols - upstream_protocols if upstream_protocols else set()
-            key = (file["name"], name)
-            matching = upstream_cases.get(key, [])
-            original = matching[occurrences[key]] if occurrences[key] < len(matching) else {}
-            occurrences[key] += 1
             item = {
                 "caseID": f"{relative}#{index}:{name}",
+                "upstreamCaseInstanceID": (original.get("meta") or {}).get("piConformanceInstanceID"),
+                "swiftCaseInstanceID": (case.get("meta") or {}).get("piConformanceInstanceID"),
                 "upstreamTest": relative,
                 "name": name,
                 "upstreamStatus": original.get("status", "missing"),
@@ -235,7 +250,8 @@ def main():
         reports[implementation] = json.loads((build / f"{implementation}.json").read_text())
     invocations = [json.loads(line) for line in (build / "swift-invocations.jsonl").read_text().splitlines()]
     upstream_invocations = [json.loads(line) for line in (build / "upstream-invocations.jsonl").read_text().splitlines()]
-    conformant, cases = evaluate(upstream, reports, invocations, exit_codes, upstream_invocations)
+    conformant, cases = evaluate(upstream, reports, invocations, exit_codes, upstream_invocations,
+                                require_case_instances=True)
     source_stable = identities == evidence_digests(repo)
     conformant = conformant and source_stable
     report = {
