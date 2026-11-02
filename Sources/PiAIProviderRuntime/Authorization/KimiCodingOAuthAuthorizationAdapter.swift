@@ -102,7 +102,7 @@ struct KimiCodingOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
     let refreshed = try await refreshCoordinator.credential(
       providerID: Self.providerID,
-      minimumValidity: 60,
+      minimumValidity: 300,
       now: clock.now(),
       refresh: { credential in try await refresh(credential) }
     )

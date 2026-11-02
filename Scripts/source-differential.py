@@ -220,6 +220,9 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-oauth-resolution-oracle.mjs',
+             'Fixtures/Differential/Cases/oauth-resolution.json',
+             'Fixtures/Differential/Oracle/oauth-resolution.json', 'stored OAuth default validity and refresh acceptance'),
             ('pi-ai-openrouter-personalization-oracle.mjs',
              'Fixtures/Differential/Cases/openrouter-personalization.json',
              'Fixtures/Differential/Oracle/openrouter-personalization.json', 'OpenRouter key-specific catalog personalization'),

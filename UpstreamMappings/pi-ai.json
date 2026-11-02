@@ -248,7 +248,8 @@
         "packages/ai/test/baseten-models.test.ts",
         "packages/ai/test/fireworks-models.test.ts",
         "packages/ai/test/together-models.test.ts",
-        "packages/ai/test/qwen-token-plan-models.test.ts"
+        "packages/ai/test/qwen-token-plan-models.test.ts",
+        "packages/ai/test/models-runtime.test.ts"
       ],
       "dependsOn": [],
       "evidence": [
@@ -286,7 +287,13 @@
         "Fixtures/Differential/Oracle/environment-keys.json",
         "Scripts/Conformance/environment.mjs",
         "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift#environmentKeysMatchPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testEnvironmentKeysMatchPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testEnvironmentKeysMatchPinnedSource",
+        "Scripts/pi-ai-oauth-resolution-oracle.mjs",
+        "Fixtures/Differential/Cases/oauth-resolution.json",
+        "Fixtures/Differential/Oracle/oauth-resolution.json",
+        "Tests/PiAIProviderRuntimeTests/OAuthResolutionFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#oauthResolutionMatchesPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOAuthResolutionMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

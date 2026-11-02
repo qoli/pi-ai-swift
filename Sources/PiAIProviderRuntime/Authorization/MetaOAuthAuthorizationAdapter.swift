@@ -108,7 +108,7 @@ struct MetaOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     return .oauth(
       try await refreshCoordinator.credential(
         providerID: providerID,
-        minimumValidity: 0, now: clock.now(), refresh: { try await mint($0.refreshToken) }))
+        minimumValidity: 300, now: clock.now(), refresh: { try await mint($0.refreshToken) }))
   }
 
   private func mint(_ identity: String) async throws -> OAuthCredential {

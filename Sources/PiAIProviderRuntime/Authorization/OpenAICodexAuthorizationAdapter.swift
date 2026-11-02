@@ -78,7 +78,7 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      minimumValidity: 60,
+      minimumValidity: 300,
       refresh: { credential in try await client.refresh(credential) }
     )
     return .oauth(refreshed)

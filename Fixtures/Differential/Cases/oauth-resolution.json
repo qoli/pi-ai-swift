@@ -1,0 +1,136 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "default-window--1",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": -1,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "default-window-0",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 0,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "default-window-59999",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 59999,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "default-window-60000",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 60000,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "default-window-120000",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 120000,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "default-window-299999",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 299999,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "default-window-300000",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 300000,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "default-window-300001",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 300001,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "default-window-600000",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 600000,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "short-refresh",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 0,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 1
+    },
+    {
+      "id": "expired-refresh",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 0,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": -1
+    },
+    {
+      "id": "empty-access",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 0,
+      "refreshedAccess": "",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "empty-refresh",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 0,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "",
+      "refreshedExpiresOffsetMilliseconds": 3600000
+    },
+    {
+      "id": "anthropic-default-120000",
+      "provider": "anthropic",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 120000,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3300000
+    },
+    {
+      "id": "anthropic-default-300000",
+      "provider": "anthropic",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 300000,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3300000
+    },
+    {
+      "id": "anthropic-default-300001",
+      "provider": "anthropic",
+      "now": 2000000000000,
+      "expiresOffsetMilliseconds": 300001,
+      "refreshedAccess": "new-access",
+      "refreshedRefresh": "new-refresh",
+      "refreshedExpiresOffsetMilliseconds": 3300000
+    }
+  ]
+}

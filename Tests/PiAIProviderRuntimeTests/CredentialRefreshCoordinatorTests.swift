@@ -5,6 +5,25 @@ import Testing
 
 @Suite
 struct CredentialRefreshCoordinatorTests {
+  @Test func oauthResolutionMatchesPinnedSource() async throws {
+    let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(
+            path: "Fixtures/Differential/\(folder)/oauth-resolution.json"))
+      ).objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    #expect(inputs.count == expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      let actual = try await OAuthResolutionFixtures.replay(input.objectValue!)
+      #expect(actual == oracle, Comment(rawValue: input.objectValue!.string("id")!))
+    }
+  }
+
   @Test
   func coalescesConcurrentRefreshAndCommitsRotatedCredentialOnce() async throws {
     let now = Date(timeIntervalSince1970: 2_000_000_000)

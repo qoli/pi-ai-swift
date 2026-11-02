@@ -19,7 +19,7 @@ actor CredentialRefreshCoordinator {
 
   func credential(
     providerID: String,
-    minimumValidity: TimeInterval = 60,
+    minimumValidity: TimeInterval = 300,
     now: Date = Date(),
     refresh: @escaping RefreshOperation
   ) async throws -> OAuthCredential {
@@ -81,16 +81,6 @@ actor CredentialRefreshCoordinator {
             providerID: providerID,
             operation: "credential.refresh",
             message: "OAuth credential refresh failed"
-          )
-        }
-        guard !refreshed.accessToken.isEmpty, !refreshed.refreshToken.isEmpty,
-          refreshed.expiresAt > now
-        else {
-          throw Self.failure(
-            .invalidCredential,
-            providerID: providerID,
-            operation: "credential.refresh.validate",
-            message: "OAuth refresh returned an invalid credential"
           )
         }
         return try await self.commit(

@@ -121,7 +121,7 @@ struct OpenAIChatGPTAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard case .oauth = stored else { return stored }
     return .oauth(
       try await refreshCoordinator.credential(
-        providerID: providerID, minimumValidity: 0,
+        providerID: providerID, minimumValidity: 300,
         now: clock.now(),
         refresh: { value in
           guard let clientID = value.metadata["clientID"],

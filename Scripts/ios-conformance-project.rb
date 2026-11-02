@@ -28,6 +28,8 @@ adaptation_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRun
 target.source_build_phase.add_file_reference(adaptation_helper)
 primary_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(primary_helper)
+oauth_resolution_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/OAuthResolutionFixtures.swift').to_s)
+target.source_build_phase.add_file_reference(oauth_resolution_helper)
 reasoning_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/ReasoningSelectionFixtures.swift').to_s)
 overflow_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/ContextOverflowFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(overflow_helper)

@@ -75,7 +75,7 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard case .oauth = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      minimumValidity: 60,
+      minimumValidity: 300,
       now: clock.now(),
       refresh: { credential in
         guard let rawGateway = credential.metadata["gateway"],

@@ -5,6 +5,24 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testOAuthResolutionMatchesPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(
+            path: "Differential/\(folder)/oauth-resolution.json"))
+      ).objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      let actual = try await OAuthResolutionFixtures.replay(input.objectValue!)
+      XCTAssertEqual(actual, oracle, input.objectValue!.string("id")!)
+    }
+  }
+
   func testOpenRouterPersonalizationMatchesPinnedSource() async throws {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     func cases(_ folder: String) throws -> [JSONValue] {

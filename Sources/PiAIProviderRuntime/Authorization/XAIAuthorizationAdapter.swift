@@ -69,7 +69,7 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard case .oauth = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      minimumValidity: 60,
+      minimumValidity: 300,
       now: clock.now(),
       refresh: { credential in
         let response = try await sendToken(

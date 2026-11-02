@@ -1,0 +1,261 @@
+{
+  "cases": [
+    {
+      "id": "default-window--1",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003600000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "default-window-0",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003600000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "default-window-59999",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003600000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "default-window-60000",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003600000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "default-window-120000",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003600000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "default-window-299999",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003600000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "default-window-300000",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003600000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "default-window-300001",
+      "refreshCount": 0,
+      "result": {
+        "auth": {
+          "apiKey": "old-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000300001,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "default-window-600000",
+      "refreshCount": 0,
+      "result": {
+        "auth": {
+          "apiKey": "old-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000600000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "short-refresh",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000000000001,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "expired-refresh",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 1999999999999,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "empty-access",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": ""
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "",
+        "expires": 2000003600000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "empty-refresh",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003600000,
+        "refresh": "",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "anthropic-default-120000",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003300000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "anthropic-default-300000",
+      "refreshCount": 1,
+      "result": {
+        "auth": {
+          "apiKey": "new-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "new-access",
+        "expires": 2000003300000,
+        "refresh": "new-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "anthropic-default-300001",
+      "refreshCount": 0,
+      "result": {
+        "auth": {
+          "apiKey": "old-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000300001,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}
