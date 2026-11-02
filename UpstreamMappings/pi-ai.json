@@ -267,7 +267,6 @@
         "Tests/PiAIProviderRuntimeTests/APIKeyAuthorizationAdapterTests.swift#loginUsesSecretChallengeAndStoresTrimmedKey",
         "Tests/PiAIProviderRuntimeTests/KeychainProviderCredentialStoreTests.swift#roundTripsListsUpdatesAndDeletesCredentialsWithoutExposingSecrets",
         "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#coalescesConcurrentRefreshAndCommitsRotatedCredentialOnce",
-        "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#logoutCancelsInFlightRefreshWithoutResurrectingCredential",
         "Docs/UPSTREAM_GATES.md",
         "Tests/PiAIProviderRuntimeTests/CloudflareAuthorizationTests.swift",
         "Scripts/pi-ai-cloudflare-auth-oracle.mjs",
@@ -322,7 +321,13 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testKeychainTransactionsMatchSourceMutationContract",
         "Tests/iOSConformance/ConformanceHost.swift",
         "Tests/iOSConformance/ConformanceHost.entitlements",
-        "Scripts/ios-conformance-project.rb"
+        "Scripts/ios-conformance-project.rb",
+        "Scripts/pi-ai-oauth-refresh-lifecycle-oracle.mjs",
+        "Fixtures/Differential/Cases/oauth-refresh-lifecycle.json",
+        "Fixtures/Differential/Oracle/oauth-refresh-lifecycle.json",
+        "Tests/PiAIProviderRuntimeTests/OAuthRefreshLifecycleFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/OAuthRefreshLifecycleTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOAuthRefreshLifecycleMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"

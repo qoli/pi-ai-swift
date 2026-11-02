@@ -100,8 +100,7 @@ struct AnthropicOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard case .oauth = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      minimumValidity: 300,
-      now: now(),
+      now: now,
       refresh: { credential in
         try await exchange(
           fields: [
@@ -113,7 +112,7 @@ struct AnthropicOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
         )
       }
     )
-    return .oauth(refreshed)
+    return refreshed.map(ProviderCredential.oauth)
   }
 
   private func exchange(

@@ -119,25 +119,24 @@ struct OpenAIChatGPTAuthorizationAdapter: ProviderAuthorizationAdapter {
   ) async throws -> ProviderCredential? {
     guard let stored = try await credentialStore.read(providerID: providerID) else { return nil }
     guard case .oauth = stored else { return stored }
-    return .oauth(
-      try await refreshCoordinator.credential(
-        providerID: providerID, minimumValidity: 300,
-        now: clock.now(),
-        refresh: { value in
-          guard let clientID = value.metadata["clientID"],
-            !clientID.trimmingCharacters(in: ProviderErrorText.javaScriptWhitespace).isEmpty
-          else {
-            throw failure(
-              "Stored OpenAI OAuth credential does not contain an issued client ID; reconnect ChatGPT"
-            )
-          }
-          return try await credential(
-            requestToken([
-              "grant_type": "refresh_token", "client_id": clientID,
-              "refresh_token": value.refreshToken,
-              "resource": Self.resource,
-            ]), clientID: clientID)
-        }))
+    let refreshed = try await refreshCoordinator.credential(
+      providerID: providerID, now: { clock.now() },
+      refresh: { value in
+        guard let clientID = value.metadata["clientID"],
+          !clientID.trimmingCharacters(in: ProviderErrorText.javaScriptWhitespace).isEmpty
+        else {
+          throw failure(
+            "Stored OpenAI OAuth credential does not contain an issued client ID; reconnect ChatGPT"
+          )
+        }
+        return try await credential(
+          requestToken([
+            "grant_type": "refresh_token", "client_id": clientID,
+            "refresh_token": value.refreshToken,
+            "resource": Self.resource,
+          ]), clientID: clientID)
+      })
+    return refreshed.map(ProviderCredential.oauth)
   }
 
   private func callbackComponents(_ input: String) throws -> URLComponents {

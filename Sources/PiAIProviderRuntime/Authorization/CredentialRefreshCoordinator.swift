@@ -1,214 +1,133 @@
 import Foundation
 
 actor CredentialRefreshCoordinator {
-  typealias RefreshOperation =
-    @Sendable (OAuthCredential) async throws -> OAuthCredential
-
-  private struct Flight: Sendable {
-    let id: UUID
-    let task: Task<OAuthCredential, any Error>
-  }
+  typealias RefreshOperation = @Sendable (OAuthCredential) async throws -> OAuthCredential
 
   private let credentialStore: any ProviderCredentialStore
-  private var generations: [String: UInt64] = [:]
-  private var flights: [String: Flight] = [:]
+  private let clock: any ProviderOAuthClock
 
-  init(credentialStore: any ProviderCredentialStore) {
+  init(
+    credentialStore: any ProviderCredentialStore,
+    clock: any ProviderOAuthClock = SystemProviderOAuthClock()
+  ) {
     self.credentialStore = credentialStore
+    self.clock = clock
   }
 
   func credential(
     providerID: String,
-    minimumValidity: TimeInterval = 300,
-    now: Date = Date(),
+    minimumValidity: TimeInterval? = nil,
+    now: @escaping @Sendable () -> Date = { Date() },
     refresh: @escaping RefreshOperation
-  ) async throws -> OAuthCredential {
-    guard !providerID.isEmpty, minimumValidity >= 0 else {
-      throw failure(
-        .invalidRequest,
-        providerID: providerID,
-        operation: "credential.refresh.configure",
-        message: "Credential refresh parameters are invalid"
-      )
-    }
-    if let flight = flights[providerID] {
-      let result = try await flight.task.value
+  ) async throws -> OAuthCredential? {
+    let ownership = ProviderRefreshOwnership()
+    let result = ProviderOperationResult<OAuthCredential?>()
+    let store = credentialStore
+    let clock = clock
+    let minimum = max(300, minimumValidity ?? 0)
+    return try await withTaskCancellationHandler {
       try Task.checkCancellation()
-      return result
-    }
-
-    let generation = generations[providerID, default: 0]
-    let flightID = UUID()
-    let task = Task<OAuthCredential, any Error> { [weak self] in
-      do {
-        guard let self else { throw CancellationError() }
-        guard
-          let stored = try await self.credentialStore.read(
-            providerID: providerID
-          )
-        else {
-          throw Self.failure(
-            .missingCredential,
-            providerID: providerID,
-            operation: "credential.refresh.read",
-            message: "OAuth credential is missing"
-          )
-        }
-        guard case .oauth(let credential) = stored else {
-          throw Self.failure(
-            .invalidCredential,
-            providerID: providerID,
-            operation: "credential.refresh.read",
-            message: "Credential is not OAuth"
-          )
-        }
-        guard credential.expiresAt.timeIntervalSince(now) <= minimumValidity
-        else {
-          await self.clearFlight(providerID: providerID, flightID: flightID)
-          return credential
-        }
-
-        let refreshed: OAuthCredential
+      let task = Task<Void, Never> {
         do {
-          refreshed = try await refresh(credential)
-        } catch is CancellationError {
-          throw CancellationError()
-        } catch let error as ProviderRuntimeFailure {
-          throw error
-        } catch {
-          throw Self.failure(
-            .authorizationFailed,
-            providerID: providerID,
-            operation: "credential.refresh",
-            message: "OAuth credential refresh failed"
-          )
-        }
-        return try await self.commit(
-          refreshed,
-          replacing: credential,
-          providerID: providerID,
-          generation: generation,
-          flightID: flightID
-        )
-      } catch is CancellationError {
-        await self?.clearFlight(providerID: providerID, flightID: flightID)
-        throw CancellationError()
-      } catch let error as ProviderRuntimeFailure {
-        await self?.clearFlight(providerID: providerID, flightID: flightID)
-        throw error
-      } catch {
-        await self?.clearFlight(providerID: providerID, flightID: flightID)
-        throw Self.failure(
-          .authorizationFailed,
-          providerID: providerID,
-          operation: "credential.refresh",
-          message: "OAuth credential refresh failed"
-        )
+          guard case .oauth(let stored) = try await store.read(providerID: providerID) else {
+            result.finish(.success(nil))
+            return
+          }
+          guard stored.expiresAt.timeIntervalSince(now()) <= minimum else {
+            result.finish(.success(stored))
+            return
+          }
+          let post = try await store.modify(providerID: providerID) { current in
+            guard ownership.begin() else { throw CancellationError() }
+            guard case .oauth(let credential) = current else { return nil }
+            guard credential.expiresAt.timeIntervalSince(now()) <= minimum else { return nil }
+            return .oauth(
+              try await Self.refreshed(
+                credential, providerID: providerID, clock: clock, refresh: refresh))
+          }
+          guard case .oauth(let credential) = post else {
+            result.finish(.success(nil))
+            return
+          }
+          if minimumValidity != nil, credential.expiresAt.timeIntervalSince(now()) <= minimum {
+            throw ProviderRuntimeFailure(
+              code: .authorizationFailed,
+              message: "OAuth refresh returned a token that expires too soon for \(providerID)",
+              providerID: providerID, operation: "credential.refresh.validity",
+              causeDescription: nil)
+          }
+          result.finish(.success(credential))
+        } catch { result.finish(.failure(error)) }
       }
+      ownership.install(task)
+      return try await result.wait()
+    } onCancel: {
+      ownership.cancelWait()
+      result.finish(.failure(CancellationError()))
     }
-    flights[providerID] = Flight(id: flightID, task: task)
-    let result = try await task.value
-    try Task.checkCancellation()
-    return result
   }
 
   func logout(providerID: String) async throws {
-    guard !providerID.isEmpty else {
-      throw failure(
-        .invalidRequest,
-        providerID: providerID,
-        operation: "credential.logout",
-        message: "Credential provider identifier is empty"
-      )
-    }
-    generations[providerID, default: 0] &+= 1
-    if let flight = flights.removeValue(forKey: providerID) {
-      flight.task.cancel()
-    }
     try await credentialStore.delete(providerID: providerID)
   }
 
-  private func commit(
-    _ refreshed: OAuthCredential,
-    replacing source: OAuthCredential,
-    providerID: String,
-    generation: UInt64,
-    flightID: UUID
+  private static func refreshed(
+    _ credential: OAuthCredential, providerID: String, clock: any ProviderOAuthClock,
+    refresh: @escaping RefreshOperation
   ) async throws -> OAuthCredential {
-    try Task.checkCancellation()
-    guard generations[providerID, default: 0] == generation,
-      flights[providerID]?.id == flightID
-    else {
-      throw raceFailure(providerID: providerID)
+    let operation = Task { try await refresh(credential) }
+    let timeout = Task {
+      do {
+        try await clock.sleep(for: .seconds(15), purpose: .timeout)
+        operation.cancel()
+      } catch {}
     }
-
-    let updated = try await credentialStore.modify(providerID: providerID) {
-      current in
-      guard current == .oauth(source) else {
-        throw Self.failure(
-          .authorizationFailed,
-          providerID: providerID,
-          operation: "credential.refresh.commit",
-          message: "OAuth credential changed while refresh was running"
-        )
-      }
-      return .oauth(refreshed)
-    }
-
-    guard generations[providerID, default: 0] == generation,
-      flights[providerID]?.id == flightID
-    else {
-      try await credentialStore.delete(providerID: providerID)
-      throw raceFailure(providerID: providerID)
-    }
-    flights[providerID] = nil
-    guard updated == .oauth(refreshed) else {
-      throw raceFailure(providerID: providerID)
-    }
-    return refreshed
-  }
-
-  private func clearFlight(providerID: String, flightID: UUID) {
-    if flights[providerID]?.id == flightID {
-      flights[providerID] = nil
+    let result = await operation.result
+    timeout.cancel()
+    _ = await timeout.result
+    do { return try result.get() } catch is CancellationError {
+      throw CancellationError()
+    } catch let error as ProviderRuntimeFailure { throw error } catch {
+      throw ProviderRuntimeFailure(
+        code: .authorizationFailed, message: "OAuth credential refresh failed",
+        providerID: providerID, operation: "credential.refresh",
+        causeDescription: error.localizedDescription)
     }
   }
+}
 
-  private func raceFailure(providerID: String) -> ProviderRuntimeFailure {
-    Self.failure(
-      .authorizationFailed,
-      providerID: providerID,
-      operation: "credential.refresh.commit",
-      message: "OAuth credential changed while refresh was running"
-    )
+private final class ProviderRefreshOwnership: @unchecked Sendable {
+  private enum Phase { case waiting, started, cancelled }
+  private let lock = NSLock()
+  private var phase = Phase.waiting
+  private var task: Task<Void, Never>?
+
+  func install(_ task: Task<Void, Never>) {
+    let cancelled = lock.withLock {
+      if phase == .cancelled { return true }
+      if phase == .waiting { self.task = task }
+      return false
+    }
+    if cancelled { task.cancel() }
   }
 
-  private func failure(
-    _ code: ProviderRuntimeFailure.Code,
-    providerID: String?,
-    operation: String,
-    message: String
-  ) -> ProviderRuntimeFailure {
-    Self.failure(
-      code,
-      providerID: providerID,
-      operation: operation,
-      message: message
-    )
+  func begin() -> Bool {
+    lock.withLock {
+      guard phase == .waiting else { return false }
+      phase = .started
+      task = nil
+      return true
+    }
   }
 
-  private static func failure(
-    _ code: ProviderRuntimeFailure.Code,
-    providerID: String?,
-    operation: String,
-    message: String
-  ) -> ProviderRuntimeFailure {
-    ProviderRuntimeFailure(
-      code: code,
-      message: message,
-      providerID: providerID,
-      operation: operation,
-      causeDescription: nil
-    )
+  func cancelWait() {
+    let task = lock.withLock {
+      guard phase == .waiting else { return nil as Task<Void, Never>? }
+      phase = .cancelled
+      let pending = self.task
+      self.task = nil
+      return pending
+    }
+    task?.cancel()
   }
 }

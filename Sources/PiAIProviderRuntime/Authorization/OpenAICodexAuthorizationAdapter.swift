@@ -78,10 +78,9 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      minimumValidity: 300,
       refresh: { credential in try await client.refresh(credential) }
     )
-    return .oauth(refreshed)
+    return refreshed.map(ProviderCredential.oauth)
   }
 
   private func failure(_ message: String) -> ProviderRuntimeFailure {

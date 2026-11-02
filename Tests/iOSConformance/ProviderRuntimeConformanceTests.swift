@@ -5,6 +5,25 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testOAuthRefreshLifecycleMatchesPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ directory: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf:
+            root.appending(path: "Differential/\(directory)/oauth-refresh-lifecycle.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      let actual = try await OAuthRefreshLifecycleFixtures.replay(input.objectValue!)
+      XCTAssertEqual(actual, oracle, input.objectValue!.string("id")!)
+    }
+  }
+
   func testOAuthMetadataMatchesPinnedSource() async throws {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     let input = try JSONValue(

@@ -23,14 +23,19 @@ enum OAuthResolutionFixtures {
       else { throw CancellationError() }
       result = credential
     } else {
-      result = try await coordinator.credential(providerID: provider, now: now) { _ in
-        await recorder.refreshed()
-        return OAuthCredential(
-          accessToken: spec.string("refreshedAccess")!,
-          refreshToken: spec.string("refreshedRefresh")!,
-          expiresAt: now.addingTimeInterval(
-            Double(spec.int("refreshedExpiresOffsetMilliseconds")!) / 1_000), metadata: [:])
-      }
+      guard
+        let resolved = try await coordinator.credential(
+          providerID: provider, now: { now },
+          refresh: { _ in
+            await recorder.refreshed()
+            return OAuthCredential(
+              accessToken: spec.string("refreshedAccess")!,
+              refreshToken: spec.string("refreshedRefresh")!,
+              expiresAt: now.addingTimeInterval(
+                Double(spec.int("refreshedExpiresOffsetMilliseconds")!) / 1_000), metadata: [:])
+          })
+      else { throw CancellationError() }
+      result = resolved
     }
     guard case .oauth(let stored) = try await store.read(providerID: provider) else {
       throw CancellationError()

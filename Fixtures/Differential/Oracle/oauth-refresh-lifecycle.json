@@ -1,0 +1,118 @@
+{
+  "cases": [
+    {
+      "id": "shared-store-coordinators",
+      "refreshCancelled": false,
+      "refreshCount": 1,
+      "results": [
+        "fresh-access-1",
+        "fresh-access-1"
+      ],
+      "stored": {
+        "access": "fresh-access-1",
+        "expires": 2000003600000,
+        "refresh": "fresh-refresh-1",
+        "type": "oauth"
+      },
+      "timeouts": [
+        15000
+      ]
+    },
+    {
+      "beforeRelease": {
+        "error": "AbortError"
+      },
+      "id": "cancel-after-refresh-start",
+      "refreshCancelled": false,
+      "refreshCount": 1,
+      "result": {
+        "error": "AbortError"
+      },
+      "stored": {
+        "access": "fresh-access-1",
+        "expires": 2000003600000,
+        "refresh": "fresh-refresh-1",
+        "type": "oauth"
+      },
+      "timeouts": [
+        15000
+      ]
+    },
+    {
+      "beforeRelease": {
+        "error": "AbortError"
+      },
+      "id": "cancel-while-waiting-for-lock",
+      "refreshCancelled": false,
+      "refreshCount": 0,
+      "result": {
+        "error": "AbortError"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      },
+      "timeouts": []
+    },
+    {
+      "deletedBeforeRelease": false,
+      "id": "logout-after-refresh-start",
+      "refreshCancelled": false,
+      "refreshCount": 1,
+      "result": "fresh-access-1",
+      "stored": null,
+      "timeouts": [
+        15000
+      ]
+    },
+    {
+      "id": "oauth-replaced-under-lock",
+      "refreshCancelled": false,
+      "refreshCount": 0,
+      "result": "external-access",
+      "stored": {
+        "access": "external-access",
+        "expires": 2000003600000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      },
+      "timeouts": []
+    },
+    {
+      "id": "credential-kind-replaced-under-lock",
+      "refreshCancelled": false,
+      "refreshCount": 0,
+      "result": null,
+      "stored": {
+        "key": "external-key",
+        "type": "api_key"
+      },
+      "timeouts": []
+    },
+    {
+      "id": "refresh-failure-keeps-reason-and-credential",
+      "refreshCancelled": false,
+      "refreshCount": 1,
+      "result": {
+        "error": "oauth",
+        "reason": "fixture-refresh-denied"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      },
+      "timeouts": [
+        15000
+      ]
+    }
+  ],
+  "sourceSHA256": {
+    "auth/credential-store.ts": "50ebde56b80b5862025e031719006ea303edd9aa80fec780fbc64319bb9e2847",
+    "auth/resolve.ts": "b64d4b13ccdb3e8d056ec4849190aa68f002988ee0417317151d59d8668502ec"
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

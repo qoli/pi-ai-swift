@@ -102,8 +102,7 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard case .oauth = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      minimumValidity: 300,
-      now: clock.now(),
+      now: { clock.now() },
       refresh: { credential in
         try await exchangeCopilotToken(
           githubToken: credential.refreshToken,
@@ -111,7 +110,7 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
         )
       }
     )
-    return .oauth(refreshed)
+    return refreshed.map(ProviderCredential.oauth)
   }
 
   private func startDevice(domain: String) async throws -> Device {

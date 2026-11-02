@@ -102,11 +102,10 @@ struct KimiCodingOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
     let refreshed = try await refreshCoordinator.credential(
       providerID: Self.providerID,
-      minimumValidity: 300,
-      now: clock.now(),
+      now: { clock.now() },
       refresh: { credential in try await refresh(credential) }
     )
-    return .oauth(refreshed)
+    return refreshed.map(ProviderCredential.oauth)
   }
 
   private func startDeviceAuthorization() async throws -> DeviceAuthorization {

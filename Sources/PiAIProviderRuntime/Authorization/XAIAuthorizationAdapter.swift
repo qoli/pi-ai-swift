@@ -69,8 +69,7 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard case .oauth = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      minimumValidity: 300,
-      now: clock.now(),
+      now: { clock.now() },
       refresh: { credential in
         let response = try await sendToken(
           [
@@ -84,7 +83,7 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
         )
       }
     )
-    return .oauth(refreshed)
+    return refreshed.map(ProviderCredential.oauth)
   }
 
   private func requestDeviceCode() async throws -> Device {

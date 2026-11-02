@@ -76,7 +76,7 @@ enum ProviderCancellableOperation {
   }
 }
 
-private final class ProviderOperationResult<Value: Sendable>: @unchecked Sendable {
+final class ProviderOperationResult<Value: Sendable>: @unchecked Sendable {
   private let lock = NSLock()
   private var result: Result<Value, any Error>?
   private var continuation: CheckedContinuation<Value, any Error>?

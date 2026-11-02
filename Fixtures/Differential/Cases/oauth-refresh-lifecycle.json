@@ -1,0 +1,43 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "cases": [
+    {
+      "id": "shared-store-coordinators",
+      "scenario": "concurrent",
+      "observeMilliseconds": 10
+    },
+    {
+      "id": "cancel-after-refresh-start",
+      "scenario": "cancel-active",
+      "observeMilliseconds": 10
+    },
+    {
+      "id": "cancel-while-waiting-for-lock",
+      "scenario": "cancel-queued",
+      "observeMilliseconds": 10
+    },
+    {
+      "id": "logout-after-refresh-start",
+      "scenario": "logout",
+      "observeMilliseconds": 10
+    },
+    {
+      "id": "oauth-replaced-under-lock",
+      "scenario": "replace-oauth",
+      "observeMilliseconds": 10
+    },
+    {
+      "id": "credential-kind-replaced-under-lock",
+      "scenario": "replace-kind",
+      "observeMilliseconds": 10
+    },
+    {
+      "id": "refresh-failure-keeps-reason-and-credential",
+      "scenario": "refresh-failure",
+      "observeMilliseconds": 10
+    }
+  ],
+  "upstreamTests": [
+    "packages/ai/test/models-runtime.test.ts"
+  ]
+}

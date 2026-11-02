@@ -105,10 +105,10 @@ struct MetaOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
   ) async throws -> ProviderCredential? {
     guard let stored = try await credentialStore.read(providerID: providerID) else { return nil }
     guard case .oauth = stored else { return stored }
-    return .oauth(
-      try await refreshCoordinator.credential(
-        providerID: providerID,
-        minimumValidity: 300, now: clock.now(), refresh: { try await mint($0.refreshToken) }))
+    let refreshed = try await refreshCoordinator.credential(
+      providerID: providerID,
+      now: { clock.now() }, refresh: { try await mint($0.refreshToken) })
+    return refreshed.map(ProviderCredential.oauth)
   }
 
   private func mint(_ identity: String) async throws -> OAuthCredential {

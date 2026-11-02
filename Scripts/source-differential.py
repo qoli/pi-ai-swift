@@ -220,6 +220,9 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-oauth-refresh-lifecycle-oracle.mjs',
+             'Fixtures/Differential/Cases/oauth-refresh-lifecycle.json',
+             'Fixtures/Differential/Oracle/oauth-refresh-lifecycle.json', 'OAuth refresh locking, cancellation and failure lifecycle'),
             ('pi-ai-oauth-metadata-oracle.mjs',
              'Fixtures/Differential/Cases/oauth-metadata.json',
              'Fixtures/Differential/Oracle/oauth-metadata.json', 'built-in OAuth catalog metadata'),

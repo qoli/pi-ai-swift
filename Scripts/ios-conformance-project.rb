@@ -51,6 +51,8 @@ credential_store_helper = project.main_group.new_file(root.join('Tests/PiAIProvi
 target.source_build_phase.add_file_reference(credential_store_helper)
 oauth_metadata_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/OAuthMetadataFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(oauth_metadata_helper)
+oauth_refresh_lifecycle_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/OAuthRefreshLifecycleFixtures.swift').to_s)
+target.source_build_phase.add_file_reference(oauth_refresh_lifecycle_helper)
 reasoning_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/ReasoningSelectionFixtures.swift').to_s)
 overflow_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/ContextOverflowFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(overflow_helper)
