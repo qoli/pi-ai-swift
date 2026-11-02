@@ -47,6 +47,84 @@
           "sha256": "4e0e5fb22a996d88d7873fcc2c837153d3a0400ccd2d7fb9952c49737ce889ba"
         }
       ]
+    },
+    "caller-model-collection": {
+      "ownership": "caller",
+      "reason": "Registers caller-supplied JavaScript Provider objects and reads their callback catalogs; object replacement identity, mutable registration and best-effort collection reads precede provider authentication or wire dispatch. Native catalog metadata and provider request dispatch remain in scope.",
+      "existingSuiteRules": [
+        {
+          "suite": "compat-env.test.ts",
+          "sha256": "c2125b30f6324772c4b22a9def8fabf14b585c6073fd2f68676c6beb88cad678"
+        },
+        {
+          "suite": "faux-provider.test.ts",
+          "sha256": "730d01cafc27867181f06dbe7977f77b8992170c53e5e72cb97141e02aa1c7ba"
+        }
+      ]
+    },
+    "caller-model-union": {
+      "ownership": "caller",
+      "reason": "Narrows caller-constructed TypeScript model unions, including values forced through incompatible casts, before provider dispatch. Native uses ProviderOutputModality and model route/capability validation; this rule does not exclude provider catalog metadata or request validation.",
+      "existingSuiteRules": [
+        {
+          "suite": "message-types.test.ts",
+          "sha256": "4e0e5fb22a996d88d7873fcc2c837153d3a0400ccd2d7fb9952c49737ce889ba"
+        }
+      ]
+    },
+    "host-provider-implementation-map": {
+      "ownership": "upstream-host",
+      "reason": "Validates JavaScript callback implementation maps supplied to createProvider, including an absent synthetic API function. Native implements its own fixed wire-protocol registry and does not expose JavaScript callback provider injection.",
+      "existingSuiteRules": [
+        {
+          "suite": "compat-env.test.ts",
+          "sha256": "c2125b30f6324772c4b22a9def8fabf14b585c6073fd2f68676c6beb88cad678"
+        },
+        {
+          "suite": "faux-provider.test.ts",
+          "sha256": "730d01cafc27867181f06dbe7977f77b8992170c53e5e72cb97141e02aa1c7ba"
+        }
+      ]
+    },
+    "host-lazy-api-module": {
+      "ownership": "upstream-host",
+      "reason": "Observes lazy JavaScript module callback loading and the presence of function properties; no provider HTTP request or Native wire implementation is executed.",
+      "existingSuiteRules": [
+        {
+          "suite": "lazy-module-load.test.ts",
+          "sha256": "42dbe0d61885e00039f3bd437bb55861db07a74809d5f034a27da94fb0d43731"
+        }
+      ]
+    },
+    "typescript-api-literal": {
+      "ownership": "upstream-host",
+      "reason": "Assigns a TypeScript Api union literal and compares the string to itself. No runtime registry or provider is read.",
+      "existingSuiteRules": [
+        {
+          "suite": "message-types.test.ts",
+          "sha256": "4e0e5fb22a996d88d7873fcc2c837153d3a0400ccd2d7fb9952c49737ce889ba"
+        }
+      ]
+    },
+    "version-publication": {
+      "ownership": "upstream-host",
+      "reason": "Checks that the TypeScript generated package-version constant matches package.json; its source names the version synchronization script. Native client identity version and wire headers remain tested separately.",
+      "existingSuiteRules": [
+        {
+          "suite": "model-data-validation.test.ts",
+          "sha256": "d2f833b7377f3c1aa2c421e1466c0f9e790b7beed584a82657d3d63fdfb49d50"
+        }
+      ]
+    },
+    "caller-transcript-tool-boundary": {
+      "ownership": "caller",
+      "reason": "Folds caller transcript tool declarations/removals into current tools and a history boundary. This case only calls resolveTranscriptTools; provider projection of an assembled request remains in scope.",
+      "existingSuiteRules": [
+        {
+          "suite": "system-message-replay.test.ts",
+          "sha256": "0a5e531df99ffb5d89f73056775a7e31e1e426e860ca894051c8ad9d8b7bc11b"
+        }
+      ]
     }
   },
   "cases": [
@@ -246,6 +324,340 @@
           "path": "packages/ai/src/utils/overflow.ts",
           "symbol": "isRecoverableLength",
           "sha256": "c0ff08ba392e99b628226e62db1ca74aef5c459c0d1dab1fc2c60d6c48e0299a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/classifier-models.test.ts",
+      "name": "Models with classifier models > rejects chat models at the classifier entry point at runtime",
+      "occurrence": 0,
+      "testSHA256": "9f4c34792441dccf4a7d5f74998e67c292dd2bc67183322a0538d478a88bc265",
+      "rule": "caller-model-union",
+      "references": [
+        {
+          "path": "packages/ai/test/classifier-models.test.ts",
+          "symbol": "rejects chat models at the classifier entry point at runtime",
+          "sha256": "9f4c34792441dccf4a7d5f74998e67c292dd2bc67183322a0538d478a88bc265"
+        },
+        {
+          "path": "packages/ai/src/utils/model-operations.ts",
+          "symbol": "getModelType",
+          "sha256": "d8a7bb663ad3b97253f03b424c6d9e821ed066c8c0449aa00e1f06b75f41115b"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "assertClassifierModel",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/identity.test.ts",
+      "name": "client identity > keeps the version constant in sync with package.json",
+      "occurrence": 0,
+      "testSHA256": "cf6766b2cb95e805cff3c4fd12afc99eb588a6cce6fa9b8472ded0f06def3293",
+      "rule": "version-publication",
+      "references": [
+        {
+          "path": "packages/ai/test/identity.test.ts",
+          "symbol": "keeps the version constant in sync with package.json",
+          "sha256": "cf6766b2cb95e805cff3c4fd12afc99eb588a6cce6fa9b8472ded0f06def3293"
+        },
+        {
+          "path": "packages/ai/src/utils/version.ts",
+          "symbol": "scripts/sync-versions.js",
+          "sha256": "8b7a126cbf9b5f608edff3fcc0bb0f9cf295e0b243d9ccbcede343275fa2dd4a"
+        },
+        {
+          "path": "packages/ai/package.json",
+          "symbol": "\"version\"",
+          "sha256": "7bb671d180ac55ac52f3e722e47aee15162e8bed06f89c10f2f4684ab1a7f995"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/images-models.test.ts",
+      "name": "model discriminants > treats models without a type as chat models",
+      "occurrence": 0,
+      "testSHA256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780",
+      "rule": "caller-model-union",
+      "references": [
+        {
+          "path": "packages/ai/test/images-models.test.ts",
+          "symbol": "treats models without a type as chat models",
+          "sha256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780"
+        },
+        {
+          "path": "packages/ai/src/utils/model-operations.ts",
+          "symbol": "getModelType",
+          "sha256": "d8a7bb663ad3b97253f03b424c6d9e821ed066c8c0449aa00e1f06b75f41115b"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "assertClassifierModel",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/images-models.test.ts",
+      "name": "Models with image models > lists chat, image, and all models through typed accessors",
+      "occurrence": 0,
+      "testSHA256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780",
+      "rule": "caller-model-collection",
+      "references": [
+        {
+          "path": "packages/ai/test/images-models.test.ts",
+          "symbol": "lists chat, image, and all models through typed accessors",
+          "sha256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "class ModelsImpl",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/images-models.test.ts",
+      "name": "Models with image models > rejects chat models at the image entry point at runtime",
+      "occurrence": 0,
+      "testSHA256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780",
+      "rule": "caller-model-union",
+      "references": [
+        {
+          "path": "packages/ai/test/images-models.test.ts",
+          "symbol": "rejects chat models at the image entry point at runtime",
+          "sha256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780"
+        },
+        {
+          "path": "packages/ai/src/utils/model-operations.ts",
+          "symbol": "getModelType",
+          "sha256": "d8a7bb663ad3b97253f03b424c6d9e821ed066c8c0449aa00e1f06b75f41115b"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "assertClassifierModel",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/images-models.test.ts",
+      "name": "Models with image models > rejects image models at the stream entry points at runtime",
+      "occurrence": 0,
+      "testSHA256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780",
+      "rule": "caller-model-union",
+      "references": [
+        {
+          "path": "packages/ai/test/images-models.test.ts",
+          "symbol": "rejects image models at the stream entry points at runtime",
+          "sha256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780"
+        },
+        {
+          "path": "packages/ai/src/utils/model-operations.ts",
+          "symbol": "getModelType",
+          "sha256": "d8a7bb663ad3b97253f03b424c6d9e821ed066c8c0449aa00e1f06b75f41115b"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "assertClassifierModel",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/images-models.test.ts",
+      "name": "Models with image models > requires at least one concrete operation implementation",
+      "occurrence": 0,
+      "testSHA256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780",
+      "rule": "host-provider-implementation-map",
+      "references": [
+        {
+          "path": "packages/ai/test/images-models.test.ts",
+          "symbol": "requires at least one concrete operation implementation",
+          "sha256": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "export function createProvider",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/model-types.test.ts",
+      "name": "chat models without a type > narrow mixed lists with isModelType",
+      "occurrence": 0,
+      "testSHA256": "cc934baaea086f058fdba2cc7cccaf57045092843cfec8fba6eea0b5fa5aa3ee",
+      "rule": "caller-model-union",
+      "references": [
+        {
+          "path": "packages/ai/test/model-types.test.ts",
+          "symbol": "narrow mixed lists with isModelType",
+          "sha256": "cc934baaea086f058fdba2cc7cccaf57045092843cfec8fba6eea0b5fa5aa3ee"
+        },
+        {
+          "path": "packages/ai/src/utils/model-operations.ts",
+          "symbol": "getModelType",
+          "sha256": "d8a7bb663ad3b97253f03b424c6d9e821ed066c8c0449aa00e1f06b75f41115b"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "assertClassifierModel",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/models-runtime.test.ts",
+      "name": "Models runtime > registers, replaces, and deletes providers",
+      "occurrence": 0,
+      "testSHA256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06",
+      "rule": "caller-model-collection",
+      "references": [
+        {
+          "path": "packages/ai/test/models-runtime.test.ts",
+          "symbol": "registers, replaces, and deletes providers",
+          "sha256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "class ModelsImpl",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/models-runtime.test.ts",
+      "name": "Models runtime > lists and finds models per provider",
+      "occurrence": 0,
+      "testSHA256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06",
+      "rule": "caller-model-collection",
+      "references": [
+        {
+          "path": "packages/ai/test/models-runtime.test.ts",
+          "symbol": "lists and finds models per provider",
+          "sha256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "class ModelsImpl",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/models-runtime.test.ts",
+      "name": "Models runtime > swallows provider source failures for both all-provider and single-provider listing",
+      "occurrence": 0,
+      "testSHA256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06",
+      "rule": "caller-model-collection",
+      "references": [
+        {
+          "path": "packages/ai/test/models-runtime.test.ts",
+          "symbol": "swallows provider source failures for both all-provider and single-provider listing",
+          "sha256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "class ModelsImpl",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/models-runtime.test.ts",
+      "name": "Models runtime > produces an error stream for unknown providers instead of throwing",
+      "occurrence": 0,
+      "testSHA256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06",
+      "rule": "caller-model-collection",
+      "references": [
+        {
+          "path": "packages/ai/test/models-runtime.test.ts",
+          "symbol": "produces an error stream for unknown providers instead of throwing",
+          "sha256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "class ModelsImpl",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/pi-messages.test.ts",
+      "name": "pi-messages api registration > is a known api usable on models",
+      "occurrence": 0,
+      "testSHA256": "257b007fdefa0fdf66524e4b7fee9a631a1bb79a5cf48af8026a34b467abcab6",
+      "rule": "typescript-api-literal",
+      "references": [
+        {
+          "path": "packages/ai/test/pi-messages.test.ts",
+          "symbol": "is a known api usable on models",
+          "sha256": "257b007fdefa0fdf66524e4b7fee9a631a1bb79a5cf48af8026a34b467abcab6"
+        },
+        {
+          "path": "packages/ai/src/types.ts",
+          "symbol": "KnownApi",
+          "sha256": "e299ef7495e6882baf2d5f3745f26f40c573999ddbeb0e8e0af63f179ec7a23e"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/providers.test.ts",
+      "name": "createProvider > lazily exposes only declared deferred capabilities",
+      "occurrence": 0,
+      "testSHA256": "f2182c8d6783d26973efc141bd7568ec962028b2211438c6508c7037c7dc91d5",
+      "rule": "host-lazy-api-module",
+      "references": [
+        {
+          "path": "packages/ai/test/providers.test.ts",
+          "symbol": "lazily exposes only declared deferred capabilities",
+          "sha256": "f2182c8d6783d26973efc141bd7568ec962028b2211438c6508c7037c7dc91d5"
+        },
+        {
+          "path": "packages/ai/src/api/lazy.ts",
+          "symbol": "export function lazyApi",
+          "sha256": "4bdd40c003b417318f71da3446cb65ec11c028a82fe816a122d3dba4e3fca708"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/providers.test.ts",
+      "name": "createProvider > produces a stream error for a model whose api has no implementation",
+      "occurrence": 0,
+      "testSHA256": "f2182c8d6783d26973efc141bd7568ec962028b2211438c6508c7037c7dc91d5",
+      "rule": "host-provider-implementation-map",
+      "references": [
+        {
+          "path": "packages/ai/test/providers.test.ts",
+          "symbol": "produces a stream error for a model whose api has no implementation",
+          "sha256": "f2182c8d6783d26973efc141bd7568ec962028b2211438c6508c7037c7dc91d5"
+        },
+        {
+          "path": "packages/ai/src/models.ts",
+          "symbol": "export function createProvider",
+          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/transcript-tool-changes.test.ts",
+      "name": "transcript system messages > resolves the top-level tool boundary per transport",
+      "occurrence": 0,
+      "testSHA256": "95e287e77f81bcbd4fb48cc9d18fc7ff48769221d0e40589a994a97cdd84a24c",
+      "rule": "caller-transcript-tool-boundary",
+      "references": [
+        {
+          "path": "packages/ai/test/transcript-tool-changes.test.ts",
+          "symbol": "resolves the top-level tool boundary per transport",
+          "sha256": "95e287e77f81bcbd4fb48cc9d18fc7ff48769221d0e40589a994a97cdd84a24c"
+        },
+        {
+          "path": "packages/ai/src/utils/transcript.ts",
+          "symbol": "resolveTranscriptTools",
+          "sha256": "1b20f9436a4f7e60008224d3e22098b2a7731731efdfb9c66f4c78a580cbe1e2"
         }
       ]
     }

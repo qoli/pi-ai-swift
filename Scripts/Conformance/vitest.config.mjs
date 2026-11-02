@@ -79,7 +79,7 @@ export default defineConfig({
         }
         return { code: `import {${wrapper} as __piProvider} from ${JSON.stringify(path.join(directory, module))};\n`
           + code.replace(`export function ${factory}`, `function __piOriginal_${factory}`)
-          + `\nexport function ${factory}(...args) { return __piProvider(__piOriginal_${factory}(...args), args); }`, map: null };
+          + `\nexport function ${factory}(...args) { return __piProvider(__piOriginal_${factory}(...args), args, ${JSON.stringify(factory)}); }`, map: null };
       }
       if (implementation !== "upstream" || !id.startsWith(path.join(upstream, "packages/ai/src/"))) return;
       if (id.endsWith("/auth/credential-store.ts")) {
@@ -221,6 +221,9 @@ export default defineConfig({
         return path.join(directory, "offline-credentials.mjs");
       }
       if (implementation !== "swift") return;
+      if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/auth/resolve.ts")) {
+        return path.join(directory, "auth-resolution.mjs");
+      }
       if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/auth/credential-store.ts")) {
         return path.join(directory, "credential-store.mjs");
       }

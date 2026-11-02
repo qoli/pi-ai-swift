@@ -1,0 +1,1258 @@
+{
+  "cases": [
+    {
+      "after": [
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "balanced",
+          "name": "Balanced",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "cheap",
+          "name": "Cheap",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5",
+          "name": "Claude Fable 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5-1",
+          "name": "Claude Fable 5.1",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-haiku-4-5",
+          "name": "Claude Haiku 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-haiku-5-5",
+          "name": "Claude Haiku 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-opus-4-5",
+          "name": "Claude Opus 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-4-8",
+          "name": "Claude Opus 4.8",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5",
+          "name": "Claude Opus 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5-5",
+          "name": "Claude Opus 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-sonnet-4-5",
+          "name": "Claude Sonnet 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5",
+          "name": "Claude Sonnet 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3",
+          "name": "GLM-5.3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-sol",
+          "name": "GPT 5.6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-terra",
+          "name": "GPT 5.6 Terra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6-astra",
+          "name": "GPT 6 Astra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-luna",
+          "name": "GPT 6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-sol",
+          "name": "GPT 6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6.1-sol",
+          "name": "GPT 6.1 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 500000,
+          "id": "grok-4.7",
+          "name": "Grok 4.7",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "kimi-k3",
+          "name": "Kimi K3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "minimax-m3.1-flash",
+          "name": "MiniMax M3.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "precise",
+          "name": "Precise",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 262144,
+          "id": "recursive/flint",
+          "name": "Flint (free, trains on data)",
+          "provider": "radius"
+        }
+      ],
+      "before": [
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "balanced",
+          "name": "Balanced",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "cheap",
+          "name": "Cheap",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5",
+          "name": "Claude Fable 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5-1",
+          "name": "Claude Fable 5.1",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-haiku-4-5",
+          "name": "Claude Haiku 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-haiku-5-5",
+          "name": "Claude Haiku 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-opus-4-5",
+          "name": "Claude Opus 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-4-8",
+          "name": "Claude Opus 4.8",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5",
+          "name": "Claude Opus 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5-5",
+          "name": "Claude Opus 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-sonnet-4-5",
+          "name": "Claude Sonnet 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5",
+          "name": "Claude Sonnet 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3",
+          "name": "GLM-5.3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-sol",
+          "name": "GPT 5.6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-terra",
+          "name": "GPT 5.6 Terra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6-astra",
+          "name": "GPT 6 Astra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-luna",
+          "name": "GPT 6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-sol",
+          "name": "GPT 6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6.1-sol",
+          "name": "GPT 6.1 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 500000,
+          "id": "grok-4.7",
+          "name": "Grok 4.7",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "kimi-k3",
+          "name": "Kimi K3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "minimax-m3.1-flash",
+          "name": "MiniMax M3.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "precise",
+          "name": "Precise",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 262144,
+          "id": "recursive/flint",
+          "name": "Flint (free, trains on data)",
+          "provider": "radius"
+        }
+      ],
+      "id": "default-baseline",
+      "requests": []
+    },
+    {
+      "after": [
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "balanced",
+          "name": "Balanced",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "cheap",
+          "name": "Cheap",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5",
+          "name": "Claude Fable 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5-1",
+          "name": "Claude Fable 5.1",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-haiku-4-5",
+          "name": "Claude Haiku 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-haiku-5-5",
+          "name": "Claude Haiku 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-opus-4-5",
+          "name": "Claude Opus 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-4-8",
+          "name": "Claude Opus 4.8",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5",
+          "name": "Claude Opus 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5-5",
+          "name": "Claude Opus 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-sonnet-4-5",
+          "name": "Claude Sonnet 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5",
+          "name": "Claude Sonnet 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3",
+          "name": "GLM-5.3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-sol",
+          "name": "GPT 5.6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-terra",
+          "name": "GPT 5.6 Terra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6-astra",
+          "name": "GPT 6 Astra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-luna",
+          "name": "GPT 6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-sol",
+          "name": "GPT 6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6.1-sol",
+          "name": "GPT 6.1 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 500000,
+          "id": "grok-4.7",
+          "name": "Grok 4.7",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "kimi-k3",
+          "name": "Kimi K3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "minimax-m3.1-flash",
+          "name": "MiniMax M3.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "precise",
+          "name": "Precise",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 262144,
+          "id": "recursive/flint",
+          "name": "Flint (free, trains on data)",
+          "provider": "radius"
+        }
+      ],
+      "before": [
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "balanced",
+          "name": "Balanced",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "cheap",
+          "name": "Cheap",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5",
+          "name": "Claude Fable 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5-1",
+          "name": "Claude Fable 5.1",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-haiku-4-5",
+          "name": "Claude Haiku 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-haiku-5-5",
+          "name": "Claude Haiku 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-opus-4-5",
+          "name": "Claude Opus 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-4-8",
+          "name": "Claude Opus 4.8",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5",
+          "name": "Claude Opus 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5-5",
+          "name": "Claude Opus 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-sonnet-4-5",
+          "name": "Claude Sonnet 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5",
+          "name": "Claude Sonnet 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3",
+          "name": "GLM-5.3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-sol",
+          "name": "GPT 5.6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-terra",
+          "name": "GPT 5.6 Terra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6-astra",
+          "name": "GPT 6 Astra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-luna",
+          "name": "GPT 6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-sol",
+          "name": "GPT 6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6.1-sol",
+          "name": "GPT 6.1 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 500000,
+          "id": "grok-4.7",
+          "name": "Grok 4.7",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "kimi-k3",
+          "name": "Kimi K3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "minimax-m3.1-flash",
+          "name": "MiniMax M3.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "precise",
+          "name": "Precise",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 262144,
+          "id": "recursive/flint",
+          "name": "Flint (free, trains on data)",
+          "provider": "radius"
+        }
+      ],
+      "id": "default-normalized-baseline",
+      "requests": []
+    },
+    {
+      "after": [],
+      "before": [],
+      "id": "custom-gateway-has-no-public-baseline",
+      "requests": []
+    },
+    {
+      "after": [],
+      "before": [
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "balanced",
+          "name": "Balanced",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "cheap",
+          "name": "Cheap",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5",
+          "name": "Claude Fable 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5-1",
+          "name": "Claude Fable 5.1",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-haiku-4-5",
+          "name": "Claude Haiku 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-haiku-5-5",
+          "name": "Claude Haiku 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-opus-4-5",
+          "name": "Claude Opus 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-4-8",
+          "name": "Claude Opus 4.8",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5",
+          "name": "Claude Opus 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5-5",
+          "name": "Claude Opus 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-sonnet-4-5",
+          "name": "Claude Sonnet 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5",
+          "name": "Claude Sonnet 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3",
+          "name": "GLM-5.3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-sol",
+          "name": "GPT 5.6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-terra",
+          "name": "GPT 5.6 Terra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6-astra",
+          "name": "GPT 6 Astra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-luna",
+          "name": "GPT 6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-sol",
+          "name": "GPT 6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6.1-sol",
+          "name": "GPT 6.1 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 500000,
+          "id": "grok-4.7",
+          "name": "Grok 4.7",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "kimi-k3",
+          "name": "Kimi K3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "minimax-m3.1-flash",
+          "name": "MiniMax M3.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "precise",
+          "name": "Precise",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 262144,
+          "id": "recursive/flint",
+          "name": "Flint (free, trains on data)",
+          "provider": "radius"
+        }
+      ],
+      "id": "empty-dynamic-catalog-replaces-baseline",
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://radius.pi.dev/v1/config"
+        }
+      ]
+    },
+    {
+      "after": [
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000,
+          "id": "organization-only",
+          "name": "Fixture Organization",
+          "provider": "radius"
+        }
+      ],
+      "before": [
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "balanced",
+          "name": "Balanced",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "cheap",
+          "name": "Cheap",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5",
+          "name": "Claude Fable 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-fable-5-1",
+          "name": "Claude Fable 5.1",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-haiku-4-5",
+          "name": "Claude Haiku 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-haiku-5-5",
+          "name": "Claude Haiku 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-opus-4-5",
+          "name": "Claude Opus 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-4-8",
+          "name": "Claude Opus 4.8",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5",
+          "name": "Claude Opus 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-opus-5-5",
+          "name": "Claude Opus 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 200000,
+          "id": "claude-sonnet-4-5",
+          "name": "Claude Sonnet 4.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5",
+          "name": "Claude Sonnet 5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "claude-sonnet-5-5",
+          "name": "Claude Sonnet 5.5",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3",
+          "name": "GLM-5.3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-sol",
+          "name": "GPT 5.6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-5.6-terra",
+          "name": "GPT 5.6 Terra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6-astra",
+          "name": "GPT 6 Astra",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-luna",
+          "name": "GPT 6 Luna",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1050000,
+          "id": "gpt-6-sol",
+          "name": "GPT 6 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "gpt-6.1-sol",
+          "name": "GPT 6.1 Sol",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 500000,
+          "id": "grok-4.7",
+          "name": "Grok 4.7",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1048576,
+          "id": "kimi-k3",
+          "name": "Kimi K3",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000000,
+          "id": "minimax-m3.1-flash",
+          "name": "MiniMax M3.1 Flash",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 272000,
+          "id": "precise",
+          "name": "Precise",
+          "provider": "radius"
+        },
+        {
+          "api": "pi-messages",
+          "contextWindow": 262144,
+          "id": "recursive/flint",
+          "name": "Flint (free, trains on data)",
+          "provider": "radius"
+        }
+      ],
+      "id": "dynamic-catalog-replaces-baseline",
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://radius.pi.dev/v1/config"
+        }
+      ]
+    },
+    {
+      "after": [
+        {
+          "api": "pi-messages",
+          "contextWindow": 1000,
+          "id": "local-fixture",
+          "name": "Fixture Local",
+          "provider": "radius"
+        }
+      ],
+      "before": [],
+      "id": "custom-gateway-dynamic-catalog",
+      "requests": [
+        {
+          "method": "GET",
+          "url": "http://localhost:8788/v1/config"
+        }
+      ]
+    }
+  ],
+  "sourceSHA256": {
+    "providers/radius-config.ts": "0e8c55d29039d760ba4cb8a763e61ea742ac13b3acdf42891c82486a610ab4f4",
+    "providers/radius.ts": "40acce75f4f5c99cbeb03247cbf0fbdde9e911b097af3c25132cdf1f75346c32"
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

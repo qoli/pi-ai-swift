@@ -16,6 +16,7 @@ actor CredentialRefreshCoordinator {
 
   func credential(
     providerID: String,
+    optimisticCredential: OAuthCredential? = nil,
     minimumValidity: TimeInterval? = nil,
     now: @escaping @Sendable () -> Date = { Date() },
     refresh: @escaping RefreshOperation
@@ -23,29 +24,31 @@ actor CredentialRefreshCoordinator {
     let ownership = ProviderRefreshOwnership()
     let result = ProviderOperationResult<OAuthCredential?>()
     let store = credentialStore
-    let clock = clock
     let minimum = max(300, minimumValidity ?? 0)
     return try await withTaskCancellationHandler {
       try Task.checkCancellation()
       let task = Task<Void, Never> {
         do {
-          guard case .oauth(let stored) = try await store.read(providerID: providerID) else {
-            result.finish(.success(nil))
-            return
+          let stored: OAuthCredential
+          if let optimisticCredential {
+            stored = optimisticCredential
+          } else {
+            guard case .oauth(let value) = try await store.read(providerID: providerID) else {
+              result.finish(.success(nil))
+              return
+            }
+            stored = value
           }
           guard stored.expiresAt.timeIntervalSince(now()) <= minimum else {
             result.finish(.success(stored))
             return
           }
-          let post = try await store.modify(providerID: providerID) { current in
-            guard ownership.begin() else { throw CancellationError() }
-            guard case .oauth(let credential) = current else { return nil }
-            guard credential.expiresAt.timeIntervalSince(now()) <= minimum else { return nil }
-            return .oauth(
-              try await Self.refreshed(
-                credential, providerID: providerID, clock: clock, refresh: refresh))
-          }
-          guard case .oauth(let credential) = post else {
+          guard
+            let credential = try await self.refreshStored(
+              providerID: providerID,
+              needsRefresh: { $0.expiresAt.timeIntervalSince(now()) <= minimum },
+              refresh: refresh)
+          else {
             result.finish(.success(nil))
             return
           }
@@ -64,6 +67,40 @@ actor CredentialRefreshCoordinator {
     } onCancel: {
       ownership.cancelWait()
       result.finish(.failure(CancellationError()))
+    }
+  }
+
+  func refreshStored(
+    providerID: String,
+    needsRefresh: @escaping @Sendable (OAuthCredential) async throws -> Bool,
+    refresh: @escaping RefreshOperation
+  ) async throws -> OAuthCredential? {
+    let ownership = ProviderRefreshOwnership()
+    let store = credentialStore
+    let clock = clock
+    let result = ProviderOperationResult<OAuthCredential?>()
+    return try await withTaskCancellationHandler {
+      let task = Task<Void, Never> {
+        do {
+          let post = try await store.modify(providerID: providerID) { current in
+            guard ownership.begin() else { throw CancellationError() }
+            guard case .oauth(let credential) = current else { return nil }
+            guard try await needsRefresh(credential) else { return nil }
+            return .oauth(
+              try await Self.refreshed(
+                credential, providerID: providerID, clock: clock, refresh: refresh))
+          }
+          if case .oauth(let credential) = post {
+            result.finish(.success(credential))
+          } else {
+            result.finish(.success(nil))
+          }
+        } catch { result.finish(.failure(error)) }
+      }
+      ownership.install(task)
+      return try await result.wait()
+    } onCancel: {
+      ownership.cancelWait()
     }
   }
 
@@ -87,7 +124,9 @@ actor CredentialRefreshCoordinator {
     _ = await timeout.result
     do { return try result.get() } catch is CancellationError {
       throw CancellationError()
-    } catch let error as ProviderRuntimeFailure { throw error } catch {
+    } catch let error as ProviderRuntimeFailure { throw error } catch let error
+      as ProviderAuthorizationResolutionFailure
+    { throw error } catch {
       throw ProviderRuntimeFailure(
         code: .authorizationFailed, message: "OAuth credential refresh failed",
         providerID: providerID, operation: "credential.refresh",

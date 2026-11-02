@@ -91,6 +91,12 @@ function anthropicSpec(caseID) {
       return { entrypoint: "stream", model: baseModel, context, options: { apiKey: "fixture-key", maxTokens: 4096, temperature: 0.25, cacheRetention: "short", toolChoice: "auto" } };
     case "anthropic-oauth-named-tool":
       return { entrypoint: "stream", model: baseModel, context, options: { apiKey: "sk-ant-oat-fixture", maxTokens: 4096, cacheRetention: "none", toolChoice: { type: "tool", name: "read" } } };
+    case "anthropic-api-key-oauth-token":
+      return { entrypoint: "stream", model: baseModel, context, options: { apiKey: "prefix-sk-ant-oat-fixture", maxTokens: 4096, cacheRetention: "none" } };
+    case "anthropic-oauth-opaque-token":
+      return { entrypoint: "stream", model: baseModel, context, options: { apiKey: "opaque-access", maxTokens: 4096, cacheRetention: "none" } };
+    case "anthropic-copilot-oauth-token":
+      return { entrypoint: "stream", model: { ...baseModel, provider: "github-copilot" }, context, options: { apiKey: "sk-ant-oat-fixture", maxTokens: 4096, cacheRetention: "none" } };
     case "anthropic-header-owned":
       return { entrypoint: "stream", model: baseModel, context, options: { headers: { "x-api-key": "header-fixture" }, maxTokens: 4096, cacheRetention: "none" } };
     case "anthropic-missing-auth":

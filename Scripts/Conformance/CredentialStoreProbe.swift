@@ -35,7 +35,8 @@ actor CredentialStoreProbeService {
     if let error = frame.object("error") {
       pending?.resume(
         throwing: CredentialProbeHostError(
-          id: error.string("id")!, message: error.string("message")!))
+          id: error.string("id")!, message: error.string("message")!,
+          resolutionFailure: error["nativeResolutionFailure"]))
     } else {
       pending?.resume(returning: frame["credential"] ?? .null)
     }
@@ -90,6 +91,7 @@ enum CredentialStoreConformanceProbe {
         if let error = error as? CredentialProbeHostError {
           failure["id"] = .string(error.id)
           failure["message"] = .string(error.message)
+          failure["nativeResolutionFailure"] = error.resolutionFailure
         }
         payload = ["error": .object(failure)]
       }
@@ -99,7 +101,7 @@ enum CredentialStoreConformanceProbe {
   }
 }
 
-private enum CredentialProbeCodec {
+enum CredentialProbeCodec {
   static let raw = "conformance.credential-json"
   static let reference = "conformance.credential-reference"
 
@@ -134,21 +136,25 @@ private enum CredentialProbeCodec {
     case .apiKey(let key): metadata = key.metadata
     case .oauth(let oauth): metadata = oauth.metadata
     }
-    var value = try JSONValue(jsonData: Data(metadata[raw]!.utf8)).objectValue!
+    var value = try metadata[raw].map { try JSONValue(jsonData: Data($0.utf8)).objectValue! } ?? [:]
     switch credential {
     case .apiKey(let key):
+      value["type"] = .string("api_key")
       value["key"] = key.configuredKey.map(JSONValue.string)
       value["env"] = key.environment.map { .object($0.mapValues(JSONValue.string)) }
     case .oauth(let oauth):
+      value["type"] = .string("oauth")
       value["access"] = .string(oauth.accessToken)
       value["refresh"] = .string(oauth.refreshToken)
-      if Date(timeIntervalSince1970: Double(value.int("expires")!) / 1_000) != oauth.expiresAt {
+      if value.int("expires").map({ Date(timeIntervalSince1970: Double($0) / 1_000) })
+        != oauth.expiresAt
+      {
         value["expires"] = .integer(
           Int64((oauth.expiresAt.timeIntervalSince1970 * 1_000).rounded()))
       }
     }
     return .object([
-      "referenceID": .string(metadata[reference]!),
+      "referenceID": .string(metadata[reference] ?? UUID().uuidString),
       "value": .object(value),
     ])
   }
@@ -157,6 +163,7 @@ private enum CredentialProbeCodec {
 private struct CredentialProbeHostError: LocalizedError {
   let id: String
   let message: String
+  let resolutionFailure: JSONValue?
   var errorDescription: String? { message }
 }
 

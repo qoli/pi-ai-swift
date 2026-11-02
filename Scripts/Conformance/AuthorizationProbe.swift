@@ -12,6 +12,12 @@ enum AuthorizationConformanceProbe {
     let transport = AuthorizationProbeTransport(rpc: rpc, clock: clock)
     let execution = Task {
       do {
+        if action == "catalog.radius" {
+          try rpc.write("authStarted", ["operation": .string("catalog.radius.refresh")])
+          let result = try await RadiusCatalogConformanceProbe.resolve(input, transport: transport)
+          try rpc.write("authFinished", ["primary": .object(result)])
+          return
+        }
         if action == "catalog.personalize" {
           try rpc.write("authStarted", ["operation": .string("catalog.openrouter.personalize")])
           let result = try await OpenRouterCatalogPersonalization.apply(
@@ -79,7 +85,9 @@ enum AuthorizationConformanceProbe {
           adapter = OpenAICodexAuthorizationAdapter(
             transport: transport, clock: clock, agentName: input.string("agentName") ?? "pi")
         case "xai": adapter = XAIOAuthAuthorizationAdapter(transport: transport, clock: clock)
-        case "radius": adapter = RadiusOAuthAuthorizationAdapter(transport: transport, clock: clock)
+        case "radius":
+          adapter = RadiusOAuthAuthorizationAdapter(
+            transport: transport, clock: clock, gateway: input.string("gateway"))
         case "meta": adapter = MetaOAuthAuthorizationAdapter(transport: transport, clock: clock)
         case "openai-chatgpt":
           adapter = OpenAIChatGPTAuthorizationAdapter(

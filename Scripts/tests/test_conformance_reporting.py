@@ -14,6 +14,55 @@ SPEC.loader.exec_module(CONFORMANCE)
 
 
 class ConformanceReportingTests(unittest.TestCase):
+    def offline_report(self):
+        evidence = {"explained": True, "location": {"line": 7},
+                    "conditionalSkips": [{"line": 4, "expression": "!fixtureCredential", "sourceSHA256": "a" * 64}],
+                    "explicitSkips": []}
+        return {"sourceStableDuringRun": True, "casePattern": None,
+                "exitCodes": {"upstream": 0, "swift": 0}, "suites": [{"path": "fixture.test.ts"}],
+                "reviewedInventoryCounts": {"adoptedByManifest": 1, "notYetAdopted": 0},
+                "cases": [{"conformanceStatus": "passed"},
+                          {"conformanceStatus": "not_executed", "upstreamStatus": "skipped", "status": "skipped",
+                           "skipEvidence": {"upstream": copy.deepcopy(evidence), "swift": copy.deepcopy(evidence)}}]}
+
+    def test_offline_acceptance_keeps_identical_explained_skips_unexecuted(self):
+        report = self.offline_report()
+        before = copy.deepcopy(report)
+        self.assertTrue(CONFORMANCE.offline_conformant(report))
+        self.assertEqual(report, before)
+        self.assertEqual(report["cases"][1]["conformanceStatus"], "not_executed")
+
+    def test_offline_acceptance_rejects_one_sided_or_different_skip_evidence(self):
+        for change in ["status", "location", "condition", "hash", "unexplained"]:
+            with self.subTest(change=change):
+                report = self.offline_report()
+                case = report["cases"][1]
+                evidence = case["skipEvidence"]["swift"]
+                if change == "status": case["status"] = "passed"
+                elif change == "location": evidence["location"]["line"] = 8
+                elif change == "condition": evidence["conditionalSkips"][0]["expression"] = "different"
+                elif change == "hash": evidence["conditionalSkips"][0]["sourceSHA256"] = "b" * 64
+                else: evidence["explained"] = False
+                self.assertFalse(CONFORMANCE.offline_conformant(report))
+
+    def test_offline_acceptance_requires_all_native_gates_and_the_full_manifest(self):
+        for change in ["source", "pattern", "exit", "suite", "unadopted", "bridge_gap", "interface_gap", "mismatch"]:
+            with self.subTest(change=change):
+                report = self.offline_report()
+                if change == "source": report["sourceStableDuringRun"] = False
+                elif change == "pattern": report["casePattern"] = "selected"
+                elif change == "exit": report["exitCodes"]["swift"] = 1
+                elif change == "suite": report["reviewedInventoryCounts"]["adoptedByManifest"] = 2
+                elif change == "unadopted": report["reviewedInventoryCounts"]["notYetAdopted"] = 1
+                else: report["cases"][0]["conformanceStatus"] = change
+                self.assertFalse(CONFORMANCE.offline_conformant(report))
+
+    def test_offline_acceptance_rejects_duplicate_suite_selection(self):
+        report = self.offline_report()
+        report["suites"] *= 2
+        report["reviewedInventoryCounts"]["adoptedByManifest"] = 2
+        self.assertFalse(CONFORMANCE.offline_conformant(report))
+
     def test_evidence_identity_detects_source_changes_between_build_and_report(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

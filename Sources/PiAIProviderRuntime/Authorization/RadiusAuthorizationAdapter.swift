@@ -9,13 +9,16 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
 
   private let transport: any ProviderHTTPTransport
   private let clock: any ProviderOAuthClock
+  private let configuredGateway: String?
 
   init(
     transport: any ProviderHTTPTransport,
-    clock: any ProviderOAuthClock = SystemProviderOAuthClock()
+    clock: any ProviderOAuthClock = SystemProviderOAuthClock(),
+    gateway: String? = nil
   ) {
     self.transport = transport
     self.clock = clock
+    configuredGateway = gateway.map(Self.normalizeGateway)
   }
 
   func authorize(
@@ -63,6 +66,34 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? {
+    { credential in
+      guard let rawGateway = configuredGateway ?? credential.metadata["gateway"],
+        let gateway = URL(string: rawGateway),
+        let scheme = gateway.scheme?.lowercased(),
+        ["http", "https"].contains(scheme),
+        gateway.host != nil
+      else {
+        throw oauthFailure(
+          .invalidCredential,
+          providerID: Self.providerID,
+          operation: "radius.oauth.refresh",
+          message: "Radius OAuth credential is missing gateway metadata"
+        )
+      }
+      return try await token(
+        gateway: gateway,
+        fields: [
+          "grant_type": "refresh_token",
+          "client_id": Self.clientID,
+          "refresh_token": credential.refreshToken,
+        ],
+        operation: "radius.oauth.refresh"
+      )
+    }
+  }
+  var oauthNow: @Sendable () -> Date { { clock.now() } }
+
   func resolveCredential(
     providerID: String,
     credentialStore: any ProviderCredentialStore,
@@ -72,34 +103,12 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard let stored = try await credentialStore.read(providerID: providerID) else {
       return nil
     }
-    guard case .oauth = stored else { return stored }
+    guard case .oauth(let optimistic) = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      now: { clock.now() },
-      refresh: { credential in
-        guard let rawGateway = credential.metadata["gateway"],
-          let gateway = URL(string: rawGateway),
-          let scheme = gateway.scheme?.lowercased(),
-          ["http", "https"].contains(scheme),
-          gateway.host != nil
-        else {
-          throw oauthFailure(
-            .invalidCredential,
-            providerID: Self.providerID,
-            operation: "radius.oauth.refresh",
-            message: "Radius OAuth credential is missing gateway metadata"
-          )
-        }
-        return try await token(
-          gateway: gateway,
-          fields: [
-            "grant_type": "refresh_token",
-            "client_id": Self.clientID,
-            "refresh_token": credential.refreshToken,
-          ],
-          operation: "radius.oauth.refresh"
-        )
-      }
+      optimisticCredential: optimistic,
+      now: oauthNow,
+      refresh: oauthRefresh!
     )
     return refreshed.map(ProviderCredential.oauth)
   }
@@ -107,6 +116,12 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
   private func requestGateway(
     _ interaction: @escaping AuthorizationInteraction
   ) async throws -> URL {
+    if let configuredGateway {
+      guard let url = URL(string: configuredGateway) else {
+        throw failure("Radius gateway URL is invalid")
+      }
+      return url
+    }
     let response = try await interaction(
       .prompt(
         providerID: Self.providerID,
@@ -132,6 +147,14 @@ struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     else {
       throw failure("Radius gateway URL is invalid")
     }
+    return result
+  }
+
+  static func normalizeGateway(_ value: String) -> String {
+    let lower = value.lowercased()
+    var result =
+      lower.hasPrefix("http://") || lower.hasPrefix("https://") ? value : "https://" + value
+    while result.hasSuffix("/") { result.removeLast() }
     return result
   }
 

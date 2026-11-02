@@ -220,6 +220,12 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-radius-catalog-oracle.mjs',
+             'Fixtures/Differential/Cases/radius-catalog.json',
+             'Fixtures/Differential/Oracle/radius-catalog.json', 'Radius baseline and dynamic catalog replacement'),
+            ('pi-ai-auth-resolution-oracle.mjs',
+             'Fixtures/Differential/Cases/auth-resolution.json',
+             'Fixtures/Differential/Oracle/auth-resolution.json', 'provider authentication selection, overlays and error stages'),
             ('pi-ai-oauth-refresh-lifecycle-oracle.mjs',
              'Fixtures/Differential/Cases/oauth-refresh-lifecycle.json',
              'Fixtures/Differential/Oracle/oauth-refresh-lifecycle.json', 'OAuth refresh locking, cancellation and failure lifecycle'),

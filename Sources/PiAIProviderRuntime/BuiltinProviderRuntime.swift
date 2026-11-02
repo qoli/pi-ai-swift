@@ -40,13 +40,14 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     self.cloudAuthorizationResolver = cloudAuthorizationResolver
     self.requestTransportResolver = requestTransportResolver
     radiusAuthorization = RadiusOAuthAuthorizationAdapter(
-      transport: authorizationTransport
+      transport: authorizationTransport, gateway: authorizationConfiguration.radiusGateway
     )
     radiusRefreshCoordinator = CredentialRefreshCoordinator(
       credentialStore: credentialStore
     )
     modelStore = try ProviderModelStore(
       expectedRevision: registry.upstreamRevision,
+      radiusGateway: authorizationConfiguration.radiusGateway,
       persistenceURL: radiusCatalogPersistenceURL
     )
     kernel = try Self.makeKernel(
@@ -141,7 +142,6 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
         providerID: RadiusOAuthAuthorizationAdapter.providerID
       )
     }
-    guard !records.isEmpty else { return kernel }
     let providers = registry.providers.map { record in
       record.id == RadiusOAuthAuthorizationAdapter.providerID
         ? record.replacingModels(with: records) : record
@@ -171,7 +171,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     case .oauth(let value): metadata = value.metadata
     }
     let raw =
-      metadata["gateway"] ?? metadata["baseURL"]
+      authorizationConfiguration.radiusGateway.map(RadiusOAuthAuthorizationAdapter.normalizeGateway)
+      ?? metadata["gateway"] ?? metadata["baseURL"]
       ?? RadiusOAuthAuthorizationAdapter.defaultGateway
     guard let url = URL(string: raw),
       let scheme = url.scheme?.lowercased(),
@@ -316,7 +317,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
         )
       case "oauth" where record.id == RadiusOAuthAuthorizationAdapter.providerID:
         adapters[method.id] = RadiusOAuthAuthorizationAdapter(
-          transport: authorizationTransport
+          transport: authorizationTransport, gateway: configuration.radiusGateway
         )
       default:
         adapters[method.id] = UnimplementedAuthorizationAdapter(

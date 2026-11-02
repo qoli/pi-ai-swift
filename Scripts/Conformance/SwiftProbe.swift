@@ -51,6 +51,19 @@ struct SwiftConformanceProbe {
     lifetime: ProbeStreamLifetime = .shared
   ) async throws -> ProbeOutput? {
     let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
+    if envelope.string("operation") == "catalog.radius" {
+      let result = try await RadiusCatalogConformanceProbe.resolve(
+        envelope, transport: RadiusProbeUnexpectedTransport())
+      FileHandle.standardOutput.write(try JSONEncoder().encode(JSONValue.object(result)))
+      return nil
+    }
+    if ["authorization.resolve", "authorization.refresh-stored"].contains(
+      envelope.string("operation")),
+      let wireServer, let incoming
+    {
+      try await AuthResolutionConformanceProbe.run(envelope, server: wireServer, incoming: incoming)
+      return nil
+    }
     if envelope.string("operation") == "credential-store", let wireServer, let incoming {
       try await CredentialStoreConformanceProbe.run(
         envelope, service: wireServer.credentialStores, incoming: incoming)
@@ -1260,7 +1273,14 @@ private enum ProbeError: Error {
   case unrepresentable(String)
 }
 
+private struct RadiusProbeUnexpectedTransport: ProviderHTTPTransport {
+  func send(_ request: URLRequest) async throws -> ProviderHTTPResponse {
+    throw ProbeError.unsupported("Radius catalog read attempted network access")
+  }
+}
+
 private struct FixtureAuthorization: ProviderAuthorizationAdapter {
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? { { $0 } }
   func authorize(
     _ operation: AuthorizationOperation, interaction: @escaping AuthorizationInteraction,
     credentialStore: any ProviderCredentialStore

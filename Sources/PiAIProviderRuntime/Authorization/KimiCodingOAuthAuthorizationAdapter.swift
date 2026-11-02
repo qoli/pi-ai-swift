@@ -88,6 +88,11 @@ struct KimiCodingOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? {
+    { credential in try await refresh(credential) }
+  }
+  var oauthNow: @Sendable () -> Date { { clock.now() } }
+
   func resolveCredential(
     providerID: String,
     credentialStore: any ProviderCredentialStore,
@@ -97,13 +102,14 @@ struct KimiCodingOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard
       let stored = try await credentialStore.read(providerID: Self.providerID)
     else { return nil }
-    guard case .oauth = stored else {
+    guard case .oauth(let optimistic) = stored else {
       throw failure(.invalidCredential, "Kimi Coding requires an OAuth credential")
     }
     let refreshed = try await refreshCoordinator.credential(
       providerID: Self.providerID,
-      now: { clock.now() },
-      refresh: { credential in try await refresh(credential) }
+      optimisticCredential: optimistic,
+      now: oauthNow,
+      refresh: oauthRefresh!
     )
     return refreshed.map(ProviderCredential.oauth)
   }

@@ -78,6 +78,7 @@ public struct ProviderConnectionOptions: Sendable, Equatable, Codable {
   public let maximumRetries: Int?
   public let maximumRetryDelayMilliseconds: Double?
   public let cloud: ProviderCloudConnectionOptions?
+  public let authentication: ProviderRequestAuthenticationOverrides?
 
   public init(
     azureOpenAIResponses: AzureOpenAIResponsesConnectionOptions? = nil,
@@ -87,7 +88,8 @@ public struct ProviderConnectionOptions: Sendable, Equatable, Codable {
     webSocketConnectTimeoutMilliseconds: Double? = nil,
     maximumRetries: Int? = nil,
     maximumRetryDelayMilliseconds: Double? = nil,
-    cloud: ProviderCloudConnectionOptions? = nil
+    cloud: ProviderCloudConnectionOptions? = nil,
+    authentication: ProviderRequestAuthenticationOverrides? = nil
   ) {
     self.azureOpenAIResponses = azureOpenAIResponses
     self.headers = headers
@@ -97,11 +99,13 @@ public struct ProviderConnectionOptions: Sendable, Equatable, Codable {
     self.maximumRetries = maximumRetries
     self.maximumRetryDelayMilliseconds = maximumRetryDelayMilliseconds
     self.cloud = cloud
+    self.authentication = authentication
   }
 
   private enum CodingKeys: String, CodingKey, CaseIterable {
     case azureOpenAIResponses, headers, transport, timeoutMilliseconds
     case webSocketConnectTimeoutMilliseconds, maximumRetries, maximumRetryDelayMilliseconds, cloud
+    case authentication
   }
 
   public init(from decoder: any Decoder) throws {
@@ -125,6 +129,23 @@ public struct ProviderConnectionOptions: Sendable, Equatable, Codable {
     maximumRetryDelayMilliseconds = try container.decodeIfPresent(
       Double.self, forKey: .maximumRetryDelayMilliseconds)
     cloud = try container.decodeIfPresent(ProviderCloudConnectionOptions.self, forKey: .cloud)
+    authentication = try container.decodeIfPresent(
+      ProviderRequestAuthenticationOverrides.self, forKey: .authentication)
+  }
+}
+
+public struct ProviderRequestAuthenticationOverrides: Sendable, Equatable, Codable {
+  public let apiKey: String?
+  public let environment: [String: String]?
+  public let minimumOAuthValidityMilliseconds: Double?
+
+  public init(
+    apiKey: String? = nil, environment: [String: String]? = nil,
+    minimumOAuthValidityMilliseconds: Double? = nil
+  ) {
+    self.apiKey = apiKey
+    self.environment = environment
+    self.minimumOAuthValidityMilliseconds = minimumOAuthValidityMilliseconds
   }
 }
 

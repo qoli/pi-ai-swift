@@ -99,15 +99,21 @@ struct MetaOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? {
+    { try await mint($0.refreshToken) }
+  }
+  var oauthNow: @Sendable () -> Date { { clock.now() } }
+
   func resolveCredential(
     providerID: String, credentialStore: any ProviderCredentialStore,
     refreshCoordinator: CredentialRefreshCoordinator
   ) async throws -> ProviderCredential? {
     guard let stored = try await credentialStore.read(providerID: providerID) else { return nil }
-    guard case .oauth = stored else { return stored }
+    guard case .oauth(let optimistic) = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      now: { clock.now() }, refresh: { try await mint($0.refreshToken) })
+      optimisticCredential: optimistic,
+      now: oauthNow, refresh: oauthRefresh!)
     return refreshed.map(ProviderCredential.oauth)
   }
 

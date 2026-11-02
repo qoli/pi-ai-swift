@@ -108,6 +108,19 @@ struct AnthropicBedrockRequestBranchDifferentialTests {
           accessToken: "sk-ant-oat-fixture", refreshToken: "",
           expiresAt: Date(timeIntervalSince1970: 4_102_444_800), metadata: [:]))
       toolChoice = .object(["type": .string("tool"), "name": .string("read")])
+    case "anthropic-api-key-oauth-token":
+      credential = .apiKey(.init(key: "prefix-sk-ant-oat-fixture", metadata: [:]))
+    case "anthropic-oauth-opaque-token":
+      credential = .oauth(
+        .init(
+          accessToken: "opaque-access", refreshToken: "",
+          expiresAt: .distantFuture, metadata: [:]))
+    case "anthropic-copilot-oauth-token":
+      providerID = "github-copilot"
+      credential = .oauth(
+        .init(
+          accessToken: "sk-ant-oat-fixture", refreshToken: "",
+          expiresAt: .distantFuture, metadata: [:]))
     case "anthropic-header-owned":
       credential = nil
       headers = ["x-api-key": "header-fixture"]

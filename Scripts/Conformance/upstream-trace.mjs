@@ -75,12 +75,16 @@ function traceOAuthMetadata(provider, source) {
   return result;
 }
 
-export function traceBuiltinProvider(provider, args) {
+export function traceBuiltinProvider(provider, args, factory) {
   const wrapped = { ...provider };
   if (provider.auth?.apiKey) wrapped.auth = { ...provider.auth, apiKey: tracePrimaryAuthorization(provider.auth.apiKey) };
   if (provider.auth?.oauth) wrapped.auth = { ...(wrapped.auth ?? provider.auth),
     oauth: traceOAuthMetadata(provider.id, provider.auth.oauth) };
-  if (!args.length && !provider.refreshModels) {
+  if (factory === "radiusProvider") {
+    wrapped.getModels = (...values) => trace("catalog.radius", undefined, () => provider.getModels(...values));
+    wrapped.refreshModels = (...values) => trace("catalog.radius.refresh", undefined, () => provider.refreshModels(...values));
+  }
+  if (!args.length && provider.id !== "radius") {
     for (const [name, operation] of [["getModels", "catalog"], ["getAllModels", "catalog.all-models"]]) {
       if (provider[name]) wrapped[name] = (...values) => trace(operation, undefined, () => provider[name](...values));
     }

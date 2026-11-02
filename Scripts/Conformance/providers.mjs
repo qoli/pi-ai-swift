@@ -6,12 +6,14 @@ export {
 } from "./bridge.mjs";
 import { getModels, invokeNative, recordNative } from "./bridge.mjs";
 import { wrapPrimaryAuthorization, withNativeOAuthMetadata } from "./authorization.mjs";
+import { nativeRadiusProvider } from "./radius-provider.mjs";
 
-export function projectBuiltinProvider(provider, args) {
+export function projectBuiltinProvider(provider, args, factory) {
+  if (factory === "radiusProvider") return nativeRadiusProvider(provider, args[0]);
   const result = { ...provider };
-  if (!args.length && !provider.refreshModels) {
+  if (!args.length && provider.id !== "radius") {
     result.getModels = () => getModels(provider.id);
-    result.getAllModels = () => getAllBuiltinModels(provider.id);
+    if (provider.getAllModels) result.getAllModels = () => getAllBuiltinModels(provider.id);
   }
   if (provider.auth?.apiKey && ["anthropic", "amazon-bedrock", "google-vertex", "cloudflare-workers-ai", "cloudflare-ai-gateway"].includes(provider.id)) {
     result.auth = { ...provider.auth, apiKey: wrapPrimaryAuthorization(provider.id, provider.auth.apiKey) };

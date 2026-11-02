@@ -90,6 +90,16 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? {
+    { credential in
+      try await exchangeCopilotToken(
+        githubToken: credential.refreshToken,
+        enterpriseDomain: credential.metadata["enterpriseDomain"]
+      )
+    }
+  }
+  var oauthNow: @Sendable () -> Date { { clock.now() } }
+
   func resolveCredential(
     providerID: String,
     credentialStore: any ProviderCredentialStore,
@@ -99,16 +109,12 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard let stored = try await credentialStore.read(providerID: providerID) else {
       return nil
     }
-    guard case .oauth = stored else { return stored }
+    guard case .oauth(let optimistic) = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      now: { clock.now() },
-      refresh: { credential in
-        try await exchangeCopilotToken(
-          githubToken: credential.refreshToken,
-          enterpriseDomain: credential.metadata["enterpriseDomain"]
-        )
-      }
+      optimisticCredential: optimistic,
+      now: oauthNow,
+      refresh: oauthRefresh!
     )
     return refreshed.map(ProviderCredential.oauth)
   }

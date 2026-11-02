@@ -1254,7 +1254,7 @@
           "id": "ctc_state",
           "call_id": "call_state",
           "name": "query",
-          "input": "quote \"\n👨‍👩‍👧"
+          "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67"
         }
       },
       {
@@ -1265,7 +1265,7 @@
       {
         "type": "response.custom_tool_call_input.done",
         "output_index": 0,
-        "input": "quote \"\n👨‍👩‍👧 /end"
+        "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67 /end"
       },
       {
         "type": "response.output_item.done",
@@ -1275,7 +1275,7 @@
           "id": "ctc_state",
           "call_id": "call_state",
           "name": "query",
-          "input": "quote \"\n👨‍👩‍👧 /end"
+          "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67 /end"
         }
       },
       {
@@ -2723,6 +2723,93 @@
             "input_tokens": 1,
             "output_tokens": 1,
             "total_tokens": 2
+          }
+        }
+      }
+    ],
+    "orphan-deltas-without-output-slot": [
+      {
+        "type": "response.created",
+        "response": {
+          "id": "fixture-orphan",
+          "model": "gpt-model"
+        }
+      },
+      {
+        "type": "response.output_text.delta",
+        "delta": "discarded"
+      },
+      {
+        "type": "response.reasoning_text.delta",
+        "delta": "discarded"
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "fixture-orphan",
+          "status": "completed",
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0
+          }
+        }
+      }
+    ],
+    "orphan-followed-by-valid-message": [
+      {
+        "type": "response.created",
+        "response": {
+          "id": "fixture-orphan",
+          "model": "gpt-model"
+        }
+      },
+      {
+        "type": "response.output_text.delta",
+        "delta": "discarded"
+      },
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "fixture-message",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": []
+        }
+      },
+      {
+        "type": "response.output_text.delta",
+        "output_index": 0,
+        "item_id": "fixture-message",
+        "content_index": 0,
+        "delta": "ok"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "fixture-message",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "ok",
+              "annotations": []
+            }
+          ]
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "fixture-orphan",
+          "status": "completed",
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0
           }
         }
       }

@@ -44,6 +44,7 @@ actor ProviderModelStore {
   init(
     bundledData: Data,
     expectedRevision: String,
+    radiusGateway: String? = nil,
     persistenceURL: URL? = nil,
     now: Date = Date(),
     maximumPersistedAge: TimeInterval? = nil
@@ -57,10 +58,17 @@ actor ProviderModelStore {
     }
     self.expectedRevision = expectedRevision
     self.persistenceURL = persistenceURL
-    bundledEntries = try Self.decodeBundled(
+    var bundled = try Self.decodeBundled(
       bundledData,
       expectedRevision: expectedRevision
     )
+    if let radiusGateway,
+      RadiusOAuthAuthorizationAdapter.normalizeGateway(radiusGateway)
+        != RadiusOAuthAuthorizationAdapter.defaultGateway
+    {
+      bundled["radius"] = .init(records: [], lastModified: nil, checkedAt: nil, etag: nil)
+    }
+    bundledEntries = bundled
     persistedEntries = try Self.loadPersisted(
       from: persistenceURL,
       expectedRevision: expectedRevision,
@@ -71,6 +79,7 @@ actor ProviderModelStore {
 
   init(
     expectedRevision: String,
+    radiusGateway: String? = nil,
     persistenceURL: URL? = nil,
     now: Date = Date(),
     maximumPersistedAge: TimeInterval? = nil
@@ -90,6 +99,7 @@ actor ProviderModelStore {
     try self.init(
       bundledData: Data(contentsOf: url),
       expectedRevision: expectedRevision,
+      radiusGateway: radiusGateway,
       persistenceURL: persistenceURL,
       now: now,
       maximumPersistedAge: maximumPersistedAge
@@ -353,14 +363,6 @@ actor ProviderModelStore {
       providerID: providerID,
       allowsHTTP: true
     )
-    guard !config.models.isEmpty else {
-      throw failure(
-        .invalidResponse,
-        providerID: providerID,
-        operation: "catalog.radius.models",
-        message: "Radius gateway config contains no models"
-      )
-    }
     let records = try config.models.map { raw in
       guard !raw.id.isEmpty, !raw.name.isEmpty,
         !raw.input.isEmpty,

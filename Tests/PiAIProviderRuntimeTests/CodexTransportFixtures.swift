@@ -155,6 +155,7 @@ private struct CodexFixtureSocket: ProviderWebSocketConnection {
 }
 
 private struct CodexFixtureAuthorization: ProviderAuthorizationAdapter {
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? { { $0 } }
   func authorize(
     _ operation: AuthorizationOperation, interaction: @escaping AuthorizationInteraction,
     credentialStore: any ProviderCredentialStore

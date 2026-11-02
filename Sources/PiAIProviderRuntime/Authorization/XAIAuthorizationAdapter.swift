@@ -57,6 +57,22 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? {
+    { credential in
+      let response = try await sendToken(
+        [
+          "grant_type": "refresh_token", "client_id": Self.clientID,
+          "refresh_token": credential.refreshToken,
+        ], message: "xAI OAuth token refresh failed")
+      return try makeCredential(
+        response,
+        operation: "xai.oauth.refresh",
+        previousRefreshToken: credential.refreshToken
+      )
+    }
+  }
+  var oauthNow: @Sendable () -> Date { { clock.now() } }
+
   func resolveCredential(
     providerID: String,
     credentialStore: any ProviderCredentialStore,
@@ -66,22 +82,12 @@ struct XAIOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard let stored = try await credentialStore.read(providerID: providerID) else {
       return nil
     }
-    guard case .oauth = stored else { return stored }
+    guard case .oauth(let optimistic) = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      now: { clock.now() },
-      refresh: { credential in
-        let response = try await sendToken(
-          [
-            "grant_type": "refresh_token", "client_id": Self.clientID,
-            "refresh_token": credential.refreshToken,
-          ], message: "xAI OAuth token refresh failed")
-        return try makeCredential(
-          response,
-          operation: "xai.oauth.refresh",
-          previousRefreshToken: credential.refreshToken
-        )
-      }
+      optimisticCredential: optimistic,
+      now: oauthNow,
+      refresh: oauthRefresh!
     )
     return refreshed.map(ProviderCredential.oauth)
   }

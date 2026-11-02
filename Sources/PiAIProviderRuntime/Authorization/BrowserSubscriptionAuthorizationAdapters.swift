@@ -88,6 +88,20 @@ struct AnthropicOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? {
+    { credential in
+      try await exchange(
+        fields: [
+          "grant_type": .string("refresh_token"),
+          "client_id": .string(Self.clientID),
+          "refresh_token": .string(credential.refreshToken),
+        ],
+        operation: "anthropic.oauth.refresh"
+      )
+    }
+  }
+  var oauthNow: @Sendable () -> Date { now }
+
   func resolveCredential(
     providerID: String,
     credentialStore: any ProviderCredentialStore,
@@ -97,20 +111,12 @@ struct AnthropicOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard let stored = try await credentialStore.read(providerID: providerID) else {
       return nil
     }
-    guard case .oauth = stored else { return stored }
+    guard case .oauth(let optimistic) = stored else { return stored }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      now: now,
-      refresh: { credential in
-        try await exchange(
-          fields: [
-            "grant_type": .string("refresh_token"),
-            "client_id": .string(Self.clientID),
-            "refresh_token": .string(credential.refreshToken),
-          ],
-          operation: "anthropic.oauth.refresh"
-        )
-      }
+      optimisticCredential: optimistic,
+      now: oauthNow,
+      refresh: oauthRefresh!
     )
     return refreshed.map(ProviderCredential.oauth)
   }
@@ -241,6 +247,8 @@ struct OpenRouterOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       )
     }
   }
+
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? { { $0 } }
 
   func resolveCredential(
     providerID: String,

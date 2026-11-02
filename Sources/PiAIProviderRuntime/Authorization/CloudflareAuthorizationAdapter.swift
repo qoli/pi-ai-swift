@@ -4,6 +4,13 @@ struct CloudflareAuthorizationAdapter: ProviderAuthorizationAdapter {
   static let providerIDs: Set<String> = ["cloudflare-ai-gateway", "cloudflare-workers-ai"]
   let providerID: String
   let methodID: String
+  func resolvePrimary(_ credential: APIKeyCredential?, context: ProviderAuthenticationContext)
+    async throws -> ProviderPrimaryAuthorization?
+  {
+    try await ProviderPrimaryAuthorization.resolve(
+      providerID: providerID,
+      credential: credential.map(ProviderCredential.apiKey), context: context)
+  }
 
   private var environmentFields: [(String, String)] {
     var fields = [("CLOUDFLARE_ACCOUNT_ID", "Enter Cloudflare account ID")]

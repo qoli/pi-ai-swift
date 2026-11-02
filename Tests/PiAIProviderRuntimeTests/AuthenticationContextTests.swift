@@ -34,7 +34,7 @@ import Testing
     #expect(await store.value == nil)
   }
 
-  @Test func oauthAvailabilityKeepsTheChatRouteAndExcludesTheClassifierRoute() async throws {
+  @Test func customAPIKeyProviderDoesNotAcceptAStoredOAuthCredential() async throws {
     let store = ContextCredentialStore(
       .oauth(
         .init(
@@ -53,8 +53,8 @@ import Testing
       store: store, transport: ContextTransport(), context: context,
       models: [model(), model(api: "openai-decisions")])
     let availability = try #require(try await runtime.catalog().providers.first?.availability)
-    #expect(availability.configured)
-    #expect(availability.models == [.init(modelID: "same", outputModality: .text)])
+    #expect(!availability.configured)
+    #expect(availability.models.isEmpty)
     #expect(await store.modifications == 0)
   }
 

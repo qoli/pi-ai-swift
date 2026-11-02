@@ -1,0 +1,420 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamTests": [
+    "packages/ai/test/models-runtime.test.ts"
+  ],
+  "cases": [
+    {
+      "id": "ambient-primary",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      }
+    },
+    {
+      "id": "stored-primary",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "api_key",
+        "key": "stored-key",
+        "env": {
+          "SCOPED": "stored"
+        }
+      }
+    },
+    {
+      "id": "valid-oauth",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000003600000
+      }
+    },
+    {
+      "id": "expired-oauth",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      }
+    },
+    {
+      "id": "stored-oauth-without-handler",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": false,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000003600000
+      }
+    },
+    {
+      "id": "stored-api-without-handler",
+      "now": 2000000000000,
+      "primary": false,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "api_key",
+        "key": "stored-key",
+        "env": {
+          "SCOPED": "stored"
+        }
+      }
+    },
+    {
+      "id": "missing-without-primary",
+      "now": 2000000000000,
+      "primary": false,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      }
+    },
+    {
+      "id": "explicit-api-key-wins-oauth",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000003600000
+      },
+      "overrides": {
+        "apiKey": "explicit-key"
+      }
+    },
+    {
+      "id": "explicit-empty-key-uses-primary-environment",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000003600000
+      },
+      "overrides": {
+        "apiKey": ""
+      }
+    },
+    {
+      "id": "explicit-environment-overlays-context",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "overrides": {
+        "env": {
+          "FIXTURE_API_KEY": "scoped-key"
+        }
+      }
+    },
+    {
+      "id": "empty-environment-retains-context",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "overrides": {
+        "env": {
+          "FIXTURE_API_KEY": ""
+        }
+      }
+    },
+    {
+      "id": "stored-environment-merges-explicit",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "api_key",
+        "key": "stored-key",
+        "env": {
+          "SCOPED": "stored"
+        }
+      },
+      "overrides": {
+        "env": {
+          "SCOPED": "explicit",
+          "EXTRA": "fixture"
+        }
+      }
+    },
+    {
+      "id": "read-failure",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "readError": "fixture-read-denied"
+    },
+    {
+      "id": "modify-failure",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "modifyError": "fixture-modify-denied"
+    },
+    {
+      "id": "primary-failure",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "primaryError": "fixture-primary-denied"
+    },
+    {
+      "id": "refresh-failure",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "refreshError": "fixture-refresh-denied"
+    },
+    {
+      "id": "derivation-failure",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000003600000
+      },
+      "derivationError": "fixture-derivation-denied"
+    },
+    {
+      "id": "longer-validity",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000600000
+      },
+      "overrides": {
+        "minOAuthValidityMs": 900000
+      }
+    },
+    {
+      "id": "explicit-minimum-rejects-short-refresh",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "refreshedExpires": 2000000001000,
+      "overrides": {
+        "minOAuthValidityMs": 600000
+      }
+    },
+    {
+      "id": "default-allows-short-refresh",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "refreshedExpires": 2000000001000
+    },
+    {
+      "id": "already-cancelled",
+      "now": 2000000000000,
+      "primary": true,
+      "oauth": true,
+      "environment": {
+        "FIXTURE_API_KEY": "ambient-key"
+      },
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "aborted": true
+    },
+    {
+      "id": "raw-refresh",
+      "rawRefresh": true,
+      "oauth": true,
+      "environment": {},
+      "now": 2000000000000,
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "needsRefresh": true
+    },
+    {
+      "id": "raw-preserve",
+      "rawRefresh": true,
+      "oauth": true,
+      "environment": {},
+      "now": 2000000000000,
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "needsRefresh": false
+    },
+    {
+      "id": "raw-missing",
+      "rawRefresh": true,
+      "oauth": true,
+      "environment": {},
+      "now": 2000000000000,
+      "credential": null,
+      "needsRefresh": true
+    },
+    {
+      "id": "raw-api-key",
+      "rawRefresh": true,
+      "oauth": true,
+      "environment": {},
+      "now": 2000000000000,
+      "credential": {
+        "type": "api_key",
+        "key": "stored-key"
+      },
+      "needsRefresh": true
+    },
+    {
+      "id": "raw-refresh-error",
+      "rawRefresh": true,
+      "oauth": true,
+      "environment": {},
+      "now": 2000000000000,
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "needsRefresh": true,
+      "refreshError": "refresh-denied"
+    },
+    {
+      "id": "raw-modify-error",
+      "rawRefresh": true,
+      "oauth": true,
+      "environment": {},
+      "now": 2000000000000,
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "needsRefresh": true,
+      "modifyError": "modify-denied"
+    },
+    {
+      "id": "raw-predicate-error",
+      "rawRefresh": true,
+      "oauth": true,
+      "environment": {},
+      "now": 2000000000000,
+      "credential": {
+        "type": "oauth",
+        "access": "old-access",
+        "refresh": "old-refresh",
+        "expires": 2000000000000
+      },
+      "needsRefresh": true,
+      "needsRefreshError": "predicate-denied"
+    }
+  ]
+}

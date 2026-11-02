@@ -140,8 +140,8 @@ function createSession() {
         return;
       }
       if (["retryRequest", "cloud"].includes(frame.kind)) phase(frame.id, "host");
-      if (frame.kind === "credentialTransform") phase(frame.id, "waiting");
-      if (frame.kind === "credentialResult") phase(frame.id, "finishing");
+      if (["credentialTransform", "authorizationCallback"].includes(frame.kind)) phase(frame.id, "waiting");
+      if (["credentialResult", "authorizationResult"].includes(frame.kind)) phase(frame.id, "finishing");
       if (["request", "observer"].includes(frame.kind)) phase(frame.id, "running");
       call.stdout.write(line + "\n");
       if (frame.kind === "finished") {

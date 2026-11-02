@@ -16,7 +16,18 @@ struct ProviderRequestAuthorization: Sendable {
   var usesHeaderAuthentication: Bool { credential == nil && !headers.isEmpty }
 }
 
+private struct KernelResolvedAuthorization: Sendable {
+  let credential: ProviderCredential?
+  let request: ProviderRequestAuthorization
+  let primary: ProviderPrimaryAuthorization?
+}
+
 protocol ProviderAuthorizationAdapter: Sendable {
+  var supportsPrimaryAuthorization: Bool { get }
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? { get }
+  var oauthNow: @Sendable () -> Date { get }
+  func resolvePrimary(_ credential: APIKeyCredential?, context: ProviderAuthenticationContext)
+    async throws -> ProviderPrimaryAuthorization?
   func requestAuthorization(for credential: ProviderCredential?) throws
     -> ProviderRequestAuthorization
 
@@ -34,6 +45,18 @@ protocol ProviderAuthorizationAdapter: Sendable {
 }
 
 extension ProviderAuthorizationAdapter {
+  var supportsPrimaryAuthorization: Bool { true }
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? { nil }
+  var oauthNow: @Sendable () -> Date { { Date() } }
+  func resolvePrimary(_ credential: APIKeyCredential?, context: ProviderAuthenticationContext)
+    async throws -> ProviderPrimaryAuthorization?
+  {
+    let value = try requestAuthorization(for: credential.map(ProviderCredential.apiKey))
+    guard value.credential != nil || !value.headers.isEmpty else { return nil }
+    return .init(
+      credential: value.credential, headers: value.headers, environment: credential?.environment,
+      source: "stored credential", connectionEnvironment: [:])
+  }
   func requestAuthorization(for credential: ProviderCredential?) throws
     -> ProviderRequestAuthorization
   {
@@ -183,9 +206,9 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         descriptors.append(descriptor)
         continue
       }
-      let credential = try await credentialStore.read(providerID: descriptor.id)
-      let resolved = try await ProviderPrimaryAuthorization.resolve(
-        providerID: descriptor.id, credential: credential, context: authenticationContext)
+      let resolved = try await ProviderAuthorizationResolution.check(
+        providerID: descriptor.id, store: credentialStore, context: authenticationContext,
+        bindings: authorizationBindings(provider))
       let routes = provider.modelConfigurations.keys.map {
         ProviderAvailableModel(modelID: $0.modelID, outputModality: $0.outputModality)
       }.sorted {
@@ -195,7 +218,7 @@ struct ProviderRuntimeKernel: ProviderRuntime {
         resolved == nil
         ? []
         : ProviderPrimaryAuthorization.availableModels(
-          routes, providerID: descriptor.id, credential: credential)
+          routes, providerID: descriptor.id, credential: resolved?.credential)
       descriptors.append(
         .init(
           id: descriptor.id, name: descriptor.name,
@@ -244,6 +267,41 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       }
       continuation.onTermination = { _ in task.cancel() }
     }
+  }
+
+  private func authorizationBindings(_ provider: ProviderDefinition)
+    -> ProviderAuthorizationBindings<KernelResolvedAuthorization>
+  {
+    typealias Bindings = ProviderAuthorizationBindings<KernelResolvedAuthorization>
+    let primary: Bindings.Primary?
+    if provider.authorization.supportsPrimaryAuthorization {
+      primary = { key, context in
+        guard
+          let resolved = try await provider.authorization.resolvePrimary(key, context: context)
+        else { return nil }
+        let request = try provider.authorization.requestAuthorization(for: resolved.credential)
+        return .init(
+          authorization: .init(
+            credential: resolved.credential, request: request, primary: resolved),
+          source: resolved.source, environment: resolved.environment)
+      }
+    } else {
+      primary = nil
+    }
+    let oauth: Bindings.OAuth?
+    if let refresh = provider.authorization.oauthRefresh {
+      oauth = .init(
+        refresh: refresh,
+        derive: { value in
+          let credential = ProviderCredential.oauth(value)
+          return .init(
+            credential: credential,
+            request: try provider.authorization.requestAuthorization(for: credential), primary: nil)
+        }, now: provider.authorization.oauthNow)
+    } else {
+      oauth = nil
+    }
+    return .init(primary: primary, oauth: oauth)
   }
 
   private func prepareStream(_ request: ProviderRequest) async throws
@@ -312,28 +370,21 @@ struct ProviderRuntimeKernel: ProviderRuntime {
           "Custom fetch is not supported by the Google \(modelConfiguration.protocolID == "google-vertex" ? "Vertex" : "Generative AI") adapter"
       )
     }
-    var primary: ProviderPrimaryAuthorization?
-    let credential: ProviderCredential?
-    if let authenticationContext {
-      let stored = try await credentialStore.read(providerID: request.providerID)
-      if case .oauth = stored {
-        credential = try await provider.authorization.resolveCredential(
-          providerID: request.providerID, credentialStore: credentialStore,
-          refreshCoordinator: refreshCoordinator)
-      } else if case .apiKey(let key) = stored, key.metadata["authentication"] == "sigv4" {
-        credential = stored
-      } else {
-        primary = try await ProviderPrimaryAuthorization.resolve(
-          providerID: request.providerID, credential: stored, context: authenticationContext)
-        credential = primary?.credential
-      }
-    } else {
-      credential = try await provider.authorization.resolveCredential(
-        providerID: request.providerID, credentialStore: credentialStore,
-        refreshCoordinator: refreshCoordinator)
-    }
+    let resolved: ProviderResolvedAuthorization<KernelResolvedAuthorization>?
+    do {
+      resolved = try await ProviderAuthorizationResolution.resolve(
+        providerID: request.providerID, store: credentialStore,
+        context: authenticationContext
+          ?? .init(environment: { _ in nil }, fileExists: { _ in false }),
+        bindings: authorizationBindings(provider), coordinator: refreshCoordinator,
+        overrides: request.connectionOptions.authentication ?? .init())
+    } catch let error as ProviderAuthorizationResolutionFailure { throw error.runtimeFailure }
+    let primary = resolved?.authorization.primary
+    let credential = resolved?.authorization.credential
     var resolvedCredential = credential
-    var requestAuthorization = try provider.authorization.requestAuthorization(for: credential)
+    var requestAuthorization =
+      resolved?.authorization.request
+      ?? ProviderRequestAuthorization(credential: nil, headers: [:])
     if let primary {
       requestAuthorization = .init(
         credential: requestAuthorization.credential,
@@ -436,7 +487,10 @@ struct ProviderRuntimeKernel: ProviderRuntime {
     )
     let identity = request.options.providerOptions.object("identity")
     var headers: [String: String]
-    if modelConfiguration.protocolID == "anthropic-messages", case .oauth = resolvedCredential {
+    if modelConfiguration.protocolID == "anthropic-messages",
+      AnthropicMessagesAdapter.isOAuthCredential(
+        requestAuthorization.credential, providerID: request.providerID)
+    {
       headers = [:]
     } else if modelConfiguration.protocolID == "bedrock-converse-stream" {
       headers = ProviderClientIdentity.attributionHeaders(

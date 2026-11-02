@@ -258,12 +258,40 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
     return conformant, cases
 
 
+def offline_conformant(report):
+    if not report["sourceStableDuringRun"] or report["casePattern"] is not None:
+        return False
+    if any(report["exitCodes"].values()):
+        return False
+    selected = [suite["path"] for suite in report["suites"]]
+    if len(set(selected)) != len(selected) or len(selected) != report["reviewedInventoryCounts"]["adoptedByManifest"]:
+        return False
+    if report["reviewedInventoryCounts"]["notYetAdopted"]:
+        return False
+    if not any(case["conformanceStatus"] == "passed" for case in report["cases"]):
+        return False
+    for case in report["cases"]:
+        if case["conformanceStatus"] in {"passed", "outside_scope"}:
+            continue
+        if case["conformanceStatus"] != "not_executed":
+            return False
+        if case["upstreamStatus"] not in {"pending", "skipped"} or case["status"] not in {"pending", "skipped"}:
+            return False
+        evidence = case.get("skipEvidence", {})
+        reference, native = evidence.get("upstream", {}), evidence.get("swift", {})
+        if not reference.get("explained") or reference != native:
+            return False
+    return True
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--upstream", type=Path)
     parser.add_argument("--test", action="append", dest="tests")
     parser.add_argument("--case", dest="case_pattern")
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--offline", action="store_true",
+                        help="Accept only full-manifest Native conformance with identical explained upstream skips")
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     manifest = json.loads((repo / "Scripts/Conformance/suites.json").read_text())
@@ -379,6 +407,7 @@ def main():
         **identities,
         "sourceStableDuringRun": source_stable,
         "conformant": conformant,
+        "acceptanceMode": "offline" if args.offline else "strict",
         "exitCodes": exit_codes,
         "scope": "unchanged upstream test files listed in suites",
         "reviewedInventoryCounts": {
@@ -428,10 +457,13 @@ def main():
         } for path in sorted((upstream / "packages/ai/test").glob("*.test.ts")) if path.name not in suites],
         "cases": cases,
     }
+    report["offlineConformant"] = offline_conformant(report)
     (build / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"Conformance: {conformant}; upstream suites={len(suites)}; cases={len(cases)}; Native evidence records={len(invocations)}")
     print(f"Report: {build / 'report.json'}")
-    return 0 if conformant else 1
+    if args.offline:
+        print(f"Offline Native conformance: {report['offlineConformant']}; unexecuted cases remain not_executed")
+    return 0 if (report["offlineConformant"] if args.offline else conformant) else 1
 
 
 if __name__ == "__main__":

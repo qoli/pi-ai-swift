@@ -60,6 +60,10 @@ export async function personalizeOpenRouterCatalog(catalog, context) {
   return result.personalized ? result.models.map(value => value.updated ? value.model : catalog[value.index]) : catalog;
 }
 
+export async function resolveRadiusCatalog(configuration, signal) {
+  return authorize("radius", "catalog.radius", configuration.credential, { signal }, configuration);
+}
+
 async function authorize(provider, action, credential, options, configuration) {
   const call = { phase: "host", deadline: Infinity, cancel: () => {} };
   active.add(call);
@@ -247,6 +251,8 @@ async function authorize(provider, action, credential, options, configuration) {
       deviceID: configuration.getDeviceId?.(), now: Date.now(),
       primaryName: configuration.name, variables: configuration.variables, aborted: options.signal?.aborted,
       catalog: configuration.catalog, baseURL: configuration.baseURL,
+      catalogState: configuration.catalogState, catalogProvider: configuration.catalogProvider,
+      cachedModels: configuration.cachedModels,
       gateway: configuration.gateway, oauthHost: process.env.KIMI_CODE_OAUTH_HOST, callbackURL: callback?.redirectUri });
     if (options.signal?.aborted) cancel();
     return await result;

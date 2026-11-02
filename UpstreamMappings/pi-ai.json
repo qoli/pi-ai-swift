@@ -191,7 +191,16 @@
         "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#loadsValidatedBundledSnapshotAtPinnedRevision",
         "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#radiusRefreshPersistsAtomicallyAndReloadsValidators",
         "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#newerRadiusRefreshOwnsPublicationWhileReadersSeeImmutableSnapshot",
-        "Tests/PiAIProviderRuntimeTests/CandidateModelStoreTests.swift"
+        "Tests/PiAIProviderRuntimeTests/CandidateModelStoreTests.swift",
+        "Scripts/pi-ai-radius-catalog-oracle.mjs",
+        "Fixtures/Differential/Cases/radius-catalog.json",
+        "Fixtures/Differential/Oracle/radius-catalog.json",
+        "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#disabledOrganizationModelsDoNotRestoreThePublicBaseline",
+        "Tests/PiAIProviderRuntimeTests/RadiusCatalogFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/RadiusCatalogTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testRadiusCatalogMatchesPinnedSource",
+        "Scripts/Conformance/RadiusCatalogProbe.swift",
+        "Scripts/Conformance/radius-provider.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -222,7 +231,11 @@
         "Sources/PiAIProviderRuntime/Authorization/ProviderOAuthLoginChoice.swift",
         "Sources/PiAIProviderRuntime/Authorization/ProviderCredentialTransactions.swift",
         "Sources/PiAIProviderRuntime/ProviderCatalog.swift",
-        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift"
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderAuthorizationResolution.swift",
+        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift",
+        "Sources/PiAIProviderRuntime/CustomProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/ProviderRequest.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -327,7 +340,15 @@
         "Fixtures/Differential/Oracle/oauth-refresh-lifecycle.json",
         "Tests/PiAIProviderRuntimeTests/OAuthRefreshLifecycleFixtures.swift",
         "Tests/PiAIProviderRuntimeTests/OAuthRefreshLifecycleTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOAuthRefreshLifecycleMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOAuthRefreshLifecycleMatchesPinnedSource",
+        "Scripts/pi-ai-auth-resolution-oracle.mjs",
+        "Fixtures/Differential/Cases/auth-resolution.json",
+        "Fixtures/Differential/Oracle/auth-resolution.json",
+        "Tests/PiAIProviderRuntimeTests/AuthResolutionFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/ProviderAuthorizationResolutionTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAuthResolutionMatchesPinnedSource",
+        "Scripts/Conformance/AuthResolutionProbe.swift",
+        "Scripts/Conformance/auth-resolution.mjs"
       ],
       "requiredGates": [
         "swift-test"
@@ -1771,7 +1792,16 @@
         "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#dynamicCatalogRoutesStreamAndReloadsPersistedModelsOffline",
         "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#invalidNetworkRefreshFailsWithoutServingPersistedModels",
         "Scripts/Conformance/authorization.mjs",
-        "Scripts/Conformance/AuthorizationProbe.swift"
+        "Scripts/Conformance/AuthorizationProbe.swift",
+        "Scripts/pi-ai-radius-catalog-oracle.mjs",
+        "Fixtures/Differential/Cases/radius-catalog.json",
+        "Fixtures/Differential/Oracle/radius-catalog.json",
+        "Tests/PiAIProviderRuntimeTests/RadiusProviderRuntimeTests.swift#disabledOrganizationModelsDoNotRestoreThePublicBaseline",
+        "Tests/PiAIProviderRuntimeTests/RadiusCatalogFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/RadiusCatalogTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testRadiusCatalogMatchesPinnedSource",
+        "Scripts/Conformance/RadiusCatalogProbe.swift",
+        "Scripts/Conformance/radius-provider.mjs"
       ],
       "requiredGates": [
         "swift-test"

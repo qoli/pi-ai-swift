@@ -50,6 +50,61 @@
         ]
       }
     },
+    "anthropic-api-key-oauth-token": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-beta": "claude-code-20250219,oauth-2025-04-20",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "authorization": "Bearer prefix-sk-ant-oat-fixture",
+        "x-app": "cli"
+      },
+      "requestBody": {
+        "betas": [
+          "claude-code-20250219",
+          "oauth-2025-04-20"
+        ],
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "You are Claude Code, Anthropic's official CLI for Claude.",
+            "type": "text"
+          },
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "Read"
+          }
+        ]
+      }
+    },
     "anthropic-api-key-system-cache-short": {
       "headers": {
         "accept": "application/json",
@@ -279,6 +334,51 @@
         "accept": "application/json",
         "anthropic-dangerous-direct-browser-access": "true",
         "authorization": "Bearer copilot-fixture"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
+          }
+        ]
+      }
+    },
+    "anthropic-copilot-oauth-token": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "authorization": "Bearer sk-ant-oat-fixture"
       },
       "requestBody": {
         "max_tokens": 4096,
@@ -625,6 +725,51 @@
               "type": "object"
             },
             "name": "Read"
+          }
+        ]
+      }
+    },
+    "anthropic-oauth-opaque-token": {
+      "headers": {
+        "accept": "application/json",
+        "anthropic-dangerous-direct-browser-access": "true",
+        "x-api-key": "opaque-access"
+      },
+      "requestBody": {
+        "max_tokens": 4096,
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user"
+          }
+        ],
+        "model": "claude-sonnet-4-5",
+        "stream": true,
+        "system": [
+          {
+            "text": "Be concise",
+            "type": "text"
+          }
+        ],
+        "thinking": {
+          "type": "disabled"
+        },
+        "tools": [
+          {
+            "description": "Read data",
+            "eager_input_streaming": true,
+            "input_schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "type": "object"
+            },
+            "name": "read"
           }
         ]
       }

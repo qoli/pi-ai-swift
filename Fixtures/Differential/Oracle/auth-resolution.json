@@ -1,0 +1,542 @@
+{
+  "cases": [
+    {
+      "calls": [
+        "read",
+        {
+          "primary": null
+        },
+        {
+          "env": "FIXTURE_API_KEY"
+        }
+      ],
+      "id": "ambient-primary",
+      "result": {
+        "auth": {
+          "apiKey": "ambient-key"
+        },
+        "source": "FIXTURE_API_KEY"
+      },
+      "stored": null
+    },
+    {
+      "calls": [
+        "read",
+        {
+          "primary": {
+            "env": {
+              "SCOPED": "stored"
+            },
+            "key": "stored-key",
+            "type": "api_key"
+          }
+        }
+      ],
+      "id": "stored-primary",
+      "result": {
+        "auth": {
+          "apiKey": "stored-key"
+        },
+        "env": {
+          "SCOPED": "stored"
+        },
+        "source": "stored credential"
+      },
+      "stored": {
+        "env": {
+          "SCOPED": "stored"
+        },
+        "key": "stored-key",
+        "type": "api_key"
+      }
+    },
+    {
+      "calls": [
+        "read",
+        {
+          "derive": "old-access"
+        }
+      ],
+      "id": "valid-oauth",
+      "result": {
+        "auth": {
+          "apiKey": "old-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000003600000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read",
+        "modify",
+        {
+          "refresh": "old-access"
+        },
+        {
+          "derive": "fresh-access"
+        }
+      ],
+      "id": "expired-oauth",
+      "result": {
+        "auth": {
+          "apiKey": "fresh-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "fresh-access",
+        "expires": 2000003600000,
+        "refresh": "fresh-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read"
+      ],
+      "id": "stored-oauth-without-handler",
+      "result": null,
+      "stored": {
+        "access": "old-access",
+        "expires": 2000003600000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read"
+      ],
+      "id": "stored-api-without-handler",
+      "result": null,
+      "stored": {
+        "env": {
+          "SCOPED": "stored"
+        },
+        "key": "stored-key",
+        "type": "api_key"
+      }
+    },
+    {
+      "calls": [
+        "read"
+      ],
+      "id": "missing-without-primary",
+      "result": null,
+      "stored": null
+    },
+    {
+      "calls": [
+        {
+          "primary": {
+            "key": "explicit-key",
+            "type": "api_key"
+          }
+        }
+      ],
+      "id": "explicit-api-key-wins-oauth",
+      "result": {
+        "auth": {
+          "apiKey": "explicit-key"
+        },
+        "source": "stored credential"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000003600000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        {
+          "primary": {
+            "key": "",
+            "type": "api_key"
+          }
+        },
+        {
+          "env": "FIXTURE_API_KEY"
+        }
+      ],
+      "id": "explicit-empty-key-uses-primary-environment",
+      "result": {
+        "auth": {
+          "apiKey": "ambient-key"
+        },
+        "source": "FIXTURE_API_KEY"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000003600000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read",
+        {
+          "primary": null
+        }
+      ],
+      "id": "explicit-environment-overlays-context",
+      "result": {
+        "auth": {
+          "apiKey": "scoped-key"
+        },
+        "source": "FIXTURE_API_KEY"
+      },
+      "stored": null
+    },
+    {
+      "calls": [
+        "read",
+        {
+          "primary": null
+        },
+        {
+          "env": "FIXTURE_API_KEY"
+        }
+      ],
+      "id": "empty-environment-retains-context",
+      "result": {
+        "auth": {
+          "apiKey": "ambient-key"
+        },
+        "source": "FIXTURE_API_KEY"
+      },
+      "stored": null
+    },
+    {
+      "calls": [
+        "read",
+        {
+          "primary": {
+            "env": {
+              "EXTRA": "fixture",
+              "SCOPED": "explicit"
+            },
+            "key": "stored-key",
+            "type": "api_key"
+          }
+        }
+      ],
+      "id": "stored-environment-merges-explicit",
+      "result": {
+        "auth": {
+          "apiKey": "stored-key"
+        },
+        "env": {
+          "EXTRA": "fixture",
+          "SCOPED": "explicit"
+        },
+        "source": "stored credential"
+      },
+      "stored": {
+        "env": {
+          "SCOPED": "stored"
+        },
+        "key": "stored-key",
+        "type": "api_key"
+      }
+    },
+    {
+      "calls": [
+        "read"
+      ],
+      "id": "read-failure",
+      "result": {
+        "error": "auth",
+        "message": "Credential store read failed for fixture: fixture-read-denied"
+      },
+      "stored": null
+    },
+    {
+      "calls": [
+        "read",
+        "modify"
+      ],
+      "id": "modify-failure",
+      "result": {
+        "error": "auth",
+        "message": "Credential store modify failed for fixture: fixture-modify-denied"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read",
+        {
+          "primary": null
+        }
+      ],
+      "id": "primary-failure",
+      "result": {
+        "error": "auth",
+        "message": "API key auth failed for provider fixture: fixture-primary-denied"
+      },
+      "stored": null
+    },
+    {
+      "calls": [
+        "read",
+        "modify",
+        {
+          "refresh": "old-access"
+        }
+      ],
+      "id": "refresh-failure",
+      "result": {
+        "error": "oauth",
+        "message": "OAuth refresh failed for fixture: fixture-refresh-denied"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read",
+        {
+          "derive": "old-access"
+        }
+      ],
+      "id": "derivation-failure",
+      "result": {
+        "error": "oauth",
+        "message": "OAuth auth derivation failed for fixture: fixture-derivation-denied"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000003600000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read",
+        "modify",
+        {
+          "refresh": "old-access"
+        },
+        {
+          "derive": "fresh-access"
+        }
+      ],
+      "id": "longer-validity",
+      "result": {
+        "auth": {
+          "apiKey": "fresh-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "fresh-access",
+        "expires": 2000003600000,
+        "refresh": "fresh-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read",
+        "modify",
+        {
+          "refresh": "old-access"
+        }
+      ],
+      "id": "explicit-minimum-rejects-short-refresh",
+      "result": {
+        "error": "oauth",
+        "message": "OAuth refresh returned a token that expires too soon for fixture"
+      },
+      "stored": {
+        "access": "fresh-access",
+        "expires": 2000000001000,
+        "refresh": "fresh-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "read",
+        "modify",
+        {
+          "refresh": "old-access"
+        },
+        {
+          "derive": "fresh-access"
+        }
+      ],
+      "id": "default-allows-short-refresh",
+      "result": {
+        "auth": {
+          "apiKey": "fresh-access"
+        },
+        "source": "OAuth"
+      },
+      "stored": {
+        "access": "fresh-access",
+        "expires": 2000000001000,
+        "refresh": "fresh-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [],
+      "id": "already-cancelled",
+      "result": {
+        "error": "AbortError"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "modify",
+        {
+          "needsRefresh": "old-access"
+        },
+        {
+          "refresh": "old-access"
+        }
+      ],
+      "id": "raw-refresh",
+      "result": {
+        "access": "fresh-access",
+        "expires": 2000003600000,
+        "refresh": "fresh-refresh",
+        "type": "oauth"
+      },
+      "stored": {
+        "access": "fresh-access",
+        "expires": 2000003600000,
+        "refresh": "fresh-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "modify",
+        {
+          "needsRefresh": "old-access"
+        }
+      ],
+      "id": "raw-preserve",
+      "result": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "modify"
+      ],
+      "id": "raw-missing",
+      "result": null,
+      "stored": null
+    },
+    {
+      "calls": [
+        "modify"
+      ],
+      "id": "raw-api-key",
+      "result": null,
+      "stored": {
+        "key": "stored-key",
+        "type": "api_key"
+      }
+    },
+    {
+      "calls": [
+        "modify",
+        {
+          "needsRefresh": "old-access"
+        },
+        {
+          "refresh": "old-access"
+        }
+      ],
+      "id": "raw-refresh-error",
+      "result": {
+        "error": "oauth",
+        "message": "OAuth refresh failed for fixture: refresh-denied"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "modify"
+      ],
+      "id": "raw-modify-error",
+      "result": {
+        "error": "auth",
+        "message": "Credential store modify failed for fixture: modify-denied"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    },
+    {
+      "calls": [
+        "modify",
+        {
+          "needsRefresh": "old-access"
+        }
+      ],
+      "id": "raw-predicate-error",
+      "result": {
+        "error": "auth",
+        "message": "Credential store modify failed for fixture: predicate-denied"
+      },
+      "stored": {
+        "access": "old-access",
+        "expires": 2000000000000,
+        "refresh": "old-refresh",
+        "type": "oauth"
+      }
+    }
+  ],
+  "sourceSHA256": {
+    "auth/helpers.ts": "37b4c7f8048f09a54363607fa91bb1c265ddfe0790067de3c3220c1f06485b90",
+    "auth/resolve.ts": "b64d4b13ccdb3e8d056ec4849190aa68f002988ee0417317151d59d8668502ec"
+  },
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

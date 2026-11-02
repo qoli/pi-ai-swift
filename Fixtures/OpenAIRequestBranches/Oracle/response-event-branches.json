@@ -1240,6 +1240,49 @@
           }
         ],
         "stopReason": "stop"
+      },
+      "orphan-deltas-without-output-slot": {
+        "content": [],
+        "events": [],
+        "stopReason": "stop"
+      },
+      "orphan-followed-by-valid-message": {
+        "content": [
+          {
+            "signature": {
+              "id": "fixture-message",
+              "v": 1
+            },
+            "text": "ok",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "delta": "ok",
+            "stopReason": "pending",
+            "text": "ok",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "fixture-message",
+              "v": 1
+            },
+            "stopReason": "pending",
+            "text": "ok",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
       }
     },
     "responses.codex-failure-branches": {

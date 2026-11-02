@@ -56,6 +56,11 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
   }
 
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? {
+    { credential in try await client.refresh(credential) }
+  }
+  var oauthNow: @Sendable () -> Date { { Date() } }
+
   func resolveCredential(
     providerID: String,
     credentialStore: any ProviderCredentialStore,
@@ -67,7 +72,7 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
     guard let stored = try await credentialStore.read(providerID: providerID) else {
       return nil
     }
-    guard case .oauth = stored else {
+    guard case .oauth(let optimistic) = stored else {
       throw ProviderRuntimeFailure(
         code: .invalidCredential,
         message: "OpenAI Codex requires an OAuth credential",
@@ -78,7 +83,8 @@ struct OpenAICodexAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
     let refreshed = try await refreshCoordinator.credential(
       providerID: providerID,
-      refresh: { credential in try await client.refresh(credential) }
+      optimisticCredential: optimistic,
+      refresh: oauthRefresh!
     )
     return refreshed.map(ProviderCredential.oauth)
   }

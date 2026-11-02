@@ -202,7 +202,8 @@ public struct CustomProviderRuntime: ProviderRuntime {
       authorization: APIKeyAuthorizationAdapter(
         providerID: provider.id,
         methodID: authorizationMethod.id,
-        label: authorizationMethod.label
+        label: authorizationMethod.label,
+        usesBuiltinPrimaryAuthorization: false
       )
     )
   }

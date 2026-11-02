@@ -46,7 +46,8 @@ export class InMemoryCredentialStore {
               send({ kind: "credentialReply", requestID: payload.requestID, credential: packet(result) });
             } catch (error) {
               const id = randomUUID(); errors.set(id, error);
-              send({ kind: "credentialReply", requestID: payload.requestID, error: { id, message: error.message } });
+              send({ kind: "credentialReply", requestID: payload.requestID,
+                error: { id, message: error.message, nativeResolutionFailure: error.nativeResolutionFailure } });
             }
           })();
         } else if (kind === "credentialResult") {
@@ -70,3 +71,5 @@ export class InMemoryCredentialStore {
     });
   }
 }
+
+export { packet as credentialPacket, value as credentialValue };

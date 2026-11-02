@@ -1,0 +1,12 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamTests": ["packages/ai/test/radius-provider.test.ts"],
+  "cases": [
+    {"id": "default-baseline"},
+    {"id": "default-normalized-baseline", "gateway": "radius.pi.dev///"},
+    {"id": "custom-gateway-has-no-public-baseline", "gateway": "http://localhost:8788/"},
+    {"id": "empty-dynamic-catalog-replaces-baseline", "config": {"baseUrl": "https://radius.fixture/v1", "models": []}},
+    {"id": "dynamic-catalog-replaces-baseline", "config": {"baseUrl": "https://radius.fixture/v1", "models": [{"id": "organization-only", "name": "Fixture Organization", "reasoning": false, "input": ["text"], "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0}, "contextWindow": 1000, "maxTokens": 100}]}},
+    {"id": "custom-gateway-dynamic-catalog", "gateway": "http://localhost:8788/", "config": {"baseUrl": "http://localhost:8788/v1", "models": [{"id": "local-fixture", "name": "Fixture Local", "reasoning": false, "input": ["text"], "cost": {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0}, "contextWindow": 1000, "maxTokens": 100}]}}
+  ]
+}

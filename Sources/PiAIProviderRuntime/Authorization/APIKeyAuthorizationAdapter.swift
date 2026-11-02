@@ -4,6 +4,28 @@ struct APIKeyAuthorizationAdapter: ProviderAuthorizationAdapter {
   let providerID: String
   let methodID: String
   let label: String
+  var usesBuiltinPrimaryAuthorization = true
+  func resolvePrimary(_ credential: APIKeyCredential?, context: ProviderAuthenticationContext)
+    async throws -> ProviderPrimaryAuthorization?
+  {
+    if !usesBuiltinPrimaryAuthorization {
+      if let credential, credential.configuredKey?.isEmpty == false {
+        return .init(
+          credential: .apiKey(credential), headers: [:], environment: credential.environment,
+          source: "stored credential", connectionEnvironment: [:])
+      }
+      guard
+        let key = try await ProviderEnvironmentKeys.firstAPIKey(
+          providerID: providerID, environment: context.environment)
+      else { return nil }
+      return .init(
+        credential: .apiKey(.init(key: key.value, metadata: [:])), headers: [:], environment: nil,
+        source: key.name, connectionEnvironment: [:])
+    }
+    return try await ProviderPrimaryAuthorization.resolve(
+      providerID: providerID,
+      credential: credential.map(ProviderCredential.apiKey), context: context)
+  }
 
   func authorize(
     _ operation: AuthorizationOperation,

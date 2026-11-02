@@ -5,6 +5,77 @@ import Testing
 
 @Suite
 struct RadiusProviderRuntimeTests {
+  @Test func configuredGatewayRoutesOAuthWithoutAnotherGatewayPrompt() async throws {
+    let store = InMemoryProviderCredentialStore()
+    let transport = RadiusBufferedFixtureTransport([
+      radiusResponse(
+        200,
+        [
+          "device_code": "fixture-device", "user_code": "FIXTURE",
+          "verification_uri": "http://localhost:8788/activate", "expires_in": 600, "interval": 1,
+        ]),
+      radiusResponse(
+        200,
+        ["access_token": "fixture-access", "refresh_token": "fixture-refresh", "expires_in": 3600]),
+    ])
+    let runtime = try BuiltinProviderRuntime(
+      credentialStore: store, authorizationTransport: transport,
+      authorizationConfiguration: .init(radiusGateway: "http://localhost:8788/"))
+    _ = try await runtime.authorize(
+      .login(providerID: "radius", methodID: "oauth"),
+      interaction: { challenge in
+        switch challenge {
+        case .choice(_, "radius-login-method", _, _): return .value("device-code")
+        case .deviceCode: return .acknowledged
+        default:
+          throw radiusFixtureFailure("Configured Radius gateway requested another interaction")
+        }
+      })
+    let requests = await transport.requests
+    #expect(requests.count == 2)
+    #expect(
+      requests.allSatisfy {
+        $0.url?.absoluteString.hasPrefix("http://localhost:8788/v1/oauth/") == true
+      })
+    guard case .oauth(let credential) = try await store.read(providerID: "radius") else {
+      Issue.record("Configured Radius OAuth did not persist a credential")
+      return
+    }
+    #expect(credential.metadata["gateway"] == "http://localhost:8788")
+  }
+
+  @Test func disabledOrganizationModelsDoNotRestoreThePublicBaseline() async throws {
+    let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+      .deletingLastPathComponent().deletingLastPathComponent()
+    let input = try JSONValue(
+      jsonData: Data(
+        contentsOf:
+          root.appending(path: "Fixtures/Differential/Cases/radius-catalog.json"))
+    )
+    .objectValue!.array("cases")!.first {
+      $0.objectValue!.string("id") == "empty-dynamic-catalog-replaces-baseline"
+    }!.objectValue!
+    let expected = try JSONValue(
+      jsonData: Data(
+        contentsOf:
+          root.appending(path: "Fixtures/Differential/Oracle/radius-catalog.json"))
+    )
+    .objectValue!.array("cases")!.first {
+      $0.objectValue!.string("id") == "empty-dynamic-catalog-replaces-baseline"
+    }!.objectValue!
+    let store = InMemoryProviderCredentialStore(credentials: [
+      "radius": .apiKey(.init(key: "fixture-key", metadata: [:]))
+    ])
+    let runtime = try BuiltinProviderRuntime(
+      credentialStore: store,
+      authorizationTransport: RadiusBufferedFixtureTransport([
+        .init(statusCode: 200, headers: [:], body: try JSONEncoder().encode(input["config"]!))
+      ]))
+    let radius = try #require(try await runtime.catalog().providers.first { $0.id == "radius" })
+    #expect(
+      radius.models.map(\.id) == expected.array("after")!.map { $0.objectValue!.string("id")! })
+  }
+
   @Test
   func deviceOAuthStoresGatewayAndHandlesPendingPolling() async throws {
     let transport = RadiusBufferedFixtureTransport([

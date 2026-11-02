@@ -1,6 +1,19 @@
 import Foundation
 
 struct CompositeAuthorizationAdapter: ProviderAuthorizationAdapter {
+  var supportsPrimaryAuthorization: Bool { methods["api-key"] != nil }
+  func resolvePrimary(_ credential: APIKeyCredential?, context: ProviderAuthenticationContext)
+    async throws -> ProviderPrimaryAuthorization?
+  {
+    try await methods["api-key"]?.resolvePrimary(credential, context: context)
+  }
+  var oauthRefresh: CredentialRefreshCoordinator.RefreshOperation? {
+    methods["oauth"]?.oauthRefresh
+  }
+  var oauthNow: @Sendable () -> Date {
+    if let adapter = methods["oauth"] { return adapter.oauthNow }
+    return { Date() }
+  }
   private let providerID: String
   private let methods: [String: any ProviderAuthorizationAdapter]
 

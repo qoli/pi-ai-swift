@@ -66,6 +66,7 @@ struct ProviderVerticalSliceTests {
           return false
         })
       #expect(events.contains(.completed(.stop)))
+      #expect(events.contains(.textDelta("ok")), Comment(rawValue: providerID))
       let sent = try #require(await transport.request())
       #expect(sent.url?.scheme == "https")
       #expect(sent.url?.absoluteString.contains("{") == false)
@@ -175,7 +176,9 @@ private actor ProviderVerticalTransport: ProviderHTTPStreamingTransport {
         [:],
         sse([
           #"{"type":"response.created","response":{"id":"vertical-response","model":"fixture"}}"#,
-          #"{"type":"response.output_text.delta","delta":"ok"}"#,
+          #"{"type":"response.output_item.added","output_index":0,"item":{"type":"message","id":"vertical-message","role":"assistant","status":"in_progress","content":[]}}"#,
+          #"{"type":"response.output_text.delta","output_index":0,"item_id":"vertical-message","content_index":0,"delta":"ok"}"#,
+          #"{"type":"response.output_item.done","output_index":0,"item":{"type":"message","id":"vertical-message","role":"assistant","status":"completed","content":[{"type":"output_text","text":"ok","annotations":[]}]}}"#,
           #"{"type":"response.completed","response":{"usage":{"input_tokens":1,"output_tokens":1}}}"#,
         ])
       )

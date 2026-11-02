@@ -5,6 +5,43 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testRadiusCatalogMatchesPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ directory: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf:
+            root.appending(path: "Differential/\(directory)/radius-catalog.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      let actual = try await RadiusCatalogFixtures.replay(input.objectValue!)
+      XCTAssertEqual(actual, oracle, input.objectValue!.string("id")!)
+    }
+  }
+
+  func testAuthResolutionMatchesPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ directory: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf:
+            root.appending(path: "Differential/\(directory)/auth-resolution.json"))
+      ).objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      let actual = try await AuthResolutionFixtures.replay(input.objectValue!)
+      XCTAssertEqual(actual, oracle, input.objectValue!.string("id")!)
+    }
+  }
+
   func testOAuthRefreshLifecycleMatchesPinnedSource() async throws {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     func cases(_ directory: String) throws -> [JSONValue] {
@@ -2094,7 +2131,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
     let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
     let cases = try XCTUnwrap(fixture.object("responsesBlockLifecycleEvents"))
-    XCTAssertEqual(cases.count, 5)
+    XCTAssertEqual(cases.count, 7)
     for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
       for (name, value) in cases {
         let expected = try XCTUnwrap(

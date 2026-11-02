@@ -109,7 +109,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
     urlRequest.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
     urlRequest.setValue("true", forHTTPHeaderField: "anthropic-dangerous-direct-browser-access")
-    let isOAuth = isOAuthCredential(context.credential)
+    let isOAuth = Self.isOAuthCredential(context.credential, providerID: request.providerID)
     let suppressBeta =
       request.connectionOptions.headers?.contains {
         $0.key.caseInsensitiveCompare("anthropic-beta") == .orderedSame && $0.value == nil
@@ -237,13 +237,17 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
   ) throws {
     switch credential {
     case .apiKey(let credential):
-      if providerID == "github-copilot" {
+      if providerID == "github-copilot" || credential.key.contains("sk-ant-oat") {
         request.setValue("Bearer \(credential.key)", forHTTPHeaderField: "Authorization")
       } else {
         request.setValue(credential.key, forHTTPHeaderField: "x-api-key")
       }
     case .oauth(let credential):
-      request.setValue("Bearer \(credential.accessToken)", forHTTPHeaderField: "Authorization")
+      if providerID == "github-copilot" || credential.accessToken.contains("sk-ant-oat") {
+        request.setValue("Bearer \(credential.accessToken)", forHTTPHeaderField: "Authorization")
+      } else {
+        request.setValue(credential.accessToken, forHTTPHeaderField: "x-api-key")
+      }
     case nil where headerOwned:
       break
     case nil:
@@ -500,9 +504,13 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     return body
   }
 
-  private func isOAuthCredential(_ credential: ProviderCredential?) -> Bool {
-    if case .oauth = credential { return true }
-    return false
+  static func isOAuthCredential(_ credential: ProviderCredential?, providerID: String) -> Bool {
+    guard providerID != "github-copilot" else { return false }
+    switch credential {
+    case .apiKey(let value): return value.key.contains("sk-ant-oat")
+    case .oauth(let value): return value.accessToken.contains("sk-ant-oat")
+    case nil: return false
+    }
   }
 
   private func hasCredentialHeader(_ headers: [String: String]) -> Bool {
