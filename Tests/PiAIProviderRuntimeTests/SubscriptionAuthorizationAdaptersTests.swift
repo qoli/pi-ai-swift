@@ -70,7 +70,7 @@ struct SubscriptionAuthorizationAdaptersTests {
       return
     }
     #expect(account.providerID == "anthropic")
-    guard case .oauth(let credential)? = await store.read(providerID: "anthropic") else {
+    guard case .oauth(let credential)? = try await store.read(providerID: "anthropic") else {
       Issue.record("Anthropic OAuth credential was not stored")
       return
     }
@@ -100,7 +100,7 @@ struct SubscriptionAuthorizationAdaptersTests {
       },
       credentialStore: store
     )
-    guard case .oauth(let credential)? = await store.read(providerID: "openrouter") else {
+    guard case .oauth(let credential)? = try await store.read(providerID: "openrouter") else {
       Issue.record("OpenRouter OAuth credential was not stored")
       return
     }
@@ -149,7 +149,7 @@ struct SubscriptionAuthorizationAdaptersTests {
       },
       credentialStore: store
     )
-    guard case .oauth(let credential)? = await store.read(providerID: "xai") else {
+    guard case .oauth(let credential)? = try await store.read(providerID: "xai") else {
       Issue.record("xAI OAuth credential was not stored")
       return
     }
@@ -243,7 +243,7 @@ struct SubscriptionAuthorizationAdaptersTests {
       credentialStore: store
     )
     guard
-      case .oauth(let credential)? = await store.read(
+      case .oauth(let credential)? = try await store.read(
         providerID: "github-copilot"
       )
     else {

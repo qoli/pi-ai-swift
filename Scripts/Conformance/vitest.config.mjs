@@ -82,6 +82,20 @@ export default defineConfig({
           + `\nexport function ${factory}(...args) { return __piProvider(__piOriginal_${factory}(...args), args); }`, map: null };
       }
       if (implementation !== "upstream" || !id.startsWith(path.join(upstream, "packages/ai/src/"))) return;
+      if (id.endsWith("/auth/credential-store.ts")) {
+        return { code: `import {trace as __piTrace} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n`
+          + code.replace("export class InMemoryCredentialStore", "class __piOriginal_InMemoryCredentialStore")
+          + `\nexport class InMemoryCredentialStore extends __piOriginal_InMemoryCredentialStore {\n`
+          + ["read", "list", "modify", "delete"].map(name => `${name}(...args) { return __piTrace("credential-store.${name}", undefined, () => super.${name}(...args)); }`).join("\n")
+          + "\n}", map: null };
+      }
+      if (id.endsWith("/auth/resolve.ts")) {
+        return { code: `import {trace as __piTrace} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n`
+          + code.replace("export function resolveProviderAuth", "function __piOriginal_resolveProviderAuth")
+            .replace("export async function refreshStoredOAuthCredential", "async function __piOriginal_refreshStoredOAuthCredential")
+          + `\nexport function resolveProviderAuth(...args) { return __piTrace("authorization.resolve", undefined, () => __piOriginal_resolveProviderAuth(...args)); }`
+          + `\nexport function refreshStoredOAuthCredential(...args) { return __piTrace("authorization.refresh-stored", undefined, () => __piOriginal_refreshStoredOAuthCredential(...args)); }`, map: null };
+      }
       if (id.endsWith("/auth/helpers.ts")) {
         return { code: `import {tracePrimaryAuthorization as __piPrimary} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n`
           + code.replace("export function envApiKeyAuth", "function __piOriginal_envApiKeyAuth")
@@ -207,6 +221,9 @@ export default defineConfig({
         return path.join(directory, "offline-credentials.mjs");
       }
       if (implementation !== "swift") return;
+      if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/auth/credential-store.ts")) {
+        return path.join(directory, "credential-store.mjs");
+      }
       if (source === "pi-conformance:upstream-overflow") return path.join(upstream, "packages/ai/src/utils/overflow.ts");
       if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/utils/overflow.ts")) {
         return path.join(directory, "overflow.mjs");

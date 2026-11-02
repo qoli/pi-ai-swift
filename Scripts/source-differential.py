@@ -220,6 +220,12 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-oauth-metadata-oracle.mjs',
+             'Fixtures/Differential/Cases/oauth-metadata.json',
+             'Fixtures/Differential/Oracle/oauth-metadata.json', 'built-in OAuth catalog metadata'),
+            ('pi-ai-credential-store-oracle.mjs',
+             'Fixtures/Differential/Cases/credential-store.json',
+             'Fixtures/Differential/Oracle/credential-store.json', 'credential store mutation and cancellation contract'),
             ('pi-ai-oauth-resolution-oracle.mjs',
              'Fixtures/Differential/Cases/oauth-resolution.json',
              'Fixtures/Differential/Oracle/oauth-resolution.json', 'stored OAuth default validity and refresh acceptance'),

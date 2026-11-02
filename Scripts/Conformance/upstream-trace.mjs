@@ -56,17 +56,30 @@ export function tracePrimaryAuthorization(source) {
 }
 
 export function authorization(provider, source) {
-  return {
+  return traceOAuthMetadata(provider, {
     ...source,
     login: (...args) => trace(`authorization.${provider}.login`, undefined, () => source.login(...args)),
     refresh: (...args) => trace(`authorization.${provider}.refresh`, undefined, () => source.refresh(...args)),
     toAuth: (...args) => trace(`authorization.${provider}.toAuth`, undefined, () => source.toAuth(...args)),
-  };
+  });
+}
+
+function traceOAuthMetadata(provider, source) {
+  if (provider === "radius") return source;
+  const result = { ...source };
+  for (const field of ["name", "isSubscription", "loginLabel"]) {
+    Object.defineProperty(result, field, { enumerable: true, configurable: true,
+      get: () => trace(`authorization.${provider}.metadata`, undefined, () => source[field]),
+    });
+  }
+  return result;
 }
 
 export function traceBuiltinProvider(provider, args) {
   const wrapped = { ...provider };
   if (provider.auth?.apiKey) wrapped.auth = { ...provider.auth, apiKey: tracePrimaryAuthorization(provider.auth.apiKey) };
+  if (provider.auth?.oauth) wrapped.auth = { ...(wrapped.auth ?? provider.auth),
+    oauth: traceOAuthMetadata(provider.id, provider.auth.oauth) };
   if (!args.length && !provider.refreshModels) {
     for (const [name, operation] of [["getModels", "catalog"], ["getAllModels", "catalog.all-models"]]) {
       if (provider[name]) wrapped[name] = (...values) => trace(operation, undefined, () => provider[name](...values));

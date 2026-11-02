@@ -2,10 +2,11 @@ import { spawn } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { PassThrough } from "node:stream";
 import { createInterface } from "node:readline";
-import { afterEach, beforeEach, expect } from "vitest";
+import { afterAll, afterEach, beforeEach, expect } from "vitest";
 import { addNativeClockCall, removeNativeClockCall, nativeClockChanged, nativeTimerScheduled } from "./native-clock.mjs";
 
 let session;
+let credentialSession;
 let nextID = 0;
 const stats = new Map();
 
@@ -28,6 +29,7 @@ afterEach(() => {
   session = undefined;
   stats.clear();
 });
+afterAll(() => { credentialSession?.close(); credentialSession = undefined; });
 
 function createSession() {
   const process = spawn(globalThis.process.env.PI_CONFORMANCE_PROBE, ["--server"], { stdio: ["pipe", "pipe", "pipe"] });
@@ -138,6 +140,8 @@ function createSession() {
         return;
       }
       if (["retryRequest", "cloud"].includes(frame.kind)) phase(frame.id, "host");
+      if (frame.kind === "credentialTransform") phase(frame.id, "waiting");
+      if (frame.kind === "credentialResult") phase(frame.id, "finishing");
       if (["request", "observer"].includes(frame.kind)) phase(frame.id, "running");
       call.stdout.write(line + "\n");
       if (frame.kind === "finished") {
@@ -207,4 +211,9 @@ function createSession() {
 export function codexProbeChild() {
   session ??= createSession();
   return session.child();
+}
+
+export function credentialProbeChild() {
+  credentialSession ??= createSession();
+  return credentialSession.child();
 }

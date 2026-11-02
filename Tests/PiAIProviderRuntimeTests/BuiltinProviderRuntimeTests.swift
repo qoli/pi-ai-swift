@@ -55,7 +55,7 @@ struct BuiltinProviderRuntimeTests {
         )
     )
     #expect(
-      await store.read(providerID: "kimi-coding")
+      try await store.read(providerID: "kimi-coding")
         == .apiKey(APIKeyCredential(key: " fixture-kimi-key ", metadata: [:]))
     )
   }

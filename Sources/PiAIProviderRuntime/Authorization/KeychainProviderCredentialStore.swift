@@ -4,8 +4,7 @@ import Security
 public actor KeychainProviderCredentialStore: ProviderCredentialStore {
   private let service: String
   private let accessGroup: String?
-  private var lockedProviderIDs: Set<String> = []
-  private var lockWaiters: [String: [CheckedContinuation<Void, Never>]] = [:]
+  private let transactions = ProviderCredentialTransactions()
 
   public init(service: String, accessGroup: String? = nil) throws {
     let normalized = service.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -21,13 +20,13 @@ public actor KeychainProviderCredentialStore: ProviderCredentialStore {
   }
 
   public func read(providerID: String) async throws -> ProviderCredential? {
+    try Task.checkCancellation()
     let providerID = try normalizedProviderID(providerID)
-    await acquire(providerID)
-    defer { release(providerID) }
     return try load(providerID: providerID)
   }
 
   public func list() async throws -> [ProviderCredentialInfo] {
+    try Task.checkCancellation()
     var query = baseQuery()
     query[kSecReturnAttributes as String] = true
     query[kSecMatchLimit as String] = kSecMatchLimitAll
@@ -70,35 +69,32 @@ public actor KeychainProviderCredentialStore: ProviderCredentialStore {
       ) async throws -> ProviderCredential?
   ) async throws -> ProviderCredential? {
     let providerID = try normalizedProviderID(providerID)
-    await acquire(providerID)
-    defer { release(providerID) }
+    return try await ProviderCancellableOperation.run {
+      try await self.transactions.withLock(providerID) {
+        try await self.update(providerID: providerID, transform)
+      }
+    }
+  }
 
+  private func update(
+    providerID: String,
+    _ transform: @escaping @Sendable (ProviderCredential?) async throws -> ProviderCredential?
+  ) async throws -> ProviderCredential? {
+    try Task.checkCancellation()
     let current = try load(providerID: providerID)
-    let updated: ProviderCredential?
-    do {
-      updated = try await transform(current)
-    } catch is CancellationError {
-      throw CancellationError()
-    } catch {
-      throw Self.failure(
-        .invalidCredential,
-        operation: "keychain.modify",
-        message: "Provider credential update was rejected"
-      )
-    }
-    if let updated {
-      try save(updated, providerID: providerID)
-    } else {
-      try remove(providerID: providerID)
-    }
-    return updated
+    let updated = try await transform(current)
+    try Task.checkCancellation()
+    if let updated { try save(updated, providerID: providerID) }
+    return updated ?? current
   }
 
   public func delete(providerID: String) async throws {
     let providerID = try normalizedProviderID(providerID)
-    await acquire(providerID)
-    defer { release(providerID) }
-    try remove(providerID: providerID)
+    try await ProviderCancellableOperation.run {
+      try await self.transactions.withLock(providerID) {
+        try await self.remove(providerID: providerID)
+      }
+    }
   }
 
   private func load(providerID: String) throws -> ProviderCredential? {
@@ -173,6 +169,7 @@ public actor KeychainProviderCredentialStore: ProviderCredentialStore {
   }
 
   private func remove(providerID: String) throws {
+    try Task.checkCancellation()
     let status = SecItemDelete(itemQuery(providerID: providerID) as CFDictionary)
     guard status == errSecSuccess || status == errSecItemNotFound else {
       throw Self.keychainFailure(status, operation: "keychain.delete")
@@ -207,24 +204,6 @@ public actor KeychainProviderCredentialStore: ProviderCredentialStore {
       )
     }
     return normalized
-  }
-
-  private func acquire(_ providerID: String) async {
-    if lockedProviderIDs.insert(providerID).inserted { return }
-    await withCheckedContinuation { continuation in
-      lockWaiters[providerID, default: []].append(continuation)
-    }
-  }
-
-  private func release(_ providerID: String) {
-    guard var waiters = lockWaiters[providerID], !waiters.isEmpty else {
-      lockedProviderIDs.remove(providerID)
-      lockWaiters[providerID] = nil
-      return
-    }
-    let next = waiters.removeFirst()
-    lockWaiters[providerID] = waiters.isEmpty ? nil : waiters
-    next.resume()
   }
 
   private static func keychainFailure(

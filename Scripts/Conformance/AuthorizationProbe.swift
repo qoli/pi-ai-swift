@@ -204,7 +204,7 @@ enum AuthorizationConformanceProbe {
         } else {
           throw AuthorizationProbeError("Unsupported authorization probe action: " + action)
         }
-        guard case .oauth(let credential) = await store.read(providerID: nativeProvider) else {
+        guard case .oauth(let credential) = try await store.read(providerID: nativeProvider) else {
           throw AuthorizationProbeError("Native authorization produced no OAuth credential")
         }
         try rpc.write(
@@ -339,7 +339,7 @@ enum AuthorizationConformanceProbe {
         let reply = try await rpc.exchange("authInteraction", payload)
         return reply.objectValue?.string("value").map(AuthorizationResponse.value) ?? .acknowledged
       }, credentialStore: store)
-    guard case .apiKey(let key) = await store.read(providerID: provider) else {
+    guard case .apiKey(let key) = try await store.read(providerID: provider) else {
       throw AuthorizationProbeError("Native primary login produced no configuration")
     }
     var value: [String: JSONValue] = ["type": .string("api_key")]

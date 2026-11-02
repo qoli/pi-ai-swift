@@ -165,6 +165,7 @@ public protocol ProviderCredentialStore: Sendable {
   func read(providerID: String) async throws -> ProviderCredential?
   func list() async throws -> [ProviderCredentialInfo]
 
+  /// A nil transform result preserves the current credential. Use delete to remove it.
   func modify(
     providerID: String,
     _ transform:

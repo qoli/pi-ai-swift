@@ -222,7 +222,7 @@ struct OpenAICodexOAuthTests {
     #expect(credential.accessToken == accessToken)
     #expect(credential.refreshToken == "refresh-2")
     #expect(
-      await store.read(providerID: OpenAICodexOAuthClient.providerID)
+      try await store.read(providerID: OpenAICodexOAuthClient.providerID)
         == .oauth(credential)
     )
   }
@@ -263,7 +263,7 @@ struct OpenAICodexOAuthTests {
       Issue.record("unexpected refresh error: \(error)")
     }
     #expect(
-      await store.read(providerID: OpenAICodexOAuthClient.providerID)
+      try await store.read(providerID: OpenAICodexOAuthClient.providerID)
         == .oauth(source)
     )
   }

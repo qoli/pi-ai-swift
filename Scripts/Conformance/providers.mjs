@@ -5,7 +5,7 @@ export {
   getProviders as getBuiltinProviders,
 } from "./bridge.mjs";
 import { getModels, invokeNative, recordNative } from "./bridge.mjs";
-import { wrapPrimaryAuthorization } from "./authorization.mjs";
+import { wrapPrimaryAuthorization, withNativeOAuthMetadata } from "./authorization.mjs";
 
 export function projectBuiltinProvider(provider, args) {
   const result = { ...provider };
@@ -16,6 +16,8 @@ export function projectBuiltinProvider(provider, args) {
   if (provider.auth?.apiKey && ["anthropic", "amazon-bedrock", "google-vertex", "cloudflare-workers-ai", "cloudflare-ai-gateway"].includes(provider.id)) {
     result.auth = { ...provider.auth, apiKey: wrapPrimaryAuthorization(provider.id, provider.auth.apiKey) };
   }
+  if (provider.auth?.oauth) result.auth = { ...(result.auth ?? provider.auth),
+    oauth: withNativeOAuthMetadata(provider.id, provider.auth.oauth) };
   for (const name of ["filterModels", "filterAllModels"]) {
     if (!provider[name]) continue;
     result[name] = (models, credential) => {

@@ -41,7 +41,7 @@ struct RadiusProviderRuntimeTests {
       credentialStore: store
     )
 
-    guard case .oauth(let credential)? = await store.read(providerID: "radius") else {
+    guard case .oauth(let credential)? = try await store.read(providerID: "radius") else {
       Issue.record("Radius OAuth credential was not stored")
       return
     }
@@ -96,7 +96,7 @@ struct RadiusProviderRuntimeTests {
       requests[1].value(forHTTPHeaderField: "Authorization")
         == "Bearer refreshed-access"
     )
-    guard case .oauth(let refreshed)? = await store.read(providerID: "radius") else {
+    guard case .oauth(let refreshed)? = try await store.read(providerID: "radius") else {
       Issue.record("Radius refreshed credential was not persisted")
       return
     }

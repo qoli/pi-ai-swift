@@ -219,7 +219,10 @@
         "Sources/PiAIProviderRuntime/Authorization/ProviderEnvironmentKeys.swift",
         "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryAuthorization.swift",
         "Sources/PiAIProviderRuntime/Authorization/ProviderPrimaryLogin.swift",
-        "Sources/PiAIProviderRuntime/Authorization/ProviderOAuthLoginChoice.swift"
+        "Sources/PiAIProviderRuntime/Authorization/ProviderOAuthLoginChoice.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderCredentialTransactions.swift",
+        "Sources/PiAIProviderRuntime/ProviderCatalog.swift",
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -238,7 +241,15 @@
         "packages/ai/src/providers/amazon-bedrock.ts",
         "packages/ai/src/providers/anthropic.ts",
         "packages/ai/src/providers/google-vertex.ts",
-        "packages/ai/src/providers/cloudflare-auth.ts"
+        "packages/ai/src/providers/cloudflare-auth.ts",
+        "packages/ai/src/auth/oauth/anthropic.ts",
+        "packages/ai/src/auth/oauth/openai-chatgpt.ts",
+        "packages/ai/src/auth/oauth/openai-codex.ts",
+        "packages/ai/src/auth/oauth/github-copilot.ts",
+        "packages/ai/src/auth/oauth/kimi-coding.ts",
+        "packages/ai/src/auth/oauth/xai.ts",
+        "packages/ai/src/auth/oauth/openrouter.ts",
+        "packages/ai/src/auth/oauth/meta.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/oauth-auth.test.ts",
@@ -293,7 +304,25 @@
         "Fixtures/Differential/Oracle/oauth-resolution.json",
         "Tests/PiAIProviderRuntimeTests/OAuthResolutionFixtures.swift",
         "Tests/PiAIProviderRuntimeTests/CredentialRefreshCoordinatorTests.swift#oauthResolutionMatchesPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOAuthResolutionMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOAuthResolutionMatchesPinnedSource",
+        "Scripts/pi-ai-credential-store-oracle.mjs",
+        "Fixtures/Differential/Cases/credential-store.json",
+        "Fixtures/Differential/Oracle/credential-store.json",
+        "Tests/PiAIProviderRuntimeTests/CredentialStoreFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/CredentialStoreTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCredentialStoreTransactionsMatchPinnedSource",
+        "Scripts/pi-ai-oauth-metadata-oracle.mjs",
+        "Fixtures/Differential/Cases/oauth-metadata.json",
+        "Fixtures/Differential/Oracle/oauth-metadata.json",
+        "Tests/PiAIProviderRuntimeTests/OAuthMetadataFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/OAuthMetadataTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOAuthMetadataMatchesPinnedSource",
+        "Scripts/Conformance/CredentialStoreProbe.swift",
+        "Scripts/Conformance/credential-store.mjs",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testKeychainTransactionsMatchSourceMutationContract",
+        "Tests/iOSConformance/ConformanceHost.swift",
+        "Tests/iOSConformance/ConformanceHost.entitlements",
+        "Scripts/ios-conformance-project.rb"
       ],
       "requiredGates": [
         "swift-test"

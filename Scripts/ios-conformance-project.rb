@@ -5,13 +5,30 @@ require 'pathname'
 root = Pathname.new(__dir__).parent.realpath
 output = Pathname.new(ARGV.fetch(0, root.join('.build/conformance/iOSConformance.xcodeproj').to_s)).expand_path
 project = Xcodeproj::Project.new(output)
+host = project.new_target(:application, 'iOSConformanceHost', :ios, '17.0', nil, :swift)
+host.build_configurations.each do |configuration|
+  configuration.build_settings.merge!(
+    'GENERATE_INFOPLIST_FILE' => 'YES',
+    'INFOPLIST_KEY_UIApplicationSceneManifest_Generation' => 'YES',
+    'PRODUCT_BUNDLE_IDENTIFIER' => 'com.ronnie.pi-ai-swift.conformance.host',
+    'SWIFT_VERSION' => '6.0',
+    'CODE_SIGN_IDENTITY' => '-',
+    'CODE_SIGN_ENTITLEMENTS' => root.join('Tests/iOSConformance/ConformanceHost.entitlements').to_s,
+    'TARGETED_DEVICE_FAMILY' => '1,2'
+  )
+end
+host_source = project.main_group.new_file(root.join('Tests/iOSConformance/ConformanceHost.swift').to_s)
+host.source_build_phase.add_file_reference(host_source)
 target = project.new_target(:unit_test_bundle, 'iOSConformance', :ios, '17.0', nil, :swift)
+target.add_dependency(host)
 target.build_configurations.each do |configuration|
   configuration.build_settings.merge!(
     'GENERATE_INFOPLIST_FILE' => 'YES',
     'PRODUCT_BUNDLE_IDENTIFIER' => 'com.ronnie.pi-ai-swift.conformance',
     'SWIFT_VERSION' => '6.0',
     'CODE_SIGN_IDENTITY' => '-',
+    'TEST_HOST' => '$(BUILT_PRODUCTS_DIR)/iOSConformanceHost.app/iOSConformanceHost',
+    'BUNDLE_LOADER' => '$(TEST_HOST)',
     'TARGETED_DEVICE_FAMILY' => '1,2'
   )
 end
@@ -30,6 +47,10 @@ primary_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntim
 target.source_build_phase.add_file_reference(primary_helper)
 oauth_resolution_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/OAuthResolutionFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(oauth_resolution_helper)
+credential_store_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/CredentialStoreFixtures.swift').to_s)
+target.source_build_phase.add_file_reference(credential_store_helper)
+oauth_metadata_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/OAuthMetadataFixtures.swift').to_s)
+target.source_build_phase.add_file_reference(oauth_metadata_helper)
 reasoning_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/ReasoningSelectionFixtures.swift').to_s)
 overflow_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/ContextOverflowFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(overflow_helper)

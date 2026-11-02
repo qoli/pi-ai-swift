@@ -1,0 +1,8 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamTests": [
+    "packages/ai/test/oauth-auth.test.ts",
+    "packages/ai/test/openrouter-oauth.test.ts"
+  ],
+  "providers": ["anthropic", "openai-chatgpt", "openai-codex", "github-copilot", "kimi-coding", "xai", "openrouter", "meta"]
+}

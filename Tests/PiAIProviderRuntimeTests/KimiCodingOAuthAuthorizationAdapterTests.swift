@@ -114,7 +114,7 @@ struct KimiCodingOAuthAuthorizationAdapterTests {
         )
     )
     #expect(
-      await store.read(providerID: "kimi-coding")
+      try await store.read(providerID: "kimi-coding")
         == .oauth(
           OAuthCredential(
             accessToken: "access",

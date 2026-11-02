@@ -2,19 +2,22 @@ import Foundation
 
 public actor InMemoryProviderCredentialStore: ProviderCredentialStore {
   private var credentials: [String: ProviderCredential]
+  private var providerOrder: [String]
+  private let transactions = ProviderCredentialTransactions()
 
   public init(credentials: [String: ProviderCredential] = [:]) {
     self.credentials = credentials
+    providerOrder = credentials.keys.sorted()
   }
 
-  public func read(providerID: String) -> ProviderCredential? {
-    credentials[providerID]
+  public func read(providerID: String) throws -> ProviderCredential? {
+    try Task.checkCancellation()
+    return credentials[providerID]
   }
 
-  public func list() -> [ProviderCredentialInfo] {
-    credentials.map { providerID, credential in
-      ProviderCredentialInfo(providerID: providerID, kind: credential.kind)
-    }.sorted { $0.providerID < $1.providerID }
+  public func list() throws -> [ProviderCredentialInfo] {
+    try Task.checkCancellation()
+    return providerOrder.map { ProviderCredentialInfo(providerID: $0, kind: credentials[$0]!.kind) }
   }
 
   public func modify(
@@ -24,13 +27,38 @@ public actor InMemoryProviderCredentialStore: ProviderCredentialStore {
         ProviderCredential?
       ) async throws -> ProviderCredential?
   ) async throws -> ProviderCredential? {
-    let updated = try await transform(credentials[providerID])
-    credentials[providerID] = updated
-    return updated
+    try await ProviderCancellableOperation.run {
+      try await self.transactions.withLock(providerID) {
+        try await self.update(providerID: providerID, transform)
+      }
+    }
   }
 
-  public func delete(providerID: String) {
+  public func delete(providerID: String) async throws {
+    try await ProviderCancellableOperation.run {
+      try await self.transactions.withLock(providerID) { try await self.remove(providerID) }
+    }
+  }
+
+  private func update(
+    providerID: String,
+    _ transform: @escaping @Sendable (ProviderCredential?) async throws -> ProviderCredential?
+  ) async throws -> ProviderCredential? {
+    try Task.checkCancellation()
+    let current = credentials[providerID]
+    let updated = try await transform(current)
+    try Task.checkCancellation()
+    if let updated {
+      if current == nil { providerOrder.append(providerID) }
+      credentials[providerID] = updated
+    }
+    return updated ?? current
+  }
+
+  private func remove(_ providerID: String) throws {
+    try Task.checkCancellation()
     credentials[providerID] = nil
+    providerOrder.removeAll { $0 == providerID }
   }
 }
 

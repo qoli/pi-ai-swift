@@ -5,6 +5,68 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testOAuthMetadataMatchesPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    let input = try JSONValue(
+      jsonData: Data(
+        contentsOf:
+          root.appending(path: "Differential/Cases/oauth-metadata.json"))
+    ).objectValue!
+    let expected = try JSONValue(
+      jsonData: Data(
+        contentsOf:
+          root.appending(path: "Differential/Oracle/oauth-metadata.json"))
+    ).objectValue!.array("cases")!
+    let actual = try await OAuthMetadataFixtures.project(input.array("providers")!)
+    XCTAssertEqual(actual, expected)
+  }
+
+  func testCredentialStoreTransactionsMatchPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(path: "Differential/\(folder)/credential-store.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    for (input, expected) in zip(try cases("Cases"), try cases("Oracle")) {
+      let actual = try await CredentialStoreFixtures.replay(input.objectValue!)
+      XCTAssertEqual(actual, expected, input.objectValue!.string("id")!)
+    }
+  }
+
+  func testKeychainTransactionsMatchSourceMutationContract() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf:
+            root.appending(path: "Differential/\(folder)/credential-store.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      // Map insertion order is specific to the upstream in-memory implementation.
+      if input.objectValue!.string("scenario") == "list-insertion-order" { continue }
+      let store = try KeychainProviderCredentialStore(
+        service: "pi-ai-swift.tests.transactions.\(UUID())")
+      do {
+        let actual = try await CredentialStoreFixtures.replay(input.objectValue!, store: store)
+        XCTAssertEqual(actual, oracle, input.objectValue!.string("id")!)
+      } catch {
+        try await store.delete(providerID: "fixture")
+        try await store.delete(providerID: "other")
+        throw error
+      }
+      try await store.delete(providerID: "fixture")
+      try await store.delete(providerID: "other")
+    }
+  }
+
   func testOAuthResolutionMatchesPinnedSource() async throws {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     func cases(_ folder: String) throws -> [JSONValue] {

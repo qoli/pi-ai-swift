@@ -258,6 +258,11 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     if record.id == AnthropicOAuthAuthorizationAdapter.providerID {
       methods.append(.init(id: "oauth-copy-code", kind: .oauth, label: "Copy authorization code"))
     }
+    methods = methods.map { method in
+      .init(
+        id: method.id, kind: method.kind, label: method.label,
+        oauthMetadata: method.kind == .oauth ? .builtin(providerID: record.id) : nil)
+    }
     var adapters: [String: any ProviderAuthorizationAdapter] = [:]
     for method in methods {
       switch method.id {

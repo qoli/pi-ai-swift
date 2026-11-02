@@ -7,6 +7,7 @@ enum WireProbeContext {
 }
 
 actor WireConformanceServer {
+  nonisolated let credentialStores = CredentialStoreProbeService()
   nonisolated let sessions = CodexWebSocketSessions()
   nonisolated let cloudCredentialSources = ProviderCloudCredentialSources()
   nonisolated let clock: ProbeWireClock
@@ -87,6 +88,7 @@ actor WireConformanceServer {
       } else {
         pending?.resume(returning: frame.object("value") ?? [:])
       }
+    case "credentialReply": await credentialStores.receive(frame)
     case "closeSessions": await sessions.close(session: frame.string("session"))
     case "resetStats": await sessions.resetStats(session: frame.string("session"))
     default: inputs[id]?.yield(frame)

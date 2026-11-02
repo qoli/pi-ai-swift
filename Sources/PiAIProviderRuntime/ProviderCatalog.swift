@@ -41,11 +41,49 @@ public struct AuthorizationMethodDescriptor: Sendable, Equatable, Codable {
   public let id: String
   public let kind: Kind
   public let label: String
+  public let oauthMetadata: ProviderOAuthMetadata?
 
-  public init(id: String, kind: Kind, label: String) {
+  public init(id: String, kind: Kind, label: String, oauthMetadata: ProviderOAuthMetadata? = nil) {
     self.id = id
     self.kind = kind
     self.label = label
+    self.oauthMetadata = oauthMetadata
+  }
+}
+
+public struct ProviderOAuthMetadata: Sendable, Equatable, Codable {
+  public let name: String
+  public let isSubscription: Bool?
+  public let loginLabel: String?
+
+  public init(name: String, isSubscription: Bool? = nil, loginLabel: String? = nil) {
+    self.name = name
+    self.isSubscription = isSubscription
+    self.loginLabel = loginLabel
+  }
+
+  static func builtin(providerID: String) -> Self? {
+    switch providerID {
+    case "anthropic": .init(name: "Anthropic (Claude Pro/Max)", isSubscription: true)
+    case "openai":
+      .init(
+        name: "OpenAI (ChatGPT subscription)", isSubscription: true,
+        loginLabel: "Sign in with ChatGPT")
+    case "openai-codex": .init(name: "OpenAI (ChatGPT Plus/Pro)", isSubscription: true)
+    case "github-copilot": .init(name: "GitHub Copilot", isSubscription: true)
+    case "kimi-coding":
+      .init(
+        name: "Kimi Code (subscription)", isSubscription: true, loginLabel: "Sign in with Kimi Code"
+      )
+    case "xai":
+      .init(
+        name: "xAI (Grok/X subscription)", isSubscription: true,
+        loginLabel: "Sign in with SuperGrok or X Premium")
+    case "openrouter": .init(name: "OpenRouter OAuth", loginLabel: "Sign in with OpenRouter")
+    case "meta":
+      .init(name: "Meta (Muse subscription)", isSubscription: true, loginLabel: "Sign in with Meta")
+    default: nil
+    }
   }
 }
 

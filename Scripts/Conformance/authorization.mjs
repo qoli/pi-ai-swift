@@ -5,6 +5,7 @@ import { recordNative } from "./bridge.mjs";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { invokeNative } from "./native-operations.mjs";
 
 const { startOAuthCallbackServer } = await import(pathToFileURL(path.join(
   process.env.PI_CONFORMANCE_UPSTREAM, "packages/ai/src/auth/oauth/callback-server.ts")));
@@ -22,12 +23,27 @@ export function wrapAuthorization(provider, source, configuration = {}) {
     result.catch(() => {});
     return result;
   };
-  return {
+  return withNativeOAuthMetadata(provider, {
     ...source,
     login: (options, loginOptions) => observed(() => authorize(provider, "login", undefined, options, { ...configuration, ...loginOptions })),
     refresh: (credential, signal) => observed(() => authorize(provider, "refresh", credential, { signal }, configuration)),
     toAuth: credential => observed(() => authorize(provider, "toAuth", credential, {}, configuration)),
-  };
+  });
+}
+
+export function withNativeOAuthMetadata(provider, source) {
+  if (provider === "radius") return source;
+  const result = { ...source };
+  for (const field of ["name", "isSubscription", "loginLabel"]) {
+    Object.defineProperty(result, field, { enumerable: true, configurable: true,
+      get() {
+        const metadata = invokeNative({ operation: "authorization.metadata", provider });
+        recordNative(`authorization.${provider}.metadata`, "*");
+        return metadata?.[field];
+      },
+    });
+  }
+  return result;
 }
 
 export function wrapPrimaryAuthorization(provider, source, variables) {

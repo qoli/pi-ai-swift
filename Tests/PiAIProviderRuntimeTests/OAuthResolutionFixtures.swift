@@ -32,7 +32,7 @@ enum OAuthResolutionFixtures {
             Double(spec.int("refreshedExpiresOffsetMilliseconds")!) / 1_000), metadata: [:])
       }
     }
-    guard case .oauth(let stored) = await store.read(providerID: provider) else {
+    guard case .oauth(let stored) = try await store.read(providerID: provider) else {
       throw CancellationError()
     }
     return .object([

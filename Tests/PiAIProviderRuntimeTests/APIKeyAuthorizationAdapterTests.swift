@@ -37,7 +37,7 @@ struct APIKeyAuthorizationAdapterTests {
           )
         ))
     #expect(
-      await store.read(providerID: "provider")
+      try await store.read(providerID: "provider")
         == .apiKey(APIKeyCredential(key: "  fixture-key  ", metadata: [:])))
   }
 
@@ -59,8 +59,8 @@ struct APIKeyAuthorizationAdapterTests {
     )
 
     #expect(state == .disconnected(providerID: "provider"))
-    #expect(await store.read(providerID: "provider") == nil)
-    #expect(await store.read(providerID: "other") != nil)
+    #expect(try await store.read(providerID: "provider") == nil)
+    #expect(try await store.read(providerID: "other") != nil)
   }
 
   @Test
@@ -89,7 +89,7 @@ struct APIKeyAuthorizationAdapterTests {
       response: .acknowledged,
       code: .authorizationFailed
     )
-    #expect(await store.read(providerID: "provider") == nil)
+    #expect(try await store.read(providerID: "provider") == nil)
   }
 }
 

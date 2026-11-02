@@ -1,0 +1,65 @@
+{
+  "cases": [
+    {
+      "metadata": {
+        "isSubscription": true,
+        "name": "Anthropic (Claude Pro/Max)"
+      },
+      "provider": "anthropic"
+    },
+    {
+      "metadata": {
+        "isSubscription": true,
+        "loginLabel": "Sign in with ChatGPT",
+        "name": "OpenAI (ChatGPT subscription)"
+      },
+      "provider": "openai-chatgpt"
+    },
+    {
+      "metadata": {
+        "isSubscription": true,
+        "name": "OpenAI (ChatGPT Plus/Pro)"
+      },
+      "provider": "openai-codex"
+    },
+    {
+      "metadata": {
+        "isSubscription": true,
+        "name": "GitHub Copilot"
+      },
+      "provider": "github-copilot"
+    },
+    {
+      "metadata": {
+        "isSubscription": true,
+        "loginLabel": "Sign in with Kimi Code",
+        "name": "Kimi Code (subscription)"
+      },
+      "provider": "kimi-coding"
+    },
+    {
+      "metadata": {
+        "isSubscription": true,
+        "loginLabel": "Sign in with SuperGrok or X Premium",
+        "name": "xAI (Grok/X subscription)"
+      },
+      "provider": "xai"
+    },
+    {
+      "metadata": {
+        "loginLabel": "Sign in with OpenRouter",
+        "name": "OpenRouter OAuth"
+      },
+      "provider": "openrouter"
+    },
+    {
+      "metadata": {
+        "isSubscription": true,
+        "loginLabel": "Sign in with Meta",
+        "name": "Meta (Muse subscription)"
+      },
+      "provider": "meta"
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

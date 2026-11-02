@@ -62,7 +62,7 @@ struct CredentialRefreshCoordinatorTests {
       #expect(try await task.value == refreshed)
     }
     #expect(await gate.callCount() == 1)
-    #expect(await store.read(providerID: "provider") == .oauth(refreshed))
+    #expect(try await store.read(providerID: "provider") == .oauth(refreshed))
   }
 
   @Test
@@ -99,7 +99,7 @@ struct CredentialRefreshCoordinatorTests {
     } catch {
       Issue.record("logout race returned an unexpected error: \(error)")
     }
-    #expect(await store.read(providerID: "provider") == nil)
+    #expect(try await store.read(providerID: "provider") == nil)
   }
 
   @Test
@@ -127,7 +127,7 @@ struct CredentialRefreshCoordinatorTests {
     }
 
     await gate.waitUntilStarted()
-    await store.delete(providerID: "provider")
+    try await store.delete(providerID: "provider")
     await gate.release()
     do {
       _ = try await task.value
@@ -138,7 +138,7 @@ struct CredentialRefreshCoordinatorTests {
     } catch {
       Issue.record("credential race returned an unexpected error: \(error)")
     }
-    #expect(await store.read(providerID: "provider") == nil)
+    #expect(try await store.read(providerID: "provider") == nil)
   }
 
   @Test

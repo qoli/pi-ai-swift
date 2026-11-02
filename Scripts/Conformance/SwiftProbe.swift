@@ -51,6 +51,22 @@ struct SwiftConformanceProbe {
     lifetime: ProbeStreamLifetime = .shared
   ) async throws -> ProbeOutput? {
     let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
+    if envelope.string("operation") == "credential-store", let wireServer, let incoming {
+      try await CredentialStoreConformanceProbe.run(
+        envelope, service: wireServer.credentialStores, incoming: incoming)
+      return nil
+    }
+    if envelope.string("operation") == "authorization.metadata" {
+      let providerID = envelope.string("provider")!
+      let runtime = try BuiltinProviderRuntime(credentialStore: InMemoryProviderCredentialStore())
+      let method = try await runtime.catalog().providers
+        .first { $0.id == (providerID == "openai-chatgpt" ? "openai" : providerID) }?
+        .authorizationMethods.first { $0.kind == .oauth }
+      let encoded = try method.map { try JSONValue(jsonData: JSONEncoder().encode($0)) }
+      let metadata = encoded?.objectValue?["oauthMetadata"] ?? .null
+      FileHandle.standardOutput.write(try JSONEncoder().encode(metadata))
+      return nil
+    }
     if envelope.string("operation") == "failure.context-overflow" {
       let message = envelope.object("message")!
       let result: Bool
