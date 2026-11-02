@@ -1,0 +1,135 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamTests": [
+    "packages/ai/test/env-api-keys.test.ts",
+    "packages/ai/test/baseten-models.test.ts",
+    "packages/ai/test/fireworks-models.test.ts",
+    "packages/ai/test/together-models.test.ts",
+    "packages/ai/test/qwen-token-plan-models.test.ts"
+  ],
+  "cases": [
+    {
+      "id": "copilot-rejects-generic-tokens",
+      "provider": "github-copilot",
+      "environment": {
+        "GH_TOKEN": "fixture-gh",
+        "GITHUB_TOKEN": "fixture-github"
+      }
+    },
+    {
+      "id": "copilot-explicit-variable",
+      "provider": "github-copilot",
+      "environment": {
+        "COPILOT_GITHUB_TOKEN": "fixture-copilot",
+        "GH_TOKEN": "fixture-gh"
+      }
+    },
+    {
+      "id": "zai-cn-variable",
+      "provider": "zai-coding-cn",
+      "environment": {
+        "ZAI_CODING_CN_API_KEY": "fixture-zai"
+      }
+    },
+    {
+      "id": "anthropic-bearer-is-discovery-only",
+      "provider": "anthropic",
+      "environment": {
+        "ANTHROPIC_AUTH_TOKEN": "fixture-bearer",
+        "ANTHROPIC_OAUTH_TOKEN": "fixture-oauth",
+        "ANTHROPIC_API_KEY": "fixture-api"
+      }
+    },
+    {
+      "id": "anthropic-bearer-is-not-api-key",
+      "provider": "anthropic",
+      "environment": {
+        "ANTHROPIC_AUTH_TOKEN": "fixture-bearer"
+      }
+    },
+    {
+      "id": "anthropic-oauth-before-api",
+      "provider": "anthropic",
+      "environment": {
+        "ANTHROPIC_OAUTH_TOKEN": "fixture-oauth",
+        "ANTHROPIC_API_KEY": "fixture-api"
+      }
+    },
+    {
+      "id": "anthropic-api-without-oauth",
+      "provider": "anthropic",
+      "environment": {
+        "ANTHROPIC_API_KEY": "fixture-api"
+      }
+    },
+    {
+      "id": "baseten",
+      "provider": "baseten",
+      "environment": {
+        "BASETEN_API_KEY": "fixture-baseten"
+      }
+    },
+    {
+      "id": "fireworks",
+      "provider": "fireworks",
+      "environment": {
+        "FIREWORKS_API_KEY": "fixture-fireworks"
+      }
+    },
+    {
+      "id": "together",
+      "provider": "together",
+      "environment": {
+        "TOGETHER_API_KEY": "fixture-together"
+      }
+    },
+    {
+      "id": "qwen-token-plan-individual",
+      "provider": "qwen-token-plan-individual",
+      "environment": {
+        "QWEN_TOKEN_PLAN_API_KEY": "fixture-qwen-token-plan-individual"
+      }
+    },
+    {
+      "id": "unknown-provider",
+      "provider": "fixture-unknown",
+      "environment": {
+        "FIXTURE_UNKNOWN_API_KEY": "fixture-unknown"
+      }
+    },
+    {
+      "id": "empty-is-absent",
+      "provider": "openai",
+      "environment": {
+        "OPENAI_API_KEY": ""
+      }
+    },
+    {
+      "id": "whitespace-is-present",
+      "provider": "openai",
+      "environment": {
+        "OPENAI_API_KEY": "  "
+      }
+    },
+    {
+      "id": "scoped-replaces-ambient",
+      "provider": "openai",
+      "environment": {
+        "OPENAI_API_KEY": "ambient"
+      },
+      "scoped": {
+        "OPENAI_API_KEY": "scoped"
+      }
+    },
+    {
+      "id": "empty-scoped-uses-ambient",
+      "provider": "openai",
+      "environment": {
+        "OPENAI_API_KEY": "ambient"
+      },
+      "scoped": {
+        "OPENAI_API_KEY": ""
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { appendFileSync } from "node:fs";
 import { createInterface } from "node:readline";
@@ -17,6 +17,8 @@ import { bedrockSDKPayload, bedrockWirePayload } from "./bedrock-payload.mjs";
 import { codexProbeChild } from "./native-session.mjs";
 import { resolveFixtureCloud, FixtureAnthropic } from "./cloud-authorization.mjs";
 import { normalizeProviderError } from "./error-body.mjs";
+import { invokeNative as invoke, recordNative as record } from "./native-operations.mjs";
+import { getEnvApiKey } from "./environment.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const heapObservations = new AsyncLocalStorage();
@@ -40,29 +42,11 @@ export function isObservingNativeHeap() { return !!heapObservations.getStore(); 
 const { AssistantMessageEventStream } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/event-stream.ts")));
 const { getCurrentSystemPrompt, getCurrentTools, normalizeContext, resolveTranscriptTools } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/transcript.ts")));
 const { getSystemMessageText, renderSystemMessageUpdate } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/text.ts")));
-const { getEnvApiKey } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/env-api-keys.ts")));
 const { getProviderEnvValue } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/utils/provider-env.ts")));
 const { clampMaxTokensToContext } = await import(pathToFileURL(path.join(upstream, "packages/ai/src/api/simple-options.ts")));
 
-function record(operation, protocol, failure, unrepresentedCapabilities = [], entrypoint = "helper") {
-  const state = expect.getState();
-  appendFileSync(path.join(process.env.PI_CONFORMANCE_OUTPUT, "swift-invocations.jsonl"), JSON.stringify({
-    file: state.testPath, test: state.currentTestName, operation, protocol, entrypoint,
-    ...(failure ? { failure } : {}),
-    ...(unrepresentedCapabilities.length ? { unrepresentedCapabilities } : {}),
-  }) + "\n");
-}
-
 export function recordCapability(capability) {
   record("capability", "*", undefined, [capability]);
-}
-
-function invoke(input) {
-  const processResult = spawnSync(process.env.PI_CONFORMANCE_PROBE, [], {
-    input: JSON.stringify(input), encoding: "utf8", maxBuffer: Infinity,
-  });
-  if (processResult.status !== 0) throw new Error(`Swift conformance probe failed: ${processResult.stderr}`);
-  return JSON.parse(processResult.stdout);
 }
 
 export { invoke as invokeNative, record as recordNative, probe as projectNativeRequest, fixtureInput };

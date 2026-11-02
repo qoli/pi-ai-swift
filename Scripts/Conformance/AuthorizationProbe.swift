@@ -12,6 +12,27 @@ enum AuthorizationConformanceProbe {
     let transport = AuthorizationProbeTransport(rpc: rpc, clock: clock)
     let execution = Task {
       do {
+        if action == "catalog.personalize" {
+          try rpc.write("authStarted", ["operation": .string("catalog.openrouter.personalize")])
+          let result = try await OpenRouterCatalogPersonalization.apply(
+            input.array("catalog")!, baseURL: input.string("baseURL"),
+            credential: primaryCredential(input.object("credential")), transport: transport)
+          try rpc.write(
+            "authFinished",
+            [
+              "primary": .object([
+                "personalized": .bool(result.personalized),
+                "models": .array(
+                  zip(result.sourceIndices, result.catalog).map { index, model in
+                    .object([
+                      "index": .integer(Int64(index)), "model": model,
+                      "updated": .bool(result.updatedIndices.contains(index)),
+                    ])
+                  }),
+              ])
+            ])
+          return
+        }
         if action.hasPrefix("primary.") {
           try rpc.write("authStarted", ["operation": .string("authorization." + action)])
           if input.bool("aborted") == true { withUnsafeCurrentTask { $0?.cancel() } }

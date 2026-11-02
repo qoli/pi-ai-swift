@@ -51,6 +51,59 @@ struct SwiftConformanceProbe {
     lifetime: ProbeStreamLifetime = .shared
   ) async throws -> ProbeOutput? {
     let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
+    if envelope.string("operation") == "failure.context-overflow" {
+      let message = envelope.object("message")!
+      let result: Bool
+      if message.string("stopReason") == "error" {
+        result =
+          ProviderRuntimeFailure(
+            code: .invalidResponse, message: message.string("errorMessage") ?? "",
+            providerID: message.string("provider"), operation: nil, causeDescription: nil
+          ).isContextOverflow
+      } else {
+        let raw = message.object("usage") ?? [:]
+        let usage = ProviderUsage(
+          inputTokens: raw.int("input"), outputTokens: raw.int("output"), reasoningTokens: nil,
+          cachedInputTokens: raw.int("cacheRead"), providerMetadata: [:])
+        let reason = message.string("stopReason")!
+        let snapshot = ProviderResponseSnapshot(
+          responseID: nil, providerID: message.string("provider")!,
+          protocolID: message.string("api")!, modelID: message.string("model")!,
+          responseModelID: nil, content: [], usage: usage,
+          finishReason: reason == "toolUse"
+            ? .toolCalls
+            : reason == "aborted"
+              ? .cancelled
+              : ProviderFinishReason(rawValue: reason)!,
+          rawFinishReason: nil, timestampMilliseconds: 0)
+        result = snapshot.isContextOverflow(contextWindow: envelope.int("contextWindow"))
+      }
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return nil
+    }
+    if let operation = envelope.string("operation"), operation.hasPrefix("environment.") {
+      let values = envelope.object("values") ?? [:]
+      let context = ProviderAuthenticationContext(
+        environment: { values[$0]?.stringValue }, fileExists: { _ in false })
+      let providerID = envelope.string("provider")!
+      let result: JSONValue
+      if operation == "environment.names" {
+        let names = try await ProviderEnvironmentKeys.configuredNames(
+          providerID: providerID, context: context)
+        result = names.isEmpty ? .null : .array(names.map(JSONValue.string))
+      } else if providerID == "amazon-bedrock" {
+        let authorization = try await ProviderPrimaryAuthorization.resolve(
+          providerID: providerID, credential: nil, context: context)
+        result = authorization == nil ? .null : .string("<authenticated>")
+      } else {
+        result =
+          try await ProviderEnvironmentKeys.firstAPIKey(
+            providerID: providerID, environment: context.environment
+          ).map { .string($0.value) } ?? .null
+      }
+      FileHandle.standardOutput.write(try JSONEncoder().encode(result))
+      return nil
+    }
     if envelope.string("operation") == "endpoint.cloudflare" {
       let value = ProviderEndpointTemplate.cloudflare(
         envelope.string("template")!,

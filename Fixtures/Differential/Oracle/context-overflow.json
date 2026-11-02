@@ -1,0 +1,149 @@
+{
+  "cases": [
+    {
+      "id": "error-0",
+      "overflow": true
+    },
+    {
+      "id": "error-1",
+      "overflow": true
+    },
+    {
+      "id": "error-2",
+      "overflow": true
+    },
+    {
+      "id": "error-3",
+      "overflow": true
+    },
+    {
+      "id": "error-4",
+      "overflow": true
+    },
+    {
+      "id": "error-5",
+      "overflow": true
+    },
+    {
+      "id": "error-6",
+      "overflow": true
+    },
+    {
+      "id": "error-7",
+      "overflow": true
+    },
+    {
+      "id": "error-8",
+      "overflow": false
+    },
+    {
+      "id": "error-9",
+      "overflow": false
+    },
+    {
+      "id": "error-10",
+      "overflow": false
+    },
+    {
+      "id": "error-11",
+      "overflow": false
+    },
+    {
+      "id": "error-12",
+      "overflow": false
+    },
+    {
+      "id": "error-13",
+      "overflow": true
+    },
+    {
+      "id": "error-14",
+      "overflow": true
+    },
+    {
+      "id": "error-15",
+      "overflow": true
+    },
+    {
+      "id": "error-16",
+      "overflow": true
+    },
+    {
+      "id": "error-17",
+      "overflow": false
+    },
+    {
+      "id": "error-18",
+      "overflow": false
+    },
+    {
+      "id": "error-19",
+      "overflow": true
+    },
+    {
+      "id": "error-20",
+      "overflow": true
+    },
+    {
+      "id": "error-21",
+      "overflow": true
+    },
+    {
+      "id": "error-22",
+      "overflow": true
+    },
+    {
+      "id": "error-23",
+      "overflow": true
+    },
+    {
+      "id": "error-24",
+      "overflow": true
+    },
+    {
+      "id": "silent-overflow",
+      "overflow": true
+    },
+    {
+      "id": "silent-boundary",
+      "overflow": false
+    },
+    {
+      "id": "length-threshold",
+      "overflow": true
+    },
+    {
+      "id": "length-below-threshold",
+      "overflow": false
+    },
+    {
+      "id": "length-cached",
+      "overflow": true
+    },
+    {
+      "id": "length-with-output",
+      "overflow": false
+    },
+    {
+      "id": "no-window",
+      "overflow": false
+    },
+    {
+      "id": "negative-window",
+      "overflow": true
+    },
+    {
+      "id": "cancelled",
+      "overflow": false
+    },
+    {
+      "id": "successful-error-text",
+      "overflow": false
+    },
+    {
+      "id": "tool-use",
+      "overflow": false
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

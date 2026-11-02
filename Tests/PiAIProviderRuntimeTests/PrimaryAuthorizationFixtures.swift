@@ -3,6 +3,26 @@ import Foundation
 @testable import PiAIProviderRuntime
 
 enum PrimaryAuthorizationFixtures {
+  static func environmentKeys(_ spec: [String: JSONValue]) async throws -> JSONValue {
+    let values = spec.object("environment") ?? [:]
+    let scoped = spec.object("scoped") ?? [:]
+    let context = ProviderAuthenticationContext(
+      environment: { name in
+        if let value = scoped[name]?.stringValue, !value.isEmpty { return value }
+        return values[name]?.stringValue
+      }, fileExists: { _ in false })
+    let providerID = spec.string("provider")!
+    let names = try await ProviderEnvironmentKeys.configuredNames(
+      providerID: providerID, context: context)
+    let key = try await ProviderEnvironmentKeys.firstAPIKey(
+      providerID: providerID, environment: context.environment)
+    return .object([
+      "id": spec["id"]!,
+      "names": names.isEmpty ? .null : .array(names.map(JSONValue.string)),
+      "key": key.map { .string($0.value) } ?? .null,
+    ])
+  }
+
   static func replay(_ spec: [String: JSONValue]) async throws -> JSONValue {
     let recorder = PrimaryAuthorizationRecorder(spec)
     let context = ProviderAuthenticationContext(

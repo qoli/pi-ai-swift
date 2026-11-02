@@ -50,6 +50,13 @@ export default defineConfig({
       if (factory) {
         const module = implementation === "upstream" ? "upstream-trace.mjs" : "providers.mjs";
         const wrapper = implementation === "upstream" ? "traceBuiltinProvider" : "projectBuiltinProvider";
+        if (factory === "openrouterProvider") {
+          code = code.replace("export async function personalizeOpenRouterCatalog", "async function __piOriginal_personalizeOpenRouterCatalog");
+          code += implementation === "swift"
+            ? `\nexport {personalizeOpenRouterCatalog} from ${JSON.stringify(path.join(directory, "authorization.mjs"))};`
+            : `\nexport function personalizeOpenRouterCatalog(...args) { return __piCatalogTrace("catalog.openrouter.personalize", undefined, () => __piOriginal_personalizeOpenRouterCatalog(...args)); }`;
+          if (implementation === "upstream") code = `import {trace as __piCatalogTrace} from ${JSON.stringify(path.join(directory, module))};\n` + code;
+        }
         return { code: `import {${wrapper} as __piProvider} from ${JSON.stringify(path.join(directory, module))};\n`
           + code.replace(`export function ${factory}`, `function __piOriginal_${factory}`)
           + `\nexport function ${factory}(...args) { return __piProvider(__piOriginal_${factory}(...args), args); }`, map: null };
@@ -108,7 +115,11 @@ export default defineConfig({
             + `\nexport function createRadiusOAuth(...args) { return __piAuth("radius", __piOriginal_createRadiusOAuth(...args)); }`, map: null,
         };
       }
-      const operations = id.endsWith("/providers/all.ts") ? {
+      const operations = id.endsWith("/utils/overflow.ts") ? {
+        isContextOverflow: "failure.context-overflow",
+      } : id.endsWith("/env-api-keys.ts") ? {
+        findEnvKeys: "environment.names", getEnvApiKey: "environment.api-key",
+      } : id.endsWith("/providers/all.ts") ? {
         getBuiltinModel: "catalog", getBuiltinModels: "catalog", getBuiltinProviders: "catalog",
         getBuiltinImageModel: "catalog.images", getBuiltinImageModels: "catalog.images",
         getBuiltinClassifierModel: "catalog.classifiers", getBuiltinClassifierModels: "catalog.classifiers",
@@ -176,6 +187,14 @@ export default defineConfig({
         return path.join(directory, "offline-credentials.mjs");
       }
       if (implementation !== "swift") return;
+      if (source === "pi-conformance:upstream-overflow") return path.join(upstream, "packages/ai/src/utils/overflow.ts");
+      if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/utils/overflow.ts")) {
+        return path.join(directory, "overflow.mjs");
+      }
+      if (source === "pi-conformance:upstream-environment") return path.join(upstream, "packages/ai/src/env-api-keys.ts");
+      if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/env-api-keys.ts")) {
+        return path.join(directory, "environment.mjs");
+      }
       if (source === "pi-conformance:upstream-auth-helpers") return path.join(upstream, "packages/ai/src/auth/helpers.ts");
       if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/providers/cloudflare-stream.ts")) return path.join(directory, "cloudflare-stream.mjs");
       if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/auth/helpers.ts")) return path.join(directory, "auth-helpers.mjs");

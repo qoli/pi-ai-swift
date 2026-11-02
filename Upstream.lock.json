@@ -520,7 +520,8 @@
     "packages/ai/test/xiaomi-models.test.ts",
     "packages/ai/test/xiaomi-token-plan-ams-anthropic-empty-signature-smoke.test.ts",
     "packages/ai/test/zai-coding-plan-models.test.ts",
-    "packages/ai/test/zen.test.ts"
+    "packages/ai/test/zen.test.ts",
+    "packages/ai/test/overflow.test.ts"
   ],
   "sourceArtifact": {
     "kind": "frozen-public-catalog-inputs",

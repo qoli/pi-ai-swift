@@ -243,7 +243,12 @@
       "upstreamTestPaths": [
         "packages/ai/test/oauth-auth.test.ts",
         "packages/ai/test/oauth-device-code.test.ts",
-        "packages/ai/test/abort.test.ts"
+        "packages/ai/test/abort.test.ts",
+        "packages/ai/test/env-api-keys.test.ts",
+        "packages/ai/test/baseten-models.test.ts",
+        "packages/ai/test/fireworks-models.test.ts",
+        "packages/ai/test/together-models.test.ts",
+        "packages/ai/test/qwen-token-plan-models.test.ts"
       ],
       "dependsOn": [],
       "evidence": [
@@ -275,7 +280,13 @@
         "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationFixtures.swift",
         "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift",
         "Tests/PiAIProviderRuntimeTests/AuthenticationContextTests.swift",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPrimaryAuthorizationMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPrimaryAuthorizationMatchesPinnedSource",
+        "Scripts/pi-ai-environment-keys-oracle.mjs",
+        "Fixtures/Differential/Cases/environment-keys.json",
+        "Fixtures/Differential/Oracle/environment-keys.json",
+        "Scripts/Conformance/environment.mjs",
+        "Tests/PiAIProviderRuntimeTests/PrimaryAuthorizationTests.swift#environmentKeysMatchPinnedSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testEnvironmentKeysMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -1545,7 +1556,8 @@
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
         "Sources/PiAIProviderRuntime/Authorization/BrowserSubscriptionAuthorizationAdapters.swift",
-        "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift"
+        "Sources/PiAIProviderRuntime/ProviderAuthorizationConfiguration.swift",
+        "Sources/PiAIProviderRuntime/Catalog/OpenRouterCatalogPersonalization.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -1570,7 +1582,13 @@
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
         "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#openRouterPKCEExchangesPermanentKeyWithoutInventingRefresh",
         "Scripts/Conformance/authorization.mjs",
-        "Scripts/Conformance/AuthorizationProbe.swift"
+        "Scripts/Conformance/AuthorizationProbe.swift",
+        "Scripts/pi-ai-openrouter-personalization-oracle.mjs",
+        "Fixtures/Differential/Cases/openrouter-personalization.json",
+        "Fixtures/Differential/Oracle/openrouter-personalization.json",
+        "Tests/PiAIProviderRuntimeTests/OpenRouterPersonalizationFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/OpenRouterPersonalizationTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testOpenRouterPersonalizationMatchesPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2029,17 +2047,20 @@
         "Sources/PiAIProviderRuntime/ProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/ProviderRuntimeFailure.swift",
         "Sources/PiAIProviderRuntime/ProviderReasoningEffort.swift",
-        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift"
+        "Sources/PiAIProviderRuntime/ProviderAuthenticationContext.swift",
+        "Sources/PiAIProviderRuntime/Runtime/ProviderContextOverflow.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/types.ts",
         "packages/ai/src/models.ts",
-        "packages/ai/src/api/simple-options.ts"
+        "packages/ai/src/api/simple-options.ts",
+        "packages/ai/src/utils/overflow.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/models-runtime.test.ts",
-        "packages/ai/test/provider-error-body-regression.test.ts"
+        "packages/ai/test/provider-error-body-regression.test.ts",
+        "packages/ai/test/overflow.test.ts"
       ],
       "dependsOn": [],
       "evidence": [
@@ -2066,7 +2087,14 @@
         "Fixtures/Differential/Oracle/reasoning-selection.json",
         "Tests/PiAIProviderRuntimeTests/ReasoningSelectionFixtures.swift",
         "Tests/PiAIProviderRuntimeTests/ProviderReasoningTests.swift#explicitSelectionMatchesPinnedSource",
-        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testExplicitReasoningSelectionMatchesPinnedSource"
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testExplicitReasoningSelectionMatchesPinnedSource",
+        "Scripts/pi-ai-context-overflow-oracle.mjs",
+        "Fixtures/Differential/Cases/context-overflow.json",
+        "Fixtures/Differential/Oracle/context-overflow.json",
+        "Tests/PiAIProviderRuntimeTests/ContextOverflowFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/ContextOverflowTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testContextOverflowMatchesPinnedSource",
+        "Scripts/Conformance/overflow.mjs"
       ],
       "requiredGates": [
         "swift-test"

@@ -5,6 +5,67 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testOpenRouterPersonalizationMatchesPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(
+            path: "Differential/\(folder)/openrouter-personalization.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      let spec = input.objectValue!
+      let actual = try await OpenRouterPersonalizationFixtures.replay(spec)
+      XCTAssertEqual(actual, oracle)
+      if let catalog = oracle.objectValue?.array("catalog") {
+        let publicResult = try await OpenRouterPersonalizationFixtures.publicCatalog(spec)
+        XCTAssertEqual(publicResult, catalog)
+      }
+    }
+  }
+
+  func testContextOverflowMatchesPinnedSource() throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(
+            path: "Differential/\(folder)/context-overflow.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      XCTAssertEqual(ContextOverflowFixtures.replay(input.objectValue!), oracle)
+    }
+  }
+
+  func testEnvironmentKeysMatchPinnedSource() async throws {
+    let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
+    func cases(_ folder: String) throws -> [JSONValue] {
+      try JSONValue(
+        jsonData: Data(
+          contentsOf: root.appending(
+            path: "Differential/\(folder)/environment-keys.json"))
+      )
+      .objectValue!.array("cases")!
+    }
+    let inputs = try cases("Cases")
+    let expected = try cases("Oracle")
+    XCTAssertEqual(inputs.count, expected.count)
+    for (input, oracle) in zip(inputs, expected) {
+      let actual = try await PrimaryAuthorizationFixtures.environmentKeys(input.objectValue!)
+      XCTAssertEqual(actual, oracle)
+    }
+  }
+
   func testExplicitReasoningSelectionMatchesPinnedSource() async throws {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     func cases(_ folder: String) throws -> [JSONValue] {

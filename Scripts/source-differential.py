@@ -220,6 +220,15 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-openrouter-personalization-oracle.mjs',
+             'Fixtures/Differential/Cases/openrouter-personalization.json',
+             'Fixtures/Differential/Oracle/openrouter-personalization.json', 'OpenRouter key-specific catalog personalization'),
+            ('pi-ai-context-overflow-oracle.mjs',
+             'Fixtures/Differential/Cases/context-overflow.json',
+             'Fixtures/Differential/Oracle/context-overflow.json', 'provider context overflow classification'),
+            ('pi-ai-environment-keys-oracle.mjs',
+             'Fixtures/Differential/Cases/environment-keys.json',
+             'Fixtures/Differential/Oracle/environment-keys.json', 'environment API key discovery'),
             ('pi-ai-reasoning-selection-oracle.mjs',
              'Fixtures/Differential/Cases/reasoning-selection.json',
              'Fixtures/Differential/Oracle/reasoning-selection.json', 'explicit caller reasoning selection'),

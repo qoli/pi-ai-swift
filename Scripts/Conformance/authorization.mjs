@@ -38,6 +38,12 @@ export function wrapPrimaryAuthorization(provider, source, variables) {
   };
 }
 
+export async function personalizeOpenRouterCatalog(catalog, context) {
+  const result = await authorize("openrouter", "catalog.personalize", context.credential,
+    { signal: context.signal }, { catalog, baseURL: context.baseUrl });
+  return result.personalized ? result.models.map(value => value.updated ? value.model : catalog[value.index]) : catalog;
+}
+
 async function authorize(provider, action, credential, options, configuration) {
   const call = { phase: "host", deadline: Infinity, cancel: () => {} };
   active.add(call);
@@ -224,6 +230,7 @@ async function authorize(provider, action, credential, options, configuration) {
     send({ operation: "authorization", provider, action, credential, method, agentName: configuration.agentName,
       deviceID: configuration.getDeviceId?.(), now: Date.now(),
       primaryName: configuration.name, variables: configuration.variables, aborted: options.signal?.aborted,
+      catalog: configuration.catalog, baseURL: configuration.baseURL,
       gateway: configuration.gateway, oauthHost: process.env.KIMI_CODE_OAUTH_HOST, callbackURL: callback?.redirectUri });
     if (options.signal?.aborted) cancel();
     return await result;

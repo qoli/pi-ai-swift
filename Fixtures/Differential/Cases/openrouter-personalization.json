@@ -1,0 +1,786 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamTest": "packages/ai/test/openrouter-user-models.test.ts",
+  "cases": [
+    {
+      "id": "original-user-limits-and-prices",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        },
+        {
+          "id": "no-limits",
+          "name": "no-limits",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        },
+        {
+          "id": "router",
+          "name": "router",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        },
+        {
+          "id": "blocked",
+          "name": "blocked",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        },
+        {
+          "id": "image",
+          "name": "image",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false,
+          "type": "image"
+        },
+        {
+          "id": "classifier",
+          "name": "classifier",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false,
+          "type": "classifier"
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "listed",
+            "context_length": 1000000,
+            "top_provider": {
+              "context_length": 262144,
+              "max_completion_tokens": 32768
+            },
+            "pricing": {
+              "prompt": "0.000003",
+              "completion": "0.000015"
+            }
+          },
+          {
+            "id": "no-limits",
+            "context_length": 0,
+            "top_provider": {
+              "context_length": null,
+              "max_completion_tokens": null
+            }
+          },
+          {
+            "id": "router",
+            "pricing": {
+              "prompt": "-1",
+              "completion": "-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "http-401",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 401,
+      "body": {}
+    },
+    {
+      "id": "http-403",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 403,
+      "body": {}
+    },
+    {
+      "id": "http-404",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 404,
+      "body": {}
+    },
+    {
+      "id": "http-429",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 429,
+      "body": {}
+    },
+    {
+      "id": "http-500",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 500,
+      "body": {}
+    },
+    {
+      "id": "no-credential",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": null,
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "listed",
+            "context_length": 1000000,
+            "top_provider": {
+              "context_length": 262144,
+              "max_completion_tokens": 32768
+            },
+            "pricing": {
+              "prompt": "0.000003",
+              "completion": "0.000015"
+            }
+          },
+          {
+            "id": "no-limits",
+            "context_length": 0,
+            "top_provider": {
+              "context_length": null,
+              "max_completion_tokens": null
+            }
+          },
+          {
+            "id": "router",
+            "pricing": {
+              "prompt": "-1",
+              "completion": "-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "empty-key",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": ""
+      },
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "listed",
+            "context_length": 1000000,
+            "top_provider": {
+              "context_length": 262144,
+              "max_completion_tokens": 32768
+            },
+            "pricing": {
+              "prompt": "0.000003",
+              "completion": "0.000015"
+            }
+          },
+          {
+            "id": "no-limits",
+            "context_length": 0,
+            "top_provider": {
+              "context_length": null,
+              "max_completion_tokens": null
+            }
+          },
+          {
+            "id": "router",
+            "pricing": {
+              "prompt": "-1",
+              "completion": "-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "oauth",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "oauth",
+        "access": "fixture-oauth",
+        "refresh": "fixture-refresh",
+        "expires": 9999999999999
+      },
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "listed",
+            "context_length": 1000000,
+            "top_provider": {
+              "context_length": 262144,
+              "max_completion_tokens": 32768
+            },
+            "pricing": {
+              "prompt": "0.000003",
+              "completion": "0.000015"
+            }
+          },
+          {
+            "id": "no-limits",
+            "context_length": 0,
+            "top_provider": {
+              "context_length": null,
+              "max_completion_tokens": null
+            }
+          },
+          {
+            "id": "router",
+            "pricing": {
+              "prompt": "-1",
+              "completion": "-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "regional-base-trailing-slashes",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "baseURL": "https://us.openrouter.ai/api/v1///",
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "listed",
+            "context_length": 1000000,
+            "top_provider": {
+              "context_length": 262144,
+              "max_completion_tokens": 32768
+            },
+            "pricing": {
+              "prompt": "0.000003",
+              "completion": "0.000015"
+            }
+          },
+          {
+            "id": "no-limits",
+            "context_length": 0,
+            "top_provider": {
+              "context_length": null,
+              "max_completion_tokens": null
+            }
+          },
+          {
+            "id": "router",
+            "pricing": {
+              "prompt": "-1",
+              "completion": "-1"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "duplicate-id-last-entry-wins",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 200,
+      "body": {
+        "data": [
+          null,
+          {},
+          42,
+          {
+            "id": "listed",
+            "context_length": 111
+          },
+          {
+            "id": "listed",
+            "context_length": 222
+          }
+        ]
+      }
+    },
+    {
+      "id": "time-pricing-and-prompt-tiers",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "listed",
+            "pricing": {
+              "prompt": "0.0000001234567tail",
+              "completion": "invalid",
+              "input_cache_read": "-1",
+              "input_cache_write": ".00000001",
+              "overrides": [
+                {
+                  "min_prompt_tokens": 1000,
+                  "completion": "0.000003"
+                },
+                {
+                  "min_prompt_tokens": 2000,
+                  "prompt": "0.000004",
+                  "utc_days": [
+                    "mon"
+                  ]
+                },
+                {
+                  "prompt": "0.00001"
+                },
+                {
+                  "min_prompt_tokens": 3000,
+                  "prompt": "0.000006",
+                  "utc_start": 0
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "fraction-rounding",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 200,
+      "body": {
+        "data": [
+          {
+            "id": "listed",
+            "pricing": {
+              "prompt": "0.0000000000015",
+              "completion": "0.0000000000005",
+              "input_cache_read": "0.0000000000025",
+              "input_cache_write": "0.0000000078125"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "invalid-data-shape",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 200,
+      "body": {
+        "data": null
+      }
+    },
+    {
+      "id": "empty-data",
+      "catalog": [
+        {
+          "id": "listed",
+          "name": "listed",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false
+        },
+        {
+          "id": "image",
+          "name": "image",
+          "api": "openai-completions",
+          "provider": "openrouter",
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 1,
+            "output": 2,
+            "cacheRead": 0.1,
+            "cacheWrite": 0
+          },
+          "contextWindow": 200000,
+          "maxTokens": 50000,
+          "reasoning": false,
+          "type": "image"
+        }
+      ],
+      "credential": {
+        "type": "api_key",
+        "key": "fixture-key"
+      },
+      "status": 200,
+      "body": {
+        "data": []
+      }
+    }
+  ]
+}

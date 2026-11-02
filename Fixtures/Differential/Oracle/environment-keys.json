@@ -1,0 +1,114 @@
+{
+  "cases": [
+    {
+      "id": "copilot-rejects-generic-tokens",
+      "key": null,
+      "names": null
+    },
+    {
+      "id": "copilot-explicit-variable",
+      "key": "fixture-copilot",
+      "names": [
+        "COPILOT_GITHUB_TOKEN"
+      ]
+    },
+    {
+      "id": "zai-cn-variable",
+      "key": "fixture-zai",
+      "names": [
+        "ZAI_CODING_CN_API_KEY"
+      ]
+    },
+    {
+      "id": "anthropic-bearer-is-discovery-only",
+      "key": "fixture-oauth",
+      "names": [
+        "ANTHROPIC_AUTH_TOKEN",
+        "ANTHROPIC_OAUTH_TOKEN",
+        "ANTHROPIC_API_KEY"
+      ]
+    },
+    {
+      "id": "anthropic-bearer-is-not-api-key",
+      "key": null,
+      "names": [
+        "ANTHROPIC_AUTH_TOKEN"
+      ]
+    },
+    {
+      "id": "anthropic-oauth-before-api",
+      "key": "fixture-oauth",
+      "names": [
+        "ANTHROPIC_OAUTH_TOKEN",
+        "ANTHROPIC_API_KEY"
+      ]
+    },
+    {
+      "id": "anthropic-api-without-oauth",
+      "key": "fixture-api",
+      "names": [
+        "ANTHROPIC_API_KEY"
+      ]
+    },
+    {
+      "id": "baseten",
+      "key": "fixture-baseten",
+      "names": [
+        "BASETEN_API_KEY"
+      ]
+    },
+    {
+      "id": "fireworks",
+      "key": "fixture-fireworks",
+      "names": [
+        "FIREWORKS_API_KEY"
+      ]
+    },
+    {
+      "id": "together",
+      "key": "fixture-together",
+      "names": [
+        "TOGETHER_API_KEY"
+      ]
+    },
+    {
+      "id": "qwen-token-plan-individual",
+      "key": "fixture-qwen-token-plan-individual",
+      "names": [
+        "QWEN_TOKEN_PLAN_API_KEY"
+      ]
+    },
+    {
+      "id": "unknown-provider",
+      "key": null,
+      "names": null
+    },
+    {
+      "id": "empty-is-absent",
+      "key": null,
+      "names": null
+    },
+    {
+      "id": "whitespace-is-present",
+      "key": "  ",
+      "names": [
+        "OPENAI_API_KEY"
+      ]
+    },
+    {
+      "id": "scoped-replaces-ambient",
+      "key": "scoped",
+      "names": [
+        "OPENAI_API_KEY"
+      ]
+    },
+    {
+      "id": "empty-scoped-uses-ambient",
+      "key": "ambient",
+      "names": [
+        "OPENAI_API_KEY"
+      ]
+    }
+  ],
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+}

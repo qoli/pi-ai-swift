@@ -1,6 +1,27 @@
 import Foundation
 
 enum ProviderEnvironmentKeys {
+  static func configuredNames(
+    providerID: String, context: ProviderAuthenticationContext
+  ) async throws -> [String] {
+    var found: [String] = []
+    for name in names[providerID] ?? [] {
+      if let value = try await context.environment(name), !value.isEmpty { found.append(name) }
+    }
+    return found
+  }
+
+  static func firstAPIKey(
+    providerID: String, variables: [String]? = nil,
+    environment: (String) async throws -> String?
+  ) async throws -> (name: String, value: String)? {
+    for name in variables ?? names[providerID] ?? [] {
+      if providerID == "anthropic", name == "ANTHROPIC_AUTH_TOKEN" { continue }
+      if let value = try await environment(name), !value.isEmpty { return (name, value) }
+    }
+    return nil
+  }
+
   static let names: [String: [String]] = [
     "ant-ling": ["ANT_LING_API_KEY"],
     "qwen-token-plan": ["QWEN_TOKEN_PLAN_API_KEY"],

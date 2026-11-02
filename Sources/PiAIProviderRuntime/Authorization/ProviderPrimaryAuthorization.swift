@@ -101,8 +101,10 @@ struct ProviderPrimaryAuthorization: Sendable {
       if let token = try await env("ANTHROPIC_AUTH_TOKEN"), !token.isEmpty {
         return result(headers: ["Authorization": "Bearer " + token], source: "ANTHROPIC_AUTH_TOKEN")
       }
-      for name in ["ANTHROPIC_OAUTH_TOKEN", "ANTHROPIC_API_KEY"] {
-        if let key = try await env(name), !key.isEmpty { return result(key: key, source: name) }
+      if let key = try await ProviderEnvironmentKeys.firstAPIKey(
+        providerID: providerID, environment: env)
+      {
+        return result(key: key.value, source: key.name)
       }
       var federation: [String: String] = [:]
       for name in [
@@ -163,8 +165,11 @@ struct ProviderPrimaryAuthorization: Sendable {
         environment: storedEnvironment,
         source: stored == nil ? "gcloud application default credentials" : "stored credential")
     default:
-      for name in variables ?? ProviderEnvironmentKeys.names[providerID] ?? [] {
-        if let key = try await env(name), !key.isEmpty { return result(key: key, source: name) }
+      if let key = try await ProviderEnvironmentKeys.firstAPIKey(
+        providerID: providerID, variables: variables,
+        environment: env)
+      {
+        return result(key: key.value, source: key.name)
       }
       return nil
     }

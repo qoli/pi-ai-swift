@@ -1,0 +1,366 @@
+{
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamTest": "packages/ai/test/overflow.test.ts",
+  "cases": [
+    {
+      "id": "error-0",
+      "provider": "anthropic",
+      "finishReason": "error",
+      "errorMessage": "prompt is too long: 213462 tokens > 200000 maximum",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-1",
+      "provider": "bedrock",
+      "finishReason": "error",
+      "errorMessage": "Input is too long for requested model",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-2",
+      "provider": "google",
+      "finishReason": "error",
+      "errorMessage": "The input token count (1196265) exceeds the maximum (1048575)",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-3",
+      "provider": "xai",
+      "finishReason": "error",
+      "errorMessage": "This model's maximum prompt length is 131072 but the request contains 537812 tokens",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-4",
+      "provider": "groq",
+      "finishReason": "error",
+      "errorMessage": "Please reduce the length of the messages or completion",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-5",
+      "provider": "openrouter",
+      "finishReason": "error",
+      "errorMessage": "This endpoint's maximum context length is 131072 tokens",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-6",
+      "provider": "together",
+      "finishReason": "error",
+      "errorMessage": "The input (150000 tokens) is longer than the model's context length (131072 tokens)",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-7",
+      "provider": "cerebras",
+      "finishReason": "error",
+      "errorMessage": "400 status code (no body)",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-8",
+      "provider": "opencode-go",
+      "finishReason": "error",
+      "errorMessage": "400 status code (no body)",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-9",
+      "provider": "bedrock",
+      "finishReason": "error",
+      "errorMessage": "Throttling error: Too many tokens, please wait before trying again.",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-10",
+      "provider": "bedrock",
+      "finishReason": "error",
+      "errorMessage": "Service unavailable: Too many tokens",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-11",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "Rate limit exceeded: too many tokens",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-12",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "Too many requests. Too many tokens.",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-13",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "Too many tokens",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-14",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "Token limit exceeded",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-15",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "context_length_exceeded",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-16",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "custom API error (413): upstream",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-17",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "400 message mentions 413",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-18",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "4130 failed to parse request",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-19",
+      "provider": "ollama",
+      "finishReason": "error",
+      "errorMessage": "prompt too long; exceeded max context length by 32 tokens",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-20",
+      "provider": "qwen",
+      "finishReason": "error",
+      "errorMessage": "Range of input length should be [1, 65536]",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-21",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "Input length 131393 exceeds the maximum allowed input length of 131040 tokens.",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-22",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "Input length (265330) exceeds model's maximum context length (262144).",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-23",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "Prompt has 5,958,968 tokens, but the configured context size is 256,000 tokens",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "error-24",
+      "provider": "custom",
+      "finishReason": "error",
+      "errorMessage": "litellm.ContextWindowExceededError: Context Window exceeded for given call.",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 200000
+    },
+    {
+      "id": "silent-overflow",
+      "provider": "fixture",
+      "finishReason": "stop",
+      "errorMessage": "413",
+      "input": 101,
+      "cacheRead": 100,
+      "output": 5,
+      "contextWindow": 200
+    },
+    {
+      "id": "silent-boundary",
+      "provider": "fixture",
+      "finishReason": "stop",
+      "errorMessage": "413",
+      "input": 100,
+      "cacheRead": 100,
+      "output": 5,
+      "contextWindow": 200
+    },
+    {
+      "id": "length-threshold",
+      "provider": "fixture",
+      "finishReason": "length",
+      "errorMessage": "413",
+      "input": 99,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 100
+    },
+    {
+      "id": "length-below-threshold",
+      "provider": "fixture",
+      "finishReason": "length",
+      "errorMessage": "413",
+      "input": 98,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 100
+    },
+    {
+      "id": "length-cached",
+      "provider": "fixture",
+      "finishReason": "length",
+      "errorMessage": "413",
+      "input": 58,
+      "cacheRead": 1048512,
+      "output": 0,
+      "contextWindow": 1048576
+    },
+    {
+      "id": "length-with-output",
+      "provider": "fixture",
+      "finishReason": "length",
+      "errorMessage": "413",
+      "input": 200,
+      "cacheRead": 0,
+      "output": 1,
+      "contextWindow": 100
+    },
+    {
+      "id": "no-window",
+      "provider": "fixture",
+      "finishReason": "stop",
+      "errorMessage": "413",
+      "input": 99999,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": null
+    },
+    {
+      "id": "negative-window",
+      "provider": "fixture",
+      "finishReason": "length",
+      "errorMessage": "413",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": -100
+    },
+    {
+      "id": "cancelled",
+      "provider": "fixture",
+      "finishReason": "aborted",
+      "errorMessage": "413",
+      "input": 500,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 100
+    },
+    {
+      "id": "successful-error-text",
+      "provider": "fixture",
+      "finishReason": "stop",
+      "errorMessage": "413",
+      "input": 0,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 100
+    },
+    {
+      "id": "tool-use",
+      "provider": "fixture",
+      "finishReason": "toolUse",
+      "errorMessage": "413",
+      "input": 200,
+      "cacheRead": 0,
+      "output": 0,
+      "contextWindow": 100
+    }
+  ]
+}
