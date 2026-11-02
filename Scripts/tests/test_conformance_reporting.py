@@ -1,5 +1,7 @@
 import copy
+import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 import tempfile
@@ -91,6 +93,31 @@ class ConformanceReportingTests(unittest.TestCase):
         self.assertFalse(self.evaluate([]))
         self.assertFalse(self.evaluate([{"file": self.file, "protocol": "anthropic-messages"}]))
         self.assertFalse(self.evaluate([{**self.call, "operation": "catalog"}]))
+
+    def test_skip_audit_preserves_unexecuted_status_and_observes_the_actual_condition(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "case.test.ts"
+            source.write_text('describe.skipIf(!configured)("group", () => {\n'
+                              '  it("conditional", () => {});\n'
+                              '  it.skip("conditional", () => {});\n});\n')
+            conditional = {"ancestorTitles": ["group"], "title": "conditional", "status": "skipped",
+                           "location": {"line": 2, "column": 3}}
+            explicit = {**conditional, "location": {"line": 3, "column": 3}}
+            reports = {key: {"testResults": [{"name": str(source), "assertionResults": [conditional, explicit]}]}
+                       for key in ["upstream", "swift"]}
+            observation = {"file": str(source), "line": 1, "declaration": "describe", "title": "group"}
+            observed = {key: [{**observation, "skipped": value}] for key, value in [("upstream", True), ("swift", False)]}
+            evidence = CONFORMANCE.skip_evidence(root, reports, observed)
+            self.assertTrue(evidence[(source.name, "group > conditional", 0)]["upstream"]["explained"])
+            self.assertEqual(evidence[(source.name, "group > conditional", 0)]["upstream"]["conditionalSkips"][0]["expression"], "!configured")
+            self.assertFalse(evidence[(source.name, "group > conditional", 0)]["swift"]["explained"])
+            self.assertEqual(evidence[(source.name, "group > conditional", 0)]["upstream"]["location"]["line"], 2)
+            self.assertEqual(evidence[(source.name, "group > conditional", 1)]["upstream"]["location"]["line"], 3)
+            self.assertTrue(evidence[(source.name, "group > conditional", 1)]["swift"]["explicitSkips"])
+            conformant, cases = CONFORMANCE.evaluate(root, reports, [], {"upstream": 0, "swift": 0})
+            self.assertFalse(conformant)
+            self.assertEqual([case["conformanceStatus"] for case in cases], ["not_executed", "not_executed"])
 
     def evaluate_dispatch(self, calls):
         original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream",
@@ -189,6 +216,84 @@ class ConformanceReportingTests(unittest.TestCase):
             self.upstream, self.reports, [call], {"upstream": 0, "swift": 0}, original)
         self.assertFalse(conformant)
         self.assertEqual(cases[0]["missingSwiftOperations"], ["catalog.reasoning"])
+
+    def test_cached_value_requires_its_actual_native_origin(self):
+        origin = {"id": "catalog-result", "sha256": "a" * 64}
+        access = {**self.call, "operation": "catalog", "entrypoint": "value-access", "valueOrigin": origin}
+        producer = {**self.call, "test": None, "operation": "catalog", "entrypoint": "value-produced",
+                    "valueOrigin": origin}
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "catalog"}]
+        for production, expected in [
+            ([], False), ([producer], True),
+            ([{**producer, "file": self.file + ".other"}], False),
+            ([{**producer, "valueOrigin": {**origin, "sha256": "b" * 64}}], False),
+        ]:
+            conformant, cases = CONFORMANCE.evaluate(
+                self.upstream, self.reports, [*production, access],
+                {"upstream": 0, "swift": 0}, original)
+            self.assertEqual(conformant, expected)
+            if expected:
+                self.assertEqual(cases[0]["swiftValueAccesses"], 1)
+                self.assertEqual(cases[0]["swiftOperationInvocations"], 0)
+
+    def test_audited_caller_case_is_visible_and_is_not_a_native_pass(self):
+        audit = {("packages/ai/test/schema.test.ts", "schema > preserves input", 0): {"rule": "caller"}}
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [], {"upstream": 0, "swift": 0}, scope_audit=audit)
+        self.assertFalse(conformant)
+        self.assertEqual(cases[0]["conformanceStatus"], "outside_scope")
+        self.assertEqual(cases[0]["swiftInvocations"], 0)
+        self.assertEqual(cases[0]["scopeAudit"], {"rule": "caller"})
+
+    def test_scope_audit_cannot_hide_provider_behavior_or_assertion_failures(self):
+        audit = {("packages/ai/test/schema.test.ts", "schema > preserves input", 0): {"rule": "caller"}}
+        original = [{"file": self.file, "test": "schema > preserves input", "operation": "stream"}]
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [self.call], {"upstream": 0, "swift": 0}, original, scope_audit=audit)
+        self.assertFalse(conformant)
+        self.assertEqual(cases[0]["conformanceStatus"], "scope_audit_conflict")
+        self.reports["swift"]["testResults"][0]["assertionResults"][0]["status"] = "failed"
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [], {"upstream": 0, "swift": 1}, scope_audit=audit)
+        self.assertFalse(conformant)
+        self.assertEqual(cases[0]["conformanceStatus"], "mismatch")
+
+    def test_scope_audit_is_bound_to_original_tests_source_and_prior_ownership_rules(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory) / "repo"
+            upstream = Path(directory) / "upstream"
+            contract = repo / "AGENTS.md"
+            contract.parent.mkdir(parents=True)
+            contract.write_text("Provider runtime ownership contract")
+            test = upstream / "packages/ai/test/schema.test.ts"
+            test.parent.mkdir(parents=True)
+            test.write_text("unchanged upstream test")
+            source = upstream / "packages/ai/src/caller.ts"
+            source.parent.mkdir(parents=True)
+            source.write_text("export function recover() {}")
+            sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+            reason = "Outside provider scope: caller recovery"
+            manifest = {"suites": ["schema.test.ts"], "excludedSuites": {"retry.test.ts": reason}}
+            audit = {"schemaVersion": 1, "upstreamRevision": "0" * 40,
+                     "contract": {"path": "AGENTS.md", "sha256": sha(contract)},
+                     "rules": {"caller": {"existingSuiteRules": [{"suite": "retry.test.ts",
+                         "sha256": hashlib.sha256(reason.encode()).hexdigest()}]}},
+                     "cases": [{"upstreamTest": "packages/ai/test/schema.test.ts", "name": "case", "occurrence": 0,
+                         "testSHA256": sha(test), "rule": "caller", "references": [{"path": "packages/ai/src/caller.ts",
+                             "symbol": "recover", "sha256": sha(source)}]}]}
+            path = repo / "Scripts/Conformance/scope-audit.json"
+            path.parent.mkdir(parents=True)
+            path.write_text(json.dumps(audit))
+            self.assertEqual(len(CONFORMANCE.load_scope_audit(repo, upstream, manifest, "0" * 40)), 1)
+            for changed in [contract, test, source]:
+                original = changed.read_bytes()
+                changed.write_text("changed")
+                with self.assertRaises(ValueError):
+                    CONFORMANCE.load_scope_audit(repo, upstream, manifest, "0" * 40)
+                changed.write_bytes(original)
+            manifest["excludedSuites"]["retry.test.ts"] = "Outside scope changed"
+            with self.assertRaises(ValueError):
+                CONFORMANCE.load_scope_audit(repo, upstream, manifest, "0" * 40)
 
     def test_skipped_failed_or_unrepresentable_cases_are_not_passes(self):
         for implementation, status in [("upstream", "failed"), ("swift", "skipped")]:

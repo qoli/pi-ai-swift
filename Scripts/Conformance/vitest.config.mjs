@@ -23,6 +23,8 @@ export default defineConfig({
   root: path.join(upstream, "packages/ai"),
   test: {
     globals: true,
+    fileParallelism: false,
+    includeTaskLocation: true,
     environment: "node",
     testTimeout: 30000,
     setupFiles: [path.join(directory, "setup.mjs")],
@@ -43,6 +45,23 @@ export default defineConfig({
     name: "swift-provider-implementation",
     enforce: "pre",
     transform(code, id) {
+      if (id.startsWith(path.join(upstream, "packages/ai/test/")) && id.endsWith(".test.ts")) {
+        const observed = code.replace(/\b(describe|it|test)\.skipIf\(/g, (match, api, offset) =>
+          `__piSkipIf(${api}, ${JSON.stringify(id)}, ${code.slice(0, offset).split("\n").length}, ${JSON.stringify(api)})(`);
+        if (observed !== code) return { code:
+          `import {observeSkipIf as __piSkipIf} from ${JSON.stringify(path.join(directory, "skip-observer.mjs"))};` + observed,
+          map: null };
+      }
+      if (id === path.join(upstream, "packages/ai/src/providers/xai.models.ts")) {
+        if (implementation === "swift") return { code:
+          `import {nativeCatalogObject as catalog} from ${JSON.stringify(path.join(directory, "catalog-values.mjs"))};\n`
+          + `export const XAI_MODELS = catalog("xai", "catalog");\n`
+          + `export const XAI_IMAGE_MODELS = catalog("xai", "catalog.images");\n`
+          + `export const XAI_CLASSIFIER_MODELS = catalog("xai", "catalog.classifiers");`, map: null };
+        return { code: `import {observeSourceCatalogValue as observe} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n`
+          + code.replace(/flatten(Chat|Image|Classifier)ModelCatalog\("xai", values\)/g,
+            (_, kind) => `observe(flatten${kind}ModelCatalog("xai", values), ${JSON.stringify(kind === "Chat" ? "catalog" : "catalog." + (kind === "Image" ? "images" : "classifiers"))})`), map: null };
+      }
       if (implementation === "swift" && id === path.join(upstream, "packages/ai/src/api/bedrock-converse-stream.lazy.ts")) {
         return { code: `import {stream as __piStream, streamSimple as __piStreamSimple} from ${JSON.stringify(bridge)};\n`
           + code + `\nsetBedrockProviderModule({stream: __piStream, streamSimple: __piStreamSimple});`, map: null };

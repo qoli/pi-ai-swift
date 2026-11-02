@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "contract": {
+    "path": "AGENTS.md",
+    "sha256": "691ad8d368826c9ae0336f1743784be6f21262993cb452d1790e55627e977943"
+  },
+  "rules": {
+    "catalog-publication": {
+      "ownership": "upstream-host",
+      "reason": "Transforms public catalog publication inputs into generated metadata; Native consumes the pinned generated artifact and validates reproduction, then owns runtime interpretation of that metadata.",
+      "existingSuiteRules": [
+        {
+          "suite": "generate-models-strict.test.ts",
+          "sha256": "02daf793d9b697da97bfc95dd4d17e58ea487f33a2801f24e6fee239ccf46ef4"
+        },
+        {
+          "suite": "reasoning-options.test.ts",
+          "sha256": "78a2bda1a9a4e0320071408a2cdc1f9ae49cad00aacefad8b4d06b2b7598a218"
+        }
+      ]
+    },
+    "caller-length-recovery": {
+      "ownership": "caller",
+      "reason": "Compares output usage with the caller original limit before context clamping to decide compact-and-retry recovery; Native owns provider finish reason and usage, not the caller recovery decision.",
+      "existingSuiteRules": [
+        {
+          "suite": "retry.test.ts",
+          "sha256": "5154cdbc5ec69d84e70ea9e501653fbb317129726760291ed4babc5db2fcb90e"
+        },
+        {
+          "suite": "context-estimate.test.ts",
+          "sha256": "4002542241f29459f7f74c977e1a86af069597499836bc67ac7eb0bfcee8c603"
+        }
+      ]
+    },
+    "typescript-type-barrel": {
+      "ownership": "upstream-host",
+      "reason": "Asserts which JavaScript runtime exports are absent from a TypeScript type-only extension compatibility barrel; no provider operation, authentication flow, or normalized event is executed.",
+      "existingSuiteRules": [
+        {
+          "suite": "models-entry.test.ts",
+          "sha256": "0e7dd169dadc35bbfbc1a6e8d2c17a80ec5bb8784465fdbb339cbe5b1dec4383"
+        },
+        {
+          "suite": "message-types.test.ts",
+          "sha256": "4e0e5fb22a996d88d7873fcc2c837153d3a0400ccd2d7fb9952c49737ce889ba"
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "upstreamTest": "packages/ai/test/fireworks-model-generation.test.ts",
+      "name": "Fireworks model generation > combines upstream effort and toggle metadata with narrow corrections",
+      "occurrence": 0,
+      "testSHA256": "009bab2e1548ad5d2882ddfabb430c034141c823cc6581faa9d16fdd4af3a4d1",
+      "rule": "catalog-publication",
+      "references": [
+        {
+          "path": "packages/ai/catalog/generate.ts",
+          "symbol": "generate",
+          "sha256": "216abe76de82ca57c3e4b425d088c0cca8eafd28ebaa2a33bc8bba825d617cd5"
+        },
+        {
+          "path": "packages/ai/catalog/sources/models-dev.ts",
+          "symbol": "normalizeModelsDevModel",
+          "sha256": "1158bf23507bfdd23a07c8d47230a63efaad0a0bd408feef04722715f86fe3f0"
+        },
+        {
+          "path": "packages/ai/test/fireworks-model-generation.test.ts",
+          "symbol": "generateFireworksModels",
+          "sha256": "009bab2e1548ad5d2882ddfabb430c034141c823cc6581faa9d16fdd4af3a4d1"
+        },
+        {
+          "path": "packages/ai/catalog/providers/fireworks.ts",
+          "symbol": "forceAdaptiveThinking",
+          "sha256": "8b54992c69de29ad07b770df87c87814d7e3314572a6c087dbc9f8dab8504b91"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/fireworks-model-generation.test.ts",
+      "name": "Fireworks model generation > does not infer adaptive thinking from toggle, budget, or missing metadata",
+      "occurrence": 0,
+      "testSHA256": "009bab2e1548ad5d2882ddfabb430c034141c823cc6581faa9d16fdd4af3a4d1",
+      "rule": "catalog-publication",
+      "references": [
+        {
+          "path": "packages/ai/catalog/generate.ts",
+          "symbol": "generate",
+          "sha256": "216abe76de82ca57c3e4b425d088c0cca8eafd28ebaa2a33bc8bba825d617cd5"
+        },
+        {
+          "path": "packages/ai/catalog/sources/models-dev.ts",
+          "symbol": "normalizeModelsDevModel",
+          "sha256": "1158bf23507bfdd23a07c8d47230a63efaad0a0bd408feef04722715f86fe3f0"
+        },
+        {
+          "path": "packages/ai/test/fireworks-model-generation.test.ts",
+          "symbol": "generateFireworksModels",
+          "sha256": "009bab2e1548ad5d2882ddfabb430c034141c823cc6581faa9d16fdd4af3a4d1"
+        },
+        {
+          "path": "packages/ai/catalog/providers/fireworks.ts",
+          "symbol": "forceAdaptiveThinking",
+          "sha256": "8b54992c69de29ad07b770df87c87814d7e3314572a6c087dbc9f8dab8504b91"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/fireworks-model-generation.test.ts",
+      "name": "Fireworks model generation > prefers updated upstream efforts over fixed maps and the Qwen fallback",
+      "occurrence": 0,
+      "testSHA256": "009bab2e1548ad5d2882ddfabb430c034141c823cc6581faa9d16fdd4af3a4d1",
+      "rule": "catalog-publication",
+      "references": [
+        {
+          "path": "packages/ai/catalog/generate.ts",
+          "symbol": "generate",
+          "sha256": "216abe76de82ca57c3e4b425d088c0cca8eafd28ebaa2a33bc8bba825d617cd5"
+        },
+        {
+          "path": "packages/ai/catalog/sources/models-dev.ts",
+          "symbol": "normalizeModelsDevModel",
+          "sha256": "1158bf23507bfdd23a07c8d47230a63efaad0a0bd408feef04722715f86fe3f0"
+        },
+        {
+          "path": "packages/ai/test/fireworks-model-generation.test.ts",
+          "symbol": "generateFireworksModels",
+          "sha256": "009bab2e1548ad5d2882ddfabb430c034141c823cc6581faa9d16fdd4af3a4d1"
+        },
+        {
+          "path": "packages/ai/catalog/providers/fireworks.ts",
+          "symbol": "forceAdaptiveThinking",
+          "sha256": "8b54992c69de29ad07b770df87c87814d7e3314572a6c087dbc9f8dab8504b91"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/oauth-auth.test.ts",
+      "name": "OAuthAuth adapters > keeps the extension OAuth barrel free of built-in flow implementations",
+      "occurrence": 0,
+      "testSHA256": "cf48a806cd38f76c5cb3a38921672acc8d665fab57d6beb7111ca51e4bc43991",
+      "rule": "typescript-type-barrel",
+      "references": [
+        {
+          "path": "packages/ai/src/oauth.ts",
+          "symbol": "export type",
+          "sha256": "1250a2a276dc310849e64a0fd306a896d42e47ad0fc8d9394279eaee4e11cdff"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/openrouter-reasoning-options.test.ts",
+      "name": "getOpenRouterThinkingLevelMap > marks mandatory reasoning and unsupported efforts unavailable",
+      "occurrence": 0,
+      "testSHA256": "75358f2a0014328d3818bad2fa429c32aeddc60ce41a4e236d5a7ecf3902bc2f",
+      "rule": "catalog-publication",
+      "references": [
+        {
+          "path": "packages/ai/catalog/sources/openrouter.ts",
+          "symbol": "getOpenRouterThinkingLevelMap",
+          "sha256": "76384062de99774492a916a267591cfb8775f3a36a590a4423cdd11a65bc67cc"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/openrouter-reasoning-options.test.ts",
+      "name": "getOpenRouterThinkingLevelMap > still marks off unavailable when OpenRouter omits effort metadata",
+      "occurrence": 0,
+      "testSHA256": "75358f2a0014328d3818bad2fa429c32aeddc60ce41a4e236d5a7ecf3902bc2f",
+      "rule": "catalog-publication",
+      "references": [
+        {
+          "path": "packages/ai/catalog/sources/openrouter.ts",
+          "symbol": "getOpenRouterThinkingLevelMap",
+          "sha256": "76384062de99774492a916a267591cfb8775f3a36a590a4423cdd11a65bc67cc"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/openrouter-reasoning-options.test.ts",
+      "name": "getOpenRouterThinkingLevelMap > keeps off available while restricting optional models to supported efforts",
+      "occurrence": 0,
+      "testSHA256": "75358f2a0014328d3818bad2fa429c32aeddc60ce41a4e236d5a7ecf3902bc2f",
+      "rule": "catalog-publication",
+      "references": [
+        {
+          "path": "packages/ai/catalog/sources/openrouter.ts",
+          "symbol": "getOpenRouterThinkingLevelMap",
+          "sha256": "76384062de99774492a916a267591cfb8775f3a36a590a4423cdd11a65bc67cc"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/openrouter-reasoning-options.test.ts",
+      "name": "getOpenRouterThinkingLevelMap > does not add metadata for optional models without effort controls",
+      "occurrence": 0,
+      "testSHA256": "75358f2a0014328d3818bad2fa429c32aeddc60ce41a4e236d5a7ecf3902bc2f",
+      "rule": "catalog-publication",
+      "references": [
+        {
+          "path": "packages/ai/catalog/sources/openrouter.ts",
+          "symbol": "getOpenRouterThinkingLevelMap",
+          "sha256": "76384062de99774492a916a267591cfb8775f3a36a590a4423cdd11a65bc67cc"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/overflow.test.ts",
+      "name": "isContextOverflow > treats a length stop below the desired output limit as recoverable",
+      "occurrence": 0,
+      "testSHA256": "1d8f734545528e121cec300b5401a090cd693eb455044639d51ec85a0b1c02ca",
+      "rule": "caller-length-recovery",
+      "references": [
+        {
+          "path": "packages/ai/src/utils/overflow.ts",
+          "symbol": "isRecoverableLength",
+          "sha256": "c0ff08ba392e99b628226e62db1ca74aef5c459c0d1dab1fc2c60d6c48e0299a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/overflow.test.ts",
+      "name": "isContextOverflow > does not recover a length stop that reached the desired output limit",
+      "occurrence": 0,
+      "testSHA256": "1d8f734545528e121cec300b5401a090cd693eb455044639d51ec85a0b1c02ca",
+      "rule": "caller-length-recovery",
+      "references": [
+        {
+          "path": "packages/ai/src/utils/overflow.ts",
+          "symbol": "isRecoverableLength",
+          "sha256": "c0ff08ba392e99b628226e62db1ca74aef5c459c0d1dab1fc2c60d6c48e0299a"
+        }
+      ]
+    },
+    {
+      "upstreamTest": "packages/ai/test/overflow.test.ts",
+      "name": "isContextOverflow > treats zero-output length stops as recoverable without context metadata",
+      "occurrence": 0,
+      "testSHA256": "1d8f734545528e121cec300b5401a090cd693eb455044639d51ec85a0b1c02ca",
+      "rule": "caller-length-recovery",
+      "references": [
+        {
+          "path": "packages/ai/src/utils/overflow.ts",
+          "symbol": "isRecoverableLength",
+          "sha256": "c0ff08ba392e99b628226e62db1ca74aef5c459c0d1dab1fc2c60d6c48e0299a"
+        }
+      ]
+    }
+  ]
+}

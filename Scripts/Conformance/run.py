@@ -33,8 +33,97 @@ def evidence_digests(repo):
     return digests
 
 
-def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=(), *, require_case_instances=False):
+def load_scope_audit(repo, upstream, manifest, revision):
+    audit = json.loads((repo / "Scripts/Conformance/scope-audit.json").read_text())
+    if audit["schemaVersion"] != 1 or audit["upstreamRevision"] != revision:
+        raise ValueError("Conformance scope audit revision/schema drift")
+
+    def verify_file(root, reference):
+        if hashlib.sha256((root / reference["path"]).read_bytes()).hexdigest() != reference["sha256"]:
+            raise ValueError(f"Conformance scope audit source drift: {reference['path']}")
+
+    verify_file(repo, audit["contract"])
+    for rule in audit["rules"].values():
+        for existing in rule["existingSuiteRules"]:
+            reason = manifest["excludedSuites"][existing["suite"]]
+            if not reason.startswith("Outside") or hashlib.sha256(reason.encode()).hexdigest() != existing["sha256"]:
+                raise ValueError("Conformance scope audit established ownership rule drift")
+    result = {}
+    for entry in audit["cases"]:
+        if entry["upstreamTest"].split("/")[-1] not in manifest["suites"]:
+            raise ValueError("Audited cases must remain in the adopted upstream suites")
+        verify_file(upstream, {"path": entry["upstreamTest"], "sha256": entry["testSHA256"]})
+        if not entry["references"]:
+            raise ValueError("Conformance scope audit requires exact source references")
+        for reference in entry["references"]:
+            verify_file(upstream, reference)
+            if reference["symbol"] not in (upstream / reference["path"]).read_text():
+                raise ValueError("Conformance scope audit symbol is absent from pinned source")
+        selector = (entry["upstreamTest"], entry["name"], entry["occurrence"])
+        if selector in result:
+            raise ValueError("Duplicate conformance scope audit selector")
+        result[selector] = {**entry, "basis": audit["rules"][entry["rule"]]}
+    return result
+
+
+def skip_evidence(upstream, reports, observations):
+    result = {}
+    for implementation, report in reports.items():
+        occurrences = Counter()
+        for file in report["testResults"]:
+            text = Path(file["name"]).read_text()
+            lines = text.splitlines()
+            source_hash = hashlib.sha256(text.encode()).hexdigest()
+            for case in file["assertionResults"]:
+                name = " > ".join([*case["ancestorTitles"], case["title"]])
+                key = (str(Path(file["name"]).relative_to(upstream)), name)
+                occurrence = occurrences[key]
+                occurrences[key] += 1
+                if case["status"] not in ["pending", "skipped"]:
+                    continue
+                location = case.get("location") or {}
+                declarations = []
+                for observed in observations[implementation]:
+                    if observed["file"] != file["name"] or not observed["skipped"]:
+                        continue
+                    if observed["declaration"] == "describe":
+                        matches = observed["title"] in case["ancestorTitles"]
+                    else:
+                        matches = observed["title"] == case["title"] and observed["line"] == location.get("line")
+                    if not matches:
+                        continue
+                    fragment = "\n".join(lines[observed["line"] - 1:])
+                    condition = re.search(r"\b(?:describe|it|test)\.skipIf\((.*?)\)\s*\(", fragment, re.DOTALL)
+                    declarations.append({**observed, "expression": condition[1].strip() if condition else None,
+                                         "sourceSHA256": source_hash})
+                explicit = []
+                line = location.get("line")
+                if line and re.search(r"\b(?:it|test)\.skip\s*\(", lines[line - 1]):
+                    explicit.append({"file": file["name"], "line": line, "sourceSHA256": source_hash})
+                result.setdefault((*key, occurrence), {})[implementation] = {
+                    "location": location, "conditionalSkips": declarations, "explicitSkips": explicit,
+                    "explained": bool(declarations or explicit),
+                }
+    return result
+
+
+def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=(), *, require_case_instances=False,
+             scope_audit=None):
     cases = []
+    value_producers = {call["valueOrigin"]["id"]: call for call in invocations
+                       if call.get("entrypoint") == "value-produced" and call.get("valueOrigin")}
+
+    def valid_value_access(call):
+        origin = call.get("valueOrigin", {})
+        producer = value_producers.get(origin.get("id"), {})
+        return (call.get("operation") in {"catalog", "catalog.images", "catalog.classifiers", "catalog.all-models"}
+                and bool(re.fullmatch(r"[0-9a-f]{64}", origin.get("sha256", "")))
+                and producer.get("file") == call.get("file")
+                and not producer.get("caseInstanceID")
+                and producer.get("operation") == call.get("operation")
+                and producer.get("protocol") == call.get("protocol")
+                and producer.get("valueOrigin") == origin
+                and not producer.get("failure"))
     upstream_cases = {}
     for file in reports["upstream"]["testResults"]:
         for case in file["assertionResults"]:
@@ -53,6 +142,7 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
             matching = upstream_cases.get(key, [])
             original = matching[occurrences[key]] if occurrences[key] < len(matching) else {}
             occurrences[key] += 1
+            audited_scope = (scope_audit or {}).get((relative, name, occurrences[key] - 1))
             duplicate_name = len(matching) > 1 or swift_case_counts[key] > 1
 
             def case_calls(records, test_case):
@@ -64,6 +154,9 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                         and (not instance or call.get("caseInstanceID") == instance)]
 
             calls = case_calls(invocations, case)
+            invalid_values = [call for call in calls if call.get("entrypoint") == "value-access"
+                              and not valid_value_access(call)]
+            calls = [call for call in calls if call not in invalid_values]
             original_calls = case_calls(upstream_invocations, original)
             caller_operations = {call["operation"] for call in original_calls
                                  if call.get("ownership") == "caller"
@@ -88,6 +181,10 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 "upstreamStatus": original.get("status", "missing"),
                 "status": case["status"],
                 "swiftInvocations": len(calls),
+                "swiftOperationInvocations": sum(call.get("entrypoint") != "value-access" for call in calls),
+                "swiftValueAccesses": sum(call.get("entrypoint") == "value-access" for call in calls),
+                "nativeValueOrigins": [call["valueOrigin"] for call in calls if call.get("entrypoint") == "value-access"],
+                "invalidNativeValueOrigins": [call.get("valueOrigin") for call in invalid_values],
                 "upstreamOperations": sorted(operations),
                 "upstreamCallerOperations": sorted(caller_operations),
                 "upstreamProtocols": sorted(upstream_protocols),
@@ -106,6 +203,7 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                     capability for call in calls for capability in call.get("unrepresentedCapabilities", [])
                 }),
                 "assertionFailures": case.get("failureMessages", []),
+                "scopeAudit": audited_scope,
             }
             if item["upstreamStatus"] in ["pending", "skipped"] or item["status"] in ["pending", "skipped"]:
                 item["conformanceStatus"] = "not_executed"
@@ -113,7 +211,14 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 item["conformanceStatus"] = "upstream_failure"
             elif item["unrepresentedCapabilities"]:
                 item["conformanceStatus"] = "interface_gap"
-            elif not item["swiftInvocations"] or not operations or item["missingSwiftOperations"]:
+            elif audited_scope:
+                if operations or upstream_protocols or swift_protocols or invalid_values:
+                    item["conformanceStatus"] = "scope_audit_conflict"
+                elif item["status"] != "passed" or item["bridgeFailures"]:
+                    item["conformanceStatus"] = "mismatch"
+                else:
+                    item["conformanceStatus"] = "outside_scope"
+            elif invalid_values or not item["swiftInvocations"] or not operations or item["missingSwiftOperations"]:
                 item["conformanceStatus"] = "bridge_gap"
             elif missing_protocols or unexpected_protocols:
                 item["conformanceStatus"] = "dispatch_mismatch"
@@ -147,7 +252,8 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
     conformant = (
         all(code == 0 for code in exit_codes.values()) and bool(cases)
         and baseline_names == swift_names
-        and all(case["conformanceStatus"] == "passed" for case in cases)
+        and any(case["conformanceStatus"] == "passed" for case in cases)
+        and all(case["conformanceStatus"] in ["passed", "outside_scope"] for case in cases)
     )
     return conformant, cases
 
@@ -173,6 +279,7 @@ def main():
     revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=upstream, text=True).strip()
     if revision != lock["revision"]:
         raise SystemExit(f"Upstream revision mismatch: {revision}")
+    scope_audit = load_scope_audit(repo, upstream, manifest, revision)
     run(["git", "diff", "--quiet", "HEAD", "--", "packages/ai/src", "packages/ai/test"], cwd=upstream)
     identities = evidence_digests(repo)
     build = (args.output or repo / ".build/conformance").resolve()
@@ -243,6 +350,7 @@ def main():
     (build / "heap-observations.jsonl").write_text("")
     for implementation in ["upstream", "swift"]:
         environment["PI_CONFORMANCE_IMPLEMENTATION"] = implementation
+        (build / f"{implementation}-skip-conditions.jsonl").write_text("")
         (build / "swift-invocations.jsonl").write_text("")
         (build / f"{implementation}.json").unlink(missing_ok=True)
         result = subprocess.run(command, cwd=upstream / "packages/ai", env=environment)
@@ -251,7 +359,18 @@ def main():
     invocations = [json.loads(line) for line in (build / "swift-invocations.jsonl").read_text().splitlines()]
     upstream_invocations = [json.loads(line) for line in (build / "upstream-invocations.jsonl").read_text().splitlines()]
     conformant, cases = evaluate(upstream, reports, invocations, exit_codes, upstream_invocations,
-                                require_case_instances=True)
+                                require_case_instances=True, scope_audit=scope_audit)
+    observed_skips = {implementation: [json.loads(line) for line in
+        (build / f"{implementation}-skip-conditions.jsonl").read_text().splitlines()]
+        for implementation in reports}
+    skips = skip_evidence(upstream, reports, observed_skips)
+    occurrences = Counter()
+    for case in cases:
+        key = (case["upstreamTest"], case["name"])
+        occurrence = occurrences[key]
+        occurrences[key] += 1
+        if case["conformanceStatus"] == "not_executed":
+            case["skipEvidence"] = skips.get((*key, occurrence), {})
     source_stable = identities == evidence_digests(repo)
     conformant = conformant and source_stable
     report = {
@@ -277,6 +396,19 @@ def main():
         } for suite in suites],
         "statusCounts": dict(Counter(case["status"] for case in cases)),
         "conformanceCounts": dict(Counter(case["conformanceStatus"] for case in cases)),
+        "skipEvidenceCounts": {
+            "explainedInBothRuns": sum(case["conformanceStatus"] == "not_executed" and
+                all(case.get("skipEvidence", {}).get(implementation, {}).get("explained")
+                    for implementation in reports) for case in cases),
+            "unexplained": sum(case["conformanceStatus"] == "not_executed" and
+                not all(case.get("skipEvidence", {}).get(implementation, {}).get("explained")
+                        for implementation in reports) for case in cases),
+        },
+        "nativeEvidenceCounts": {
+            "operationRecords": sum(call.get("entrypoint") not in ["value-access", "value-produced"] for call in invocations),
+            "cachedValueAccessRecords": sum(call.get("entrypoint") == "value-access" for call in invocations),
+            "valueOrigins": sum(call.get("entrypoint") == "value-produced" for call in invocations),
+        },
         "heapMeasurements": [json.loads(line) for line in
                              (build / "heap-observations.jsonl").read_text().splitlines()],
         "upstreamStatusCounts": dict(Counter(case["upstreamStatus"] for case in cases)),
@@ -297,7 +429,7 @@ def main():
         "cases": cases,
     }
     (build / "report.json").write_text(json.dumps(report, indent=2) + "\n")
-    print(f"Conformance: {conformant}; upstream suites={len(suites)}; cases={len(cases)}; Swift calls={len(invocations)}")
+    print(f"Conformance: {conformant}; upstream suites={len(suites)}; cases={len(cases)}; Native evidence records={len(invocations)}")
     print(f"Report: {build / 'report.json'}")
     return 0 if conformant else 1
 

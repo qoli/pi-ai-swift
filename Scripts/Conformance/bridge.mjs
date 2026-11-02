@@ -19,6 +19,7 @@ import { resolveFixtureCloud, FixtureAnthropic } from "./cloud-authorization.mjs
 import { normalizeProviderError } from "./error-body.mjs";
 import { invokeNative as invoke, recordNative as record } from "./native-operations.mjs";
 import { getEnvApiKey } from "./environment.mjs";
+import { observeNativeCatalogValue } from "./catalog-values.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
 const heapObservations = new AsyncLocalStorage();
@@ -154,7 +155,8 @@ export function getModel(provider, id) {
 export function getModels(provider) {
   catalog ??= invoke({ operation: "catalog" });
   record("catalog", provider);
-  return Object.values(catalog).filter(model => model.provider === provider).map(model => structuredClone(model));
+  const models = Object.values(catalog).filter(model => model.provider === provider).map(model => structuredClone(model));
+  return observeNativeCatalogValue(models, "catalog", provider);
 }
 
 export function getProviders() {

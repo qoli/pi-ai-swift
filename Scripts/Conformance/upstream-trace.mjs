@@ -3,6 +3,7 @@ import path from "node:path";
 import { afterEach, expect } from "vitest";
 import { getCurrentTest } from "@vitest/runner";
 import { AsyncLocalStorage } from "node:async_hooks";
+import { observeValue } from "./value-observer.mjs";
 
 const invocation = new AsyncLocalStorage();
 const parserCalls = new Map();
@@ -29,8 +30,14 @@ export function trace(operation, protocol, run) {
       file: state.testPath, test: state.currentTestName, caseInstanceID: getCurrentTest()?.id,
       operation, protocol, ownership,
     }) + "\n");
-    return run();
+    const value = run();
+    return operation === "catalog" && Array.isArray(value) && !getCurrentTest()
+      ? observeSourceCatalogValue(value, operation) : value;
   });
+}
+
+export function observeSourceCatalogValue(value, operation) {
+  return observeValue(value, () => trace(operation, undefined, () => {}));
 }
 
 export function traceCallerModels(models) {
