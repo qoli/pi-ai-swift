@@ -1,7 +1,10 @@
 import hashlib
 import importlib.util
+import contextlib
+import io
 import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -13,6 +16,21 @@ SPEC.loader.exec_module(CI)
 
 
 class ConformanceCITests(unittest.TestCase):
+    def test_console_and_artifact_keep_both_streams_and_the_failed_exit_code(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            log = root / "step.log"
+            console = io.StringIO()
+            with contextlib.redirect_stdout(console):
+                code = CI.execute_logged(
+                    [sys.executable, "-c", "import sys; print('stdout fixture', flush=True); "
+                     "print('stderr fixture', file=sys.stderr, flush=True); sys.exit(7)"],
+                    cwd=root, environment={}, log=log)
+            self.assertEqual(code, 7)
+            self.assertEqual(console.getvalue(), log.read_text())
+            self.assertIn("stdout fixture", console.getvalue())
+            self.assertIn("stderr fixture", console.getvalue())
+
     def test_process_environment_excludes_credentials_and_ambient_configuration(self):
         parent = {
             "PATH": "/fixture/bin", "DEVELOPER_DIR": "/fixture/Xcode",

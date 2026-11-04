@@ -57,6 +57,16 @@ def write_evidence(output, evidence):
     (output / "SHA256SUMS").write_text("".join(checksums))
 
 
+def execute_logged(command, *, cwd, environment, log):
+    with log.open("w") as handle:
+        with subprocess.Popen(command, cwd=cwd, env=environment, stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT, text=True, bufsize=1) as process:
+            for line in process.stdout:
+                handle.write(line)
+                print(line, end="", flush=True)
+            return process.wait()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True, help="New evidence directory; must not already exist")
@@ -92,12 +102,11 @@ def main():
                 evidence["steps"].append(step)
                 write_evidence(output, evidence)
                 print(f"Running {name}; log: {log}", flush=True)
-                with log.open("w") as handle:
-                    result = subprocess.run(command, cwd=cwd, env=environment, stdout=handle, stderr=subprocess.STDOUT)
-                step["exitCode"] = result.returncode
+                exit_code = execute_logged(command, cwd=cwd, environment=environment, log=log)
+                step["exitCode"] = exit_code
                 write_evidence(output, evidence)
-                if result.returncode:
-                    raise subprocess.CalledProcessError(result.returncode, command)
+                if exit_code:
+                    raise subprocess.CalledProcessError(exit_code, command)
                 if capture:
                     return log.read_text().strip()
 
