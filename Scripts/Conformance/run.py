@@ -15,6 +15,13 @@ def run(command, *, cwd, env=None):
     subprocess.run(command, cwd=cwd, env=env, check=True)
 
 
+def target_object_files(bin_path, target):
+    aggregate = bin_path / f"{target}.o"
+    if aggregate.is_file():
+        return [aggregate]
+    return sorted((bin_path / f"{target}.build").rglob("*.o"))
+
+
 def evidence_digests(repo):
     digests = {}
     for name, root, recursive in [
@@ -327,15 +334,14 @@ def main():
         [*swift_build, "--show-bin-path"],
         cwd=repo, text=True).strip())
     probe = bin_path / "swift-conformance-probe"
-    objects = sorted((bin_path / "PiAIProviderRuntime.build").glob("*.o"))
+    objects = target_object_files(bin_path, "PiAIProviderRuntime")
     modules = bin_path / "Modules"
     if (bin_path / "PiAIProviderRuntime.o").is_file():
         objects = [bin_path / "PiAIProviderRuntime.o"]
         modules = bin_path
     if not objects:
         raise SystemExit("Swift provider-runtime object files were not produced")
-    zstd_objects = [bin_path / "libzstd.o"] if (bin_path / "libzstd.o").is_file() else sorted(
-        (bin_path / "libzstd.build").glob("*.o"))
+    zstd_objects = target_object_files(bin_path, "libzstd")
     if not zstd_objects:
         raise SystemExit("Native zstd object files were not produced")
     objects.extend(zstd_objects)

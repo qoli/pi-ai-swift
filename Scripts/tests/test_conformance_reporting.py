@@ -14,6 +14,20 @@ SPEC.loader.exec_module(CONFORMANCE)
 
 
 class ConformanceReportingTests(unittest.TestCase):
+    def test_native_link_inputs_accept_nested_and_aggregate_swiftpm_layouts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            files = [root / 'libzstd.build/flat.o', root / 'libzstd.build/lib/common/zstd_common.c.o',
+                     root / 'libzstd.build/lib/decompress/zstd_decompress.c.o']
+            for file in files:
+                file.parent.mkdir(parents=True, exist_ok=True)
+                file.write_bytes(b'fixture object')
+            self.assertEqual(CONFORMANCE.target_object_files(root, 'libzstd'), sorted(files))
+            aggregate = root / 'libzstd.o'
+            aggregate.write_bytes(b'aggregate fixture object')
+            self.assertEqual(CONFORMANCE.target_object_files(root, 'libzstd'), [aggregate])
+            self.assertEqual(CONFORMANCE.target_object_files(root, 'missing'), [])
+
     def offline_report(self):
         evidence = {"explained": True, "location": {"line": 7},
                     "conditionalSkips": [{"line": 4, "expression": "!fixtureCredential", "sourceSHA256": "a" * 64}],
