@@ -328,7 +328,8 @@ def main():
         for option, directory in [("--cache-path", "cache"), ("--config-path", "configuration"),
                                   ("--security-path", "security")]:
             swift_build.extend([option, str(args.build_root.resolve() / directory)])
-        swift_build.extend(["--disable-keychain", "--disable-netrc", "--force-resolved-versions"])
+        swift_build.extend(["--disable-keychain", "--disable-netrc", "--force-resolved-versions",
+                            "--disable-dependency-cache", "--manifest-cache", "local"])
     run(swift_build, cwd=repo)
     bin_path = Path(subprocess.check_output(
         [*swift_build, "--show-bin-path"],

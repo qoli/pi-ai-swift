@@ -41,7 +41,8 @@ def isolated_environment(parent, root):
 
 
 def swift_options(root):
-    options = ["--disable-keychain", "--disable-netrc", "--force-resolved-versions"]
+    options = ["--disable-keychain", "--disable-netrc", "--force-resolved-versions",
+               "--disable-dependency-cache", "--manifest-cache", "local"]
     for option, directory in [("--scratch-path", "build"), ("--cache-path", "cache"),
                               ("--config-path", "configuration"), ("--security-path", "security")]:
         options.extend([option, str(root / directory)])

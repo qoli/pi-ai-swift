@@ -267,7 +267,7 @@
       ],
       "upstreamSourceSHA256": "fcd722758fa9205f6f2633c0445fa6ef36e82c3c5eca2ea959c8af6b2dd6d9f7",
       "upstreamTestSHA256": "e7a06b9de0a57a7a44c5bf5293a21be7f9d50cec2834586443b3303f82c6b83b",
-      "swiftEvidenceSHA256": "1d91f4239ebb90016a3322cac9586b48b64d310ca6a9a1a518cbecc564626e65"
+      "swiftEvidenceSHA256": "ea8c21bd311a121ad92e2cfd1e38e4c56f5c68f2422757c1621cb75e98cbc4ca"
     },
     {
       "protocolID": "google-generative-ai",

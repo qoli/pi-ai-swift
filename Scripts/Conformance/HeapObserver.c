@@ -8,6 +8,7 @@
 // libmalloc's allocation logger ABI: apple-oss-distributions/libmalloc/src/malloc.c.
 typedef void (*allocation_logger)(uint32_t, uintptr_t, uintptr_t, uintptr_t,
                                   uintptr_t, uint32_t);
+static _Atomic(allocation_logger) *logger_slot;
 static _Atomic uint64_t allocated_bytes;
 static _Atomic uintptr_t measuring_thread;
 static _Atomic uint64_t thread_bytes;
@@ -37,7 +38,9 @@ static void observe_allocation(uint32_t type, uintptr_t zone, uintptr_t arg2,
 
 int pi_heap_begin_threaded(void) {
   atomic_store_explicit(&thread_only, 1, memory_order_relaxed);
-  return pi_heap_begin();
+  int status = pi_heap_begin();
+  if (!status) atomic_store_explicit(logger_slot, NULL, memory_order_relaxed);
+  return status;
 }
 
 int pi_heap_begin(void) {
@@ -46,6 +49,7 @@ int pi_heap_begin(void) {
   if (!slot) return 1;
   allocation_logger previous = atomic_load_explicit(slot, memory_order_relaxed);
   if (previous && previous != observe_allocation) return 1;
+  logger_slot = slot;
   atomic_store_explicit(&allocated_bytes, 0, memory_order_relaxed);
   atomic_store_explicit(slot, observe_allocation, memory_order_relaxed);
   return 0;
@@ -64,9 +68,13 @@ uint64_t pi_heap_live_bytes(void) {
 void pi_heap_thread_begin(void) {
   atomic_store_explicit(&thread_bytes, 0, memory_order_relaxed);
   atomic_store_explicit(&measuring_thread, (uintptr_t)pthread_self(), memory_order_relaxed);
+  if (atomic_load_explicit(&thread_only, memory_order_relaxed))
+    atomic_store_explicit(logger_slot, observe_allocation, memory_order_relaxed);
 }
 
 uint64_t pi_heap_thread_end(void) {
+  if (atomic_load_explicit(&thread_only, memory_order_relaxed))
+    atomic_store_explicit(logger_slot, NULL, memory_order_relaxed);
   atomic_store_explicit(&measuring_thread, 0, memory_order_relaxed);
   return atomic_load_explicit(&thread_bytes, memory_order_relaxed);
 }

@@ -180,7 +180,10 @@ struct Handle {
         pi_json_node_key(frame.node, index, key.data());
         own(env, frame.projection.value, text(env, key), projected.value);
       }
-      if (projected.fill) stack.push_back({child, projected, 0});
+      if (projected.fill) {
+        if (frame.next == frame.projection.count) stack.pop_back();
+        stack.push_back({child, projected, 0});
+      }
     }
     return initial.value;
   }
