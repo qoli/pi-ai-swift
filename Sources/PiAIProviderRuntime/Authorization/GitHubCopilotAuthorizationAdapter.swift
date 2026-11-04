@@ -130,10 +130,12 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       providerID: Self.providerID,
       operation: "copilot.oauth.device.start"
     )
+    // Preserve the server bytes for host URL serialization. Older Foundation
+    // string initializers irreversibly escape characters allowed by WHATWG URL.
     guard let code = body.string("device_code"), !code.isEmpty,
       let userCode = body.string("user_code"), !userCode.isEmpty,
       let verification = body.string("verification_uri"),
-      let verificationURL = URL(string: verification),
+      let verificationURL = URL(dataRepresentation: Data(verification.utf8), relativeTo: nil),
       let expiresIn = body.int("expires_in"), expiresIn > 0
     else { throw failure("GitHub device authorization response is malformed") }
     guard ["https", "http"].contains(verificationURL.scheme ?? "") else {

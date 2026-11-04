@@ -417,6 +417,13 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testCopilotDeviceURLPreservesBytesForHostSerialization() async throws {
+    let url = try await CopilotDeviceURLFixtures.verificationURL()
+    XCTAssertEqual(url.scheme, "https")
+    XCTAssertEqual(url.dataRepresentation, Data(CopilotDeviceURLFixtures.verificationURI.utf8))
+    XCTAssertFalse(url.absoluteString.contains("\u{1b}"))
+  }
+
   func testCompletionsTerminationMatchesPinnedSource() async throws {
     let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
     let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")

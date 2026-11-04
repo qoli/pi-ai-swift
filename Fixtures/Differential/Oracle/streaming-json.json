@@ -422,6 +422,304 @@
           ]
         }
       ]
+    },
+    {
+      "id": "array-storage-transitions",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": []
+            }
+          ],
+          "snapshot": []
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            1
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                0
+              ],
+              "value": 1
+            }
+          ],
+          "snapshot": [
+            1
+          ]
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            1,
+            2
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                1
+              ],
+              "value": 2
+            }
+          ],
+          "snapshot": [
+            1,
+            2
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                2
+              ],
+              "value": []
+            }
+          ],
+          "snapshot": [
+            1,
+            2,
+            []
+          ]
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            1,
+            2,
+            [
+              3
+            ]
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                2,
+                0
+              ],
+              "value": 3
+            }
+          ],
+          "snapshot": [
+            1,
+            2,
+            [
+              3,
+              4
+            ]
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                2,
+                1
+              ],
+              "value": 4
+            }
+          ],
+          "snapshot": [
+            1,
+            2,
+            [
+              3,
+              4
+            ]
+          ]
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            1,
+            2,
+            [
+              3,
+              4
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nested-open-path",
+      "observations": [
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [],
+              "value": []
+            },
+            {
+              "kind": "set",
+              "path": [
+                0
+              ],
+              "value": []
+            },
+            {
+              "kind": "set",
+              "path": [
+                0,
+                0
+              ],
+              "value": []
+            },
+            {
+              "kind": "set",
+              "path": [
+                0,
+                0,
+                0
+              ],
+              "value": []
+            }
+          ],
+          "snapshot": [
+            [
+              [
+                []
+              ]
+            ]
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "value": []
+            }
+          ],
+          "snapshot": [
+            [
+              [
+                [
+                  []
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            [
+              [
+                [
+                  [
+                    1
+                  ]
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "changes": [
+            {
+              "kind": "set",
+              "path": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "value": 1
+            }
+          ],
+          "snapshot": [
+            [
+              [
+                [
+                  [
+                    1
+                  ]
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            [
+              [
+                [
+                  [
+                    1
+                  ]
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            [
+              [
+                [
+                  [
+                    1
+                  ]
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            [
+              [
+                [
+                  [
+                    1
+                  ]
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "changes": [],
+          "snapshot": [
+            [
+              [
+                [
+                  [
+                    1
+                  ]
+                ]
+              ]
+            ]
+          ]
+        }
+      ]
     }
   ],
   "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"

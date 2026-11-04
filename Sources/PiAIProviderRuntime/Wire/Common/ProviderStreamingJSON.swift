@@ -32,7 +32,37 @@ final class ProviderJSONNode {
   }
 
   struct Array {
-    var elements: [ProviderJSONNode] = []
+    // Open paths are commonly chains of one-element arrays. Keeping their
+    // first child inline avoids a separate array allocation in every copy.
+    private var first: ProviderJSONNode?
+    private var remaining: [ProviderJSONNode] = []
+
+    var count: Int { first == nil ? 0 : 1 + remaining.count }
+
+    var elements: [ProviderJSONNode] {
+      get { first.map { [$0] + remaining } ?? [] }
+      set {
+        first = newValue.first
+        remaining = Swift.Array(newValue.dropFirst())
+      }
+    }
+
+    subscript(index: Int) -> ProviderJSONNode {
+      get { index == 0 ? first! : remaining[index - 1] }
+      set {
+        if index == 0 { first = newValue } else { remaining[index - 1] = newValue }
+      }
+    }
+
+    mutating func append(_ child: ProviderJSONNode) {
+      if first == nil { first = child } else { remaining.append(child) }
+    }
+
+    func appendChildren(to pending: inout [ProviderJSONNode]) {
+      if let first { pending.append(first) }
+      pending.append(contentsOf: remaining)
+    }
+
     func copy() -> Array {
       self
     }
@@ -112,39 +142,38 @@ final class ProviderJSONNode {
   func setElement(_ index: Int, _ child: ProviderJSONNode) -> Bool {
     guard case .array(var array) = value else { return false }
     value = .null
-    let added = index == array.elements.count
+    let added = index == array.count
     if added {
-      array.elements.append(child)
+      array.append(child)
     } else {
-      array.elements[index] = child
+      array[index] = child
     }
     value = .array(array)
     return added
   }
 
-  private func detachChildren() -> [ProviderJSONNode] {
-    let children: [ProviderJSONNode]
+  private func detachChildren(into pending: inout [ProviderJSONNode]) {
     switch value {
     case .object(let object):
-      children = Swift.Array(object.members.values)
+      pending.append(contentsOf: object.members.values)
     case .array(let array):
-      children = array.elements
-    case .text(let previous, _): children = previous.map { [$0] } ?? []
-    default: children = []
+      array.appendChildren(to: &pending)
+    case .text(let previous, _): if let previous { pending.append(previous) }
+    default: break
     }
     value = .null
-    return children
   }
 
   deinit {
     pool.liveNodes -= 1
     if pool.tracksReleases && tracksBridgeCache { pool.releasedIDs.append(id) }
     // Closing a deeply nested document must not recurse through ARC destruction.
-    var pending = detachChildren()
+    var pending: [ProviderJSONNode] = []
+    detachChildren(into: &pending)
     while !pending.isEmpty {
       var child = pending.removeLast()
       if isKnownUniquelyReferenced(&child) {
-        pending.append(contentsOf: child.detachChildren())
+        child.detachChildren(into: &pending)
       }
     }
   }
@@ -436,7 +465,7 @@ final class ProviderStreamingJSONParser {
 
   private func valueSlot() -> Slot? {
     guard let frame = stack.last else { return root == nil ? .root : nil }
-    if case .array(let array) = frame.container.value { return .element(array.elements.count) }
+    if case .array(let array) = frame.container.value { return .element(array.count) }
     if frame.phase == .value || frame.phase == .colon, let key = frame.key { return .member(key) }
     return nil
   }

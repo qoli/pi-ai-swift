@@ -260,7 +260,7 @@ func jsonNodeUnits(_ raw: UnsafeMutableRawPointer, _ output: UnsafeMutablePointe
 func jsonNodeCount(_ raw: UnsafeMutableRawPointer) -> Int {
   switch node(raw).value {
   case .object(let object): object.keys.count
-  case .array(let array): array.elements.count
+  case .array(let array): array.count
   default: 0
   }
 }
@@ -269,7 +269,7 @@ func jsonNodeCount(_ raw: UnsafeMutableRawPointer) -> Int {
 func jsonNodeChild(_ raw: UnsafeMutableRawPointer, _ index: Int) -> UnsafeMutableRawPointer? {
   switch node(raw).value {
   case .object(let object): pointer(object.members[object.keys[index]])
-  case .array(let array): pointer(array.elements[index])
+  case .array(let array): pointer(array[index])
   default: nil
   }
 }

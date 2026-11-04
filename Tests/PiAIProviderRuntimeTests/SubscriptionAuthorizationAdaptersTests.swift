@@ -5,6 +5,14 @@ import Testing
 
 @Suite
 struct SubscriptionAuthorizationAdaptersTests {
+  @Test
+  func copilotDeviceURLPreservesBytesForHostSerialization() async throws {
+    let url = try await CopilotDeviceURLFixtures.verificationURL()
+    #expect(url.scheme == "https")
+    #expect(url.dataRepresentation == Data(CopilotDeviceURLFixtures.verificationURI.utf8))
+    #expect(!url.absoluteString.contains("\u{1b}"))
+  }
+
   @Test(arguments: ["anthropic", "openai-codex", "openrouter"])
   func alreadyCancelledLoginDoesNotInteractOrSend(provider: String) async throws {
     let transport = SubscriptionQueueTransport([])

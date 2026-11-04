@@ -118,7 +118,14 @@ struct Handle {
     pi_json_node_track_cache(node);
   }
 
-  std::pair<napi_value, bool> shallow(void *node, bool root = false) {
+  struct Projection {
+    napi_value value;
+    bool fill;
+    bool array = false;
+    intptr_t count = 0;
+  };
+
+  Projection shallow(void *node, bool root = false) {
     napi_value value;
     if (!node) { check(napi_get_undefined(env, &value)); return {value, false}; }
     int descriptor = pi_json_node_kind(node);
@@ -146,35 +153,36 @@ struct Handle {
         remember(*part, value, true);
       }
     } else {
+      intptr_t count = pi_json_node_count(node);
       if (kind == 4) check(napi_create_object(env, &value));
-      else check(napi_create_array_with_length(env, pi_json_node_count(node), &value));
+      else check(napi_create_array_with_length(env, count, &value));
       if (!transient) remember(node, value);
-      return {value, true};
+      return {value, true, kind == 5, count};
     }
     return {value, false};
   }
 
   napi_value materialize(void *root) {
     auto initial = shallow(root, true);
-    if (!initial.second) return initial.first;
-    struct Frame { void *node; napi_value value; intptr_t next; };
-    std::vector<Frame> stack{{root, initial.first, 0}};
+    if (!initial.fill) return initial.value;
+    struct Frame { void *node; Projection projection; intptr_t next; };
+    std::vector<Frame> stack{{root, initial, 0}};
     while (!stack.empty()) {
       auto &frame = stack.back();
-      if (frame.next == pi_json_node_count(frame.node)) { stack.pop_back(); continue; }
+      if (frame.next == frame.projection.count) { stack.pop_back(); continue; }
       intptr_t index = frame.next++;
       void *child = pi_json_node_child(frame.node, index);
       auto projected = shallow(child);
-      if ((pi_json_node_kind(frame.node) & 255) == 5) {
-        check(napi_set_element(env, frame.value, index, projected.first));
+      if (frame.projection.array) {
+        check(napi_set_element(env, frame.projection.value, index, projected.value));
       } else {
         std::vector<uint16_t> key(pi_json_node_key(frame.node, index, nullptr));
         pi_json_node_key(frame.node, index, key.data());
-        own(env, frame.value, text(env, key), projected.first);
+        own(env, frame.projection.value, text(env, key), projected.value);
       }
-      if (projected.second) stack.push_back({child, projected.first, 0});
+      if (projected.fill) stack.push_back({child, projected, 0});
     }
-    return initial.first;
+    return initial.value;
   }
 
   napi_value changes() {

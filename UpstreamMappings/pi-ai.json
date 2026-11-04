@@ -1002,7 +1002,8 @@
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/github-copilot.ts",
         "packages/ai/src/providers/github-copilot.models.ts",
-        "packages/ai/src/providers/github-copilot.ts"
+        "packages/ai/src/providers/github-copilot.ts",
+        "packages/ai/src/auth/oauth/trusted-url.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts",
@@ -1023,16 +1024,16 @@
         "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#copilotDynamicHeadersReflectInitiatorAndVision",
         "Scripts/Conformance/AuthorizationProbe.swift",
         "Scripts/Conformance/authorization.mjs",
-        "Scripts/Conformance/device-code.mjs"
+        "Scripts/Conformance/device-code.mjs",
+        "Tests/PiAIProviderRuntimeTests/CopilotDeviceURLFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/SubscriptionAuthorizationAdaptersTests.swift#copilotDeviceURLPreservesBytesForHostSerialization",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testCopilotDeviceURLPreservesBytesForHostSerialization"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRun",
-      "conformanceGaps": [
-        "Foundation URL serializes a literal closing bracket after an escaped control character differently from WHATWG URL in the verification URI fixture."
-      ],
       "authorizedPolicy": "User authorized the pinned login policy POSTs for known tool-capable unconfigured models, bounded 429 retry/budget, best-effort continuation after transport failures, and stopping the batch on exhausted throttling. No real account was changed."
     },
     {

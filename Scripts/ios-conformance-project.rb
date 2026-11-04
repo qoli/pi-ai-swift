@@ -49,6 +49,8 @@ oauth_resolution_helper = project.main_group.new_file(root.join('Tests/PiAIProvi
 target.source_build_phase.add_file_reference(oauth_resolution_helper)
 credential_store_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/CredentialStoreFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(credential_store_helper)
+copilot_url_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/CopilotDeviceURLFixtures.swift').to_s)
+target.source_build_phase.add_file_reference(copilot_url_helper)
 oauth_metadata_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/OAuthMetadataFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(oauth_metadata_helper)
 oauth_refresh_lifecycle_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/OAuthRefreshLifecycleFixtures.swift').to_s)

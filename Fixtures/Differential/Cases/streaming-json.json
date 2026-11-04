@@ -8,6 +8,8 @@
     { "id": "missing-punctuation", "chunks": ["{\"a\" 1 \"b\":", "\"x\n", "y\"}"] },
     { "id": "root-literal", "chunks": ["f", "al", "se", " "] },
     { "id": "unknown-words", "chunks": ["{\"a\":NaN,", "\"b\":Infinity,\"c\":", "null}"] },
-    { "id": "array-pieces", "chunks": ["[", "{\"a\":1}", ",\"x", "y\"]"] }
+    { "id": "array-pieces", "chunks": ["[", "{\"a\":1}", ",\"x", "y\"]"] },
+    { "id": "array-storage-transitions", "chunks": ["[", "1", ",", "2", ",", "[", "3", ",4", "]", "]"] },
+    { "id": "nested-open-path", "chunks": ["[[[[", "[", "1", "]", "]", "]", "]", "]"] }
   ]
 }
