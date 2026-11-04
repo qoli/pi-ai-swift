@@ -2,13 +2,13 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
-private final class WeakJSONPool {
-  weak var value: ProviderJSONNodePool?
-  init(_ value: ProviderJSONNodePool) { self.value = value }
+private final class WeakJSONHandle {
+  weak var value: StreamingJSONHandle?
+  init(_ value: StreamingJSONHandle) { self.value = value }
 }
 
 // This C ABI is synchronously invoked on the Node test worker's thread.
-nonisolated(unsafe) private var jsonPools: [WeakJSONPool] = []
+nonisolated(unsafe) private var jsonHandles: [WeakJSONHandle] = []
 
 private final class StreamingJSONHandle {
   let pool = ProviderJSONNodePool()
@@ -25,7 +25,9 @@ private final class StreamingJSONHandle {
     parser = ProviderStreamingJSONParser(pool: pool)
     arguments = pool.node(.object(.init()))
     pool.tracksReleases = true
-    jsonPools.append(WeakJSONPool(pool))
+    // Weak pool references put every node's pool retain/release on ARC's slow
+    // path. Handles own all native roots, so observe the handle lifetime instead.
+    jsonHandles.append(WeakJSONHandle(self))
   }
 
   func append(_ units: [UInt16]) {
@@ -209,16 +211,7 @@ func jsonNodeID(_ raw: UnsafeMutableRawPointer) -> UInt64 { node(raw).id }
 @_cdecl("pi_json_node_kind")
 func jsonNodeKind(_ raw: UnsafeMutableRawPointer) -> Int32 {
   let value = node(raw)
-  let kind: Int32
-  switch value.value {
-  case .null: kind = 0
-  case .boolean: kind = 1
-  case .number: kind = 2
-  case .text: kind = 3
-  case .object: kind = 4
-  case .array: kind = 5
-  }
-  return kind | (value.isSnapshotContainer ? 256 : 0)
+  return value.kind.rawValue | (value.isSnapshotContainer ? 256 : 0)
 }
 
 @_cdecl("pi_json_node_track_cache")
@@ -226,8 +219,8 @@ func jsonNodeTrackCache(_ raw: UnsafeMutableRawPointer) { node(raw).tracksBridge
 
 @_cdecl("pi_streaming_json_live_nodes")
 func streamingJSONLiveNodes() -> Int {
-  jsonPools.removeAll { $0.value == nil }
-  return jsonPools.reduce(0) { $0 + ($1.value?.liveNodes ?? 0) }
+  jsonHandles.removeAll { $0.value == nil }
+  return jsonHandles.reduce(0) { $0 + ($1.value?.pool.liveNodes ?? 0) }
 }
 
 @_cdecl("pi_json_node_number")

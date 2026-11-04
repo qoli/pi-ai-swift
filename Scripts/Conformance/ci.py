@@ -112,7 +112,8 @@ def main():
 
             for name, command in [("xcode", ["xcodebuild", "-version"]), ("swift", ["swift", "--version"]),
                                   ("node", ["node", "--version"]), ("npm", ["npm", "--version"]),
-                                  ("python", [sys.executable, "--version"]), ("platform", ["uname", "-sm"])]:
+                                  ("python", [sys.executable, "--version"]), ("platform", ["uname", "-sm"]),
+                                  ("os", ["sw_vers"]), ("cpu", ["sysctl", "-n", "machdep.cpu.brand_string"])]:
                 evidence["tools"][name] = run(f"tool-{name}", command, capture=True)
             upstream = root / "upstream"
             run("upstream-init", ["git", "init", str(upstream)])

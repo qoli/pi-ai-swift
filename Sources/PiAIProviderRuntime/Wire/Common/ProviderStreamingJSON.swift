@@ -9,10 +9,12 @@ final class ProviderJSONNodePool {
   var releasedIDs: [UInt64] = []
   var liveNodes = 0
 
-  func node(_ value: ProviderJSONNode.Value) -> ProviderJSONNode {
+  func node(_ value: ProviderJSONNode.Value, isSnapshotContainer: Bool = false) -> ProviderJSONNode
+  {
     nextID += 1
     liveNodes += 1
-    return ProviderJSONNode(id: nextID, pool: self, value: value)
+    return ProviderJSONNode(
+      id: nextID, pool: self, value: value, isSnapshotContainer: isSnapshotContainer)
   }
 }
 
@@ -77,16 +79,31 @@ final class ProviderJSONNode {
     case array(Array)
   }
 
+  enum Kind: Int32 {
+    case null, boolean, number, text, object, array
+  }
+
   let id: UInt64
   let pool: ProviderJSONNodePool
-  var value: Value
-  var isSnapshotContainer = false
+  private(set) var value: Value
+  let kind: Kind
+  let isSnapshotContainer: Bool
   var tracksBridgeCache = false
 
-  init(id: UInt64, pool: ProviderJSONNodePool, value: Value) {
+  init(id: UInt64, pool: ProviderJSONNodePool, value: Value, isSnapshotContainer: Bool) {
     self.id = id
     self.pool = pool
     self.value = value
+    self.isSnapshotContainer = isSnapshotContainer
+    kind =
+      switch value {
+      case .null: .null
+      case .boolean: .boolean
+      case .number: .number
+      case .text: .text
+      case .object: .object
+      case .array: .array
+      }
   }
 
   var utf16: [UInt16] {
@@ -105,11 +122,10 @@ final class ProviderJSONNode {
   func copiedContainer() -> ProviderJSONNode {
     let copy: ProviderJSONNode
     switch value {
-    case .object(let object): copy = pool.node(.object(object.copy()))
-    case .array(let array): copy = pool.node(.array(array.copy()))
+    case .object(let object): copy = pool.node(.object(object.copy()), isSnapshotContainer: true)
+    case .array(let array): copy = pool.node(.array(array.copy()), isSnapshotContainer: true)
     default: return self
     }
-    copy.isSnapshotContainer = true
     return copy
   }
 
@@ -167,6 +183,8 @@ final class ProviderJSONNode {
   deinit {
     pool.liveNodes -= 1
     if pool.tracksReleases && tracksBridgeCache { pool.releasedIDs.append(id) }
+    // Nodes cleared by an ancestor need no second traversal.
+    if case .null = value { return }
     // Closing a deeply nested document must not recurse through ARC destruction.
     var pending: [ProviderJSONNode] = []
     detachChildren(into: &pending)
