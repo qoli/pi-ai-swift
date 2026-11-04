@@ -3773,7 +3773,10 @@
         "Scripts/Conformance/classifier.mjs",
         "Scripts/tests/test_native_clock.py",
         "Scripts/Conformance/auth-helpers.mjs",
-        "Scripts/Conformance/cloudflare-stream.mjs"
+        "Scripts/Conformance/cloudflare-stream.mjs",
+        ".github/workflows/ci.yml",
+        "Scripts/Conformance/ci.py",
+        "Scripts/tests/test_conformance_ci.py"
       ],
       "requiredGates": [
         "unchanged-upstream-conformance",

@@ -290,6 +290,8 @@ def main():
     parser.add_argument("--test", action="append", dest="tests")
     parser.add_argument("--case", dest="case_pattern")
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--build-root", type=Path,
+                        help="Isolate SwiftPM build, dependency cache, configuration and security state")
     parser.add_argument("--offline", action="store_true",
                         help="Accept only full-manifest Native conformance with identical explained upstream skips")
     args = parser.parse_args()
@@ -313,8 +315,13 @@ def main():
     build = (args.output or repo / ".build/conformance").resolve()
     build.mkdir(parents=True, exist_ok=True)
     (build / "report.json").unlink(missing_ok=True)
-    scratch = repo / ".build/conformance/swift"
+    scratch = args.build_root.resolve() / "build" if args.build_root else repo / ".build/conformance/swift"
     swift_build = ["swift", "build", "-c", "release", "-Xswiftc", "-enable-testing", "--scratch-path", str(scratch)]
+    if args.build_root:
+        for option, directory in [("--cache-path", "cache"), ("--config-path", "configuration"),
+                                  ("--security-path", "security")]:
+            swift_build.extend([option, str(args.build_root.resolve() / directory)])
+        swift_build.extend(["--disable-keychain", "--disable-netrc", "--force-resolved-versions"])
     run(swift_build, cwd=repo)
     bin_path = Path(subprocess.check_output(
         [*swift_build, "--show-bin-path"],

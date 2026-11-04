@@ -8,11 +8,14 @@ struct OpenAIResponseEventBranchTests {
   @Test
   func pinnedResponseEventOracleIsReproducible() throws {
     let root = responseEventRepositoryRoot()
+    let upstream =
+      ProcessInfo.processInfo.environment["PI_AI_SWIFT_UPSTREAM_CACHE"]
+      ?? root.appending(path: ".build/upstreams/pi").path
     let process = Process()
     process.currentDirectoryURL = root
     process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
     process.arguments = [
-      "node", "Scripts/openai-response-event-oracle.mjs", ".build/upstreams/pi",
+      "node", "Scripts/openai-response-event-oracle.mjs", upstream,
       "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
     ]
     let output = Pipe()

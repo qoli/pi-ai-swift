@@ -8,6 +8,9 @@ struct AzureOpenAIConfigurationDifferentialTests {
   @Test
   func pinnedSourceOracleIsReproducible() throws {
     let root = repositoryRootForAzureConfiguration()
+    let upstream =
+      ProcessInfo.processInfo.environment["PI_AI_SWIFT_UPSTREAM_CACHE"]
+      ?? root.appending(path: ".build/upstreams/pi").path
     let process = Process()
     let output = Pipe()
     let errors = Pipe()
@@ -15,7 +18,7 @@ struct AzureOpenAIConfigurationDifferentialTests {
     process.arguments = [
       "node",
       root.appending(path: "Scripts/pi-ai-azure-configuration-oracle.mjs").path,
-      root.appending(path: ".build/upstreams/pi").path,
+      upstream,
       root.appending(path: "Fixtures/AzureOpenAIConfiguration/Cases/configuration.json").path,
     ]
     process.standardOutput = output

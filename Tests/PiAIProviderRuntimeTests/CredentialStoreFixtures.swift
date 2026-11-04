@@ -15,20 +15,32 @@ enum CredentialStoreFixtures {
       _ = try await store.modify(providerID: provider) { _ in key("0") }
       if independent { _ = try await store.modify(providerID: "other") { _ in key("0") } }
       let recorder = StoreTransactionRecorder()
-      let increment: @Sendable (ProviderCredential?) async throws -> ProviderCredential? = {
-        current in
+      let gate = StoreTransactionGate()
+      let increment: @Sendable (ProviderCredential?, Bool) async throws -> ProviderCredential? = {
+        current, holdFirst in
         let value = keyValue(current)!
         await recorder.enter(value)
+        if holdFirst { await gate.block() }
         try await Task.sleep(for: .milliseconds(spec.int("holdMilliseconds")!))
         await recorder.leave()
         return key(String(Int(value)! + 1))
       }
-      let first = Task { try await store.modify(providerID: provider, increment) }
-      await recorder.waitForFirst()
-      let second = Task {
-        try await store.modify(providerID: independent ? "other" : provider, increment)
+      let first = Task {
+        try await store.modify(providerID: provider) { try await increment($0, independent) }
       }
-      observed["results"] = .array(try await [project(first.value), project(second.value)])
+      if independent { await gate.waitForFirst() } else { await recorder.waitForFirst() }
+      let second = Task {
+        try await store.modify(providerID: independent ? "other" : provider) {
+          try await increment($0, false)
+        }
+      }
+      let secondResult = await withTaskCancellationHandler {
+        await second.result
+      } onCancel: {
+        Task { await gate.release() }
+      }
+      await gate.release()
+      observed["results"] = .array(try await [project(first.value), project(secondResult.get())])
       observed["reads"] = .array(await recorder.reads.map(JSONValue.string))
       observed["maximumActive"] = .integer(Int64(await recorder.maximumActive))
     } else if scenario == "delete-after-modify" {

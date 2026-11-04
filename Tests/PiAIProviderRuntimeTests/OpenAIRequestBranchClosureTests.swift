@@ -36,12 +36,15 @@ struct OpenAIRequestBranchClosureTests {
   @Test
   func pinnedSourceOracleIsReproducible() throws {
     let root = repositoryRoot()
+    let upstream =
+      ProcessInfo.processInfo.environment["PI_AI_SWIFT_UPSTREAM_CACHE"]
+      ?? root.appending(path: ".build/upstreams/pi").path
     for stem in ["request-branches", "completions-compat"] {
       let process = Process()
       process.currentDirectoryURL = root
       process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
       process.arguments = [
-        "node", "Scripts/openai-request-branch-oracle.mjs", ".build/upstreams/pi",
+        "node", "Scripts/openai-request-branch-oracle.mjs", upstream,
         "Fixtures/OpenAIRequestBranches/Cases/\(stem).json",
       ]
       let output = Pipe()

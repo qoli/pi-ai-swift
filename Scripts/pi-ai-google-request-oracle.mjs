@@ -29,6 +29,7 @@ for (const testCase of fixture.cases) {
 const output = `${JSON.stringify({
   schemaVersion: 1,
   upstreamRevision: revision,
+  normalizations: ["JavaScript host platform, Node version and architecture in default wire identity headers"],
   cases: results,
 }, null, 2)}\n`;
 if (outputPath) await writeFile(outputPath, output);
@@ -64,7 +65,7 @@ async function capture(protocolID, testCase) {
       const request = input instanceof Request ? input : new Request(input, init);
       wireRequest = {
         url: request.url,
-        headers: Object.fromEntries(request.headers.entries()),
+        headers: canonicalWireHeaders(Object.fromEntries(request.headers.entries())),
       };
       return new Response(
         'data: {"responseId":"fixture","candidates":[{"finishReason":"STOP"}]}\n\n',
@@ -206,6 +207,23 @@ function vertexAPIKey(kind) {
   if (kind === "api-key") return "fixture-key";
   if (kind === "placeholder") return "<vertex-api-key>";
   return "gcp-vertex-credentials";
+}
+
+function canonicalWireHeaders(headers) {
+  // Runtime identity varies across CI hosts; explicit identity behavior has its
+  // own source-derived fixture matrix. Keep product and SDK versions unchanged.
+  if (headers["user-agent"]) {
+    headers["user-agent"] = headers["user-agent"].replace(
+      `(${process.platform}; node/${process.version}; ${process.arch})`,
+      "(<runtime-platform>; node/<runtime-version>; <runtime-architecture>)",
+    );
+  }
+  if (headers["x-goog-api-client"]) {
+    headers["x-goog-api-client"] = headers["x-goog-api-client"].replace(
+      `gl-node/${process.version}`, "gl-node/<runtime-version>",
+    );
+  }
+  return headers;
 }
 
 function canonicalize(value) {

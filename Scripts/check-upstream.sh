@@ -328,7 +328,10 @@ fi
 # Execute the exact pinned TypeScript source as the differential oracle. The
 # lockfile owns dependency identity; lifecycle scripts are not needed for the
 # provider request builders exercised by the oracle.
-npm --prefix "$cache_root" ci --ignore-scripts --no-audit --no-fund
+(
+  cd "$cache_root"
+  npm ci --ignore-scripts --no-audit --no-fund
+)
 
 package_file="$cache_root/$upstream_package_path/package.json"
 if [[ ! -f "$package_file" ]]; then

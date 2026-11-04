@@ -4,7 +4,8 @@ import Testing
 @testable import PiAIProviderRuntime
 
 @Suite struct CredentialStoreTests {
-  @Test func keychainTransactionsMatchSourceMutationContract() async throws {
+  @Test(.timeLimit(.minutes(1))) func keychainTransactionsMatchSourceMutationContract() async throws
+  {
     let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
       .deletingLastPathComponent().deletingLastPathComponent()
     func cases(_ folder: String) throws -> [JSONValue] {
@@ -32,7 +33,7 @@ import Testing
     }
   }
 
-  @Test func transactionsMatchPinnedSource() async throws {
+  @Test(.timeLimit(.minutes(1))) func transactionsMatchPinnedSource() async throws {
     let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
       .deletingLastPathComponent().deletingLastPathComponent()
     func cases(_ folder: String) throws -> [JSONValue] {

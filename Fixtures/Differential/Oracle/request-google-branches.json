@@ -726,8 +726,8 @@
         "wireRequest": {
           "headers": {
             "content-type": "application/json",
-            "user-agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
-            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
+            "user-agent": "pi/1.4.0 (<runtime-platform>; node/<runtime-version>; <runtime-architecture>)",
+            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/<runtime-version>",
             "x-goog-api-key": "fixture-key"
           },
           "url": "https://gateway.example.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
@@ -739,8 +739,8 @@
         "wireRequest": {
           "headers": {
             "content-type": "application/json",
-            "user-agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
-            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
+            "user-agent": "pi/1.4.0 (<runtime-platform>; node/<runtime-version>; <runtime-architecture>)",
+            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/<runtime-version>",
             "x-goog-api-key": "fixture-key"
           },
           "url": "https://gateway.example.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
@@ -1576,8 +1576,8 @@
         "wireRequest": {
           "headers": {
             "content-type": "application/json",
-            "user-agent": "pi/1.4.0 (darwin; node/v26.0.0; arm64)",
-            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/v26.0.0",
+            "user-agent": "pi/1.4.0 (<runtime-platform>; node/<runtime-version>; <runtime-architecture>)",
+            "x-goog-api-client": "google-genai-sdk/2.21.0 gl-node/<runtime-version>",
             "x-goog-api-key": "fixture-key"
           },
           "url": "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:streamGenerateContent?alt=sse"
@@ -2008,6 +2008,9 @@
       }
     }
   },
+  "normalizations": [
+    "JavaScript host platform, Node version and architecture in default wire identity headers"
+  ],
   "schemaVersion": 1,
   "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
 }
