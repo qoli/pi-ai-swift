@@ -11,6 +11,7 @@ struct ProviderVerticalSliceTests {
       "anthropic", "github-copilot", "openrouter", "radius", "xai", "typesafe",
     ]
     let runtimeCatalog = try await BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: InMemoryProviderCredentialStore()
     ).catalog()
     let providerIDs = Set(runtimeCatalog.providers.map(\.id))
@@ -32,6 +33,7 @@ struct ProviderVerticalSliceTests {
       )
       let transport = ProviderVerticalTransport()
       let runtime = try BuiltinProviderRuntime(
+        installation: .init(deviceID: nil),
         credentialStore: store,
         streamingTransport: transport,
         authorizationTransport: ProviderVerticalUnusedHTTPTransport(),

@@ -15,7 +15,8 @@ import Testing
         expiresAt: .distantFuture, metadata: [:]))
     let store = ResolutionCountingStore(credentials: ["anthropic": stored])
     let transport = ResolutionFixtureTransport()
-    let runtime = try BuiltinProviderRuntime(credentialStore: store, streamingTransport: transport)
+    let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil), credentialStore: store, streamingTransport: transport)
     let model = try #require(
       try await runtime.catalog().providers.first { $0.id == "anthropic" }?.models.first)
     await store.resetReads()
@@ -45,6 +46,7 @@ import Testing
     let transport = ResolutionFixtureTransport()
     let store = InMemoryProviderCredentialStore()
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store, streamingTransport: transport,
       authorizationConfiguration: .init(
         authenticationContext: .init(
@@ -92,6 +94,7 @@ import Testing
           expiresAt: Date().addingTimeInterval(3_600), metadata: [:]))
     ])
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store,
       streamingTransport: ResolutionFixtureTransport())
     let catalog = try await runtime.catalog()
@@ -123,6 +126,7 @@ import Testing
           expiresAt: Date().addingTimeInterval(3_600), metadata: [:]))
     ])
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store,
       authorizationConfiguration: .init(
         authenticationContext: .init(

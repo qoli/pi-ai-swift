@@ -16,7 +16,8 @@ struct CloudflareAuthorizationTests {
       let expected = try #require(oracle.object("logins")?.object(id))
       let original = ProviderCredential.apiKey(.init(key: "fixture-original", metadata: [:]))
       let store = InMemoryProviderCredentialStore(credentials: [provider: original])
-      let runtime = try BuiltinProviderRuntime(credentialStore: store)
+      let runtime = try BuiltinProviderRuntime(
+        installation: .init(deviceID: nil), credentialStore: store)
       let interaction = CloudflareFixtureInteraction(
         answers: try #require(item.array("answers")).compactMap(\.stringValue),
         stopAt: item.int("stopAt"))

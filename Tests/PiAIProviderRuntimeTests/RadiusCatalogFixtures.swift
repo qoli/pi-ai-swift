@@ -7,6 +7,7 @@ enum RadiusCatalogFixtures {
     let store = InMemoryProviderCredentialStore()
     let transport = RadiusCatalogFixtureTransport(config: spec["config"])
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store, authorizationTransport: transport,
       authorizationConfiguration: .init(radiusGateway: spec.string("gateway")))
     let before = try await project(runtime)

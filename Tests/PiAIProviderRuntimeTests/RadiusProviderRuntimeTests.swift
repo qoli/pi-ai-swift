@@ -19,6 +19,7 @@ struct RadiusProviderRuntimeTests {
         ["access_token": "fixture-access", "refresh_token": "fixture-refresh", "expires_in": 3600]),
     ])
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store, authorizationTransport: transport,
       authorizationConfiguration: .init(radiusGateway: "http://localhost:8788/"))
     _ = try await runtime.authorize(
@@ -67,6 +68,7 @@ struct RadiusProviderRuntimeTests {
       "radius": .apiKey(.init(key: "fixture-key", metadata: [:]))
     ])
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store,
       authorizationTransport: RadiusBufferedFixtureTransport([
         .init(statusCode: 200, headers: [:], body: try JSONEncoder().encode(input["config"]!))
@@ -152,6 +154,7 @@ struct RadiusProviderRuntimeTests {
       ),
     ])
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store,
       streamingTransport: RadiusStreamingFixtureTransport(),
       authorizationTransport: buffered
@@ -205,6 +208,7 @@ struct RadiusProviderRuntimeTests {
     ])
     let streaming = RadiusStreamingFixtureTransport()
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: credentialStore,
       streamingTransport: streaming,
       authorizationTransport: buffered,
@@ -229,6 +233,7 @@ struct RadiusProviderRuntimeTests {
     #expect(sent.value(forHTTPHeaderField: "Authorization") == "Bearer radius-fixture-key")
 
     let offline = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: InMemoryProviderCredentialStore(),
       streamingTransport: RadiusStreamingFixtureTransport(),
       authorizationTransport: RadiusRejectingBufferedTransport(),
@@ -257,6 +262,7 @@ struct RadiusProviderRuntimeTests {
       ]
     )
     let initial = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: credentialStore,
       streamingTransport: RadiusStreamingFixtureTransport(),
       authorizationTransport: RadiusBufferedFixtureTransport([
@@ -267,6 +273,7 @@ struct RadiusProviderRuntimeTests {
     _ = try await initial.catalog()
 
     let invalid = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: credentialStore,
       streamingTransport: RadiusStreamingFixtureTransport(),
       authorizationTransport: RadiusBufferedFixtureTransport([

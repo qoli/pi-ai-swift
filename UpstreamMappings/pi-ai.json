@@ -235,7 +235,8 @@
         "Sources/PiAIProviderRuntime/Authorization/ProviderAuthorizationResolution.swift",
         "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift",
         "Sources/PiAIProviderRuntime/CustomProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/ProviderRequest.swift"
+        "Sources/PiAIProviderRuntime/ProviderRequest.swift",
+        "Sources/PiAIProviderRuntime/ProviderInstallationContext.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -348,13 +349,17 @@
         "Tests/PiAIProviderRuntimeTests/ProviderAuthorizationResolutionTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAuthResolutionMatchesPinnedSource",
         "Scripts/Conformance/AuthResolutionProbe.swift",
-        "Scripts/Conformance/auth-resolution.mjs"
+        "Scripts/Conformance/auth-resolution.mjs",
+        "Tests/PiAIProviderRuntimeTests/InstallationContextFixtures.swift",
+        "Tests/PiAIProviderRuntimeTests/ProviderInstallationContextTests.swift",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testPersistentInstallationContextThroughOpenAILogin"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRequired"
+      "liveVerificationStatus": "notRequired",
+      "authorizedPolicy": "User-authorized native construction API: BuiltinProviderRuntime requires ProviderInstallationContext; persistent(at:) owns stable installation UUID creation and storage under the host-selected directory, retaining the existing ProviderInstallationID filename. Protocol adapters and original conformance inputs retain the missing/invalid device ID rejection. This managed installation API is a native integration extension, not an upstream default."
     },
     {
       "id": "differential-fixture-harness",

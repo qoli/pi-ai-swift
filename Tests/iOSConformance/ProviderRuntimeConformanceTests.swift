@@ -5,6 +5,18 @@ import XCTest
 
 @MainActor
 final class ProviderRuntimeConformanceTests: XCTestCase {
+  func testPersistentInstallationContextThroughOpenAILogin() async throws {
+    let ids = try await InstallationContextFixtures.observePersistentLogin()
+    XCTAssertEqual(ids.count, 4)
+    XCTAssertEqual(ids[0], ids[1])
+    XCTAssertEqual(ids[2], "urn:uuid:" + InstallationContextFixtures.existingID)
+    XCTAssertNotEqual(ids[0], ids[2])
+    XCTAssertNotEqual(ids[0], ids[3])
+    XCTAssertTrue(ids.allSatisfy { $0.hasPrefix("urn:uuid:") })
+    XCTAssertTrue(
+      ids.allSatisfy { UUID(uuidString: String($0.dropFirst("urn:uuid:".count))) != nil })
+  }
+
   func testRadiusCatalogMatchesPinnedSource() async throws {
     let root = try XCTUnwrap(Bundle(for: Self.self).resourceURL)
     func cases(_ directory: String) throws -> [JSONValue] {

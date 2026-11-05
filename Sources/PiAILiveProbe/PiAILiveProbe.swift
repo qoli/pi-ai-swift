@@ -9,7 +9,13 @@ struct PiAILiveProbe {
       let store = InMemoryProviderCredentialStore(
         credentials: [configuration.providerID: configuration.credential]
       )
-      let runtime = try BuiltinProviderRuntime(credentialStore: store)
+      guard let directory = ProcessInfo.processInfo.environment["PI_AI_LIVE_INSTALLATION_DIRECTORY"]
+      else {
+        throw LiveProbeFailure("PI_AI_LIVE_INSTALLATION_DIRECTORY is required")
+      }
+      let runtime = try BuiltinProviderRuntime(
+        installation: .persistent(at: URL(fileURLWithPath: directory, isDirectory: true)),
+        credentialStore: store)
       let catalog = try await runtime.catalog()
       guard
         let provider = catalog.providers.first(where: {

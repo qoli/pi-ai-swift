@@ -69,6 +69,7 @@ struct GoogleSourceDerivedRequestTests {
     ])
     let transport = GoogleBuiltinCaptureTransport()
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store,
       streamingTransport: transport
     )

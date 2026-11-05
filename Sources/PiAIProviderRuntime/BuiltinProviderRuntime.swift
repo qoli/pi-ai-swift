@@ -8,6 +8,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
   private let streamingTransport: any ProviderHTTPStreamingTransport
   private let authorizationTransport: any ProviderHTTPTransport
   private let authorizationConfiguration: ProviderAuthorizationConfiguration
+  private let installation: ProviderInstallationContext
   private let wireObserver: ProviderWireObserver?
   private let webSocketTransport: any ProviderWebSocketTransport
   private let cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?
@@ -18,6 +19,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
   private let radiusRefreshCoordinator: CredentialRefreshCoordinator
 
   public init(
+    installation: ProviderInstallationContext,
     credentialStore: any ProviderCredentialStore,
     streamingTransport: any ProviderHTTPStreamingTransport =
       URLSessionProviderHTTPStreamingTransport(),
@@ -35,6 +37,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     self.streamingTransport = streamingTransport
     self.authorizationTransport = authorizationTransport
     self.authorizationConfiguration = authorizationConfiguration
+    self.installation = installation
     self.wireObserver = wireObserver
     self.webSocketTransport = webSocketTransport
     self.cloudAuthorizationResolver = cloudAuthorizationResolver
@@ -59,6 +62,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       webSocketTransport: webSocketTransport,
       codexSessions: codexSessions,
       authorizationConfiguration: authorizationConfiguration,
+      installation: installation,
       cloudAuthorizationResolver: cloudAuthorizationResolver,
       cloudCredentialSources: cloudCredentialSources,
       requestTransportResolver: requestTransportResolver
@@ -158,6 +162,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       webSocketTransport: webSocketTransport,
       codexSessions: codexSessions,
       authorizationConfiguration: authorizationConfiguration,
+      installation: installation,
       cloudAuthorizationResolver: cloudAuthorizationResolver,
       cloudCredentialSources: cloudCredentialSources,
       requestTransportResolver: requestTransportResolver
@@ -199,6 +204,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
     webSocketTransport: any ProviderWebSocketTransport,
     codexSessions: CodexWebSocketSessions,
     authorizationConfiguration: ProviderAuthorizationConfiguration,
+    installation: ProviderInstallationContext,
     cloudAuthorizationResolver: ProviderCloudAuthorizationResolver?,
     cloudCredentialSources: ProviderCloudCredentialSources,
     requestTransportResolver: ProviderRequestTransportResolver?
@@ -207,7 +213,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       try makeDefinition(
         $0,
         authorizationTransport: authorizationTransport,
-        configuration: authorizationConfiguration
+        configuration: authorizationConfiguration,
+        installation: installation
       )
     }
     return try ProviderRuntimeKernel(
@@ -229,7 +236,8 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
   private static func makeDefinition(
     _ record: BuiltinProviderRecord,
     authorizationTransport: any ProviderHTTPTransport,
-    configuration: ProviderAuthorizationConfiguration
+    configuration: ProviderAuthorizationConfiguration,
+    installation: ProviderInstallationContext
   ) throws -> ProviderDefinition {
     var methods = record.authorizationMethodIDs.map { methodID in
       switch methodID {
@@ -292,7 +300,7 @@ public struct BuiltinProviderRuntime: ProviderRuntime {
       case "oauth" where record.id == OpenAIChatGPTAuthorizationAdapter.providerID:
         adapters[method.id] = OpenAIChatGPTAuthorizationAdapter(
           transport: authorizationTransport,
-          deviceID: configuration.deviceID, agentName: configuration.chatGPTAgentName)
+          deviceID: installation.deviceID, agentName: configuration.chatGPTAgentName)
       case let methodID
       where record.id == AnthropicOAuthAuthorizationAdapter.providerID
         && ["oauth", "oauth-copy-code"].contains(methodID):

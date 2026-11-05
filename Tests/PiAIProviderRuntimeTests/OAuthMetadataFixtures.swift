@@ -4,7 +4,8 @@ import Foundation
 
 enum OAuthMetadataFixtures {
   static func project(_ providers: [JSONValue]) async throws -> [JSONValue] {
-    let runtime = try BuiltinProviderRuntime(credentialStore: InMemoryProviderCredentialStore())
+    let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil), credentialStore: InMemoryProviderCredentialStore())
     let catalog = try await runtime.catalog()
     return try providers.map { provider in
       let providerID = provider.stringValue!

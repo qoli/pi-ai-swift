@@ -9,6 +9,7 @@ struct BuiltinProviderRuntimeTests {
   func exposesCompleteCatalogAndRoutesGenericAPIKeyAuthorization() async throws {
     let store = InMemoryProviderCredentialStore()
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store,
       streamingTransport: RuntimeUnusedStreamingTransport(),
       authorizationTransport: RuntimeUnusedHTTPTransport()
@@ -75,6 +76,7 @@ struct BuiltinProviderRuntimeTests {
       )
     )
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: store,
       streamingTransport: transport,
       authorizationTransport: RuntimeUnusedHTTPTransport()

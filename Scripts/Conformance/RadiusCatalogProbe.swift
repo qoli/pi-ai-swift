@@ -31,6 +31,7 @@ enum RadiusCatalogConformanceProbe {
     }
     let credential = try AuthorizationConformanceProbe.primaryCredential(input.object("credential"))
     let runtime = try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
       credentialStore: InMemoryProviderCredentialStore(
         credentials: credential.map { ["radius": $0] } ?? [:]),
       authorizationTransport: transport, radiusCatalogPersistenceURL: persistence,
