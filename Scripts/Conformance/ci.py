@@ -83,7 +83,7 @@ def main():
         "repositoryRevision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip(),
         "worktreeClean": not bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=repo, text=True)),
         "upstreamRevision": lock["revision"],
-        "cachePolicy": "Fresh temporary upstream, npm, SwiftPM and compiler caches for every invocation",
+        "cachePolicy": "Fresh upstream, npm, SwiftPM and compiler state for every invocation; Debug and Release share that invocation's SwiftPM dependencies",
         "credentialPolicy": "Allowlisted process environment; no Git helpers, npm user config, SwiftPM Keychain or netrc",
         "executionNetworkPolicy": "Conformance permits mocks and loopback only; public dependency bootstrap requires network",
         "tools": {},
@@ -130,9 +130,10 @@ def main():
             run("verify-pinned-upstream", ["bash", "Scripts/check-upstream.sh", "--explain", "--candidate", lock["revision"]])
             run("reporting-tests", [sys.executable, "-B", "-m", "unittest", "discover", "-s", "Scripts/tests"])
             run("swift-format", ["swift", "format", "lint", "--recursive", "Sources", "Tests", "Package.swift"])
-            run("native-tests", ["swift", "test", *swift_options(root / "native")])
+            swift_root = root / "swift"
+            run("native-tests", ["swift", "test", *swift_options(swift_root)])
             run("offline-conformance", [sys.executable, "-B", "Scripts/Conformance/run.py", "--offline", "--upstream",
-                                        str(upstream), "--output", str(output), "--build-root", str(root / "conformance")])
+                                        str(upstream), "--output", str(output), "--build-root", str(swift_root)])
             report = json.loads((output / "report.json").read_text())
             evidence["result"] = {key: report[key] for key in ["offlineConformant", "conformant", "conformanceCounts",
                                                               "swiftSourceSHA256", "harnessSHA256"]}

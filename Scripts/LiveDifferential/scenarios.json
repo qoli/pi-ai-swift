@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "source": "packages/ai/test/stream.test.ts",
+  "coverageKind": "Shared live differential scenarios; upstream-derived invariants and explicitly labelled native extensions. Not unchanged upstream tests.",
+  "system": "You are a helpful assistant. Be concise.",
+  "tool": {
+    "name": "math_operation",
+    "description": "Perform basic arithmetic operations",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "a": {
+          "type": "number"
+        },
+        "b": {
+          "type": "number"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "add",
+            "subtract",
+            "multiply",
+            "divide"
+          ]
+        }
+      },
+      "required": [
+        "a",
+        "b",
+        "operation"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "cases": [
+    {
+      "id": "text_multi_turn",
+      "turns": [
+        {
+          "prompt": "Reply with exactly: 'Hello test successful'",
+          "expectText": "Hello test successful"
+        },
+        {
+          "prompt": "Now say 'Goodbye test successful'",
+          "expectText": "Goodbye test successful"
+        }
+      ]
+    },
+    {
+      "id": "tools_multi_turn",
+      "tools": true,
+      "turns": [
+        {
+          "prompt": "Calculate 15 + 27 using the math_operation tool.",
+          "expectTool": true
+        },
+        {
+          "toolResult": "{\"result\":42,\"verificationCode\":\"pi-live-tool-replay-ok\"}",
+          "prompt": "Report the verification code from the tool result verbatim.",
+          "expectText": "pi-live-tool-replay-ok"
+        }
+      ]
+    },
+    {
+      "id": "reasoning_text",
+      "reasoning": true,
+      "referenceBinding": "Live reasoning evidence: deterministic arithmetic with the same explicit effort in both runtimes",
+      "turns": [
+        {
+          "prompt": "A machine starts in state A and cycles A to B to C to D to A. These four transitions cost 7, 11, 5 and 19 respectively. Find the total cost after exactly 1003 transitions. Reply with just the integer, without separators.",
+          "expectText": "10523"
+        }
+      ]
+    },
+    {
+      "id": "reasoning_tools",
+      "tools": true,
+      "reasoning": true,
+      "turns": [
+        {
+          "prompt": "Calculate 15 + 27 using the math_operation tool.",
+          "expectTool": true
+        }
+      ]
+    },
+    {
+      "id": "cancel",
+      "cancelAfterFirstDelta": true,
+      "turns": [
+        {
+          "prompt": "Count from one to one hundred, one number per line."
+        }
+      ]
+    },
+    {
+      "id": "image_input",
+      "imageInput": true,
+      "referenceBinding": "upstream stream.test.ts handleImage",
+      "turns": [
+        {
+          "prompt": "What do you see in this image? Please describe the shape (circle, rectangle, square, triangle, ...) and color (red, blue, green, ...). You MUST reply in English.",
+          "expectWords": [
+            "red",
+            "circle"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "structured_output",
+      "structuredOutput": true,
+      "referenceBinding": "Native responseSchema extension compared with explicit upstream onPayload schema projection",
+      "turns": [
+        {
+          "prompt": "Calculate 15 + 27."
+        }
+      ]
+    },
+    {
+      "id": "reasoning_tools_required",
+      "tools": true,
+      "reasoning": true,
+      "turns": [
+        {
+          "prompt": "Calculate 15 + 27 using the math_operation tool.",
+          "expectTool": true
+        }
+      ],
+      "toolChoiceByProtocol": {
+        "openai-completions": "required",
+        "openai-responses": "required",
+        "openai-codex-responses": "required",
+        "google-generative-ai": "any"
+      }
+    },
+    {
+      "id": "tools_required",
+      "tools": true,
+      "turns": [
+        {
+          "prompt": "Calculate 15 + 27 using the math_operation tool.",
+          "expectTool": true
+        }
+      ],
+      "toolChoiceByProtocol": {
+        "openai-completions": "required",
+        "openai-responses": "required",
+        "openai-codex-responses": "required",
+        "google-generative-ai": "any"
+      }
+    }
+  ],
+  "imageFixture": "packages/ai/test/data/red-circle.png",
+  "imageSHA256": "8a0661c7398b69a4051a47733b6ed5540b23549f2245ba2d608fd9d050b7e919",
+  "structuredSchema": {
+    "type": "object",
+    "properties": {
+      "result": {
+        "type": "integer",
+        "enum": [
+          42
+        ]
+      }
+    },
+    "required": [
+      "result"
+    ],
+    "additionalProperties": false
+  }
+}
