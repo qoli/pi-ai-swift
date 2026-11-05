@@ -736,6 +736,15 @@ struct OpenAIResponseEventBranchTests {
       providerID: "fixture", operation: "responses.blocks.oracle")
     let cases = try #require(fixture.object("responsesBlockLifecycleEvents"))
     let expectedCases = try #require(oracle.object("cases")?.object("responses.block-lifecycle"))
+    for name in [
+      "metadata-before-created", "metadata-before-terminal", "metadata-after-terminal",
+      "codex-metadata-before-created", "codex-metadata-before-terminal",
+      "codex-metadata-after-terminal",
+      "codex-websocket-timing-before-terminal",
+    ] {
+      #expect(cases[name] != nil, Comment(rawValue: name))
+      #expect(expectedCases[name] != nil, Comment(rawValue: name))
+    }
     for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
       for name in cases.keys.sorted() {
         let expected = try #require(expectedCases[name]?.objectValue)

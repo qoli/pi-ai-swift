@@ -993,6 +993,138 @@
       }
     },
     "responses.block-lifecycle": {
+      "codex-metadata-after-terminal": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "codex-metadata-before-created": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "codex-metadata-before-terminal": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "codex-websocket-timing-before-terminal": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
       "commentary-commentary-completed": {
         "content": [
           {
@@ -1236,6 +1368,105 @@
             },
             "stopReason": "stop",
             "text": "",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "metadata-after-terminal": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "metadata-before-created": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
+      "metadata-before-terminal": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "stop",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_phase",
+              "phase": "final_answer",
+              "v": 1
+            },
+            "stopReason": "stop",
+            "text": "answer",
             "type": "text_end"
           }
         ],

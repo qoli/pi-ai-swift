@@ -1911,7 +1911,8 @@ private struct OpenAIResponsesReducer {
     case "response.output_text.done", "response.content_part.added",
       "response.content_part.done",
       "response.reasoning_summary_part.added",
-      "response.reasoning_summary_text.done":
+      "response.reasoning_summary_text.done", "response.metadata", "codex.response.metadata",
+      "responsesapi.websocket_timing":
       return []
     default:
       throw invalid("unsupported OpenAI Responses event: \(type)")

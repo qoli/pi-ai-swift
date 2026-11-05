@@ -75,6 +75,7 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#chatCompletionsJSONModeDoesNotAdvertiseStrictSchemas",
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#schema6PreservesTypedRoutesWithoutAdvertisingClassifiers",
         "Docs/SCHEMA6_FEASIBILITY.md"
       ],
@@ -189,6 +190,7 @@
       "dependsOn": [],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#loadsValidatedBundledSnapshotAtPinnedRevision",
+        "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#chatCompletionsJSONModeDoesNotAdvertiseStrictSchemas",
         "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#radiusRefreshPersistsAtomicallyAndReloadsValidators",
         "Tests/PiAIProviderRuntimeTests/ProviderModelStoreTests.swift#newerRadiusRefreshOwnsPublicationWhileReadersSeeImmutableSnapshot",
         "Tests/PiAIProviderRuntimeTests/CandidateModelStoreTests.swift",

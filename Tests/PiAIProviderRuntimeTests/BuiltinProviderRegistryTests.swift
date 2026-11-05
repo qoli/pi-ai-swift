@@ -6,6 +6,24 @@ import Testing
 @Suite
 struct BuiltinProviderRegistryTests {
   @Test
+  func chatCompletionsJSONModeDoesNotAdvertiseStrictSchemas() async throws {
+    let registry = try BuiltinProviderRegistry.load()
+    let deepSeek = try #require(registry.providers.first { $0.id == "deepseek" })
+    let store = try ProviderModelStore(expectedRevision: registry.upstreamRevision)
+    let stored = await store.records(providerID: deepSeek.id)
+    for id in ["deepseek-flash", "deepseek-v4-pro"] {
+      let model = try #require(deepSeek.models.first { $0.id == id })
+      let record = try #require(stored.first { $0.model.id == id })
+      #expect(model.protocolID == "openai-completions")
+      #expect(!model.capabilities.structuredOutput)
+      #expect(!record.model.capabilities.structuredOutput)
+    }
+    let openAI = try #require(registry.providers.first { $0.id == "openai" })
+    let schemaModel = try #require(openAI.models.first { $0.id == "gpt-6-luna" })
+    #expect(schemaModel.capabilities.structuredOutput)
+  }
+
+  @Test
   func bundledCatalogPreservesPinnedProviderAndModelInventory() throws {
     let registry = try BuiltinProviderRegistry.load()
     #expect(registry.upstreamRevision == "86dc686cf2fd795b2b24af3d614bb0e1307bcd76")

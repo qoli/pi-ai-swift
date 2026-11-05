@@ -150,7 +150,8 @@ struct BuiltinProviderRecord: Sendable {
           imageInput: inputs.contains("image"),
           toolCalling: outputModality == .text,
           reasoning: reasoning,
-          structuredOutput: outputModality == .text && Self.supportsStructuredOutput(protocolID),
+          structuredOutput: outputModality == .text
+            && Self.supportsStructuredOutput(protocolID, providerID: providerID),
           imageGeneration: outputModality == .image,
           classification: outputModality == .classification
         ),
@@ -212,13 +213,15 @@ struct BuiltinProviderRecord: Sendable {
     )
   }
 
-  private static func supportsStructuredOutput(_ protocolID: String) -> Bool {
+  static func supportsStructuredOutput(_ protocolID: String, providerID: String) -> Bool {
+    // DeepSeek Chat Completions accepts JSON mode but does not enforce a supplied JSON Schema.
+    if providerID == "deepseek", protocolID == "openai-completions" { return false }
     switch protocolID {
     case "openai-completions", "openai-responses",
       "azure-openai-responses", "google-generative-ai", "google-vertex":
-      true
+      return true
     default:
-      false
+      return false
     }
   }
 

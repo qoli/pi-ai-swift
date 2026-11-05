@@ -1254,7 +1254,7 @@
           "id": "ctc_state",
           "call_id": "call_state",
           "name": "query",
-          "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67"
+          "input": "quote \"\n👨‍👩‍👧"
         }
       },
       {
@@ -1265,7 +1265,7 @@
       {
         "type": "response.custom_tool_call_input.done",
         "output_index": 0,
-        "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67 /end"
+        "input": "quote \"\n👨‍👩‍👧 /end"
       },
       {
         "type": "response.output_item.done",
@@ -1275,7 +1275,7 @@
           "id": "ctc_state",
           "call_id": "call_state",
           "name": "query",
-          "input": "quote \"\n\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67 /end"
+          "input": "quote \"\n👨‍👩‍👧 /end"
         }
       },
       {
@@ -2813,6 +2813,318 @@
           }
         }
       }
+    ],
+    "metadata-before-created": [
+      {
+        "type": "response.metadata",
+        "metadata": {
+          "fixture": true
+        }
+      },
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      }
+    ],
+    "metadata-before-terminal": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.metadata",
+        "metadata": {
+          "fixture": true
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      }
+    ],
+    "metadata-after-terminal": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      },
+      {
+        "type": "response.metadata",
+        "metadata": {
+          "fixture": true
+        }
+      }
+    ],
+    "codex-metadata-before-created": [
+      {
+        "type": "codex.response.metadata",
+        "metadata": {
+          "fixture": true
+        }
+      },
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      }
+    ],
+    "codex-metadata-before-terminal": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "codex.response.metadata",
+        "metadata": {
+          "fixture": true
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      }
+    ],
+    "codex-metadata-after-terminal": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      },
+      {
+        "type": "codex.response.metadata",
+        "metadata": {
+          "fixture": true
+        }
+      }
+    ],
+    "codex-websocket-timing-before-terminal": [
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": [],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_phase",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ],
+          "phase": "final_answer"
+        }
+      },
+      {
+        "type": "responsesapi.websocket_timing"
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_phase",
+          "status": "completed"
+        }
+      }
     ]
   },
   "completionBlockLifecycleCases": {
@@ -3262,5 +3574,29 @@
     "scalar-error": "data: {\"error\":\"scalar quota\"}\n\n",
     "falsy-error-control": "data: {\"error\":false,\"choices\":[]}\n\ndata: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"hello\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n",
     "malformed-json": "data: {bad}\n\n"
+  },
+  "responsesMetadataProvenance": {
+    "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+    "sourcePath": "packages/ai/src/api/openai-responses-shared.ts",
+    "sourceFunction": "processResponsesStream",
+    "kind": "minimized synthetic replay of a live-observed event type",
+    "caseNames": [
+      "metadata-before-created",
+      "metadata-before-terminal",
+      "metadata-after-terminal",
+      "codex-metadata-before-created",
+      "codex-metadata-before-terminal",
+      "codex-metadata-after-terminal",
+      "codex-websocket-timing-before-terminal"
+    ],
+    "swiftAssertion": "OpenAIResponseEventBranchTests.responseBlockLifecycleAndProvisionalPhasesMatchSource",
+    "invariant": "Nonsemantic metadata and timing events do not alter normalized block emissions, content or terminal state",
+    "livePayloadRetained": false,
+    "eventTypes": [
+      "response.metadata",
+      "codex.response.metadata",
+      "responsesapi.websocket_timing"
+    ],
+    "codexForwarder": "packages/ai/src/api/openai-codex-responses.ts#mapCodexEvents"
   }
 }

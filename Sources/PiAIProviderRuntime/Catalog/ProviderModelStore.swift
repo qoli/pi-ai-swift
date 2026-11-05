@@ -322,7 +322,7 @@ actor ProviderModelStore {
           toolCalling: !imageGeneration && !classification,
           reasoning: object.bool("reasoning") ?? false,
           structuredOutput: !imageGeneration && !classification
-            && supportsStructuredOutput(protocolID),
+            && BuiltinProviderRecord.supportsStructuredOutput(protocolID, providerID: providerID),
           imageGeneration: imageGeneration,
           classification: classification
         ),
@@ -584,16 +584,6 @@ actor ProviderModelStore {
         operation: "catalog.store.model-limits",
         message: "provider model has invalid limits: \(modelID)"
       )
-    }
-  }
-
-  private static func supportsStructuredOutput(_ protocolID: String) -> Bool {
-    switch protocolID {
-    case "openai-completions", "openai-responses", "azure-openai-responses",
-      "google-generative-ai", "google-vertex":
-      true
-    default:
-      false
     }
   }
 

@@ -2150,11 +2150,11 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
     let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
     let cases = try XCTUnwrap(fixture.object("responsesBlockLifecycleEvents"))
-    XCTAssertEqual(cases.count, 7)
+    let expectedCases = try XCTUnwrap(oracle.object("cases")?.object("responses.block-lifecycle"))
+    XCTAssertEqual(Set(cases.keys), Set(expectedCases.keys))
     for api in ["openai-responses", "azure-openai-responses", "openai-codex-responses"] {
       for (name, value) in cases {
-        let expected = try XCTUnwrap(
-          oracle.object("cases")?.object("responses.block-lifecycle")?.object(name))
+        let expected = try XCTUnwrap(expectedCases[name]?.objectValue)
         let chunks = try XCTUnwrap(value.arrayValue).map {
           Data(
             ("data: " + String(decoding: try JSONEncoder().encode($0), as: UTF8.self) + "\n\n").utf8
