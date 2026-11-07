@@ -280,6 +280,10 @@
         "response": {
           "id": "resp-early"
         }
+      },
+      {
+        "type": "keepalive",
+        "sequence_number": 0
       }
     ]
   },
@@ -2814,6 +2818,67 @@
         }
       }
     ],
+    "keepalive-between-text-deltas": [
+      {
+        "type": "response.created",
+        "response": {
+          "id": "resp_keepalive"
+        }
+      },
+      {
+        "type": "response.output_item.added",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_keepalive",
+          "role": "assistant",
+          "status": "in_progress",
+          "content": []
+        }
+      },
+      {
+        "type": "response.output_text.delta",
+        "output_index": 0,
+        "item_id": "msg_keepalive",
+        "content_index": 0,
+        "delta": "ans"
+      },
+      {
+        "type": "keepalive",
+        "sequence_number": 0
+      },
+      {
+        "type": "response.output_text.delta",
+        "output_index": 0,
+        "item_id": "msg_keepalive",
+        "content_index": 0,
+        "delta": "wer"
+      },
+      {
+        "type": "response.output_item.done",
+        "output_index": 0,
+        "item": {
+          "type": "message",
+          "id": "msg_keepalive",
+          "role": "assistant",
+          "status": "completed",
+          "content": [
+            {
+              "type": "output_text",
+              "text": "answer",
+              "annotations": []
+            }
+          ]
+        }
+      },
+      {
+        "type": "response.completed",
+        "response": {
+          "id": "resp_keepalive",
+          "status": "completed"
+        }
+      }
+    ],
     "metadata-before-created": [
       {
         "type": "response.metadata",
@@ -3368,6 +3433,10 @@
           "response": {
             "id": "resp_azure"
           }
+        },
+        {
+          "type": "keepalive",
+          "sequence_number": 0
         },
         {
           "type": "response.completed",

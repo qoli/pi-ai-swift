@@ -737,6 +737,7 @@ struct OpenAIResponseEventBranchTests {
     let cases = try #require(fixture.object("responsesBlockLifecycleEvents"))
     let expectedCases = try #require(oracle.object("cases")?.object("responses.block-lifecycle"))
     for name in [
+      "keepalive-between-text-deltas",
       "metadata-before-created", "metadata-before-terminal", "metadata-after-terminal",
       "codex-metadata-before-created", "codex-metadata-before-terminal",
       "codex-metadata-after-terminal",

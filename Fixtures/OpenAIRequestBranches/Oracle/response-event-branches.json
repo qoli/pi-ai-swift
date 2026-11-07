@@ -1373,6 +1373,51 @@
         ],
         "stopReason": "stop"
       },
+      "keepalive-between-text-deltas": {
+        "content": [
+          {
+            "signature": {
+              "id": "msg_keepalive",
+              "v": 1
+            },
+            "text": "answer",
+            "type": "text"
+          }
+        ],
+        "events": [
+          {
+            "contentIndex": 0,
+            "stopReason": "pending",
+            "text": "",
+            "type": "text_start"
+          },
+          {
+            "contentIndex": 0,
+            "delta": "ans",
+            "stopReason": "pending",
+            "text": "ans",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 0,
+            "delta": "wer",
+            "stopReason": "pending",
+            "text": "answer",
+            "type": "text_delta"
+          },
+          {
+            "contentIndex": 0,
+            "signature": {
+              "id": "msg_keepalive",
+              "v": 1
+            },
+            "stopReason": "pending",
+            "text": "answer",
+            "type": "text_end"
+          }
+        ],
+        "stopReason": "stop"
+      },
       "metadata-after-terminal": {
         "content": [
           {
@@ -3313,6 +3358,10 @@
             "type": "response.created"
           },
           {
+            "sequence_number": 0,
+            "type": "keepalive"
+          },
+          {
             "response": {
               "id": "resp_azure",
               "status": "completed"
@@ -3322,6 +3371,11 @@
           }
         ],
         "models": [
+          {
+            "api": "openai-responses",
+            "id": "gpt-model",
+            "provider": "openai"
+          },
           {
             "api": "openai-responses",
             "id": "gpt-model",
@@ -3345,6 +3399,7 @@
         "stages": [
           "payload",
           "response",
+          "event",
           "event",
           "event"
         ]

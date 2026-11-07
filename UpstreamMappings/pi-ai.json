@@ -3319,7 +3319,10 @@
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRequired"
+      "liveVerificationStatus": "notRequired",
+      "maintenanceNotes": [
+        "2026-11-07 accepted-pin Class B repair: keepalive-between-text-deltas and the raw wire observer prove that a keepalive emits no normalized content and the stream continues; earlyEof still requires a terminal response event. See Docs/RESPONSES_KEEPALIVE_REPAIR.md."
+      ]
     },
     {
       "id": "wire-openrouter-images",

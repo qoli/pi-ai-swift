@@ -1908,7 +1908,7 @@ private struct OpenAIResponsesReducer {
         providerMetadata: type == "response.failed" && flavor != .codex
           ? object.object("response")?.string("status").map { ["rawStopReason": .string($0)] } : nil
       )
-    case "response.output_text.done", "response.content_part.added",
+    case "keepalive", "response.output_text.done", "response.content_part.added",
       "response.content_part.done",
       "response.reasoning_summary_part.added",
       "response.reasoning_summary_text.done", "response.metadata", "codex.response.metadata",
