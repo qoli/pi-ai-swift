@@ -1587,7 +1587,8 @@
       "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
-        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift"
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/ProviderSessionHeaders.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -1609,13 +1610,17 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#openCodeGoCompletesWithSessionOmitted",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#openCodeGoDerivesAnOpaqueRequestScopedSession",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#openCodeGoPreservesExplicitRoutingAndZenScope"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
-      "liveVerificationStatus": "notRun"
+      "liveVerificationStatus": "notRun",
+      "verificationBoundary": "The request-scoped routing ID for missing sessionId is a local extension. See Docs/OPENCODE_GO_SESSION_EXTENSION.md for scope and evidence."
     },
     {
       "id": "provider-openrouter",

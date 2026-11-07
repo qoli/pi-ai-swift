@@ -75,6 +75,86 @@ struct ProviderVerticalSliceTests {
       #expect(sent.httpMethod == "POST")
     }
   }
+
+  @Test(arguments: ["gemini-4-argon", "claude-haiku-5-5", "deepseek-v4.1-flash", "gpt-5.6-luna"])
+  func openCodeGoCompletesWithSessionOmitted(_ modelID: String) async throws {
+    let transport = ProviderVerticalTransport(requiresOpenCodeSession: true)
+    let runtime = try openCodeRuntime(transport)
+    let header = try await openCodeSessionHeader(runtime, transport: transport, modelID: modelID)
+    #expect(header?.isEmpty == false)
+  }
+
+  @Test
+  func openCodeGoDerivesAnOpaqueRequestScopedSession() async throws {
+    let transport = ProviderVerticalTransport(requiresOpenCodeSession: true)
+    let runtime = try openCodeRuntime(transport)
+    let requestID = "local request\nfirst"
+    let first = try #require(
+      try await openCodeSessionHeader(runtime, transport: transport, requestID: requestID))
+    let repeatRequest = try await openCodeSessionHeader(
+      runtime, transport: transport, requestID: requestID)
+    let otherRequest = try await openCodeSessionHeader(
+      runtime, transport: transport, requestID: "local request second", sessionID: "")
+    #expect(first != requestID)
+    #expect(repeatRequest == first)
+    #expect(otherRequest != first)
+
+    let unnamed = try #require(
+      try await openCodeSessionHeader(runtime, transport: transport, requestID: ""))
+    let otherUnnamed = try await openCodeSessionHeader(runtime, transport: transport, requestID: "")
+    #expect(unnamed != otherUnnamed)
+  }
+
+  @Test
+  func openCodeGoPreservesExplicitRoutingAndZenScope() async throws {
+    let transport = ProviderVerticalTransport()
+    let runtime = try openCodeRuntime(transport)
+    let conversation = try await openCodeSessionHeader(
+      runtime, transport: transport, sessionID: "caller-conversation")
+    let override = try await openCodeSessionHeader(
+      runtime, transport: transport, sessionID: "caller-conversation",
+      headers: ["X-OpenCode-Session": "caller-header"])
+    let suppressed = try await openCodeSessionHeader(
+      runtime, transport: transport, headers: ["X-OpenCode-Session": nil])
+    let zen = try await openCodeSessionHeader(runtime, transport: transport, providerID: "opencode")
+    #expect(conversation == "caller-conversation")
+    #expect(override == "caller-header")
+    #expect(suppressed == nil)
+    #expect(zen == nil)
+  }
+
+  private func openCodeRuntime(_ transport: ProviderVerticalTransport) throws
+    -> BuiltinProviderRuntime
+  {
+    let key = ProviderCredential.apiKey(.init(key: "fixture-key", metadata: [:]))
+    return try BuiltinProviderRuntime(
+      installation: .init(deviceID: nil),
+      credentialStore: InMemoryProviderCredentialStore(credentials: [
+        "opencode-go": key, "opencode": key,
+      ]),
+      streamingTransport: transport)
+  }
+
+  private func openCodeSessionHeader(
+    _ runtime: BuiltinProviderRuntime, transport: ProviderVerticalTransport,
+    providerID: String = "opencode-go", modelID: String = "gemini-4-argon",
+    requestID: String = "fixture-request", sessionID: String? = nil,
+    headers: [String: String?]? = nil
+  ) async throws -> String? {
+    let request = ProviderRequest(
+      id: requestID, providerID: providerID, modelID: modelID,
+      messages: [.user([.text("reply with ok")])], tools: [],
+      options: .init(
+        maximumOutputTokens: 32, temperature: nil, reasoningEffort: nil,
+        responseSchema: nil, providerOptions: [:], sessionID: sessionID, cacheRetention: .none),
+      connectionOptions: .init(headers: headers))
+    var events: [ProviderEvent] = []
+    for try await event in runtime.stream(request) { events.append(event) }
+    #expect(events.contains(.textDelta("ok")))
+    #expect(events.contains(.completed(.stop)))
+    let sent = try #require(await transport.request())
+    return sent.value(forHTTPHeaderField: "x-opencode-session")
+  }
 }
 
 private struct ProviderVerticalUnavailableWebSocketTransport: ProviderWebSocketTransport {
@@ -111,13 +191,28 @@ private func providerCredential(_ providerID: String) -> ProviderCredential {
 }
 
 private actor ProviderVerticalTransport: ProviderHTTPStreamingTransport {
+  private let requiresOpenCodeSession: Bool
   private var captured: URLRequest?
+
+  init(requiresOpenCodeSession: Bool = false) {
+    self.requiresOpenCodeSession = requiresOpenCodeSession
+  }
 
   func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
     captured = request
-    let fixture = try responseFixture(for: request)
+    let status: Int
+    let fixture: (headers: [String: String], body: Data)
+    if requiresOpenCodeSession,
+      request.value(forHTTPHeaderField: "x-opencode-session")?.isEmpty != false
+    {
+      status = 400
+      fixture = ([:], Data(#"{"error":{"type":"MissingSessionID"}}"#.utf8))
+    } else {
+      status = 200
+      fixture = try responseFixture(for: request)
+    }
     return ProviderHTTPStreamingResponse(
-      statusCode: 200,
+      statusCode: status,
       headers: fixture.headers,
       body: AsyncThrowingStream { continuation in
         continuation.yield(fixture.body)

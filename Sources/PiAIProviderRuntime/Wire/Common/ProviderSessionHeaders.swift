@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 enum ProviderSessionHeaders {
@@ -15,15 +16,19 @@ enum ProviderSessionHeaders {
   }
 
   static func applyOpenCode(request: ProviderRequest, to urlRequest: inout URLRequest) {
-    guard
-      ["opencode", "opencode-go"].contains(request.providerID),
-      let sessionID = request.options.sessionID, !sessionID.isEmpty
-    else { return }
-    let projection = openCodeHeaders(
-      sessionID: sessionID, headers: request.connectionOptions.headers)
-    if projection.changed {
-      setDefault(sessionID, forHTTPHeaderField: "x-opencode-session", to: &urlRequest)
+    guard ["opencode", "opencode-go"].contains(request.providerID) else { return }
+    var sessionID = request.options.sessionID
+    if request.providerID == "opencode-go", sessionID?.isEmpty != false {
+      // Go requires a routing ID. Keep it scoped to the request without sending the host's raw ID.
+      sessionID =
+        request.id.isEmpty
+        ? UUID().uuidString
+        : SHA256.hash(data: Data(request.id.utf8)).map { String(format: "%02x", $0) }.joined()
     }
+    guard let sessionID,
+      openCodeHeaders(sessionID: sessionID, headers: request.connectionOptions.headers).changed
+    else { return }
+    setDefault(sessionID, forHTTPHeaderField: "x-opencode-session", to: &urlRequest)
   }
 
   static func applyAnthropicAffinity(
