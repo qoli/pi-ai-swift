@@ -170,13 +170,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
           continuation.finish(throwing: error)
         } catch {
           continuation.finish(
-            throwing: failure(
-              .transportFailed,
-              providerID: request.providerID,
-              operation: "google.response.transport",
-              message: "Google generation transport failed",
-              cause: String(describing: error)
-            ))
+            throwing: ProviderRuntimeFailure(
+              transportError: error, message: "Google generation transport failed",
+              providerID: request.providerID, operation: "google.response.transport"))
         }
       }
       continuation.onTermination = { _ in task.cancel() }

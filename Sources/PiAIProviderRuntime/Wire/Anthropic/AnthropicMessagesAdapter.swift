@@ -81,7 +81,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
               throwing: ProviderRuntimeFailure(
                 code: error.code, message: error.message, providerID: error.providerID,
                 operation: error.operation, causeDescription: error.causeDescription,
-                providerMetadata: metadata))
+                providerMetadata: metadata,
+                underlyingURLErrorCode: error.underlyingURLErrorCode))
           } else {
             continuation.finish(throwing: error)
           }

@@ -81,13 +81,9 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
           continuation.finish(throwing: error)
         } catch {
           continuation.finish(
-            throwing: failure(
-              .transportFailed,
-              providerID: request.providerID,
-              operation: "mistral.response.transport",
-              message: "Mistral Conversations transport failed",
-              cause: String(describing: error)
-            ))
+            throwing: ProviderRuntimeFailure(
+              transportError: error, message: "Mistral Conversations transport failed",
+              providerID: request.providerID, operation: "mistral.response.transport"))
         }
       }
       continuation.onTermination = { _ in task.cancel() }

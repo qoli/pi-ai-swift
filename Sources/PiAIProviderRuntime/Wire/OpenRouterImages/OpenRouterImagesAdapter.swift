@@ -41,13 +41,9 @@ struct OpenRouterImagesAdapter: WireProtocolAdapter {
           continuation.finish(throwing: error)
         } catch {
           continuation.finish(
-            throwing: failure(
-              .transportFailed,
-              request,
-              "openrouter-images.response.transport",
-              "OpenRouter image transport failed",
-              cause: String(describing: error)
-            ))
+            throwing: ProviderRuntimeFailure(
+              transportError: error, message: "OpenRouter image transport failed",
+              providerID: request.providerID, operation: "openrouter-images.response.transport"))
         }
       }
       continuation.onTermination = { _ in task.cancel() }

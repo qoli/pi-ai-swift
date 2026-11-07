@@ -222,7 +222,8 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               code: error.code, message: usageLimitMessage(error.message),
               providerID: error.providerID,
               operation: error.operation, causeDescription: error.causeDescription,
-              providerMetadata: error.providerMetadata))
+              providerMetadata: error.providerMetadata,
+              underlyingURLErrorCode: error.underlyingURLErrorCode))
         } catch {
           continuation.finish(throwing: error)
         }

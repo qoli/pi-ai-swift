@@ -105,7 +105,8 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
               } ?? (error.message + sdkDeserializationSuffix),
               providerID: error.providerID,
               operation: error.operation, causeDescription: error.causeDescription,
-              providerMetadata: metadata.isEmpty ? nil : metadata))
+              providerMetadata: metadata.isEmpty ? nil : metadata,
+              underlyingURLErrorCode: error.underlyingURLErrorCode))
         } catch {
           guard !Task.isCancelled, !(error is CancellationError),
             !diagnostics.isEmpty || responseRequestID != nil
@@ -118,9 +119,8 @@ struct BedrockConverseStreamAdapter: WireProtocolAdapter {
           }
           continuation.finish(
             throwing: ProviderRuntimeFailure(
-              code: .transportFailed, message: error.localizedDescription,
+              transportError: error, message: error.localizedDescription,
               providerID: request.providerID, operation: "bedrock.response",
-              causeDescription: String(describing: error),
               providerMetadata: ["diagnostics": .array(diagnostics)]))
         }
       }

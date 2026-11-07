@@ -22,6 +22,8 @@ public struct ProviderRuntimeFailure: Error, Sendable, Equatable, Codable,
   public let operation: String?
   public let causeDescription: String?
   public let providerMetadata: [String: JSONValue]?
+  /// The URL loading error code retained when a provider adds transport context.
+  public let underlyingURLErrorCode: Int?
 
   public init(
     code: Code,
@@ -29,7 +31,8 @@ public struct ProviderRuntimeFailure: Error, Sendable, Equatable, Codable,
     providerID: String?,
     operation: String?,
     causeDescription: String?,
-    providerMetadata: [String: JSONValue]? = nil
+    providerMetadata: [String: JSONValue]? = nil,
+    underlyingURLErrorCode: Int? = nil
   ) {
     self.code = code
     self.message = message
@@ -37,6 +40,18 @@ public struct ProviderRuntimeFailure: Error, Sendable, Equatable, Codable,
     self.operation = operation
     self.causeDescription = causeDescription
     self.providerMetadata = providerMetadata
+    self.underlyingURLErrorCode = underlyingURLErrorCode
+  }
+
+  init(
+    transportError: any Error, message: String, providerID: String,
+    operation: String, providerMetadata: [String: JSONValue]? = nil
+  ) {
+    self.init(
+      code: .transportFailed, message: message, providerID: providerID,
+      operation: operation, causeDescription: String(describing: transportError),
+      providerMetadata: providerMetadata,
+      underlyingURLErrorCode: (transportError as? URLError)?.code.rawValue)
   }
 
   public var errorDescription: String? { message }
