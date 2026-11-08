@@ -1,4 +1,5 @@
 """Source-derived catalog regression and frozen-input integrity checks."""
+import base64
 import gzip
 import hashlib
 import json
@@ -69,6 +70,26 @@ class Schema6CatalogTests(unittest.TestCase):
         result = replay(FIXTURES / 'manifest.json', second)
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertEqual(self.output.read_bytes(), second.read_bytes())
+
+    def test_opencode_go_routes_match_frozen_gateway_inventory(self):
+        responses = json.loads(gzip.decompress((FIXTURES / 'responses.json.gz').read_bytes()))
+        captured = next(response for response in responses
+                        if response['url'] == 'https://opencode.ai/inference/go/v1/models')
+        official = json.loads(base64.b64decode(captured['body']))['data']
+        provider = next(p for p in self.catalog['providers'] if p['id'] == 'opencode-go')
+        protocols = {'openai-completions': 'chat-completions', 'openai-responses': 'responses',
+                     'anthropic-messages': 'messages', 'google-generative-ai': 'generate-content'}
+        by_id = {model['id']: model for model in official}
+        self.assertEqual({model['id'] for model in provider['models']}, set(by_id))
+        for model in provider['models']:
+            protocol = protocols[model['api']]
+            routes = by_id[model['id']]['api']
+            self.assertIn(protocol, routes)
+            base_url = routes[protocol]['base_url']
+            if protocol == 'messages':
+                base_url = base_url.removesuffix('/v1')
+            self.assertEqual(model['baseUrl'], base_url)
+
 
 class Schema6InputTests(unittest.TestCase):
     def test_changed_input_cannot_be_relabelled_as_original_evidence(self):

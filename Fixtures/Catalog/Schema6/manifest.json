@@ -3,7 +3,7 @@
   "candidate": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "nodeVersion": "v26.0.0",
   "schemaVersion": 6,
-  "structureHash": "312c356a7d3ee3998618307020742191183268a30673256153dd0b230c5a2bae",
+  "structureHash": "9fb11f81caa98d8b5fb7c6ca30232beabd75e43c25a1a46a3198e29085f8f217",
   "generatedAt": "2026-10-29T19:46:21.098Z",
   "generatorEntrypoint": "catalog/generate.ts",
   "nodeConditions": [
@@ -55,6 +55,12 @@
       "url": "https://openrouter.ai/api/v1/models?output_modalities=decisions",
       "status": 200,
       "sha256": "800d60633b17ff6510beb296933e475b060edb33774c69a197618869c9b71f47"
+    },
+    {
+      "url": "https://opencode.ai/inference/go/v1/models",
+      "status": 200,
+      "sha256": "ff6423790a8f94bfe095fdcb8615f23e8387ce67ac5e99b04f5508c1c4e3ab00",
+      "capturedAt": "2026-11-08T21:30:41+00:00"
     }
   ],
   "providerFileHashes": {
@@ -83,7 +89,7 @@
     "nvidia.json": "e030898fb1d1778b85c5b86fdde95b28e4dd75f36302f50bcff8bf2941f919b1",
     "openai-codex.json": "dd30453068f310317abf35d9adc6d841339a1351f0c6925a6aff45d975e0257c",
     "openai.json": "df2fe1f312051bbe29801ef903ab370c701a74a680f1370e96eb465eacd1d82d",
-    "opencode-go.json": "daed1626c48d9cec6da77f53a163aec917d5d5fc8d6e4d53c23f448f99463328",
+    "opencode-go.json": "5e093641d257041aa7731aa10a98d7ac289ea45df8c9debbe1e036cfbf356c6b",
     "opencode.json": "89049678c12b553fd44d3b760514ead39ebc6fa68d84b135db69c133ab443bc9",
     "openrouter.json": "b053a3f6aa1da4c0488a490d84c75db3b7057c4b7c5c9da5e451f83044683d33",
     "qwen-token-plan-cn.json": "80824536f0c3cd83ab27424df2d664738cbe3f971b4e568a625432288fa53229",
@@ -171,7 +177,7 @@
   },
   "responseArchive": {
     "path": "responses.json.gz",
-    "sha256": "2a2f0ad582d621f6757b97c888e1290c7ae645f75fc13bcd333809b9a5889cf2"
+    "sha256": "22cd23232b3e9f0643941280e6c438ae8bd27dfaae1a4a626b1ce4bb4631725a"
   },
   "repository": "https://github.com/earendil-works/pi.git",
   "package": {
@@ -184,5 +190,5 @@
     "image": 64,
     "classifier": 55
   },
-  "projectedProvidersSHA256": "2fa972d38d824505580e255ff089f168db8a62af6723dadd7a37cf810d667b9d"
+  "projectedProvidersSHA256": "b6fa4c4f9285ae47646805b5664892456f22e19e6dcf16d924797e8ec5dc454f"
 }

@@ -8,7 +8,7 @@
     "name": "@earendil-works/pi-ai",
     "version": "1.4.0"
   },
-  "generatedCatalogSHA256": "f976953100abc09f7e3524df857ae506c4ed35519d576649cc3167c31424ae69",
+  "generatedCatalogSHA256": "8d9844fe9dc0a239676249a3d3641dec891dea3980f5298f58a7cf9aba2e7089",
   "trackedBuiltinProviders": [
     "amazon-bedrock",
     "ant-ling",
@@ -525,8 +525,8 @@
   ],
   "sourceArtifact": {
     "kind": "frozen-public-catalog-inputs",
-    "evidenceSHA256": "dde5105f257a94822a7a9b9fba57f7cc89e0aba9e4f3047e75cb4f0208c5172b",
-    "responseArchiveSHA256": "2a2f0ad582d621f6757b97c888e1290c7ae645f75fc13bcd333809b9a5889cf2"
+    "evidenceSHA256": "77e328274970e7f2d0f5f15f7a2f7065a724d69367825c42bf109aa80ab4c3ef",
+    "responseArchiveSHA256": "22cd23232b3e9f0643941280e6c438ae8bd27dfaae1a4a626b1ce4bb4631725a"
   },
   "sourceArtifactManifest": "Fixtures/Catalog/Schema6/manifest.json"
 }

@@ -18,12 +18,42 @@ import tarfile
 import tempfile
 
 
+MODELS_DEV_CATALOG = 'https://models.dev/experimental/v2.0/api.json'
+OPENCODE_GO_INVENTORY = 'https://opencode.ai/inference/go/v1/models'
+
+
 def sha256(data):
     return hashlib.sha256(data).hexdigest()
 
 
 def run(*args, **kwargs):
     return subprocess.run(args, check=True, **kwargs)
+
+
+def catalog_responses(responses):
+    by_url = {item['url']: item for item in responses}
+    inventory = by_url.get(OPENCODE_GO_INVENTORY)
+    if inventory is None:
+        return responses
+
+    published = json.loads(base64.b64decode(inventory['body']))['data']
+    by_id = {model['id']: model for model in published}
+    if inventory['status'] != 200 or not by_id or len(by_id) != len(published):
+        raise ValueError('Invalid OpenCode Go model inventory')
+
+    original = by_url[MODELS_DEV_CATALOG]
+    catalog = json.loads(base64.b64decode(original['body']))
+    provider = catalog['opencode-go']
+    # The gateway owns Go availability. Preserve metadata for existing models
+    # and let the exact upstream generator project entries new to this snapshot.
+    models = {key: model for key, model in provider['models'].items() if key in by_id}
+    models.update((key, by_id[key]) for key in sorted(by_id.keys() - models.keys()))
+    provider['models'] = models
+    body = json.dumps(catalog, separators=(',', ':'), ensure_ascii=False).encode()
+    by_url[MODELS_DEV_CATALOG] = {
+        **original, 'body': base64.b64encode(body).decode(), 'sha256': sha256(body),
+    }
+    return by_url.values()
 
 
 def replay(upstream, manifest_path, output, generated_data_output=None):
@@ -81,7 +111,7 @@ def replay(upstream, manifest_path, output, generated_data_output=None):
                 (target / package.name).symlink_to(resolved_package, target_is_directory=True)
         captures = root / 'responses'
         captures.mkdir()
-        for item in responses:
+        for item in catalog_responses(responses):
             (captures / (sha256(item['url'].encode()) + '.json')).write_text(json.dumps(item))
         env = {'PATH': os.environ['PATH'], 'SCHEMA6_MODE': 'replay', 'SCHEMA6_RESPONSES': str(captures)}
         package = source / evidence['package']['path']

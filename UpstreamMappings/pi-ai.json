@@ -1613,14 +1613,15 @@
         "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice",
         "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#openCodeGoCompletesWithSessionOmitted",
         "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#openCodeGoDerivesAnOpaqueRequestScopedSession",
-        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#openCodeGoPreservesExplicitRoutingAndZenScope"
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#openCodeGoPreservesExplicitRoutingAndZenScope",
+        "Scripts/tests/test_schema6_catalog.py#test_opencode_go_routes_match_frozen_gateway_inventory"
       ],
       "requiredGates": [
         "swift-test"
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRun",
-      "verificationBoundary": "The request-scoped routing ID for missing sessionId is a local extension. See Docs/OPENCODE_GO_SESSION_EXTENSION.md for scope and evidence."
+      "verificationBoundary": "The request-scoped routing ID for missing sessionId is a local extension. See Docs/OPENCODE_GO_SESSION_EXTENSION.md for scope and evidence. Catalog replay uses the frozen OpenCode Go gateway inventory for membership and retains the previously frozen metadata for shared models."
     },
     {
       "id": "provider-openrouter",
