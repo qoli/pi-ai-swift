@@ -317,13 +317,13 @@ struct GoogleGenerativeAIAdapterTests {
   }
 
   @Test
-  func rejectsHTTPStreamErrorUnsafeFinishAndMissingTerminal() async {
+  func rejectsHTTPStreamErrorUnsafeFinishAndMalformedSSETail() async {
     let adapter = GoogleGenerativeAIAdapter()
     let model = googleModel()
     let request = fixtureRequest(providerID: "google", modelID: model.id)
     let context = googleContext(model: model)
 
-    await #expect(throws: ProviderRuntimeFailure.self) {
+    let httpFailure = await #expect(throws: ProviderRuntimeFailure.self) {
       for try await _ in adapter.stream(
         request,
         context: context,
@@ -333,7 +333,9 @@ struct GoogleGenerativeAIAdapterTests {
         )
       ) {}
     }
-    await #expect(throws: ProviderRuntimeFailure.self) {
+    #expect(httpFailure?.code == .transportFailed)
+
+    let safetyFailure = await #expect(throws: ProviderRuntimeFailure.self) {
       for try await _ in adapter.stream(
         request,
         context: context,
@@ -348,18 +350,78 @@ struct GoogleGenerativeAIAdapterTests {
         )
       ) {}
     }
-    await #expect(throws: ProviderRuntimeFailure.self) {
+    #expect(safetyFailure?.code == .transportFailed)
+
+    let malformedTail = await #expect(throws: ProviderRuntimeFailure.self) {
       for try await _ in adapter.stream(
         request,
         context: context,
         transport: GoogleFixtureTransport(
           statusCode: 200,
-          chunks: [
-            Data("data: {\"responseId\":\"unterminated\",\"candidates\":[]}\n\n".utf8)
-          ]
+          chunks: [Data("data: {\"candidates\":".utf8)]
         )
       ) {}
     }
+    #expect(malformedTail?.code == .invalidResponse)
+    #expect(malformedTail?.operation == "google.event.decode")
+  }
+
+  @Test(arguments: [false, true])
+  func reportsIncompleteStreamWithOnlySSETailMetadata(otherCandidateHasReason: Bool) async throws {
+    let model = googleModel()
+    let text = "fixture text mentioning finishReason"
+    let otherCandidate = otherCandidateHasReason ? #",{"finishReason":"STOP"}"# : ""
+    let frame =
+      #"{"responseId":"fixture-response","candidates":[{"content":{"parts":[{"text":"\#(text)"}]}}\#(otherCandidate)]}"#
+    let usage = #"{"usageMetadata":{"promptTokenCount":1,"candidatesTokenCount":1}}"#
+    let tail = "data: [DONE]"
+    let transport = GoogleFixtureTransport(
+      statusCode: 200,
+      chunks: [Data("data: \(frame)\n\ndata: \(usage)\n\n".utf8), Data(tail.utf8)])
+    var events: [ProviderEvent] = []
+
+    let failure = try #require(
+      await #expect(throws: ProviderRuntimeFailure.self) {
+        for try await event in GoogleGenerativeAIAdapter().stream(
+          fixtureRequest(providerID: "google", modelID: model.id),
+          context: googleContext(model: model), transport: transport)
+        {
+          events.append(event)
+        }
+      })
+
+    #expect(failure.code == .incompleteStream)
+    #expect(failure.operation == "google.event.finish")
+    #expect(failure.underlyingURLErrorCode == nil)
+    #expect(
+      failure.causeDescription == """
+        end=eof httpStatus=200 sseEvents=3 eofPendingLineBytes=\(tail.utf8.count) eofFlushedEvents=1 \
+        doneMarkerSeen=true lastJSONCandidates=0 \
+        finishReasonFieldSeen=\(otherCandidateHasReason) usageMetadataSeen=true
+        """)
+    #expect(events.contains(.textDelta(text)))
+    #expect(
+      !events.contains { event in
+        switch event {
+        case .completed, .responseSnapshot: true
+        default: false
+        }
+      })
+  }
+
+  @Test
+  func acceptsFinishReasonFlushedAtEOF() async throws {
+    let model = googleModel()
+    let terminal = #"data: {"candidates":[{"finishReason":"STOP"}]}"#
+    let transport = GoogleFixtureTransport(statusCode: 200, chunks: [Data(terminal.utf8)])
+    var events: [ProviderEvent] = []
+    for try await event in GoogleGenerativeAIAdapter().stream(
+      fixtureRequest(providerID: "google", modelID: model.id),
+      context: googleContext(model: model), transport: transport)
+    {
+      events.append(event)
+    }
+    #expect(events.last == .completed(.stop))
   }
 
   @Test

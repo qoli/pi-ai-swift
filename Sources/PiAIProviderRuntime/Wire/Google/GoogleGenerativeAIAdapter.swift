@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 
 private func rewriteGoogleConst(_ value: JSONValue, nameMap: Bool = false) -> JSONValue {
   if case .array(let values) = value { return .array(values.map { rewriteGoogleConst($0) }) }
@@ -153,13 +154,18 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
             }
           }
           try Task.checkCancellation()
-          for event in try decoder.finish() {
+          let pendingLineBytes = decoder.pendingLineBytes
+          let flushedEvents = try decoder.finish()
+          for event in flushedEvents {
             for normalized in try await reducer.reduce(event, observation: observation) {
               try await observation.toolEvent(normalized)
               continuation.yield(normalized)
             }
           }
-          for normalized in try reducer.finish() {
+          for normalized in try reducer.finish(
+            requestID: request.id, httpStatus: response.statusCode,
+            pendingLineBytes: pendingLineBytes, flushedEventCount: flushedEvents.count)
+          {
             try await observation.toolEvent(normalized)
             continuation.yield(normalized)
           }
@@ -841,6 +847,8 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
 }
 
 private struct GoogleEventReducer {
+  private static let logger = Logger(subsystem: "com.ronnie.pi-ai-swift", category: "GoogleSSE")
+
   let providerID: String
   let protocolID: String
   let requestedModelID: String
@@ -852,6 +860,10 @@ private struct GoogleEventReducer {
   private var toolCallIDs = Set<String>()
   private var generatedToolCallCount = 0
   private var content: [ProviderResponseContent] = []
+  private var sseEventCount = 0
+  private var sawDoneMarker = false
+  private var lastCandidateCount = 0
+  private var sawFinishReasonField = false
 
   init(
     providerID: String,
@@ -868,7 +880,11 @@ private struct GoogleEventReducer {
   mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
     -> [ProviderEvent]
   {
-    guard event.data != "[DONE]" else { return [] }
+    sseEventCount += 1
+    guard event.data != "[DONE]" else {
+      sawDoneMarker = true
+      return []
+    }
     let object = try decodeJSONObject(
       Data(event.data.utf8),
       providerID: providerID,
@@ -890,7 +906,11 @@ private struct GoogleEventReducer {
       responseID = object.string("responseId")
     }
 
-    if let candidate = object.array("candidates")?.first?.objectValue {
+    let candidates = object.array("candidates") ?? []
+    lastCandidateCount = candidates.count
+    sawFinishReasonField =
+      sawFinishReasonField || candidates.contains { $0.objectValue?["finishReason"] != nil }
+    if let candidate = candidates.first?.objectValue {
       if let content = candidate.object("content") {
         for part in content.array("parts") ?? [] {
           guard let part = part.objectValue else {
@@ -977,9 +997,26 @@ private struct GoogleEventReducer {
     return normalized
   }
 
-  mutating func finish() throws -> [ProviderEvent] {
+  mutating func finish(
+    requestID: String, httpStatus: Int, pendingLineBytes: Int, flushedEventCount: Int
+  ) throws -> [ProviderEvent] {
     guard let finishReason else {
-      throw invalid("Google stream ended without a finish reason")
+      let diagnostic = """
+        end=eof httpStatus=\(httpStatus) sseEvents=\(sseEventCount) \
+        eofPendingLineBytes=\(pendingLineBytes) eofFlushedEvents=\(flushedEventCount) \
+        doneMarkerSeen=\(sawDoneMarker) lastJSONCandidates=\(lastCandidateCount) \
+        finishReasonFieldSeen=\(sawFinishReasonField) usageMetadataSeen=\(usage != nil)
+        """
+      let correlationID = UUID(uuidString: requestID)?.uuidString ?? "unavailable"
+      Self.logger.warning(
+        "event=google.sse.incomplete requestID=\(correlationID, privacy: .public) \(diagnostic, privacy: .public)"
+      )
+      throw ProviderRuntimeFailure(
+        code: .incompleteStream,
+        message: "Google stream ended without a finish reason",
+        providerID: providerID,
+        operation: "google.event.finish",
+        causeDescription: diagnostic)
     }
     let reason: ProviderFinishReason
     switch finishReason {

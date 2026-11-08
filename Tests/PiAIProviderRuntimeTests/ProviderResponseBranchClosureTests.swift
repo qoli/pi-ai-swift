@@ -109,6 +109,8 @@ struct ProviderResponseBranchClosureTests {
           )
           #expect(failure.operation != nil)
           switch scenario.caseID {
+          case "google-missing-finish":
+            #expect(failure.code == .incompleteStream)
           case "google-safety-stop", "google-sdk-error", "mistral-error-stop",
             "mistral-unknown-stop",
             "mistral-http-error", "openrouter-provider-error", "openrouter-http-error":

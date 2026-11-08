@@ -12,6 +12,8 @@ public struct ProviderRuntimeFailure: Error, Sendable, Equatable, Codable,
     case authorizationFailed
     case invalidRequest
     case invalidResponse
+    /// The transport reached EOF before the protocol confirmed completion.
+    case incompleteStream
     case transportFailed
     case upstreamDrift
   }

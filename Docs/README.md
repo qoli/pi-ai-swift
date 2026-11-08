@@ -16,6 +16,7 @@ behavior. Document completion claims must stay within that evidence.
 | [COMPLETIONS_CONTENT_ORDER_REPAIR.md](COMPLETIONS_CONTENT_ORDER_REPAIR.md) | Landed | Accepted-pin first-seen content ordering repair and source-derived consumer evidence |
 | [RESPONSES_KEEPALIVE_REPAIR.md](RESPONSES_KEEPALIVE_REPAIR.md) | Landed | Accepted-pin Responses heartbeat repair and regression evidence |
 | [TRANSPORT_ERROR_CODE_EXTENSION.md](TRANSPORT_ERROR_CODE_EXTENSION.md) | Landed | Local URL error code extension for SwiftChat and conditions for its removal |
+| [GOOGLE_SSE_INCOMPLETE_STREAM_EXTENSION.md](GOOGLE_SSE_INCOMPLETE_STREAM_EXTENSION.md) | Landed | Google and Vertex EOF classification, structural SSE diagnostics, and the SwiftChat retry boundary |
 | [OPENCODE_GO_SESSION_EXTENSION.md](OPENCODE_GO_SESSION_EXTENSION.md) | Landed | Request-scoped OpenCode Go routing ID, verification and conditions for removal |
 | [UPSTREAM_CHECK_2026-09-24.md](UPSTREAM_CHECK_2026-09-24.md) | Retired | Initial failed assessment; superseded by schema 6 reconstruction and the completed sync |
 | [SCHEMA6_FEASIBILITY.md](SCHEMA6_FEASIBILITY.md) | Landed | Catalog probe and tooling-stage history; full acceptance recorded in the sync report |

@@ -87,9 +87,14 @@ struct SourceDerivedFailureDifferentialTests {
           )
         } catch let failure as ProviderRuntimeFailure {
           let expectedCode: ProviderRuntimeFailure.Code =
-            failureCase.expectedCategory == "httpProviderError"
-              || failureCase.expectedCategory == "providerDeclaredError"
-            ? .transportFailed : .invalidResponse
+            switch (
+              failureCase.expectedCategory, protocolCase.protocolID
+            ) {
+            case ("httpProviderError", _), ("providerDeclaredError", _): .transportFailed
+            case ("missingTerminal", "google-generative-ai"), ("missingTerminal", "google-vertex"):
+              .incompleteStream
+            default: .invalidResponse
+            }
           #expect(
             failure.code == expectedCode,
             "typed \(failureCase.expectedCategory) drift for \(protocolCase.protocolID): \(failure.code), \(failure.message)"

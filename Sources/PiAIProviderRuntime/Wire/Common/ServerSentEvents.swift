@@ -12,6 +12,8 @@ struct ServerSentEventDecoder: Sendable {
   private var eventID: String?
   private var dataLines: [String] = []
 
+  var pendingLineBytes: Int { buffer.count }
+
   mutating func append(_ chunk: Data) throws -> [ServerSentEvent] {
     buffer.append(chunk)
     var events: [ServerSentEvent] = []
