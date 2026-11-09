@@ -92,4 +92,18 @@ enum ProviderErrorText {
       status: status, body: truncate(compact, maximumCharacters: maximumBodyCharacters),
       message: emptyMessage, messageCarriesBody: false)
   }
+
+  static func openAIStreamError(_ data: Data) throws -> (message: String, code: String?) {
+    let parsed = try ProviderOrderedJSON(data: data)
+    let error = parsed["error"].flatMap { $0.isNullish ? nil : $0 } ?? parsed
+    let message: String
+    if let detail = error["message"], detail.isTruthy {
+      message = try detail.stringValue ?? detail.encodedString()
+    } else if error.isTruthy {
+      message = try error.encodedString()
+    } else {
+      message = "(no status code or body)"
+    }
+    return (message, error["code"]?.stringValue)
+  }
 }

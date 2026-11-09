@@ -1617,15 +1617,25 @@ private struct OpenAIResponsesReducer {
     -> [ProviderEvent]
   {
     if event.data == "[DONE]" { return [] }
+    let data = Data(event.data.utf8)
     let object = try decodeJSONObject(
-      Data(event.data.utf8),
+      data,
       providerID: providerID,
       operation: "openai-responses.event.decode"
     )
     let sdkError =
       event.event == "error"
       || object["error"].map { ProviderOrderedJSON.scalar($0).isTruthy } == true
-    if flavor == .codex || !sdkError { try await observation.streamEvent(.object(object)) }
+    if flavor != .codex, sdkError {
+      let error = try ProviderErrorText.openAIStreamError(data)
+      throw ProviderRuntimeFailure(
+        code: .transportFailed,
+        message: error.message,
+        providerID: providerID,
+        operation: "openai-responses.event.error",
+        causeDescription: error.code)
+    }
+    try await observation.streamEvent(.object(object))
     do {
       return try await reduceObject(
         object, eventName: event.event, eventData: event.data, observation: observation)

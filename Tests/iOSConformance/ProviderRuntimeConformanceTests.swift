@@ -2020,7 +2020,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     let fixture = try load("OpenAIRequestBranches/Cases/response-event-branches.json")
     let oracle = try load("OpenAIRequestBranches/Oracle/response-event-branches.json")
     var cases = try XCTUnwrap(fixture.array("responsesProviderErrorCases"))
-    XCTAssertEqual(cases.count, 23)
+    XCTAssertEqual(cases.count, 25)
     var observations = try XCTUnwrap(oracle.object("cases")?.object("responses.provider-errors"))
     let codexBranches = try XCTUnwrap(
       oracle.object("cases")?.object("responses.codex-failure-branches"))
@@ -2053,6 +2053,9 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
       let failure = try XCTUnwrap(observed, name)
       XCTAssertEqual(failure.code, .transportFailed, name)
       XCTAssertEqual(failure.message, expected.string("errorMessage"), name)
+      if let code = spec.string("errorCode") {
+        XCTAssertEqual(failure.causeDescription, code, name)
+      }
       XCTAssertEqual(
         failure.providerMetadata?.string("rawStopReason"), expected.string("rawStopReason"), name)
     }

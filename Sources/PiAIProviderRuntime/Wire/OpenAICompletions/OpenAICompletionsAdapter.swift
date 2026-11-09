@@ -886,17 +886,7 @@ private struct OpenAICompletionsReducer {
     if event.event == "error"
       || value.objectValue?["error"].map({ ProviderOrderedJSON.scalar($0).isTruthy }) == true
     {
-      let parsed = try ProviderOrderedJSON(data: Data(event.data.utf8))
-      let error = parsed["error"].flatMap { $0.isNullish ? nil : $0 } ?? parsed
-      let message: String
-      if let detail = error["message"], detail.isTruthy {
-        message = try detail.stringValue ?? detail.encodedString()
-      } else if error.isTruthy {
-        message = try error.encodedString()
-      } else {
-        message = "(no status code or body)"
-      }
-      throw invalid(message)
+      throw invalid(try ProviderErrorText.openAIStreamError(Data(event.data.utf8)).message)
     }
     try await observation.streamEvent(value)
     guard let object = value.objectValue else { return [] }

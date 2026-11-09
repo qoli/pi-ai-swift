@@ -49,7 +49,7 @@ struct OpenAIResponseEventBranchTests {
           path: "Fixtures/OpenAIRequestBranches/Oracle/response-event-branches.json")),
       providerID: "fixture", operation: "responses.errors.oracle")
     let cases = try #require(fixture.array("responsesProviderErrorCases"))
-    #expect(cases.count == 23)
+    #expect(cases.count == 25)
     for value in cases {
       let spec = try #require(value.objectValue)
       let name = try #require(spec.string("id"))
@@ -71,6 +71,9 @@ struct OpenAIResponseEventBranchTests {
       } catch let failure as ProviderRuntimeFailure {
         #expect(failure.code == .transportFailed, Comment(rawValue: name))
         #expect(failure.message == expected.string("errorMessage"), Comment(rawValue: name))
+        if let code = spec.string("errorCode") {
+          #expect(failure.causeDescription == code, Comment(rawValue: name))
+        }
         #expect(
           failure.providerMetadata?.string("rawStopReason") == expected.string("rawStopReason"),
           Comment(rawValue: name))

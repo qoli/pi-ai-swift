@@ -2438,6 +2438,22 @@
       "body": "{\"error\":{\"code\":\"subscription_sharing_usage_limit_exceeded\",\"message\":\"Usage limit reached.\",\"type\":\"rate_limit_error\"}}"
     },
     {
+      "id": "openai-responses.sse.untyped-error",
+      "api": "openai-responses",
+      "provider": "fixture-provider",
+      "status": 200,
+      "errorCode": "fixture_stream_failure",
+      "body": "data: {\"error\":{\"code\":\"fixture_stream_failure\",\"message\":\"Synthetic stream failure.\"}}\n\n"
+    },
+    {
+      "id": "azure-openai-responses.sse.untyped-error",
+      "api": "azure-openai-responses",
+      "provider": "azure-openai-responses",
+      "status": 200,
+      "errorCode": "fixture_stream_failure",
+      "body": "data: {\"error\":{\"code\":\"fixture_stream_failure\",\"message\":\"Synthetic stream failure.\"}}\n\n"
+    },
+    {
       "id": "openai-codex-responses.error.nested",
       "api": "openai-codex-responses",
       "provider": "openai-codex",
