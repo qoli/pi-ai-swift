@@ -797,7 +797,9 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
             return (key, sent.value(forHTTPHeaderField: key).map(JSONValue.string) ?? .null)
           })
       let expected = try XCTUnwrap(oracle.object("cases")?.object(name))
-      XCTAssertEqual(projected, expected.object("requestBody"), name)
+      let upstream = try XCTUnwrap(expected["requestBody"], name)
+      let expectedBody = try OpenAIInstructionRoleFixtures.expectedBody(upstream, for: name)
+      XCTAssertEqual(.object(projected), expectedBody, name)
       XCTAssertEqual(headers, expected.object("requestHeaders"), name)
     }
   }

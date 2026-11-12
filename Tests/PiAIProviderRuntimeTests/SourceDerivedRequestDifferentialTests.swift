@@ -64,11 +64,12 @@ struct SourceDerivedRequestDifferentialTests {
           scenario: scenario,
           protocolCase: protocolCase
         )
-        if actual != expected.requestBody {
-          let difference = firstRequestDifference(actual, expected.requestBody)
-          Issue.record(
-            "source-derived replay request drift for \(scenario.caseID)/\(protocolCase.protocolID): \(difference)"
-          )
+        let caseID = "\(scenario.caseID)/\(protocolCase.protocolID)"
+        let expectedBody = try OpenAIInstructionRoleFixtures.expectedBody(
+          expected.requestBody, for: caseID)
+        if actual != expectedBody {
+          let difference = firstRequestDifference(actual, expectedBody)
+          Issue.record("source-derived replay request drift for \(caseID): \(difference)")
         }
       }
     }

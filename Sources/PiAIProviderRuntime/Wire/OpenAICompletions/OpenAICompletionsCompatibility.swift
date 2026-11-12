@@ -33,9 +33,6 @@ enum OpenAICompletionsCompatibility {
     let useMaxTokens =
       baseURL.contains("chutes.ai") || isDeepSeek || isMoonshot
       || isCloudflareGateway || isTogether || isNvidia || isAntLing || isZai
-    let developerRole =
-      isOpenRouter
-      && (context.model.id.hasPrefix("anthropic/") || context.model.id.hasPrefix("openai/"))
     let thinkingFormat =
       isDeepSeek
       ? "deepseek"
@@ -46,7 +43,6 @@ enum OpenAICompletionsCompatibility {
           : isAntLing ? "ant-ling" : isOpenRouter ? "openrouter" : "openai"
     var result: [String: JSONValue] = [
       "supportsStore": .bool(!isNonStandard),
-      "supportsDeveloperRole": .bool(developerRole || (!isNonStandard && !isOpenRouter)),
       "supportsReasoningEffort": .bool(
         !isGrok && !isZai && !isMoonshot && !isTogether
           && !isCloudflareGateway && !isNvidia && !isAntLing),

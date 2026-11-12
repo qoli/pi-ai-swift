@@ -5,6 +5,42 @@ import Testing
 
 @Suite
 struct OpenAIRequestBranchClosureTests {
+  @Test(
+    arguments: ["openai-completions", "openai-responses"],
+    ["https://api.openai.com/v1", "https://fixture.invalid/api.openai.com/v1"])
+  func instructionRoleDependsOnExplicitCapability(_ protocolID: String, baseURL: String)
+    async throws
+  {
+    let messages: [ProviderMessage] = [
+      .system("Initial instruction"),
+      .user([.text("first")]),
+      .systemMessage(.init(content: "Updated instruction")),
+      .user([.text("second")]),
+    ]
+    let messageField = protocolID == "openai-completions" ? "messages" : "input"
+    for reasoning in [false, true] {
+      for declaration: Bool? in [nil, false, true] {
+        var compat: [String: JSONValue] = ["supportsMidConvoSystemMessages": .bool(true)]
+        if let declaration { compat["supportsDeveloperRole"] = .bool(declaration) }
+        let body = try await capture(
+          protocolID: protocolID, providerID: "custom", modelID: "model",
+          reasoning: reasoning, baseURL: baseURL, metadata: ["compat": .object(compat)],
+          options: options(effort: reasoning ? .high : nil),
+          tool: .init(name: "example", description: "", inputSchema: toolSchema()),
+          messages: messages)
+        let roles = try #require(body.array(messageField))
+          .compactMap { $0.objectValue?.string("role") }
+        let documented = protocolID == "openai-responses" && baseURL == "https://api.openai.com/v1"
+        let role = (declaration ?? documented) ? "developer" : "system"
+        #expect(roles == [role, "user", role, "user"])
+        let effort =
+          protocolID == "openai-completions"
+          ? body.string("reasoning_effort") : body.object("reasoning")?.string("effort")
+        #expect(effort == (reasoning ? "high" : nil))
+      }
+    }
+  }
+
   @Test
   func azureCompletionsRetainsMidConversationSystemMessages() async throws {
     let fixture = makeFixture(
@@ -958,7 +994,9 @@ struct OpenAIRequestBranchClosureTests {
             return (key, request.value(forHTTPHeaderField: key).map(JSONValue.string) ?? .null)
           })
       let expected = try #require(oracle.object("cases")?.object(id))
-      #expect(projected == expected.object("requestBody"), Comment(rawValue: id))
+      let upstream = try #require(expected["requestBody"])
+      let expectedBody = try OpenAIInstructionRoleFixtures.expectedBody(upstream, for: id)
+      #expect(JSONValue.object(projected) == expectedBody, Comment(rawValue: id))
       #expect(headers == expected.object("requestHeaders"), Comment(rawValue: id))
     }
   }
@@ -1028,9 +1066,10 @@ struct OpenAIRequestBranchClosureTests {
     ] {
       let body = try await captureCompatTranscript(
         reasoning: reasoning, compat: compat, signature: signature)
-      let expected = try expectedRequestBody(caseID)
+      let upstream = try expectedRequestBody(caseID)
+      let expected = try OpenAIInstructionRoleFixtures.expectedBody(.object(upstream), for: caseID)
       #expect(
-        ["messages": body["messages"] ?? .null] == expected,
+        JSONValue.object(["messages": body["messages"] ?? .null]) == expected,
         Comment(rawValue: caseID))
     }
 
@@ -1140,13 +1179,14 @@ private func capture(
   baseURL: String = "https://fixture.invalid/v1",
   metadata: [String: JSONValue], credentialMetadata: [String: String] = [:],
   connectionOptions: ProviderConnectionOptions = .init(),
-  options: ProviderGenerationOptions, tool: ProviderToolDefinition
+  options: ProviderGenerationOptions, tool: ProviderToolDefinition,
+  messages: [ProviderMessage]? = nil
 ) async throws -> [String: JSONValue] {
   let transport = BranchCaptureTransport()
   let fixture = makeFixture(
     protocolID: protocolID, providerID: providerID, modelID: modelID, reasoning: reasoning,
     baseURL: baseURL, metadata: metadata, credentialMetadata: credentialMetadata,
-    connectionOptions: connectionOptions, options: options, tool: tool)
+    connectionOptions: connectionOptions, options: options, tool: tool, messages: messages)
   do {
     for try await _ in fixture.adapter.stream(
       fixture.request, context: fixture.context, transport: transport)

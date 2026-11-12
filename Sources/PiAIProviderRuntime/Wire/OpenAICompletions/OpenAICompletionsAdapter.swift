@@ -409,20 +409,15 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     let target = ProviderMessageSource(
       api: protocolID, providerID: context.provider.id, modelID: context.model.id)
     let compat = OpenAICompletionsCompatibility.resolve(context)
+    let instructionRole = context.openAIInstructionRole
     var result: [JSONValue] = []
     var pendingToolImages: [ProviderImage] = []
     for (messageIndex, message) in messages.enumerated() {
       switch message {
       case .system(let text):
-        let supportsDeveloper = compat.bool("supportsDeveloperRole") != false
-        let role =
-          context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
-        result.append(.object(["role": .string(role), "content": .string(text)]))
+        result.append(.object(["role": .string(instructionRole), "content": .string(text)]))
       case .systemMessage(let value):
         let text = value.content
-        let supportsDeveloper = compat.bool("supportsDeveloperRole") != false
-        let role =
-          context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
         if ProviderToolDeclarationMode.resolve(protocolID: protocolID, compatibility: compat)
           == .additions,
           !value.toolsAdded.isEmpty
@@ -437,7 +432,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
             ]))
         }
         if !text.isEmpty {
-          result.append(.object(["role": .string(role), "content": .string(text)]))
+          result.append(.object(["role": .string(instructionRole), "content": .string(text)]))
         }
       case .user(let content):
         if compat.bool("requiresAssistantAfterToolResult") == true,

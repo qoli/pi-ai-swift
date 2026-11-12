@@ -37,6 +37,8 @@ source = project.main_group.new_file(root.join('Tests/iOSConformance/ProviderRun
 target.source_build_phase.add_file_reference(source)
 body_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/FixtureHTTPBody.swift').to_s)
 target.source_build_phase.add_file_reference(body_helper)
+role_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/OpenAIInstructionRoleFixtures.swift').to_s)
+target.source_build_phase.add_file_reference(role_helper)
 installation_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/InstallationContextFixtures.swift').to_s)
 target.source_build_phase.add_file_reference(installation_helper)
 codex_helper = project.main_group.new_file(root.join('Tests/PiAIProviderRuntimeTests/CodexTransportFixtures.swift').to_s)

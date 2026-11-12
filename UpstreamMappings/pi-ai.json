@@ -3101,6 +3101,7 @@
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsAdapter.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsCompatibility.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/OpenAIInstructionRole.swift",
         "Sources/PiAIProviderRuntime/Wire/OpenAICompletions/OpenAICompletionsReasoningDetails.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift",
         "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
@@ -3142,6 +3143,10 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream",
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#reasoningFormatsEncodeOffAndMappedEffort",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#instructionRoleDependsOnExplicitCapability",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#builtinOpenAIAndGroqUseEndpointInstructionRoles",
+        "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#usesSystemRoleAndConfiguredQwenThinkingSwitch",
+        "Tests/PiAIProviderRuntimeTests/OpenAIInstructionRoleFixtures.swift",
         "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#responseIdentityMatchesSourceForAliasesAndLateModelMetadata",
         "Fixtures/Differential/Cases/response-rich.json",
         "Fixtures/Differential/Oracle/response-rich.json",
@@ -3226,7 +3231,8 @@
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired",
       "maintenanceNotes": [
-        "2026-10-07 accepted-pin Class B repair: preserve first-seen content block and tool completion order; source-executed response-rich identityCases completions.order-* prove reasoning/text/tool ordering, metadata-only reasoning, and interleaved deltas."
+        "2026-10-07 accepted-pin Class B repair: preserve first-seen content block and tool completion order; source-executed response-rich identityCases completions.order-* prove reasoning/text/tool ordering, metadata-only reasoning, and interleaved deltas.",
+        "2026-11-12 authorized local deviation: instruction roles use explicit endpoint support and default to system independently of reasoning. See Docs/OPENAI_INSTRUCTION_ROLE_EXTENSION.md."
       ]
     },
     {
@@ -3236,6 +3242,7 @@
       "status": "landed",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/Wire/OpenAIResponses/OpenAIResponsesAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/Common/OpenAIInstructionRole.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift",
         "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
@@ -3265,6 +3272,8 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#instructionRoleDependsOnExplicitCapability",
+        "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#builtinOpenAIAndGroqUseEndpointInstructionRoles",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
         "Scripts/pi-ai-emission-snapshots.mjs",
         "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift",
@@ -3327,7 +3336,8 @@
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRequired",
       "maintenanceNotes": [
-        "2026-11-07 accepted-pin Class B repair: keepalive-between-text-deltas and the raw wire observer prove that a keepalive emits no normalized content and the stream continues; earlyEof still requires a terminal response event. See Docs/RESPONSES_KEEPALIVE_REPAIR.md."
+        "2026-11-07 accepted-pin Class B repair: keepalive-between-text-deltas and the raw wire observer prove that a keepalive emits no normalized content and the stream continues; earlyEof still requires a terminal response event. See Docs/RESPONSES_KEEPALIVE_REPAIR.md.",
+        "2026-11-12 authorized local deviation: only explicit role support or the documented native OpenAI Responses endpoint selects developer. See Docs/OPENAI_INSTRUCTION_ROLE_EXTENSION.md."
       ]
     },
     {

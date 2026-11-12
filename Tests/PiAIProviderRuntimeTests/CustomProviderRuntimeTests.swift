@@ -93,6 +93,55 @@ struct CustomProviderRuntimeTests {
     #expect(body["store"] == nil)
   }
 
+  @Test(
+    arguments: ["https://api.siliconflow.cn/v1", "https://fixture.invalid/v1"],
+    [ProviderReasoningEffort.off, .high])
+  func usesSystemRoleAndConfiguredQwenThinkingSwitch(
+    apiRoot: String, effort: ProviderReasoningEffort
+  ) async throws {
+    let modelID = "Qwen/Qwen3.8-27B"
+    let instructions = "Extract a receipt"
+    let transport = CustomProviderFixtureTransport()
+    let store = InMemoryProviderCredentialStore(credentials: [
+      "my-provider": .apiKey(APIKeyCredential(key: "fixture-key", metadata: [:]))
+    ])
+    let runtime = try CustomProviderRuntime(
+      providers: [
+        CustomProvider(
+          id: "my-provider", baseURL: URL(string: apiRoot), api: "openai-completions",
+          models: [
+            customModel(
+              id: modelID, reasoning: true,
+              metadata: [
+                "compat": .object([
+                  "maxTokensField": .string("max_tokens"), "supportsStore": .bool(false),
+                  "thinkingFormat": .string("qwen"), "supportsReasoningEffort": .bool(false),
+                ])
+              ])
+          ])
+      ], credentialStore: store, streamingTransport: transport)
+
+    let request = customRequest(
+      modelID: modelID, messages: [.system(instructions), .user([.text("CNY 31.50")])],
+      reasoningEffort: effort)
+    var events: [ProviderEvent] = []
+    for try await event in runtime.stream(request) { events.append(event) }
+    #expect(events.contains(.textDelta("ok")))
+    #expect(events.last == .completed(.stop))
+
+    let sent = try #require(await transport.request)
+    #expect(sent.url?.absoluteString == "\(apiRoot)/chat/completions")
+    let body = try decodeJSONObject(
+      try #require(sent.httpBody), providerID: "my-provider", operation: "custom-provider.fixture")
+    #expect(
+      body.array("messages")?.first
+        == .object([
+          "role": .string("system"), "content": .string(instructions),
+        ]))
+    #expect(body["enable_thinking"] == .bool(effort != .off))
+    #expect(body["reasoning_effort"] == nil)
+  }
+
   @Test
   func invalidDeclarationsFailAtConstructionWithoutProtocolFallback() {
     let store = InMemoryProviderCredentialStore()
@@ -248,6 +297,7 @@ private func customModel(
   api: String? = nil,
   baseURL: URL? = nil,
   headers: [String: String] = [:],
+  reasoning: Bool = false,
   metadata: [String: JSONValue] = [:]
 ) -> CustomProviderModel {
   CustomProviderModel(
@@ -259,7 +309,7 @@ private func customModel(
       textInput: true,
       imageInput: false,
       toolCalling: true,
-      reasoning: false,
+      reasoning: reasoning,
       structuredOutput: true,
       imageGeneration: false
     ),
@@ -269,17 +319,21 @@ private func customModel(
   )
 }
 
-private func customRequest() -> ProviderRequest {
+private func customRequest(
+  modelID: String = "my-model",
+  messages: [ProviderMessage] = [.user([.text("hello")])],
+  reasoningEffort: ProviderReasoningEffort? = nil
+) -> ProviderRequest {
   ProviderRequest(
     id: "request",
     providerID: "my-provider",
-    modelID: "my-model",
-    messages: [.user([.text("hello")])],
+    modelID: modelID,
+    messages: messages,
     tools: [],
     options: ProviderGenerationOptions(
       maximumOutputTokens: 64,
       temperature: nil,
-      reasoningEffort: nil,
+      reasoningEffort: reasoningEffort,
       responseSchema: nil,
       providerOptions: [:]
     )

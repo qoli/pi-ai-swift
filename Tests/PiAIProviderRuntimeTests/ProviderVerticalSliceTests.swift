@@ -6,6 +6,48 @@ import Testing
 @Suite
 struct ProviderVerticalSliceTests {
   @Test
+  func builtinOpenAIAndGroqUseEndpointInstructionRoles() async throws {
+    let cases = [
+      (
+        provider: "openai", model: "gpt-4.1", field: "input", role: "developer",
+        endpoint: "https://api.openai.com/v1/responses"
+      ),
+      (
+        provider: "groq", model: "qwen/qwen3.8-27b", field: "messages", role: "system",
+        endpoint: "https://api.groq.com/openai/v1/chat/completions"
+      ),
+    ]
+    for item in cases {
+      let transport = ProviderVerticalTransport()
+      let runtime = try BuiltinProviderRuntime(
+        installation: .init(deviceID: nil),
+        credentialStore: InMemoryProviderCredentialStore(
+          credentials: [item.provider: .apiKey(.init(key: "fixture", metadata: [:]))]),
+        streamingTransport: transport)
+      let request = ProviderRequest(
+        id: "instruction-role", providerID: item.provider, modelID: item.model,
+        messages: [.system("Fixture instruction"), .user([.text("Reply with ok")])], tools: [],
+        options: .init(
+          maximumOutputTokens: 32, temperature: nil,
+          reasoningEffort: item.provider == "groq" ? .high : nil,
+          responseSchema: nil, providerOptions: [:]))
+      var terminal: ProviderFinishReason?
+      for try await event in runtime.stream(request) {
+        if case .completed(let reason) = event { terminal = reason }
+      }
+      #expect(terminal == .stop)
+      let sent = try #require(await transport.request())
+      #expect(sent.url?.absoluteString == item.endpoint)
+      let body = try decodeJSONObject(
+        try fixtureHTTPBody(sent), providerID: item.provider, operation: "fixture.instruction-role")
+      #expect(body.array(item.field)?.first?.objectValue?.string("role") == item.role)
+      if item.provider == "groq" {
+        #expect(body.string("reasoning_effort") == "high")
+      }
+    }
+  }
+
+  @Test
   func everyCompletedAuthorizationProviderRoutesARealTextVerticalSlice() async throws {
     let excludedForLaterOAuthOrDynamicWork: Set<String> = [
       "anthropic", "github-copilot", "openrouter", "radius", "xai", "typesafe",

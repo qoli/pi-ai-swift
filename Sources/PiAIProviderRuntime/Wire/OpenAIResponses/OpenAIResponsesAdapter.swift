@@ -865,6 +865,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     {
       input.insert(
         .object([
+          // The additional_tools input schema requires this role when the feature is enabled.
           "type": .string("additional_tools"), "role": .string("developer"),
           "tools": .array(
             try request.tools.map {
@@ -1073,13 +1074,12 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     var replayMessageIndex = 0
     var normalizedToolIDs: [String: String] = [:]
     let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
+    let instructionRole = context.openAIInstructionRole
     let toolMode = ProviderToolDeclarationMode.resolve(
       protocolID: protocolID, compatibility: compat)
     var declaredAdditionalTools = false
     var unavailableTools: [String] = []
-    func appendToolChanges(_ value: ProviderSystemMessage, role: String, messageIndex: Int) throws
-      -> String
-    {
+    func appendToolChanges(_ value: ProviderSystemMessage, messageIndex: Int) throws -> String {
       guard toolMode != .none else { return value.content }
       let added = Set(value.toolsAdded.map(\.name))
       unavailableTools.removeAll { added.contains($0) }
@@ -1090,7 +1090,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           if !unavailableTools.isEmpty {
             notice += "\nStill unavailable: " + unavailableTools.joined(separator: ", ") + "."
           }
-          result.append(.object(["role": .string(role), "content": .string(notice)]))
+          result.append(.object(["role": .string(instructionRole), "content": .string(notice)]))
         }
         if toolMode == .changes { declaredAdditionalTools = true }
         var grammars: [String: ProviderConstrainedSamplingResolver.Grammar] = [:]
@@ -1151,23 +1151,15 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       switch message {
       case .system(let text):
         if includeSystem || !isLeadingSystem {
-          let supportsDeveloper =
-            context.modelConfiguration.metadata.object("compat")?
-            .bool("supportsDeveloperRole") != false
-          let role =
-            context.model.capabilities.reasoning && supportsDeveloper ? "developer" : "system"
-          result.append(.object(["role": .string(role), "content": .string(text)]))
+          result.append(.object(["role": .string(instructionRole), "content": .string(text)]))
         }
         if !isLeadingSystem { replayMessageIndex += 1 }
         continue
       case .systemMessage(let value):
-        let role =
-          context.model.capabilities.reasoning && compat.bool("supportsDeveloperRole") != false
-          ? "developer" : "system"
-        let text = try appendToolChanges(value, role: role, messageIndex: messageIndex)
+        let text = try appendToolChanges(value, messageIndex: messageIndex)
         if includeSystem || !isLeadingSystem {
           if !text.isEmpty {
-            result.append(.object(["role": .string(role), "content": .string(text)]))
+            result.append(.object(["role": .string(instructionRole), "content": .string(text)]))
           }
         }
         if !isLeadingSystem { replayMessageIndex += 1 }
