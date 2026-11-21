@@ -9,7 +9,7 @@ struct ProviderVerticalSliceTests {
   func builtinOpenAIAndGroqUseEndpointInstructionRoles() async throws {
     let cases = [
       (
-        provider: "openai", model: "gpt-4.1", field: "input", role: "developer",
+        provider: "openai", model: "gpt-4.1", field: "input", role: "system",
         endpoint: "https://api.openai.com/v1/responses"
       ),
       (
@@ -58,7 +58,7 @@ struct ProviderVerticalSliceTests {
     ).catalog()
     let providerIDs = Set(runtimeCatalog.providers.map(\.id))
       .subtracting(excludedForLaterOAuthOrDynamicWork)
-    #expect(providerIDs.count == 36)
+    #expect(providerIDs.count == 37)
 
     for providerID in providerIDs.sorted() {
       let provider = try #require(

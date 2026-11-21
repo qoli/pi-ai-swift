@@ -204,6 +204,20 @@ struct SwiftConformanceProbe {
       await RetryConformanceProbe.run(envelope, incoming: incoming, server: wireServer)
       return nil
     }
+    if envelope.string("operation") == "strict.session" {
+      for item in envelope.array("operations") ?? [] {
+        guard let op = item.objectValue else { throw ProbeError.unsupported("strict.session") }
+        if op.bool("mark") == true {
+          ProviderSessionResources.markStrictToolLimitsExceeded(op.string("session"))
+        } else if op.bool("cleanup") == true {
+          ProviderSessionResources.cleanup(op.string("session"))
+        }
+      }
+      FileHandle.standardOutput.write(
+        try JSONEncoder().encode(
+          ProviderSessionResources.hasExceededStrictToolLimits(envelope.string("session"))))
+      return nil
+    }
     if envelope.string("operation") == "authorization" {
       try await AuthorizationConformanceProbe.run(envelope)
       return nil
@@ -338,7 +352,21 @@ struct SwiftConformanceProbe {
       }
       return nil
     }
-    if envelope.string("operation") == "error.normalize-sdk-object" {
+    if ["error.normalize-sdk-object", "error.cause-detail"].contains(
+      envelope.string("operation") ?? "")
+    {
+      let causes: [ProviderErrorText.Cause] = (envelope.array("causes") ?? []).compactMap {
+        guard let object = $0.objectValue else { return nil }
+        return .init(
+          message: object.string("message") ?? "", name: object.string("name") ?? "",
+          code: object.string("code"))
+      }
+      if envelope.string("operation") == "error.cause-detail" {
+        let text = ProviderErrorText.withCauseDetail(
+          envelope.string("message") ?? "", causes: causes)
+        FileHandle.standardOutput.write(try JSONEncoder().encode(text))
+        return nil
+      }
       func candidate(_ key: String) -> ProviderErrorText.BodyCandidate {
         let value = envelope.object(key) ?? [:]
         if let text = value.string("text") { return .text(text) }
@@ -354,7 +382,7 @@ struct SwiftConformanceProbe {
         serializedValue: envelope.string("serialized"),
         stringValue: envelope.string("stringValue") ?? "",
         statusCandidates: envelope.array("statusCandidates") ?? [], body: candidate("body"),
-        error: candidate("error"), responseBody: candidate("responseBody"))
+        error: candidate("error"), responseBody: candidate("responseBody"), causes: causes)
       FileHandle.standardOutput.write(try JSONEncoder().encode(result))
       return nil
     }
@@ -371,6 +399,11 @@ struct SwiftConformanceProbe {
         try JSONEncoder().encode([
           "value": JSONValue.string(result), "retainedBytes": .integer(retained),
         ]))
+      return nil
+    }
+    if envelope.string("operation") == "google.stop-reason" {
+      let reason = GoogleGenerativeAIAdapter.stopReason(try envelope.required("reason"))
+      FileHandle.standardOutput.write(try JSONEncoder().encode(reason?.rawValue))
       return nil
     }
     if envelope.string("operation") == "google-tools" {
@@ -489,6 +522,7 @@ struct SwiftConformanceProbe {
       "location",
       "maxTokens", "temperature", "reasoningEffort", "reasoning", "thinkingEnabled",
       "thinkingBudgetTokens", "reasoningSummary", "responseSchema", "sessionId", "cacheRetention",
+      "disableContinuation",
       "serviceTier", "toolChoice", "thinkingBudgets", "textVerbosity", "env",
       "azureBaseUrl", "azureResourceName", "azureApiVersion", "azureDeploymentName", "region",
       "profile", "bearerToken",
@@ -533,6 +567,7 @@ struct SwiftConformanceProbe {
           })
       },
       textVerbosity: options.string("textVerbosity"))
+    generationOptions.disableContinuation = options.bool("disableContinuation")
     generationOptions.cacheRetentionIsExplicit = options["cacheRetention"] != nil
     let cloudOptions =
       ["google-vertex", "bedrock-converse-stream", "anthropic-messages"].contains(api)

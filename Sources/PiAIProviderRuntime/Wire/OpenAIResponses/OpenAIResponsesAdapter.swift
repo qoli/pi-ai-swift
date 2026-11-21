@@ -275,6 +275,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     let fallbackActive = await sessions.isFallbackActive(session)
     let disabled = mode == .auto && fallbackActive
     if disabled { await sessions.recordFallback(session: session) }
+    var emittedStart = false
     if mode != .sse && !disabled {
       var retriedLimit = false
       var retriedContinuation = false
@@ -311,6 +312,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
             operation: "codex.websocket.encode")
           try await acquired.socket.send(String(decoding: encoded, as: UTF8.self))
           var reducer = try codexReducer(request, context: context)
+          if emittedStart { _ = reducer.startEvent() }
           while !reducer.isTerminal {
             let text = try await codexTimeout(
               milliseconds: timeout, clock: context.clock,
@@ -326,8 +328,9 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               ?? object.object("response")?.object("error")?.string("code")
             let events = try await reducer.reduce(
               .init(event: nil, data: text, id: nil), observation: observation)
-            if let type = object.string("type"), type != "codex.rate_limits" {
+            if object.string("type") != nil {
               started = true
+              emittedStart = true
               if let start = reducer.startEvent() { continuation.yield(start) }
             }
             for event in events {
@@ -401,7 +404,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       urlRequest, request: request, context: context, transport: transport,
       observation: observation, timeout: timeout)
     var reducer = try codexReducer(request, context: context)
-    if let start = reducer.startEvent() { continuation.yield(start) }
+    if let start = reducer.startEvent(), !emittedStart { continuation.yield(start) }
     var decoder = ServerSentEventDecoder()
     responseChunks: for try await chunk in response.body {
       try Task.checkCancellation()
@@ -727,32 +730,44 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           message: "Invalid Azure OpenAI base URL: \(configuration.baseURL)"
         )
       }
-      // The pinned SDK concatenates baseURL and path before parsing the query.
-      var components = URLComponents(
-        url: URL(string: baseURL.absoluteString + "/responses")!,
-        resolvingAgainstBaseURL: false
-      )
-      let originalQuery = components?.percentEncodedQuery?.replacingOccurrences(
+      var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+      // The SDK parses the base query as form data, then appends the operation path.
+      let baseQuery = components?.percentEncodedQuery?.replacingOccurrences(
         of: "+", with: "%20")
-      components?.percentEncodedQuery = originalQuery
-      var query: [(String, String)] = []
-      for item in components?.queryItems ?? [] {
-        if let index = query.firstIndex(where: { $0.0 == item.name }) {
-          query[index].1 = item.value ?? ""
-        } else {
-          query.append((item.name, item.value ?? ""))
+      components?.percentEncodedQuery = baseQuery
+      let items = components?.queryItems ?? []
+      let path = components?.percentEncodedPath ?? ""
+      components?.percentEncodedPath = path + (path.hasSuffix("/") ? "responses" : "/responses")
+      if baseURL.query != nil { components?.fragment = nil }
+      var seen = Set<String>()
+      var repeated = Set<String>()
+      var query = [URLQueryItem]()
+      for item in items {
+        if seen.insert(item.name).inserted {
+          query.append(
+            item.name == "api-version"
+              ? URLQueryItem(name: item.name, value: configuration.apiVersion) : item)
+        } else if item.name != "api-version" {
+          repeated.insert(item.name)
         }
       }
-      if let index = query.firstIndex(where: { $0.0 == "api-version" }) {
-        query[index].1 = configuration.apiVersion
-      } else {
-        query.append(("api-version", configuration.apiVersion))
+      if !seen.contains("api-version") {
+        query.append(URLQueryItem(name: "api-version", value: configuration.apiVersion))
       }
-      let unreserved = CharacterSet(
-        charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
-      components?.percentEncodedQuery = query.map { key, value in
-        "\(key.addingPercentEncoding(withAllowedCharacters: unreserved)!)=\(value.addingPercentEncoding(withAllowedCharacters: unreserved)!)"
-      }.joined(separator: "&")
+      if !repeated.isEmpty {
+        query.removeAll { repeated.contains($0.name) }
+        query += items.filter { repeated.contains($0.name) }
+      }
+      // Rebuilding repeated parameters uses URLSearchParams (form encoding).
+      let allowed = CharacterSet(
+        charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._"
+          + (repeated.isEmpty ? "~" : "*"))
+      func encode(_ text: String) -> String {
+        let escaped = text.addingPercentEncoding(withAllowedCharacters: allowed)!
+        return repeated.isEmpty ? escaped : escaped.replacingOccurrences(of: "%20", with: "+")
+      }
+      components?.percentEncodedQuery = query.map { "\(encode($0.name))=\(encode($0.value ?? ""))" }
+        .joined(separator: "&")
       guard let url = components?.url else {
         throw failure(
           .invalidRequest,
@@ -848,7 +863,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       "input": .array(
         try makeInput(
           request.messages.insertingMissingToolResults(),
-          includeSystem: flavor != .codex,
+          includeSystem: true,
           context: context,
           grammarInputProperties: try grammarInputProperties(request, context: context),
           deferredTools: toolPlacement.deferred,
@@ -876,7 +891,6 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         ]), at: 0)
       body["input"] = .array(input)
     }
-    let instructions = request.messages.first?.systemPayload?.content ?? ""
     if flavor != .codex, !omitUnsupportedFields, compat.bool("supportsMaxOutputTokens") != false,
       let maximum = request.options.maximumOutputTokens
         ?? context.model.maximumOutputTokens
@@ -890,6 +904,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       flavor == .standard && request.options.environment?["PI_CACHE_RETENTION"] == "long"
       ? .long : request.options.cacheRetention
     if flavor != .codex, cacheRetention != .none,
+      flavor != .standard || compat.string("promptCacheKeyMode") != "disabled",
       let sessionID = request.options.sessionID, !sessionID.isEmpty
     {
       body["prompt_cache_key"] = .string(String(sessionID.prefix(64)))
@@ -917,9 +932,14 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       let mapped = levelMap.string(effort.rawValue)
       if effort == .off {
         if levelMap["off"] != .null {
-          body["reasoning"] = .object([
-            "effort": .string(mapped ?? "none")
-          ])
+          var reasoning: [String: JSONValue] = [
+            "effort": .string(configurationEffort == nil ? (mapped ?? "none") : "medium")
+          ]
+          if flavor == .codex {
+            reasoning["summary"] = .string(request.options.reasoningSummary ?? "auto")
+            body["include"] = .array([.string("reasoning.encrypted_content")])
+          }
+          body["reasoning"] = .object(reasoning)
         }
       } else {
         body["reasoning"] = .object([
@@ -985,11 +1005,11 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       ])
     }
     if flavor == .codex {
-      body["instructions"] = .string(
-        instructions.isEmpty
-          ? "You are a helpful assistant."
-          : instructions
-      )
+      if let maximum = request.options.maximumOutputTokens, maximum != 0,
+        compat.bool("supportsMaxOutputTokens") != false
+      {
+        body["max_output_tokens"] = .integer(Int64(max(16, maximum)))
+      }
       body["text"] = .object(["verbosity": .string(request.options.textVerbosity ?? "low")])
       body["include"] = .array([.string("reasoning.encrypted_content")])
       body["tool_choice"] = request.options.toolChoice ?? .string("auto")
@@ -1022,13 +1042,17 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
   private func configurationUpdateEffort(_ request: ProviderRequest, context: WireProtocolContext)
     -> String?
   {
-    guard flavor == .standard,
+    guard flavor != .azure,
       context.modelConfiguration.metadata.object("compat")?.bool("supportsMidConvoEffort") == true,
-      let effort = request.options.reasoningEffort, effort != .off,
+      let effort = request.options.reasoningEffort,
       !isChatGPTSignIn(context)
     else { return nil }
-    return context.modelConfiguration.metadata.object("thinkingLevelMap")?.string(effort.rawValue)
-      ?? effort.rawValue
+    let mapping = context.modelConfiguration.metadata.object("thinkingLevelMap")
+    if effort == .off {
+      guard flavor == .codex, mapping?["off"] != .null else { return nil }
+      return mapping?.string("off") ?? "none"
+    }
+    return mapping?.string(effort.rawValue) ?? effort.rawValue
   }
 
   private func configurationUpdate(_ effort: String) -> JSONValue {
@@ -1557,6 +1581,7 @@ private struct OpenAIResponsesReducer {
   private var terminalFinishReason: ProviderFinishReason?
   private var rawTerminalFinishReason: String?
   private var terminalErrorMessage: String?
+  private var diagnostics: [JSONValue] = []
   private var responseID: String?
   private var tools: [String: ToolState] = [:]
   private var toolOrder: [String] = []
@@ -1834,6 +1859,21 @@ private struct OpenAIResponsesReducer {
       terminal = true
       if flavor == .codex { endTurn = response.bool("end_turn") }
       try backfillReasoningSignatures(from: response)
+      let removals: [JSONValue] = (response.array("input_transformations") ?? []).compactMap {
+        value in
+        guard let entry = value.objectValue, entry.string("type") == "reasoning",
+          entry.string("action") == "removed", entry.string("reason") != "turn_boundary"
+        else { return nil }
+        return .object(entry.filter { ["type", "id", "action", "reason"].contains($0.key) })
+      }
+      if !removals.isEmpty {
+        diagnostics.append(
+          .object([
+            "type": .string("openai_input_transformations"),
+            "timestamp": .integer(Int64(Date().timeIntervalSince1970 * 1_000)),
+            "details": .object(["transformations": .array(removals)]),
+          ]))
+      }
       var events: [ProviderEvent] = []
       if let usage = response.object("usage") {
         self.usage = try pricedUsage(
@@ -2022,6 +2062,7 @@ private struct OpenAIResponsesReducer {
       providerThinkingLevel.map { ["providerThinkingLevel": JSONValue.string($0)] }
       ?? [:]
     if let terminalErrorMessage { metadata["errorMessage"] = .string(terminalErrorMessage) }
+    if !diagnostics.isEmpty { metadata["diagnostics"] = .array(diagnostics) }
     if let endTurn { metadata["endTurn"] = .bool(endTurn) }
     return .responseSnapshot(
       ProviderResponseSnapshot(

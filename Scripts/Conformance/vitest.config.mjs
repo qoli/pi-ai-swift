@@ -173,7 +173,7 @@ export default defineConfig({
       } : id.endsWith("/utils/provider-retry.ts") ? {
         retryProviderRequest: "provider.retry",
       } : id.endsWith("/utils/error-body.ts") ? {
-        normalizeProviderError: "error.normalize-sdk-object",
+        withCauseDetail: "error.cause-detail", normalizeProviderError: "error.normalize-sdk-object",
         formatProviderError: "error.format",
         truncateErrorText: "error.truncate",
       } : id.endsWith("/utils/json-parse.ts") ? {
@@ -185,8 +185,9 @@ export default defineConfig({
       } : id.includes("/api/") ? {
         stream: "stream", streamSimple: "stream", generateImages: "stream", convertMessages: "stream", classify: "classify",
         resolveGoogleThinkingLevel: "stream", processResponsesStream: "stream", convertResponsesMessages: "stream",
+        ...(id.endsWith("/strict-tool-limits.ts") ? { hasExceededStrictToolLimits: "strict.session" } : {}),
         ...(id.endsWith("/google-shared.ts") ? {
-          convertTools: "google.tools", requiresToolCallId: "google.tool-call-id",
+          mapStopReason: "google.stop-reason", convertTools: "google.tools", requiresToolCallId: "google.tool-call-id",
           supportsGoogleStrictToolSampling: "google.strict-tools", resolveGoogleFunctionCallingMode: "google.tool-choice",
           isThinkingPart: "google.thinking-part", retainThoughtSignature: "google.thought-signature",
         } : {}),
@@ -250,6 +251,11 @@ export default defineConfig({
       if (source.startsWith("pi-conformance:native-oauth/")) return "\0pi-native-oauth/" + source.split("/").at(-1);
       if (source === "pi-conformance:upstream-oauth-load") return path.join(upstream, "packages/ai/src/auth/oauth/load.ts");
       if (source === "pi-conformance:upstream-providers") return path.join(upstream, "packages/ai/src/providers/all.ts");
+      if (source === "pi-conformance:session-resources") return path.join(upstream, "packages/ai/src/session-resources.ts");
+      if (source === "pi-conformance:upstream-strict-tools") return path.join(upstream, "packages/ai/src/api/strict-tool-limits.ts");
+      if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/api/strict-tool-limits.ts")) {
+        return path.join(directory, "strict-tool-limits.mjs");
+      }
       if (source === "pi-conformance:upstream-google-shared") return path.join(upstream, "packages/ai/src/api/google-shared.ts");
       if (source === "pi-conformance:upstream-responses-shared") return path.join(upstream, "packages/ai/src/api/openai-responses-shared.ts");
       if (source === "pi-conformance:upstream-memory-observer") return path.join(upstream, "packages/ai/test/memory-helpers.ts");

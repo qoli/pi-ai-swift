@@ -483,7 +483,6 @@
     },
     "codex.default-instructions": {
       "requestBody": {
-        "instructions": "You are a helpful assistant.",
         "text": {
           "verbosity": "low"
         }
@@ -494,7 +493,6 @@
         "include": [
           "reasoning.encrypted_content"
         ],
-        "instructions": "System branch fixture",
         "parallel_tool_calls": true,
         "prompt_cache_key": "codex-session",
         "service_tier": "priority",
@@ -534,7 +532,6 @@
     },
     "codex.explicit-verbosity": {
       "requestBody": {
-        "instructions": "System branch fixture",
         "text": {
           "verbosity": "high"
         }
@@ -737,7 +734,7 @@
         "messages": [
           {
             "content": "System branch fixture",
-            "role": "developer"
+            "role": "system"
           },
           {
             "content": "answer",
@@ -772,7 +769,7 @@
         "messages": [
           {
             "content": "System branch fixture",
-            "role": "developer"
+            "role": "system"
           },
           {
             "content": [
@@ -875,7 +872,7 @@
         "messages": [
           {
             "content": "System branch fixture",
-            "role": "developer"
+            "role": "system"
           },
           {
             "content": "hello",
@@ -1614,6 +1611,10 @@
       "requestBody": {
         "input": [
           {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
+          {
             "call_id": "call_1",
             "id": "ctc_1",
             "input": "abc",
@@ -1633,6 +1634,10 @@
       "requestBody": {
         "input": [
           {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
+          {
             "arguments": "{\"payload\":\"abc\"}",
             "call_id": "call_1",
             "name": "sample_tool",
@@ -1649,6 +1654,10 @@
     "openai-codex-responses.replay-text-id-hash": {
       "requestBody": {
         "input": [
+          {
+            "content": "System branch fixture",
+            "role": "developer"
+          },
           {
             "content": [
               {
@@ -2087,5 +2096,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
 }

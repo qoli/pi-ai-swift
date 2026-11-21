@@ -89,7 +89,10 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
           body = inner
         }
       }
-      let endpoint = context.baseURL.appending(
+      let baseURL =
+        protocolID == "typesafe-system-one" && request.providerID == "github-copilot"
+        ? context.baseURL.appending(path: "v1") : context.baseURL
+      let endpoint = baseURL.appending(
         path: protocolID == "openai-decisions"
           ? "decisions" : protocolID == "cloudflare-workers-ai-system-one" ? "run" : "systemone")
       let raw = try await post(

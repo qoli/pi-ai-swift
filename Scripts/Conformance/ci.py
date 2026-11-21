@@ -137,9 +137,22 @@ def main():
                                         "--package-tarball", str(tarball)])
             else:
                 catalog = output / "exact-source-catalog.json"
-                run("source-catalog", [sys.executable, "-B", "Scripts/replay-schema6-catalog.py", "--upstream", str(upstream),
-                                       "--output", str(catalog), "--generated-data-output",
-                                       str(upstream / "packages/ai/src/providers/data")])
+                if lock["sourceArtifact"]["kind"] == "published-provider-data":
+                    run("build-schema", ["npm", "run", "--workspace", "@earendil-works/pi-schema", "build"], cwd=upstream)
+                    run("source-catalog", [sys.executable, "-B", "Scripts/replay-release-catalog.py", "--upstream", str(upstream),
+                                           "--manifest", lock["sourceArtifactManifest"], "--output", str(catalog)])
+                    # Historical frozen-input regression tests use their original generator and dependencies.
+                    historical = root / "schema6-upstream"
+                    base = json.loads((repo / "Fixtures/Catalog/Schema6/manifest.json").read_bytes())["candidate"]
+                    run("historical-init", ["git", "init", str(historical)])
+                    run("historical-fetch", ["git", "fetch", "--depth", "1", lock["repository"], base], cwd=historical)
+                    run("historical-checkout", ["git", "checkout", "--detach", base], cwd=historical)
+                    run("historical-dependencies", ["npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund"], cwd=historical)
+                    environment["SCHEMA6_UPSTREAM"] = str(historical)
+                else:
+                    run("source-catalog", [sys.executable, "-B", "Scripts/replay-schema6-catalog.py", "--upstream", str(upstream),
+                                           "--output", str(catalog), "--generated-data-output",
+                                           str(upstream / "packages/ai/src/providers/data")])
                 environment["SCHEMA6_CATALOG_PATH"] = str(catalog)
                 run("verify-pinned-upstream", ["bash", "Scripts/check-upstream.sh", "--explain", "--candidate", lock["revision"]])
             swift_root = root / "swift"

@@ -20,7 +20,7 @@ struct SourceDerivedRequestDifferentialTests {
     #expect(fixture.schemaVersion == 1)
     #expect(oracle.schemaVersion == 1)
     #expect(fixture.caseID == oracle.caseID)
-    let expectedRevision = try pinnedRevision(repository: repository)
+    let expectedRevision = try oracleRevision(repository: repository)
     #expect(oracle.upstreamRevision == expectedRevision)
 
     let expectedProtocols = StandardWireProtocols.supportedProtocolIDs.subtracting(
@@ -65,8 +65,7 @@ struct SourceDerivedRequestDifferentialTests {
           protocolCase: protocolCase
         )
         let caseID = "\(scenario.caseID)/\(protocolCase.protocolID)"
-        let expectedBody = try OpenAIInstructionRoleFixtures.expectedBody(
-          expected.requestBody, for: caseID)
+        let expectedBody = expected.requestBody
         if actual != expectedBody {
           let difference = firstRequestDifference(actual, expectedBody)
           Issue.record("source-derived replay request drift for \(caseID): \(difference)")
@@ -136,7 +135,8 @@ struct SourceDerivedRequestDifferentialTests {
       options: ProviderGenerationOptions(
         maximumOutputTokens: isImage ? nil : fixture.options.maximumOutputTokens,
         temperature: isImage ? nil : fixture.options.temperature,
-        reasoningEffort: nil,
+        reasoningEffort: protocolCase.protocolID == "openai-codex-responses"
+          && protocolCase.reasoning ? .off : nil,
         responseSchema: nil,
         providerOptions: providerOptions(protocolID: protocolCase.protocolID),
         outputModality: isImage ? .image : .text,
@@ -210,6 +210,10 @@ struct SourceDerivedRequestDifferentialTests {
         metadata: replayConfigurationMetadata(protocolCase, scenario: scenario)
       )
     )
+    let codex = protocolCase.protocolID == "openai-codex-responses"
+    let simpleEffort =
+      scenario.reasoningEffort.flatMap(ProviderReasoningEffort.init(rawValue:))
+      ?? (codex && model.capabilities.reasoning ? .off : nil)
     let signatures = replaySignatures(protocolID: protocolCase.protocolID)
     let source = ProviderMessageSource(
       api: scenario.sameSource ? protocolCase.protocolID : "different-api",
@@ -344,9 +348,10 @@ struct SourceDerivedRequestDifferentialTests {
           ]
           : []),
       options: ProviderGenerationOptions(
-        maximumOutputTokens: scenario.omitMaximumOutputTokens == true ? nil : 64,
+        maximumOutputTokens: scenario.omitMaximumOutputTokens == true
+          ? (codex ? protocolCase.maximumOutputTokens : nil) : 64,
         temperature: scenario.temperature,
-        reasoningEffort: scenario.reasoningEffort.flatMap(ProviderReasoningEffort.init(rawValue:)),
+        reasoningEffort: simpleEffort,
         responseSchema: nil,
         providerOptions: providerOptions(protocolID: protocolCase.protocolID),
         sessionID: scenario.sessionID,
@@ -577,9 +582,21 @@ private func decode<Value: Decodable>(_ type: Value.Type, at url: URL) throws ->
   try JSONDecoder().decode(type, from: Data(contentsOf: url))
 }
 
-private func pinnedRevision(repository: URL) throws -> String {
+private func oracleRevision(repository: URL) throws -> String {
   struct Lock: Decodable { let revision: String }
-  return try decode(Lock.self, at: repository.appending(path: "Upstream.lock.json")).revision
+  let lock = try decode(Lock.self, at: repository.appending(path: "Upstream.lock.json"))
+  guard let revision = ProcessInfo.processInfo.environment["PI_AI_SWIFT_CONFORMANCE_CANDIDATE"]
+  else {
+    return lock.revision
+  }
+  struct Review: Decodable {
+    let baseRevision: String
+    let revision: String
+  }
+  let review = try decode(
+    Review.self, at: repository.appending(path: "Scripts/Conformance/candidate-v1.6.0.json"))
+  try #require(review.baseRevision == lock.revision && review.revision == revision)
+  return review.revision
 }
 
 func firstRequestDifference(

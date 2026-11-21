@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 import path from "node:path";
 import { providerStreams } from "./pi-ai-provider-context.mjs";
 
-const [upstreamRoot, casePath] = process.argv.slice(2);
+const [upstreamRoot, casePath, option, candidate] = process.argv.slice(2);
 if (!upstreamRoot || !casePath) {
   throw new Error("usage: openai-request-branch-oracle.mjs UPSTREAM_ROOT CASE_JSON");
 }
@@ -15,13 +15,21 @@ const fixture = JSON.parse(await readFile(casePath, "utf8"));
 if (fixture.schemaVersion !== 1 || !Array.isArray(fixture.cases)) {
   throw new Error("unsupported OpenAI request branch fixture");
 }
-const repositoryRoot = path.resolve(path.dirname(casePath), "../../..");
+const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const lock = JSON.parse(await readFile(path.join(repositoryRoot, "Upstream.lock.json"), "utf8"));
 const revision = execFileSync("git", ["-C", upstreamRoot, "rev-parse", "HEAD"], {
   encoding: "utf8",
 }).trim();
-if (revision !== lock.revision) {
-  throw new Error(`OpenAI request oracle revision mismatch: expected ${lock.revision}, found ${revision}`);
+let target = lock.revision;
+if (option !== undefined) {
+  const review = JSON.parse(await readFile(path.join(repositoryRoot, "Scripts/Conformance/candidate-v1.6.0.json"), "utf8"));
+  if (option !== "--candidate" || candidate !== review.revision || review.baseRevision !== lock.revision) {
+    throw new Error("Unreviewed request oracle candidate");
+  }
+  target = candidate;
+}
+if (revision !== target) {
+  throw new Error(`OpenAI request oracle revision mismatch: expected ${target}, found ${revision}`);
 }
 
 const results = {};

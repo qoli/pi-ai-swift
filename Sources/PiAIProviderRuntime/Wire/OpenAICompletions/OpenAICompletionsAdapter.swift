@@ -302,12 +302,15 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           message: "vLLM priority must be numeric")
       }
     }
+    let keyMode = compat.string("promptCacheKeyMode") ?? "auto"
+    let automaticCacheKey =
+      context.baseURL.absoluteString.contains("api.openai.com")
+      || (request.options.cacheRetention == .long
+        && compat.bool("supportsLongCacheRetention") != false)
     if request.options.cacheRetention != .none,
       let sessionID = request.options.sessionID,
       !sessionID.isEmpty,
-      context.baseURL.host == "api.openai.com"
-        || (request.options.cacheRetention == .long
-          && compat.bool("supportsLongCacheRetention") != false)
+      keyMode == "enabled" || (keyMode == "auto" && automaticCacheKey)
     {
       body["prompt_cache_key"] = .string(String(sessionID.prefix(64)))
     }
@@ -346,22 +349,24 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
         }
       )
       if compat.bool("zaiToolStream") == true { body["tool_stream"] = .bool(true) }
-    } else if request.messages.contains(where: { message in
-      switch message {
-      case .toolResult: return true
-      case .assistant(let content):
-        return content.contains {
-          if case .toolCall = $0 { return true }
-          return false
+    } else if compat.bool("requiresToolsWithToolHistory") == true,
+      request.messages.contains(where: { message in
+        switch message {
+        case .toolResult: return true
+        case .assistant(let content):
+          return content.contains {
+            if case .toolCall = $0 { return true }
+            return false
+          }
+        case .assistantMessage(let assistant):
+          return assistant.content.contains {
+            if case .toolCall = $0 { return true }
+            return false
+          }
+        default: return false
         }
-      case .assistantMessage(let assistant):
-        return assistant.content.contains {
-          if case .toolCall = $0 { return true }
-          return false
-        }
-      default: return false
-      }
-    }) {
+      })
+    {
       body["tools"] = .array([])
     }
     try applyAnthropicCacheControl(
@@ -412,6 +417,36 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
     let instructionRole = context.openAIInstructionRole
     var result: [JSONValue] = []
     var pendingToolImages: [ProviderImage] = []
+    func appendUser(_ content: [ProviderUserContent]) throws {
+      if compat.bool("requiresAssistantAfterToolResult") == true,
+        result.last?.objectValue?.string("role") == "tool"
+      {
+        result.append(
+          .object([
+            "role": .string("assistant"),
+            "content": .string("I have processed the tool results."),
+          ]))
+      }
+      if content.count == 1, case .text(let text) = content[0] {
+        guard !text.isEmpty else { return }
+        result.append(
+          .object([
+            "role": .string("user"),
+            "content": .string(text),
+          ]))
+      } else {
+        let filtered = content.filter { item in
+          if case .text(let text) = item { return !text.isEmpty }
+          return true
+        }
+        guard !filtered.isEmpty else { return }
+        result.append(
+          .object([
+            "role": .string("user"),
+            "content": .array(try filtered.map(makeUserContent(_:))),
+          ]))
+      }
+    }
     for (messageIndex, message) in messages.enumerated() {
       switch message {
       case .system(let text):
@@ -435,41 +470,14 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
           result.append(.object(["role": .string(instructionRole), "content": .string(text)]))
         }
       case .user(let content):
-        if compat.bool("requiresAssistantAfterToolResult") == true,
-          result.last?.objectValue?.string("role") == "tool"
-        {
-          result.append(
-            .object([
-              "role": .string("assistant"),
-              "content": .string("I have processed the tool results."),
-            ]))
-        }
-        if content.count == 1, case .text(let text) = content[0] {
-          guard !text.isEmpty else { continue }
-          result.append(
-            .object([
-              "role": .string("user"),
-              "content": .string(text),
-            ]))
-        } else {
-          let filtered = content.filter { item in
-            if case .text(let text) = item { return !text.isEmpty }
-            return true
-          }
-          guard !filtered.isEmpty else { continue }
-          result.append(
-            .object([
-              "role": .string("user"),
-              "content": .array(try filtered.map(makeUserContent(_:))),
-            ]))
-        }
+        try appendUser(content)
       case .userMessage(let user):
-        result.append(
-          contentsOf: try makeMessages([.user(user.content)], context: context, tools: tools))
+        try appendUser(user.content)
       case .assistant(let content):
         var object: [String: JSONValue] = [
           "role": .string("assistant"),
-          "content": compat.bool("requiresAssistantAfterToolResult") == true ? .string("") : .null,
+          "content": compat.bool("requiresAssistantAfterToolResult") == true
+            || compat.bool("requiresNonNullAssistantContent") == true ? .string("") : .null,
         ]
         let texts = content.compactMap { item -> String? in
           switch item {
@@ -883,7 +891,17 @@ private struct OpenAICompletionsReducer {
     {
       throw invalid(try ProviderErrorText.openAIStreamError(Data(event.data.utf8)).message)
     }
-    try await observation.streamEvent(value)
+    if var normalized = value.objectValue, let choices = normalized.array("choices") {
+      normalized["choices"] = .array(
+        choices.map { choice in
+          guard var object = choice.objectValue else { return choice }
+          if object["finish_reason"] == nil { object["finish_reason"] = .null }
+          return .object(object)
+        })
+      try await observation.streamEvent(.object(normalized))
+    } else {
+      try await observation.streamEvent(value)
+    }
     guard let object = value.objectValue else { return [] }
     var events: [ProviderEvent] = []
     if responseID == nil, let id = object.string("id"), !id.isEmpty {
@@ -1135,9 +1153,11 @@ private struct OpenAICompletionsReducer {
     let input = max(
       0, (usage.int("prompt_tokens") ?? 0) - (cached ?? 0) - (cacheWrite ?? 0))
     let output = usage.int("completion_tokens") ?? 0
+    let detailedReasoning = usage.object("completion_tokens_details")?.int("reasoning_tokens") ?? 0
     self.usage = ProviderUsage(
       inputTokens: input, outputTokens: output,
-      reasoningTokens: usage.object("completion_tokens_details")?.int("reasoning_tokens") ?? 0,
+      reasoningTokens: detailedReasoning == 0
+        ? usage.int("reasoning_tokens") ?? 0 : detailedReasoning,
       cachedInputTokens: cached ?? 0, cacheWriteTokens: cacheWrite ?? 0,
       totalTokens: input + output + (cached ?? 0) + (cacheWrite ?? 0),
       providerMetadata: usage,

@@ -9,7 +9,7 @@ struct ProviderIdentityHost: Sendable, Equatable, Codable {
 }
 
 enum ProviderClientIdentity {
-  static let upstreamVersion = "1.4.0"
+  static let upstreamVersion = "1.6.0"
 
   static func merge(_ sources: [[String: JSONValue]?]) -> [String: JSONValue]? {
     var result: [String: JSONValue]?

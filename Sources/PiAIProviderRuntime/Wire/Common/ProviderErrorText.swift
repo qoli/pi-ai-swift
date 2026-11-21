@@ -20,10 +20,27 @@ enum ProviderErrorText {
     case other
   }
 
+  struct Cause {
+    let message: String
+    let name: String
+    let code: String?
+  }
+
+  static func withCauseDetail(_ message: String, causes: [Cause]) -> String {
+    guard let deepest = causes.prefix(5).last else { return message }
+    var detail = (deepest.message.isEmpty ? deepest.name : deepest.message).trimmingCharacters(
+      in: javaScriptWhitespace)
+    if let code = deepest.code, !detail.contains(code) {
+      detail = detail.isEmpty ? code : "\(detail) (\(code))"
+    }
+    guard !detail.isEmpty, !message.contains(detail) else { return message }
+    return message.isEmpty ? detail : "\(message): \(detail)"
+  }
+
   static func normalize(
     isError: Bool, message: String, serializedValue: String?, stringValue: String,
     statusCandidates: [JSONValue], body: BodyCandidate, error: BodyCandidate,
-    responseBody: BodyCandidate
+    responseBody: BodyCandidate, causes: [Cause] = []
   ) -> Normalized {
     guard isError else {
       return .init(
@@ -53,7 +70,8 @@ enum ProviderErrorText {
       $0.isEmpty ? nil : truncate($0, maximumCharacters: maximumBodyCharacters)
     }
     return .init(
-      status: status, body: excerpt, message: message,
+      status: status, body: excerpt,
+      message: status == nil && excerpt == nil ? withCauseDetail(message, causes: causes) : message,
       messageCarriesBody: excerpt.map { message.contains($0) } ?? true)
   }
 

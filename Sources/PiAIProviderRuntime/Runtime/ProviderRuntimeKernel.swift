@@ -360,16 +360,6 @@ struct ProviderRuntimeKernel: ProviderRuntime {
       )
     }
     let override = try await requestTransportResolver?(request)
-    if override != nil,
-      ["google-generative-ai", "google-vertex"].contains(modelConfiguration.protocolID)
-    {
-      throw failure(
-        .unsupportedCapability, providerID: request.providerID,
-        operation: "stream.resolve-transport",
-        message:
-          "Custom fetch is not supported by the Google \(modelConfiguration.protocolID == "google-vertex" ? "Vertex" : "Generative AI") adapter"
-      )
-    }
     let resolved: ProviderResolvedAuthorization<KernelResolvedAuthorization>?
     do {
       resolved = try await ProviderAuthorizationResolution.resolve(

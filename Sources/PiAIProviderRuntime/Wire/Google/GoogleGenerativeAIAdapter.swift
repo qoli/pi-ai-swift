@@ -85,6 +85,19 @@ enum GoogleVertexConfiguration {
 }
 
 struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
+  static func stopReason(_ raw: String) -> ProviderFinishReason? {
+    switch raw {
+    case "STOP": return .stop
+    case "MAX_TOKENS", "CONTINUATION": return .length
+    case "BLOCKLIST", "PROHIBITED_CONTENT", "SPII", "SAFETY", "IMAGE_SAFETY",
+      "IMAGE_PROHIBITED_CONTENT", "IMAGE_RECITATION", "IMAGE_OTHER", "RECITATION",
+      "FINISH_REASON_UNSPECIFIED", "OTHER", "LANGUAGE", "MALFORMED_FUNCTION_CALL",
+      "UNEXPECTED_TOOL_CALL", "TOO_MANY_TOOL_CALLS", "NO_IMAGE":
+      return .error
+    default: return nil
+    }
+  }
+
   enum Flavor: Sendable, Equatable {
     case generativeAI
     case vertex
@@ -119,7 +132,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
               .transportFailed,
               providerID: request.providerID,
               operation: "google.response",
-              message: "Google generation request failed (HTTP \(response.statusCode))",
+              message: ProviderErrorText.http(
+                status: response.statusCode, body: body,
+                emptyMessage: "Google generation request failed (HTTP \(response.statusCode))"),
               cause: body
             )
           }
@@ -1018,14 +1033,11 @@ private struct GoogleEventReducer {
         operation: "google.event.finish",
         causeDescription: diagnostic)
     }
-    let reason: ProviderFinishReason
-    switch finishReason {
-    case "STOP": reason = sawToolCall ? .toolCalls : .stop
-    case "MAX_TOKENS": reason = .length
-    case "BLOCKLIST", "PROHIBITED_CONTENT", "SPII", "SAFETY", "IMAGE_SAFETY",
-      "IMAGE_PROHIBITED_CONTENT", "IMAGE_RECITATION", "IMAGE_OTHER", "RECITATION",
-      "FINISH_REASON_UNSPECIFIED", "OTHER", "LANGUAGE", "MALFORMED_FUNCTION_CALL",
-      "UNEXPECTED_TOOL_CALL", "NO_IMAGE":
+    guard let mapped = GoogleGenerativeAIAdapter.stopReason(finishReason) else {
+      throw invalid("unsupported Google finish reason: \(finishReason)")
+    }
+    let reason: ProviderFinishReason = mapped == .stop && sawToolCall ? .toolCalls : mapped
+    if reason == .error {
       throw ProviderRuntimeFailure(
         code: .transportFailed,
         message: "Provider stopped with: \(finishReason)",
@@ -1034,8 +1046,6 @@ private struct GoogleEventReducer {
         causeDescription: finishReason,
         providerMetadata: ["rawStopReason": .string(finishReason)]
       )
-    default:
-      throw invalid("unsupported Google finish reason: \(finishReason)")
     }
     let terminalUsage =
       usage

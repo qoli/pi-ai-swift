@@ -9,7 +9,11 @@ if [[ "$lock_schema" == 4 ]]; then
   temporary_root="$(mktemp -d "${TMPDIR:-/tmp}/pi-ai-source-catalog.XXXXXX")"
   trap 'rm -rf "$temporary_root"' EXIT
   evidence_path="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["sourceArtifactManifest"])' "$lock_file")"
-  python3 "$repo_root/Scripts/replay-schema6-catalog.py" \
+  replay=replay-schema6-catalog.py
+  if [[ "$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["sourceArtifact"]["kind"])' "$lock_file")" == published-provider-data ]]; then
+    replay=replay-release-catalog.py
+  fi
+  python3 "$repo_root/Scripts/$replay" \
     --upstream "${PI_AI_SWIFT_UPSTREAM_CACHE:-$repo_root/.build/upstreams/pi}" \
     --manifest "$repo_root/$evidence_path" --output "$temporary_root/catalog.json"
   python3 - "$lock_file" "$temporary_root/catalog.json" "$output_file" <<'PY'

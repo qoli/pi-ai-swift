@@ -14,10 +14,22 @@ SPEC.loader.exec_module(CANDIDATE)
 class CandidateConformanceTests(unittest.TestCase):
     def test_review_requires_both_exact_revisions(self):
         data = json.loads((ROOT / "Scripts/Conformance/candidate-v1.6.0.json").read_text())
-        self.assertEqual(CANDIDATE.profile(ROOT, data["revision"], data["baseRevision"]), data)
-        for revision, base in [(data["revision"][:8], data["baseRevision"]), (data["revision"], "0" * 40)]:
-            with self.assertRaisesRegex(ValueError, "exact candidate"):
-                CANDIDATE.profile(ROOT, revision, base)
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            manifests = repo / "Scripts/Conformance"
+            manifests.mkdir(parents=True)
+            for name, key in [("suites.json", "baseManifestSHA256"), ("scope-audit.json", "baseScopeAuditSHA256")]:
+                path = manifests / name
+                path.write_text("{}")
+                data[key] = CANDIDATE.sha256(path)
+            (manifests / "candidate-v1.6.0.json").write_text(json.dumps(data))
+            self.assertEqual(CANDIDATE.profile(repo, data["revision"], data["baseRevision"]), data)
+            for revision, base in [(data["revision"][:8], data["baseRevision"]), (data["revision"], "0" * 40)]:
+                with self.assertRaisesRegex(ValueError, "exact candidate"):
+                    CANDIDATE.profile(repo, revision, base)
+            (manifests / "suites.json").write_text("changed")
+            with self.assertRaisesRegex(ValueError, "rebasing"):
+                CANDIDATE.profile(repo, data["revision"], data["baseRevision"])
 
     def test_unverified_tarball_cannot_write_candidate_model_data(self):
         with tempfile.TemporaryDirectory() as directory:

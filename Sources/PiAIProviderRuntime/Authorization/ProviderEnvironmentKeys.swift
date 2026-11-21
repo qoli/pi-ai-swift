@@ -24,9 +24,14 @@ enum ProviderEnvironmentKeys {
 
   static let names: [String: [String]] = [
     "ant-ling": ["ANT_LING_API_KEY"],
-    "qwen-token-plan": ["QWEN_TOKEN_PLAN_API_KEY"],
-    "qwen-token-plan-cn": ["QWEN_TOKEN_PLAN_CN_API_KEY"],
-    "qwen-token-plan-individual": ["QWEN_TOKEN_PLAN_API_KEY"],
+    "qwen-token-plan": ["QWEN_TOKEN_PLAN_TEAM_API_KEY", "QWEN_TOKEN_PLAN_API_KEY"],
+    "qwen-token-plan-cn": ["QWEN_TOKEN_PLAN_TEAM_CN_API_KEY", "QWEN_TOKEN_PLAN_CN_API_KEY"],
+    "qwen-token-plan-individual-cn": [
+      "QWEN_TOKEN_PLAN_INDIVIDUAL_CN_API_KEY", "QWEN_TOKEN_PLAN_CN_API_KEY",
+    ],
+    "qwen-token-plan-individual": [
+      "QWEN_TOKEN_PLAN_INDIVIDUAL_API_KEY", "QWEN_TOKEN_PLAN_API_KEY",
+    ],
     "openai": ["OPENAI_API_KEY"],
     "azure": ["AZURE_OPENAI_API_KEY"],
     "nvidia": ["NVIDIA_API_KEY"],

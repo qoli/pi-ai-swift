@@ -270,12 +270,12 @@ struct OpenAIResponsesAdapterTests {
       operation: "fixture"
     )
     #expect(body.string("prompt_cache_key") == clampedSessionID)
-    #expect(body.string("instructions") == "You are a helpful assistant.")
+    #expect(body["instructions"] == nil)
     #expect(body.object("text")?.string("verbosity") == "low")
     #expect(body.string("tool_choice") == "auto")
     #expect(body.bool("parallel_tool_calls") == true)
     #expect(body.string("service_tier") == "priority")
-    #expect(body["max_output_tokens"] == nil)
+    #expect(body.int("max_output_tokens") == 100)
   }
 }
 

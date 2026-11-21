@@ -6,11 +6,16 @@ export {
 } from "./bridge.mjs";
 import { getModels, invokeNative, recordNative } from "./bridge.mjs";
 import { wrapPrimaryAuthorization, withNativeOAuthMetadata } from "./authorization.mjs";
+import { classify } from "./classifier.mjs";
 import { nativeRadiusProvider } from "./radius-provider.mjs";
 
 export function projectBuiltinProvider(provider, args, factory) {
   if (factory === "radiusProvider") return nativeRadiusProvider(provider, args[0]);
   const result = { ...provider };
+  if (provider.id === "github-copilot" && provider.classify) {
+    result.classify = (model, context, options) => model.api === "typesafe-system-one"
+      ? classify(model.api, model, context, options) : provider.classify(model, context, options);
+  }
   if (!args.length && provider.id !== "radius") {
     result.getModels = () => getModels(provider.id);
     if (provider.getAllModels) result.getAllModels = () => getAllBuiltinModels(provider.id);

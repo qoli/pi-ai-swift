@@ -542,6 +542,7 @@ public struct ProviderGenerationOptions: Sendable, Equatable, Codable {
   public let providerOptions: [String: JSONValue]
   public let outputModality: ProviderOutputModality
   public let sessionID: String?
+  public var disableContinuation: Bool?
   public let cacheRetention: ProviderCacheRetention
   var cacheRetentionIsExplicit: Bool?
   public let serviceTier: String?

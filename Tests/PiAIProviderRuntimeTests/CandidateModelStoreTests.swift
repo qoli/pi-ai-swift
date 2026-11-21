@@ -40,10 +40,15 @@ struct CandidateModelStoreTests {
   @Test(.enabled(if: ProcessInfo.processInfo.environment["SCHEMA6_CATALOG_PATH"] != nil))
   func completeExactSourceCatalogPreservesEverySupportedRecord() async throws {
     let path = try #require(ProcessInfo.processInfo.environment["SCHEMA6_CATALOG_PATH"])
-    try await verifyProjection(Data(contentsOf: URL(fileURLWithPath: path)))
+    let lock = try JSONDecoder().decode(
+      [String: JSONValue].self, from: Data(contentsOf: root.appending(path: "Upstream.lock.json")))
+    try await verifyProjection(
+      Data(contentsOf: URL(fileURLWithPath: path)),
+      expected: try #require(lock["revision"]?.stringValue))
   }
 
-  private func verifyProjection(_ data: Data) async throws {
+  private func verifyProjection(_ data: Data, expected: String? = nil) async throws {
+    let revision = expected ?? revision
     let fixture = try JSONDecoder().decode(CandidateStoreFixture.self, from: data)
     #expect(fixture.upstreamRevision == revision)
     let store = try ProviderModelStore(bundledData: data, expectedRevision: revision)

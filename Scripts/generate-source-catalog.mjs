@@ -13,14 +13,23 @@ if (!sourceRoot || !evidencePath || !outputPath) {
 }
 const evidenceBytes = await readFile(evidencePath);
 const evidence = JSON.parse(evidenceBytes);
-const packageRoot = path.join(sourceRoot, evidence.package.path);
+const release = evidence.publishedPackage;
+const packageIdentity = release ? { path: "packages/ai", name: "@earendil-works/pi-ai", version: evidence.version } : evidence.package;
+const packageRoot = path.join(sourceRoot, packageIdentity.path);
 const packageInfo = JSON.parse(await readFile(path.join(packageRoot, "package.json")));
-if (packageInfo.name !== evidence.package.name || packageInfo.version !== evidence.package.version) {
+if (packageInfo.name !== packageIdentity.name || packageInfo.version !== packageIdentity.version) {
   throw new Error("Source package identity does not match evidence");
 }
 const modelDataManifest = JSON.parse(await readFile(path.join(packageRoot, "src/providers/data/.manifest.json")));
-if (modelDataManifest.schemaVersion !== 6 || modelDataManifest.structureHash !== evidence.structureHash) {
+if (modelDataManifest.schemaVersion !== 6 || (!release && modelDataManifest.structureHash !== evidence.structureHash)) {
   throw new Error("Source model-data schema/structure does not match evidence");
+}
+if (release) {
+  const { generatedAt, ...manifest } = modelDataManifest;
+  const sorted = (_, value) => value && typeof value === "object" && !Array.isArray(value)
+    ? Object.fromEntries(Object.keys(value).sort().map(key => [key, value[key]])) : value;
+  const digest = createHash("sha256").update(JSON.stringify(manifest, sorted)).digest("hex");
+  if (digest !== evidence.catalogSHA256) throw new Error("Published catalog manifest differs from review");
 }
 const { builtinProviders } = await import(pathToFileURL(path.join(packageRoot, "src/providers/all.ts")));
 const providers = builtinProviders().map(provider => ({
@@ -39,9 +48,9 @@ const classifierProviderIDs = providers.filter(p => p.models.some(m => m.type ==
 const document = {
   schemaVersion: 1,
   upstreamRepository: evidence.repository,
-  upstreamRevision: evidence.candidate,
-  upstreamPackage: evidence.package,
-  sourceArtifact: {
+  upstreamRevision: release ? evidence.revision : evidence.candidate,
+  upstreamPackage: packageIdentity,
+  sourceArtifact: release ? { kind: "published-provider-data", ...release } : {
     kind: "frozen-public-catalog-inputs",
     evidenceSHA256: createHash("sha256").update(evidenceBytes).digest("hex"),
     responseArchiveSHA256: evidence.responseArchive.sha256,

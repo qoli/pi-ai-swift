@@ -14,11 +14,26 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
         var diagnostics: [JSONValue] = []
         do {
           let observation = ProviderWireObservation(request: request, wire: context)
+          let sending = RetryingProviderHTTPTransport(
+            request: request, context: context, transport: transport)
+          var completedThread: AnthropicMessageThread?
           let response = try await PreferredStrictToolFallback.response(
             request: request, api: .anthropic,
-            transport: RetryingProviderHTTPTransport(
-              request: request, context: context, transport: transport),
+            transport: sending,
             onDowngrade: { diagnostics.append($0) },
+            send: { wire in
+              guard let session = threadSession(request, context),
+                request.options.disableContinuation != true,
+                let data = wire.httpBody, let body = try JSONValue(jsonData: data).objectValue
+              else { return try await sending.stream(wire) }
+              let thread = AnthropicMessageThread(
+                session: session, full: wire, body: body, provider: request.providerID)
+              let (response, threaded) = try await thread.send(using: sending) {
+                diagnostics.append($0)
+              }
+              completedThread = threaded ? thread : nil
+              return response
+            },
             makeRequest: { current in
               let wire = try makeRequest(current, context: context)
               preparedThinkingLevel = managedThinkingLevel(request: current, context: context)
@@ -44,6 +59,8 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
               metadata: context.modelConfiguration.metadata,
               providerID: request.providerID,
               operation: "anthropic.usage.pricing"),
+            oauthTools: Self.isOAuthCredential(context.credential, providerID: request.providerID)
+              ? request.tools.map(\.name) : [],
             isOpenRouter: request.providerID == "openrouter"
               || context.baseURL.absoluteString.contains("openrouter.ai"),
             fallbackModels: context.modelConfiguration.metadata.object("compat")?.array(
@@ -65,7 +82,17 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
               continuation.yield(normalized)
             }
           }
+          try Task.checkCancellation()
           for event in try reducer.finish() {
+            if case .responseSnapshot(let snapshot) = event, let completedThread,
+              let id = snapshot.responseID,
+              snapshot.responseModelID == nil,
+              [.stop, .toolCalls, .length].contains(snapshot.finishReason)
+            {
+              let replay = try snapshot.replayAssistantMessage()
+              try completedThread.record(
+                id: id, reply: makeConversationMessage(.assistantMessage(replay), context: context))
+            }
             try await observation.toolEvent(event)
             continuation.yield(event)
           }
@@ -120,9 +147,10 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       ? []
       : betaFeatures(
         request: request, compat: compat, isOAuth: isOAuth, headers: context.headers,
-        reasoning: context.model.capabilities.reasoning)
+        reasoning: context.model.capabilities.reasoning,
+        messageThreads: threadSession(request, context) != nil)
     if isOAuth {
-      urlRequest.setValue("claude-cli/2.1.280", forHTTPHeaderField: "User-Agent")
+      urlRequest.setValue("claude-cli/2.1.322", forHTTPHeaderField: "User-Agent")
       urlRequest.setValue("cli", forHTTPHeaderField: "x-app")
     }
     for (name, value) in context.headers {
@@ -181,11 +209,19 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
     }
   }
 
+  private func threadSession(_ request: ProviderRequest, _ context: WireProtocolContext) -> String?
+  {
+    let supported =
+      context.modelConfiguration.metadata.object("compat")?.bool("supportsMessageThreads")
+      ?? context.baseURL.absoluteString.contains("api.anthropic.com")
+    return supported && request.options.cacheRetention != .none ? request.options.sessionID : nil
+  }
+
   private func betaFeatures(
     request: ProviderRequest,
     compat: [String: JSONValue],
     isOAuth: Bool,
-    headers: [String: String], reasoning: Bool
+    headers: [String: String], reasoning: Bool, messageThreads: Bool
   ) -> [String] {
     if let configured = headers.first(where: { $0.key.lowercased() == "anthropic-beta" })?.value {
       return Array(
@@ -218,6 +254,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       features.append("server-side-fallback-2026-07-01")
     }
     if usesNativeToolChanges(request, compat: compat) { features.append("inline-tools-2026-09-15") }
+    if messageThreads { features.append("message-threads-2026-08-12") }
     var seen = Set<String>()
     return features.filter { seen.insert($0).inserted }
   }
@@ -555,11 +592,12 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
         "type": .string("object"), "properties": .object([:]), "required": .array([]),
       ])
     }
-    let legacy: [String: JSONValue] = [
+    var legacy: [String: JSONValue] = [
       "type": .string("object"),
       "properties": object["properties"]?.objectValue.map(JSONValue.object) ?? .object([:]),
       "required": object["required"]?.arrayValue.map(JSONValue.array) ?? .array([]),
     ]
+    for key in ["additionalProperties", "$defs", "definitions"] { legacy[key] = object[key] }
     guard strict else { return .object(legacy) }
     for (key, value) in legacy { object[key] = value }
     return .object(object)
@@ -663,6 +701,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       api: protocolID, providerID: context.provider.id, modelID: context.model.id)
     let allowEmptySignature =
       context.modelConfiguration.metadata.object("compat")?.bool("allowEmptySignature") == true
+    let isOAuth = Self.isOAuthCredential(context.credential, providerID: context.provider.id)
     switch message {
     case .system, .systemMessage:
       return nil
@@ -681,14 +720,14 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       return try makeMessages([.user(user.content)], context: context)[0]
     case .assistant(let content):
       let blocks = content.compactMap {
-        makeAssistantContent($0, allowEmptySignature: allowEmptySignature)
+        makeAssistantContent($0, allowEmptySignature: allowEmptySignature, isOAuth: isOAuth)
       }
       guard !blocks.isEmpty else { return nil }
       return .object(["role": .string("assistant"), "content": .array(blocks)])
     case .assistantMessage(let assistant):
       guard let content = assistant.replayContent(for: target) else { return nil }
       let blocks = content.compactMap {
-        makeAssistantContent($0, allowEmptySignature: allowEmptySignature)
+        makeAssistantContent($0, allowEmptySignature: allowEmptySignature, isOAuth: isOAuth)
       }
       guard !blocks.isEmpty else { return nil }
       return .object(["role": .string("assistant"), "content": .array(blocks)])
@@ -878,12 +917,13 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
   }
 
   private func makeAssistantContent(
-    _ content: ProviderAssistantContent, allowEmptySignature: Bool
+    _ content: ProviderAssistantContent, allowEmptySignature: Bool, isOAuth: Bool
   ) -> JSONValue? {
     switch content {
     case .textUTF16(let units):
       return makeAssistantContent(
-        .text(ProviderInputText.sanitizeUTF16(units)), allowEmptySignature: allowEmptySignature)
+        .text(ProviderInputText.sanitizeUTF16(units)), allowEmptySignature: allowEmptySignature,
+        isOAuth: isOAuth)
     case .unrecognized:
       return nil
     case .text(let text):
@@ -917,7 +957,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       return .object([
         "type": .string("tool_use"),
         "id": .string(call.id),
-        "name": .string(call.name),
+        "name": .string(isOAuth ? claudeCodeToolName(call.name) : call.name),
         "input": call.arguments,
       ])
     }
@@ -981,6 +1021,7 @@ private struct AnthropicEventReducer {
   private var reportedAccounting: [String: JSONValue] = [:]
   private var inputTransformations: [JSONValue]?
   private var responseID: String?
+  private let oauthTools: [String]
   private var responseModelID: String?
   private var inputTokens: Int? = 0
   private var cachedInputTokens: Int? = 0
@@ -1002,13 +1043,14 @@ private struct AnthropicEventReducer {
     requestedModelID: String,
     providerThinkingLevel: String?,
     pricing: ProviderUsagePricing?,
-    isOpenRouter: Bool = false,
+    oauthTools: [String] = [], isOpenRouter: Bool = false,
     fallbackModels: [JSONValue] = [], diagnostics: [JSONValue] = []
   ) {
     self.providerID = providerID
     self.requestedModelID = requestedModelID
     self.providerThinkingLevel = providerThinkingLevel
     self.pricing = pricing
+    self.oauthTools = oauthTools
     self.isOpenRouter = isOpenRouter
     self.fallbackModels = fallbackModels
     self.diagnostics = diagnostics
@@ -1092,9 +1134,11 @@ private struct AnthropicEventReducer {
         return []
       }
       if blockType == "tool_use" {
-        guard let id = block.string("id"), let name = block.string("name") else {
+        guard let id = block.string("id"), let wireName = block.string("name") else {
           throw invalid("tool_use block is missing id or name")
         }
+        let name =
+          oauthTools.first { $0.caseInsensitiveCompare(wireName) == .orderedSame } ?? wireName
         let initial = block["input"] ?? .object([:])
         let initialText =
           initial.objectValue?.isEmpty == false

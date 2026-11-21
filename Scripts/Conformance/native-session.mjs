@@ -5,7 +5,10 @@ import { createInterface } from "node:readline";
 import { afterAll, afterEach, beforeEach, expect } from "vitest";
 import { addNativeClockCall, removeNativeClockCall, nativeClockChanged, nativeTimerScheduled } from "./native-clock.mjs";
 
+import { registerSessionResourceCleanup } from "pi-conformance:session-resources";
+
 let session;
+registerSessionResourceCleanup(id => session?.send({ kind: "cleanupProviderSessions", session: id }));
 let credentialSession;
 let nextID = 0;
 const stats = new Map();

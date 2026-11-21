@@ -3,6 +3,7 @@ import base64
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import tarfile
 
@@ -39,6 +40,19 @@ def catalog_identity(upstream):
     data = json.loads((upstream / "packages/ai/src/providers/data/.manifest.json").read_text())
     del data["generatedAt"]
     return hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def stage_native_package(repo, upstream, destination):
+    """Build the candidate with its real SwiftPM resource, leaving the accepted bundle intact."""
+    destination.mkdir()
+    for name in ("Package.swift", "Package.resolved"):
+        shutil.copyfile(repo / name, destination / name)
+    shutil.copytree(repo / "Sources", destination / "Sources")
+    (destination / "Tests").symlink_to(repo / "Tests", target_is_directory=True)
+    resource = destination / "Sources/PiAIProviderRuntime/Resources/BuiltinCatalog.json"
+    subprocess.run(["node", str(repo / "Scripts/generate-source-catalog.mjs"), str(upstream),
+                    str(repo / "Scripts/Conformance/candidate-v1.6.0.json"), str(resource)], check=True)
+    return sha256(resource)
 
 
 def prepare_catalog(upstream, tarball, review):

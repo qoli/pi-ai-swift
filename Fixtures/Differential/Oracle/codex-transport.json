@@ -61,6 +61,10 @@
           },
           "input": [
             {
+              "content": "initial instructions",
+              "role": "system"
+            },
+            {
               "content": [
                 {
                   "text": "synthetic question",
@@ -74,12 +78,11 @@
               "role": "system"
             }
           ],
-          "instructions": "initial instructions",
           "transport": "sse"
         }
       ],
       "stopReason": "stop"
     }
   ],
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
 }

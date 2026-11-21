@@ -220,6 +220,8 @@ def main() -> int:
         )
     if lock['schemaVersion'] == 4:
         for script, cases, output, description in [
+            ('pi-ai-custom-endpoint-oracle.mjs', 'Fixtures/Differential/Cases/custom-provider-endpoints.json',
+             'Fixtures/Differential/Oracle/custom-provider-endpoints.json', 'custom provider endpoint URLs'),
             ('pi-ai-radius-catalog-oracle.mjs',
              'Fixtures/Differential/Cases/radius-catalog.json',
              'Fixtures/Differential/Oracle/radius-catalog.json', 'Radius baseline and dynamic catalog replacement'),

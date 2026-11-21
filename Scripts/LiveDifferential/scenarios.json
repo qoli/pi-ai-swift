@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
   "source": "packages/ai/test/stream.test.ts",
   "coverageKind": "Shared live differential scenarios; upstream-derived invariants and explicitly labelled native extensions. Not unchanged upstream tests.",
   "system": "You are a helpful assistant. Be concise.",

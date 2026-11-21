@@ -242,11 +242,17 @@ if lock["schemaVersion"] == 3:
             raise SystemExit(f"malformed upstream lock: publishedArtifact.{key} is required")
 else:
     artifact = lock.get("sourceArtifact")
-    if not isinstance(artifact, dict) or artifact.get("kind") != "frozen-public-catalog-inputs":
+    if not isinstance(artifact, dict) or artifact.get("kind") not in {"frozen-public-catalog-inputs", "published-provider-data"}:
         raise SystemExit("malformed source-derived upstream lock")
     if not isinstance(lock.get("sourceArtifactManifest"), str) or not lock["sourceArtifactManifest"]:
         raise SystemExit("source-derived lock requires sourceArtifactManifest")
-    for key in ["evidenceSHA256", "responseArchiveSHA256"]:
+    if artifact["kind"] == "published-provider-data":
+        import base64
+        if (not artifact.get("tarball", "").startswith("https://registry.npmjs.org/")
+                or not artifact.get("integrity", "").startswith("sha512-")
+                or len(base64.b64decode(artifact["integrity"][7:], validate=True)) != 64):
+            raise SystemExit("malformed published provider data identity")
+    for key in (["evidenceSHA256", "responseArchiveSHA256"] if artifact["kind"] == "frozen-public-catalog-inputs" else []):
         value = artifact.get(key)
         if not isinstance(value, str) or len(value) != 64 or any(c not in "0123456789abcdef" for c in value):
             raise SystemExit(f"malformed source artifact digest: {key}")
@@ -358,6 +364,12 @@ if package.get("version") != expected_version:
     )
 PY
 
+release_data="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("sourceArtifact", {}).get("kind", ""))' "$lock_file")"
+if [[ "$release_data" == published-provider-data ]]; then
+  (cd "$cache_root" && npm run --workspace @earendil-works/pi-schema build)
+  python3 "$repo_root/Scripts/check-source-catalog.py" --repo "$repo_root" --upstream "$cache_root"
+fi
+
 for required_path in "${required_paths[@]}"; do
   if [[ ! -f "$cache_root/$required_path" ]]; then
     echo "missing required upstream source: $required_path" >&2
@@ -366,7 +378,7 @@ for required_path in "${required_paths[@]}"; do
 done
 
 lock_schema="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["schemaVersion"])' "$lock_file")"
-if [[ "$lock_schema" == 4 ]]; then
+if [[ "$lock_schema" == 4 && "$release_data" != published-provider-data ]]; then
   python3 "$repo_root/Scripts/check-source-catalog.py" --repo "$repo_root" --upstream "$cache_root"
 fi
 

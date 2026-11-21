@@ -120,6 +120,9 @@ enum ProviderConstrainedSamplingResolver {
         throw StrictSchemaError("\(key): \(encoded) is unsupported")
       }
     }
+    guard schema["type"] != nil || schema["anyOf"] != nil || schema["enum"] != nil else {
+      throw StrictSchemaError("schemas without a type are unsupported")
+    }
     if case .array(var variants)? = schema["anyOf"] {
       guard !variants.isEmpty else {
         throw StrictSchemaError("anyOf must contain at least one schema")

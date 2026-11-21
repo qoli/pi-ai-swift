@@ -290,6 +290,10 @@
         ],
         "input": [
           {
+            "content": "Be concise",
+            "role": "developer"
+          },
+          {
             "content": [
               {
                 "text": "Use the echo tool",
@@ -299,11 +303,12 @@
             "role": "user"
           }
         ],
-        "instructions": "Be concise",
+        "max_output_tokens": 64,
         "model": "gpt-5.1-codex",
         "parallel_tool_calls": true,
         "reasoning": {
-          "effort": "none"
+          "effort": "none",
+          "summary": "auto"
         },
         "store": false,
         "stream": true,
@@ -487,5 +492,5 @@
   },
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/earendil-works/pi.git",
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
 }

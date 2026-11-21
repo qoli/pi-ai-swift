@@ -1,5 +1,5 @@
 {
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
   "cases": [
     { "id": "arn-overrides-configured-region", "modelID": "arn:aws:bedrock:us-west-2:123456789012:application-inference-profile/example", "region": "us-east-1", "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com" },
     { "id": "govcloud-arn", "modelID": "arn:aws-us-gov:bedrock:us-gov-west-1:123456789012:application-inference-profile/example", "region": "us-east-1", "endpoint": "https://bedrock-runtime.us-east-1.amazonaws.com" },

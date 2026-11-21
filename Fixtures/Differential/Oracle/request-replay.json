@@ -383,6 +383,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -397,11 +401,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -1452,6 +1457,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -1510,11 +1519,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -2338,6 +2348,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -2372,11 +2386,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -3074,6 +3089,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -3108,11 +3127,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -3467,6 +3487,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -3514,11 +3538,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -4593,6 +4618,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -4661,11 +4690,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -5087,6 +5117,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -5133,11 +5167,12 @@
               "type": "custom_tool_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -5168,6 +5203,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -5214,11 +5253,12 @@
               "type": "custom_tool_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -5248,6 +5288,10 @@
             "reasoning.encrypted_content"
           ],
           "input": [
+            {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
             {
               "content": [
                 {
@@ -5296,11 +5340,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -5974,6 +6019,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -6021,12 +6070,13 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "prompt_cache_key": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-e",
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -6804,6 +6854,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -6851,11 +6905,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -7632,6 +7687,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -7679,12 +7738,13 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "prompt_cache_key": "replay-session",
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -8450,6 +8510,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -8497,11 +8561,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 4096,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -9312,6 +9377,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -9369,11 +9438,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -10211,6 +10281,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -10263,11 +10337,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -11054,6 +11129,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -11101,11 +11180,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -11872,6 +11952,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -11919,7 +12003,7 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
@@ -11959,7 +12043,7 @@
           "messages": [
             {
               "content": "Replay exactly",
-              "role": "developer"
+              "role": "system"
             },
             {
               "content": "First turn",
@@ -12713,6 +12797,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -12760,7 +12848,7 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
@@ -12800,7 +12888,7 @@
           "messages": [
             {
               "content": "Replay exactly",
-              "role": "developer"
+              "role": "system"
             },
             {
               "content": "First turn",
@@ -13554,6 +13642,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -13601,7 +13693,7 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
@@ -13641,7 +13733,7 @@
           "messages": [
             {
               "content": "Replay exactly",
-              "role": "developer"
+              "role": "system"
             },
             {
               "content": "First turn",
@@ -14395,6 +14487,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -14442,7 +14538,7 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
@@ -14482,7 +14578,7 @@
           "messages": [
             {
               "content": "Replay exactly",
-              "role": "developer"
+              "role": "system"
             },
             {
               "content": "First turn",
@@ -15226,6 +15322,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -15273,11 +15373,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -15312,7 +15413,7 @@
           "messages": [
             {
               "content": "Replay exactly",
-              "role": "developer"
+              "role": "system"
             },
             {
               "content": "First turn",
@@ -15613,6 +15714,19 @@
             {
               "description": "Read weather",
               "input_schema": {
+                "$defs": {
+                  "input": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "city"
+                    ],
+                    "type": "object"
+                  }
+                },
                 "properties": {},
                 "required": [],
                 "type": "object"
@@ -16060,6 +16174,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -16107,11 +16225,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -16884,6 +17003,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -16931,11 +17054,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -17697,6 +17821,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -17744,11 +17872,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -18520,6 +18649,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -18567,12 +18700,13 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "prompt_cache_key": "replay-session",
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -19312,7 +19446,6 @@
                 "description": "Read weather",
                 "name": "weather",
                 "parameters": {
-                  "additionalProperties": false,
                   "properties": {
                     "city": {
                       "type": "string"
@@ -19323,7 +19456,7 @@
                   ],
                   "type": "object"
                 },
-                "strict": true
+                "strict": false
               },
               "type": "function"
             }
@@ -19336,6 +19469,10 @@
             "reasoning.encrypted_content"
           ],
           "input": [
+            {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
             {
               "content": [
                 {
@@ -19384,11 +19521,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -19727,6 +19865,19 @@
             {
               "description": "Read weather",
               "input_schema": {
+                "$defs": {
+                  "input": {
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "city"
+                    ],
+                    "type": "object"
+                  }
+                },
                 "properties": {},
                 "required": [],
                 "type": "object"
@@ -20174,6 +20325,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -20221,11 +20376,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -20610,6 +20766,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -20657,11 +20817,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -21268,6 +21429,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -21315,11 +21480,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -22102,6 +22268,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -22149,11 +22319,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -22909,6 +23080,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -22956,11 +23131,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -23724,6 +23900,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -23771,11 +23951,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -24577,6 +24758,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -24633,11 +24818,12 @@
               "role": "user"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -25403,6 +25589,10 @@
           ],
           "input": [
             {
+              "content": "Replay exactly",
+              "role": "developer"
+            },
+            {
               "content": [
                 {
                   "text": "First turn",
@@ -25450,11 +25640,12 @@
               "type": "function_call_output"
             }
           ],
-          "instructions": "Replay exactly",
+          "max_output_tokens": 64,
           "model": "gpt-5.1-codex",
           "parallel_tool_calls": true,
           "reasoning": {
-            "effort": "none"
+            "effort": "none",
+            "summary": "auto"
           },
           "store": false,
           "stream": true,
@@ -25729,5 +25920,5 @@
   },
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/earendil-works/pi.git",
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
 }

@@ -798,8 +798,7 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
           })
       let expected = try XCTUnwrap(oracle.object("cases")?.object(name))
       let upstream = try XCTUnwrap(expected["requestBody"], name)
-      let expectedBody = try OpenAIInstructionRoleFixtures.expectedBody(upstream, for: name)
-      XCTAssertEqual(.object(projected), expectedBody, name)
+      XCTAssertEqual(.object(projected), upstream, name)
       XCTAssertEqual(headers, expected.object("requestHeaders"), name)
     }
   }

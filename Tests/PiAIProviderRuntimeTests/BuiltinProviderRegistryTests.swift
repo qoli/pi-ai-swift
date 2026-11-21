@@ -26,9 +26,9 @@ struct BuiltinProviderRegistryTests {
   @Test
   func bundledCatalogPreservesPinnedProviderAndModelInventory() throws {
     let registry = try BuiltinProviderRegistry.load()
-    #expect(registry.upstreamRevision == "86dc686cf2fd795b2b24af3d614bb0e1307bcd76")
-    #expect(registry.providers.count == 42)
-    #expect(registry.providers.flatMap(\.models).count == 1_710)
+    #expect(registry.upstreamRevision == "faac585884ae2c013a6b1400f3e9e77f10b34bac")
+    #expect(registry.providers.count == 43)
+    #expect(registry.providers.flatMap(\.models).count == 1_847)
 
     let kimi = try #require(
       registry.providers.first { $0.id == "kimi-coding" }
@@ -47,19 +47,19 @@ struct BuiltinProviderRegistryTests {
     #expect(fable.promptCache?.longLifetimeSeconds == 3_600)
 
     let radius = try #require(registry.providers.first { $0.id == "radius" })
-    #expect(radius.models.count == 28)
+    #expect(radius.models.count == 39)
     #expect(Set(radius.models.map(\.protocolID)) == ["pi-messages"])
 
     let meta = try #require(registry.providers.first { $0.id == "meta" })
     #expect(meta.authorizationMethodIDs == ["apiKey", "oauth"])
-    #expect(meta.models.count == 6)
+    #expect(meta.models.count == 7)
     #expect(Set(meta.models.map(\.protocolID)) == ["openai-responses"])
 
     let openRouter = try #require(
       registry.providers.first { $0.id == "openrouter" }
     )
-    #expect(openRouter.models.count == 484)
-    #expect(openRouter.modelConfigurations.count == 488)
+    #expect(openRouter.models.count == 530)
+    #expect(openRouter.modelConfigurations.count == 535)
     let overlapping = try #require(
       openRouter.models.first { $0.id == "google/gemini-3-pro-image" }
     )

@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
@@ -6,7 +7,7 @@ import { providerStreams } from './pi-ai-provider-context.mjs';
 const [root] = process.argv.slice(2);
 const sourcePath = 'packages/ai/src/api/openai-completions.ts';
 const sourceSHA256 = createHash('sha256').update(readFileSync(path.join(root,sourcePath))).digest('hex');
-if (sourceSHA256 !== 'e765179e356b4828a38954cda4cec762a851bb1d3a8fa28cdaf05edd12ca5c8a') throw Error('candidate source hash mismatch');
+if (sourceSHA256 !== '0a45961174b9be7018bb013f674c24209ee16860d65aa60aad8909c2433b35da') throw Error('candidate source hash mismatch');
 const implementation = await providerStreams(root, await import(pathToFileURL(path.resolve(root, sourcePath)).href));
 const cases = [];
 for (const strict of [null, false, true]) {
@@ -45,4 +46,4 @@ for (const test of thinkingDefaults) {
   if (!payload) throw Error(result.errorMessage);
   test.expected = Object.fromEntries(Object.entries(payload).filter(([key]) => thinkingFields.includes(key)));
 }
-console.log(JSON.stringify({revision:'86dc686cf2fd795b2b24af3d614bb0e1307bcd76',sourcePath,sourceSHA256:createHash('sha256').update(readFileSync(path.join(root,sourcePath))).digest('hex'),cases,thinkingDefaults},null,2));
+console.log(JSON.stringify({revision:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),sourcePath,sourceSHA256:createHash('sha256').update(readFileSync(path.join(root,sourcePath))).digest('hex'),cases,thinkingDefaults},null,2));

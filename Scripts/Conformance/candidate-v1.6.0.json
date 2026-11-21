@@ -44,5 +44,6 @@
   "publishedPackage": {
     "tarball": "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-1.6.0.tgz",
     "integrity": "sha512-9hL+eygFDEiFp//cydeUfmFsKmEqpmvsNPb10Y1W8+m5K9O+sx1hMStfu6nukrBD5sl6mP4RykCYBBNEgsVLfw=="
-  }
+  },
+  "repository": "https://github.com/earendil-works/pi.git"
 }

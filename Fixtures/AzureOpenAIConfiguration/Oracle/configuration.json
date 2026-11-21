@@ -40,21 +40,21 @@
     },
     "azure-config-proxy-query-duplicates": {
       "model": "source-model",
-      "url": "https://proxy.invalid/v1?q=a%20b&k=two&api-version=2026-01-01-preview"
+      "url": "https://proxy.invalid/v1/responses?q=a+b&api-version=2026-01-01-preview&k=one&k=two"
     },
     "azure-config-proxy-query-encoding": {
       "model": "source-model",
-      "url": "https://proxy.invalid/v1?name=two%20words&path=a%2Fb&flag%2Fresponses=&api-version=2026-01-01-preview"
+      "url": "https://proxy.invalid/v1/responses?name=two%20words&path=a%2Fb&flag=&api-version=2026-01-01-preview"
     },
     "azure-config-proxy-query-existing-version": {
       "model": "source-model",
-      "url": "https://proxy.invalid/v1?api-version=2026-01-01-preview&custom=true%2Fresponses"
+      "url": "https://proxy.invalid/v1/responses?api-version=2026-01-01-preview&custom=true"
     },
     "azure-config-proxy-query-preserved": {
       "model": "source-model",
-      "url": "https://proxy.invalid/v1?custom=true%2Fresponses&api-version=2026-01-01-preview"
+      "url": "https://proxy.invalid/v1/responses?custom=true&api-version=2026-01-01-preview"
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
 }

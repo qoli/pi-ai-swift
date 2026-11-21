@@ -92,6 +92,7 @@ actor WireConformanceServer {
     case "credentialReply": await credentialStores.receive(frame)
     case "authorizationReply", "authorizationTransform", "authorizationContext":
       await authorization.receive(frame)
+    case "cleanupProviderSessions": ProviderSessionResources.cleanup(frame.string("session"))
     case "closeSessions": await sessions.close(session: frame.string("session"))
     case "resetStats": await sessions.resetStats(session: frame.string("session"))
     default: inputs[id]?.yield(frame)

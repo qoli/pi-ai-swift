@@ -114,5 +114,5 @@
     "auth/credential-store.ts": "50ebde56b80b5862025e031719006ea303edd9aa80fec780fbc64319bb9e2847",
     "auth/resolve.ts": "b64d4b13ccdb3e8d056ec4849190aa68f002988ee0417317151d59d8668502ec"
   },
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76"
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
 }

@@ -80,21 +80,20 @@ import Testing
   }
 
   @Test(arguments: ["google-generative-ai", "google-vertex"])
-  func googleRejectsAnExplicitRequestTransportBeforeSending(api: String) async throws {
+  func googleSendsWithTheExplicitRequestTransport(api: String) async throws {
     let original = ContextTransport()
-    let replacement = ContextTransport()
+    let replacement = ContextTransport(fails: true)
     let runtime = try runtime(
-      store: ContextCredentialStore(), transport: original,
-      models: [model(api: api)], resolver: { _ in replacement })
+      store: ContextCredentialStore(.apiKey(.init(key: "fixture", metadata: [:]))),
+      transport: original, models: [model(api: api)], resolver: { _ in replacement })
     do {
       for try await _ in runtime.stream(request("google")) {}
-      Issue.record("Google accepted a per-request transport override")
+      Issue.record("The overridden transport's HTTP error was lost")
     } catch let failure as ProviderRuntimeFailure {
-      #expect(failure.code == .unsupportedCapability)
-      #expect(failure.operation == "stream.resolve-transport")
+      #expect(failure.message.contains("synthetic failure"))
     }
     #expect(await original.requests.isEmpty)
-    #expect(await replacement.requests.isEmpty)
+    #expect(await replacement.requests.count == 1)
   }
 
   private func runtime(

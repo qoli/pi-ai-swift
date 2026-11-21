@@ -69,7 +69,7 @@ actor CodexWebSocketSessions {
       entry.expiry = nil
       if entry.busy {
         cacheNew = false
-      } else if clock.now().timeIntervalSince(entry.created) >= 55 * 60 {
+      } else if clock.now().timeIntervalSince(entry.created) >= 45 * 60 {
         entries.removeValue(forKey: key)
         await entry.lease.socket.close(code: 1000, reason: "connection_age_limit")
       } else {

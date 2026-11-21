@@ -13,6 +13,20 @@ def verify(repo, upstream, lock, catalog):
     manifest_path = repo / lock['sourceArtifactManifest']
     manifest_bytes = manifest_path.read_bytes()
     evidence = json.loads(manifest_bytes)
+    if artifact.get('kind') == 'published-provider-data':
+        if (evidence['revision'] != lock['revision'] or evidence['repository'] != lock['repository']
+                or evidence['version'] != lock['package']['version']
+                or artifact != {'kind': 'published-provider-data', **evidence['publishedPackage']}
+                or catalog.get('sourceArtifact') != artifact or 'publishedArtifact' in catalog):
+            raise ValueError('Published catalog source identity differs from lock')
+        with tempfile.TemporaryDirectory(prefix='verify-release-catalog-') as temporary:
+            output = Path(temporary) / 'catalog.json'
+            subprocess.run(['python3', str(repo / 'Scripts/replay-release-catalog.py'),
+                            '--upstream', str(upstream), '--manifest', str(manifest_path),
+                            '--output', str(output)], check=True)
+            if hashlib.sha256(output.read_bytes()).hexdigest() != lock['generatedCatalogSHA256'] or json.loads(output.read_bytes()) != catalog:
+                raise ValueError('Bundled release catalog differs from exact-source replay')
+        return
     if evidence['candidate'] != lock['revision'] or evidence['repository'] != lock['repository'] or evidence['package'] != lock['package']:
         raise ValueError('Source catalog evidence identity differs from upstream lock')
     expected = {

@@ -1,5 +1,4 @@
 {
-  "revision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
   "cases": [
     {
       "baseURL": "http://ronnie-mac-studio.local:8001/v1",
@@ -25,5 +24,6 @@
       "baseURL": "https://api.example.com/custom/v1",
       "requestURL": "https://api.example.com/custom/v1/chat/completions"
     }
-  ]
+  ],
+  "revision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
 }

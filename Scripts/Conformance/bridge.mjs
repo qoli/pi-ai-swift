@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { appendFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { createInterface } from "node:readline";
 import { zstdDecompressSync } from "node:zlib";
 import path from "node:path";
@@ -22,6 +23,8 @@ import { getEnvApiKey } from "./environment.mjs";
 import { observeNativeCatalogValue } from "./catalog-values.mjs";
 
 const upstream = process.env.PI_CONFORMANCE_UPSTREAM;
+const { normalizeChatCompletionChunk } = createRequire(path.join(upstream, "packages/ai/package.json"))(
+  "openai/lib/chat-completions/streaming");
 const heapObservations = new AsyncLocalStorage();
 const yieldIO = globalThis.setImmediate;
 const streamLifetimes = [];
@@ -54,7 +57,8 @@ export { invoke as invokeNative, record as recordNative, probe as projectNativeR
 
 function fixtureCredential(model, options) {
   const environment = { ...process.env, ...options.env };
-  const environmentKey = model.api === "google-vertex" ? undefined : getEnvApiKey(model.provider, options.env);
+  const environmentKey = options.apiKey != null || options.client || model.api === "google-vertex"
+    ? undefined : getEnvApiKey(model.provider, options.env);
   return {
     key: options.apiKey ?? (options.client ? "synthetic-sdk-fixture-key" :
       environmentKey === "<authenticated>" ? undefined : environmentKey),
@@ -77,7 +81,9 @@ function fixtureInput(model, context, options, responses, credential, requestSou
   const preservesSystemMessages = ["openai-completions", "anthropic-messages", "openai-responses", "azure-openai-responses", "openai-codex-responses"].includes(model.api)
     && model.compat?.supportsMidConvoSystemMessages === true;
   let toolPlan;
-  if (["openai-completions", "openai-responses", "azure-openai-responses", "openai-codex-responses"].includes(model.api)) {
+  const hasToolChanges = context.messages.some(message => message.role === "system"
+    && (message.toolsAdded?.length || message.toolsRemoved?.length));
+  if (hasToolChanges && ["openai-completions", "openai-responses", "azure-openai-responses", "openai-codex-responses"].includes(model.api)) {
     const mode = invoke({ operation: "tool-support", model });
     record("tool-support", model.api);
     toolPlan = resolveTranscriptTools(context.messages, mode);
@@ -223,7 +229,7 @@ export function stream(model, context, options = {}, requestSource = "api", gene
         cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
     };
     try {
-      await nativeStream(model, context, options, event => emit(event, partial, output), requestSource, generationMode);
+      await nativeStream(model, context, options, event => emit(event, partial, output), requestSource, generationMode, credential);
       output.push(partial.stopReason === "error" || partial.stopReason === "aborted"
         ? { type: "error", reason: partial.stopReason, error: partial }
         : { type: "done", reason: partial.stopReason, message: partial });
@@ -252,9 +258,8 @@ export async function generateImages(model, context, options = {}) {
   return { ...result, output: content };
 }
 
-async function nativeStream(model, context, options, emitEvent, requestSource, generationMode) {
+async function nativeStream(model, context, options, emitEvent, requestSource, generationMode, credential = fixtureCredential(model, options)) {
   const heapSamples = heapObservations.getStore();
-  const credential = fixtureCredential(model, options);
   const connection = { credential, providerEvents: [] };
   const argumentUpdates = new Map();
   const child = ["openai-codex-responses", "anthropic-messages", "google-vertex", "bedrock-converse-stream"].includes(model.api) || (model.api === "openai-completions" && options.maxRetries !== undefined) ? codexProbeChild()
@@ -445,7 +450,7 @@ export function streamSimple(model, context, options = {}, requestSource = "api"
   return stream(model, context, {
     ...base,
     maxTokens: clampMaxTokensToContext(model, context, options.maxTokens ?? model.maxTokens),
-    reasoningEffort: disableGoogleThinking ? undefined : reasoningEffort,
+    reasoningEffort: disableGoogleThinking ? undefined : reasoningEffort ?? (model.api === "openai-codex-responses" && model.reasoning && model.thinkingLevelMap?.off !== null ? "off" : undefined),
     ...(disableGoogleThinking ? { thinking: { enabled: false } } : {}),
   }, requestSource, "simple");
 }
@@ -563,13 +568,15 @@ async function mockResponse(model, request, body, options, connection) {
     Object.assign(config, request.azureConfiguration);
   }
   if (model.api === "google-generative-ai" || model.api === "google-vertex") {
-    const client = connection.client ??= new GoogleGenAI(request.cloudConfiguration ?? { apiKey: options.apiKey,
+    const configuration = request.cloudConfiguration ?? { apiKey: options.apiKey,
       httpOptions: { headers: request.headers },
       ...(model.api === "google-vertex" ? { vertexai: true, project: options.project, location: options.location } : {}),
-    });
+    };
+    const client = connection.client ??= new GoogleGenAI({ ...configuration,
+      httpOptions: { ...configuration.httpOptions, fetch: options.fetch ?? globalThis.fetch } });
     const { systemInstruction, tools, toolConfig, generationConfig, contents } = body;
     const data = await client.models.generateContentStream({ model: model.id, contents,
-      config: { ...generationConfig, ...(systemInstruction ? { systemInstruction } : {}),
+      config: { automaticContinuation: false, ...generationConfig, ...(systemInstruction ? { systemInstruction } : {}),
         ...(tools ? { tools } : {}), ...(toolConfig ? { toolConfig } : {}) } });
     const chunks = (async function* () {
       for await (const event of data) {
@@ -620,7 +627,8 @@ async function mockResponse(model, request, body, options, connection) {
     for await (const event of reply.data) {
       if (hasNativeWireObserver(model) && options.onProviderStreamEvent) {
         // Verify Native's parsed value before restoring the SDK reference identity.
-        connection.providerEvents.push({ reference: event, serialized: JSON.parse(JSON.stringify(event)) });
+        const expected = model.api === "openai-completions" ? normalizeChatCompletionChunk(event) : event;
+        connection.providerEvents.push({ reference: event, serialized: JSON.parse(JSON.stringify(expected)) });
       } else if (!hasNativeWireObserver(model)) await options.onProviderStreamEvent?.(event, model);
       const label = model.api === "anthropic-messages" ? `event: ${event.type}\n` : "";
       yield Buffer.from(`${label}data: ${JSON.stringify(event)}\n\n`).toString("base64");
@@ -656,13 +664,13 @@ function bedrockModelID(url) {
 
 function googleSDKPayload(body, model) {
   return { model: model.id, contents: body.contents,
-    config: { ...body.generationConfig,
+    config: { automaticContinuation: false, ...body.generationConfig,
       ...(body.systemInstruction ? { systemInstruction: body.systemInstruction } : {}),
       ...(body.tools ? { tools: body.tools } : {}), ...(body.toolConfig ? { toolConfig: body.toolConfig } : {}) } };
 }
 
 function googleWireBody(payload) {
-  const { systemInstruction, tools, toolConfig, ...generationConfig } = payload.config ?? {};
+  const { systemInstruction, tools, toolConfig, automaticContinuation, ...generationConfig } = payload.config ?? {};
   return { contents: payload.contents, generationConfig,
     ...(systemInstruction ? { systemInstruction } : {}),
     ...(tools ? { tools } : {}), ...(toolConfig ? { toolConfig } : {}) };

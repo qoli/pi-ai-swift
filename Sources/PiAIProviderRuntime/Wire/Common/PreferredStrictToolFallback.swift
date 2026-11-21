@@ -11,14 +11,20 @@ enum PreferredStrictToolFallback {
     transport: any ProviderHTTPStreamingTransport,
     onDowngrade: (JSONValue) -> Void = { _ in },
     onResponse: (ProviderHTTPStreamingResponse) async throws -> Void = { _ in },
+    send: ((URLRequest) async throws -> ProviderHTTPStreamingResponse)? = nil,
     makeRequest: (ProviderRequest) async throws -> URLRequest
   ) async throws -> ProviderHTTPStreamingResponse {
-    var current = request
-    var downgraded = false
+    var downgraded = ProviderSessionResources.hasExceededStrictToolLimits(request.options.sessionID)
+    var current = downgraded ? withoutPreferredStrict(request) : request
     while true {
       try Task.checkCancellation()
       let wire = try await makeRequest(current)
-      let response = try await transport.stream(wire)
+      let response: ProviderHTTPStreamingResponse
+      if let send {
+        response = try await send(wire)
+      } else {
+        response = try await transport.stream(wire)
+      }
       try await onResponse(response)
       if (200..<300).contains(response.statusCode) { return response }
       let body = try await collectErrorBody(from: response.body)
@@ -46,18 +52,8 @@ enum PreferredStrictToolFallback {
             "error": .object(["message": .string(message)]),
             "details": .object(["reason": .string("strict_tool_limits_exceeded")]),
           ]))
-        current = ProviderRequest(
-          id: request.id, providerID: request.providerID, modelID: request.modelID,
-          messages: request.messages.map { message in
-            guard case .systemMessage(let system) = message else { return message }
-            return .systemMessage(
-              .init(
-                content: system.content,
-                toolsAdded: system.toolsAdded.map(withoutPreferredStrict),
-                toolsRemoved: system.toolsRemoved))
-          },
-          tools: request.tools.map(withoutPreferredStrict),
-          options: request.options, connectionOptions: request.connectionOptions)
+        ProviderSessionResources.markStrictToolLimitsExceeded(request.options.sessionID)
+        current = withoutPreferredStrict(request)
         continue
       }
       throw ProviderRuntimeFailure(
@@ -84,6 +80,22 @@ enum PreferredStrictToolFallback {
     .map { ["diagnostics": .array([$0])] }
   }
 
+  private static func withoutPreferredStrict(_ request: ProviderRequest) -> ProviderRequest {
+    return ProviderRequest(
+      id: request.id, providerID: request.providerID, modelID: request.modelID,
+      messages: request.messages.map { message in
+        guard case .systemMessage(let system) = message else { return message }
+        return .systemMessage(
+          .init(
+            content: system.content,
+            toolsAdded: system.toolsAdded.map(withoutPreferredStrict),
+            toolsRemoved: system.toolsRemoved))
+      },
+      tools: request.tools.map(withoutPreferredStrict),
+      options: request.options, connectionOptions: request.connectionOptions,
+      classifier: request.classifier)
+  }
+
   private static func withoutPreferredStrict(_ tool: ProviderToolDefinition)
     -> ProviderToolDefinition
   {
@@ -91,7 +103,7 @@ enum PreferredStrictToolFallback {
     return .init(name: tool.name, description: tool.description, inputSchema: tool.inputSchema)
   }
 
-  private static func errorMessage(
+  static func errorMessage(
     api: API, response: ProviderHTTPStreamingResponse, body: String?
   ) -> String {
     switch api {

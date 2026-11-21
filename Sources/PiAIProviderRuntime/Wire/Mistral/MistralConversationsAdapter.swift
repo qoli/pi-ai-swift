@@ -242,7 +242,7 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
     if !request.tools.isEmpty {
       body["tools"] = .array(
         try request.tools.map {
-          try makeToolDefinition($0, providerID: request.providerID)
+          try makeToolDefinition($0, context: context)
         })
     }
     if let toolChoice = request.options.toolChoice {
@@ -444,12 +444,13 @@ struct MistralConversationsAdapter: WireProtocolAdapter {
 
   private func makeToolDefinition(
     _ tool: ProviderToolDefinition,
-    providerID: String
+    context: WireProtocolContext
   ) throws -> JSONValue {
     let constrained = try ProviderConstrainedSamplingResolver.jsonSchema(
       for: tool,
-      supportsStrictMode: true,
-      providerID: providerID,
+      supportsStrictMode: context.modelConfiguration.metadata.object("compat")?.bool(
+        "supportsStrictMode") ?? false,
+      providerID: context.model.providerID,
       operation: "mistral.request.tool-schema"
     )
     return .object([

@@ -95,7 +95,7 @@ enum ProviderSessionHeaders {
       return
     }
     if format == "openai" {
-      setDefault(sessionID, forHTTPHeaderField: "session_id", to: &urlRequest)
+      setDefault(sessionID, forHTTPHeaderField: "session-id", to: &urlRequest)
     }
     setDefault(sessionID, forHTTPHeaderField: "x-client-request-id", to: &urlRequest)
   }

@@ -36,7 +36,7 @@ export async function resolveFixtureCloud(stage, value, options, connection) {
   const config = value.configuration;
   const id = String(++nextSource);
   if (request.googleApplicationDefaultCredentials) {
-    sources.set(id, { kind: "vertex", client: new GoogleGenAI(config) });
+    sources.set(id, { kind: "vertex", client: new GoogleGenAI({ ...config, httpOptions: { ...config.httpOptions, fetch: options.fetch ?? globalThis.fetch } }) });
   } else if (request.awsCredentials) {
     sources.set(id, { kind: "aws", region: request.awsCredentials.region, client: new BedrockRuntimeClient(config) });
   } else if (request.anthropicFederation) {

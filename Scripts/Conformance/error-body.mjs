@@ -20,10 +20,26 @@ function hostValue(value) {
   };
 }
 
+function causes(error) {
+  const values = [];
+  for (let current = error?.cause; current instanceof Error && values.length < 5; current = current.cause) {
+    const code = current.code;
+    values.push({ message: current.message, name: current.name,
+      code: typeof code === "string" || typeof code === "number" ? String(code) : undefined });
+  }
+  return values;
+}
+
+export function withCauseDetail(error) {
+  const result = invokeNative({ operation: "error.cause-detail", message: error.message, causes: causes(error) });
+  recordNative("error.cause-detail", "*");
+  return result;
+}
+
 export function normalizeProviderError(error) {
   const result = invokeNative({
     operation: "error.normalize-sdk-object", isError: error instanceof Error,
-    message: error?.message, ...hostValue(error),
+    message: error?.message, causes: causes(error), ...hostValue(error),
     statusCandidates: [error?.statusCode, error?.status, error?.$metadata?.httpStatusCode, error?.$response?.statusCode],
     body: hostValue(error?.body), error: hostValue(error?.error), responseBody: hostValue(error?.$response?.body),
   });

@@ -63,7 +63,9 @@
         "packages/ai/src/providers/data/xiaomi-token-plan-sgp.json",
         "packages/ai/src/providers/data/xiaomi.json",
         "packages/ai/src/providers/data/zai-coding-cn.json",
-        "packages/ai/src/providers/data/zai.json"
+        "packages/ai/src/providers/data/zai.json",
+        "packages/ai/src/providers/schema-builders.ts",
+        "packages/ai/src/providers/data/qwen-token-plan-individual-cn.json"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts",
@@ -77,7 +79,9 @@
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#bundledCatalogPreservesPinnedProviderAndModelInventory",
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#chatCompletionsJSONModeDoesNotAdvertiseStrictSchemas",
         "Tests/PiAIProviderRuntimeTests/BuiltinProviderRegistryTests.swift#schema6PreservesTypedRoutesWithoutAdvertisingClassifiers",
-        "Docs/SCHEMA6_FEASIBILITY.md"
+        "Docs/SCHEMA6_FEASIBILITY.md",
+        "Fixtures/Catalog/Releases/v1.6.0.json",
+        "Scripts/replay-release-catalog.py"
       ],
       "requiredGates": [
         "swift-test"
@@ -102,7 +106,8 @@
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/types.ts",
-        "packages/ai/src/api/transform-messages.ts"
+        "packages/ai/src/api/transform-messages.ts",
+        "packages/ai/src/cache-warming.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/cross-provider-handoff.test.ts",
@@ -265,7 +270,8 @@
         "packages/ai/src/auth/oauth/kimi-coding.ts",
         "packages/ai/src/auth/oauth/xai.ts",
         "packages/ai/src/auth/oauth/openrouter.ts",
-        "packages/ai/src/auth/oauth/meta.ts"
+        "packages/ai/src/auth/oauth/meta.ts",
+        "packages/ai/src/lazy-oauth.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/oauth-auth.test.ts",
@@ -1772,6 +1778,37 @@
       "liveVerificationStatus": "notRun"
     },
     {
+      "id": "provider-qwen-token-plan-individual-cn",
+      "providerID": "qwen-token-plan-individual-cn",
+      "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for qwen-token-plan-individual-cn.",
+      "status": "missing",
+      "swiftPaths": [],
+      "plannedSwiftPaths": [
+        "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
+        "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
+        "Sources/PiAIProviderRuntime/Authorization/ProviderEnvironmentKeys.swift"
+      ],
+      "upstreamPaths": [
+        "packages/ai/src/providers/qwen-token-plan-individual-cn.models.ts",
+        "packages/ai/src/providers/qwen-token-plan-individual-cn.ts"
+      ],
+      "upstreamTestPaths": [
+        "packages/ai/test/qwen-token-plan-models.test.ts"
+      ],
+      "dependsOn": [
+        "builtin-provider-registry",
+        "catalog-model-store",
+        "credential-store-auth-resolution",
+        "wire-openai-completions"
+      ],
+      "evidence": [],
+      "requiredGates": [
+        "swift-test"
+      ],
+      "supportDisposition": "planned",
+      "liveVerificationStatus": "notRun"
+    },
+    {
       "id": "provider-radius",
       "providerID": "radius",
       "responsibility": "Provider definition, authorization composition, catalog, endpoint, headers, and wire protocol selection for radius.",
@@ -2291,13 +2328,16 @@
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift",
         "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
-        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift"
+        "Sources/PiAIProviderRuntime/ProviderCloudAuthorization.swift",
+        "Sources/PiAIProviderRuntime/Wire/Anthropic/AnthropicMessageThreads.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/anthropic-messages.ts",
         "packages/ai/src/api/anthropic-messages.lazy.ts",
-        "packages/ai/src/utils/diagnostics.ts"
+        "packages/ai/src/utils/diagnostics.ts",
+        "packages/ai/src/api/strict-tool-limits.ts",
+        "packages/ai/src/session-resources.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/anthropic-empty-thinking-signature-compat.test.ts",
@@ -2311,7 +2351,9 @@
         "packages/ai/test/anthropic-strict-tool-schema.test.ts",
         "packages/ai/test/openrouter-cost.test.ts",
         "packages/ai/test/opencode-provider-headers.test.ts",
-        "packages/ai/test/streaming-tool-arguments.test.ts"
+        "packages/ai/test/streaming-tool-arguments.test.ts",
+        "packages/ai/test/anthropic-message-threads.test.ts",
+        "packages/ai/test/strict-tool-limits.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2391,7 +2433,9 @@
         "Scripts/Conformance/CloudProbe.swift",
         "Scripts/Conformance/cloud-authorization.mjs",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testFederationReusesTheNativeCredentialSource",
-        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource"
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource",
+        "Scripts/Conformance/strict-tool-limits.mjs",
+        "Scripts/Conformance/suites.json"
       ],
       "requiredGates": [
         "swift-test",
@@ -2500,7 +2544,9 @@
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/api/bedrock-converse-stream.ts",
-        "packages/ai/src/api/bedrock-converse-stream.lazy.ts"
+        "packages/ai/src/api/bedrock-converse-stream.lazy.ts",
+        "packages/ai/src/api/strict-tool-limits.ts",
+        "packages/ai/src/lazy-bedrock-provider.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/stream.test.ts",
@@ -2589,7 +2635,9 @@
         "Scripts/Conformance/CloudProbe.swift",
         "Scripts/Conformance/cloud-authorization.mjs",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testFederationReusesTheNativeCredentialSource",
-        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource"
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource",
+        "Scripts/Conformance/strict-tool-limits.mjs",
+        "Scripts/Conformance/suites.json"
       ],
       "requiredGates": [
         "swift-test"
@@ -2647,7 +2695,8 @@
         "packages/ai/src/utils/text.ts",
         "packages/ai/src/utils/transcript.ts",
         "packages/ai/src/utils/uuid.ts",
-        "packages/ai/src/utils/version.ts"
+        "packages/ai/src/utils/version.ts",
+        "packages/ai/src/utils/string-enum.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
@@ -2661,7 +2710,8 @@
         "packages/ai/test/streaming-json.test.ts",
         "packages/ai/test/streaming-tool-arguments.test.ts",
         "packages/ai/test/tool-call-without-result.test.ts",
-        "packages/ai/test/unicode-surrogate.test.ts"
+        "packages/ai/test/unicode-surrogate.test.ts",
+        "packages/ai/test/clamp-max-tokens.test.ts"
       ],
       "dependsOn": [],
       "evidence": [
@@ -2753,7 +2803,8 @@
         "packages/ai/test/google-thinking-signature.test.ts",
         "packages/ai/test/opencode-provider-headers.test.ts",
         "packages/ai/test/stream.test.ts",
-        "packages/ai/test/streaming-tool-arguments.test.ts"
+        "packages/ai/test/streaming-tool-arguments.test.ts",
+        "packages/ai/test/google-stop-reason-continuation.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -3133,7 +3184,9 @@
         "packages/ai/test/provider-error-body-regression.test.ts",
         "packages/ai/test/sampling-options.test.ts",
         "packages/ai/test/streaming-tool-arguments.test.ts",
-        "packages/ai/test/transcript-tool-changes.test.ts"
+        "packages/ai/test/transcript-tool-changes.test.ts",
+        "packages/ai/test/openai-completions-non-null-assistant-content.test.ts",
+        "packages/ai/test/openai-reasoning-replay-e2e.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -3143,10 +3196,9 @@
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#honorsModelCompatibilityAndNormalizesToolStream",
         "Tests/PiAIProviderRuntimeTests/OpenAICompletionsAdapterTests.swift#reasoningFormatsEncodeOffAndMappedEffort",
-        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#instructionRoleDependsOnExplicitCapability",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#instructionRoleFollowsUpstreamProtocolAndReasoning",
         "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#builtinOpenAIAndGroqUseEndpointInstructionRoles",
         "Tests/PiAIProviderRuntimeTests/CustomProviderRuntimeTests.swift#usesSystemRoleAndConfiguredQwenThinkingSwitch",
-        "Tests/PiAIProviderRuntimeTests/OpenAIInstructionRoleFixtures.swift",
         "Tests/PiAIProviderRuntimeTests/SourceDerivedResponseDifferentialTests.swift#responseIdentityMatchesSourceForAliasesAndLateModelMetadata",
         "Fixtures/Differential/Cases/response-rich.json",
         "Fixtures/Differential/Oracle/response-rich.json",
@@ -3232,7 +3284,7 @@
       "liveVerificationStatus": "notRequired",
       "maintenanceNotes": [
         "2026-10-07 accepted-pin Class B repair: preserve first-seen content block and tool completion order; source-executed response-rich identityCases completions.order-* prove reasoning/text/tool ordering, metadata-only reasoning, and interleaved deltas.",
-        "2026-11-12 authorized local deviation: instruction roles use explicit endpoint support and default to system independently of reasoning. See Docs/OPENAI_INSTRUCTION_ROLE_EXTENSION.md."
+        "The v1.6.0 candidate retires the 1.4.0 instruction-role deviation. See Docs/OPENAI_INSTRUCTION_ROLE_EXTENSION.md."
       ]
     },
     {
@@ -3263,7 +3315,9 @@
         "packages/ai/test/sampling-options.test.ts",
         "packages/ai/test/opencode-provider-headers.test.ts",
         "packages/ai/test/streaming-tool-arguments.test.ts",
-        "packages/ai/test/transcript-tool-changes.test.ts"
+        "packages/ai/test/transcript-tool-changes.test.ts",
+        "packages/ai/test/openai-responses-input-transformations.test.ts",
+        "packages/ai/test/openai-responses-prompt-cache.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -3272,7 +3326,7 @@
       ],
       "evidence": [
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#encodesStructuredRequestAndNormalizesResponsesEvents",
-        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#instructionRoleDependsOnExplicitCapability",
+        "Tests/PiAIProviderRuntimeTests/OpenAIRequestBranchClosureTests.swift#instructionRoleFollowsUpstreamProtocolAndReasoning",
         "Tests/PiAIProviderRuntimeTests/ProviderVerticalSliceTests.swift#builtinOpenAIAndGroqUseEndpointInstructionRoles",
         "Tests/PiAIProviderRuntimeTests/OpenAIResponsesAdapterTests.swift#selectedEffortMapsToWireWhileNilOmitsReasoning",
         "Scripts/pi-ai-emission-snapshots.mjs",
@@ -3337,7 +3391,7 @@
       "liveVerificationStatus": "notRequired",
       "maintenanceNotes": [
         "2026-11-07 accepted-pin Class B repair: keepalive-between-text-deltas and the raw wire observer prove that a keepalive emits no normalized content and the stream continues; earlyEof still requires a terminal response event. See Docs/RESPONSES_KEEPALIVE_REPAIR.md.",
-        "2026-11-12 authorized local deviation: only explicit role support or the documented native OpenAI Responses endpoint selects developer. See Docs/OPENAI_INSTRUCTION_ROLE_EXTENSION.md."
+        "The v1.6.0 candidate retires the 1.4.0 instruction-role deviation. See Docs/OPENAI_INSTRUCTION_ROLE_EXTENSION.md."
       ]
     },
     {
@@ -3803,7 +3857,8 @@
         "Scripts/Conformance/cloudflare-stream.mjs",
         ".github/workflows/ci.yml",
         "Scripts/Conformance/ci.py",
-        "Scripts/tests/test_conformance_ci.py"
+        "Scripts/tests/test_conformance_ci.py",
+        "Scripts/Conformance/strict-tool-limits.mjs"
       ],
       "requiredGates": [
         "unchanged-upstream-conformance",

@@ -47,7 +47,7 @@ struct AzureOpenAIConfigurationDifferentialTests {
     let oracle: AzureConfigurationOracle = try decodeFixture(
       "Fixtures/AzureOpenAIConfiguration/Oracle/configuration.json")
 
-    #expect(oracle.upstreamRevision == "86dc686cf2fd795b2b24af3d614bb0e1307bcd76")
+    #expect(oracle.upstreamRevision == "faac585884ae2c013a6b1400f3e9e77f10b34bac")
     for testCase in fixture.cases {
       let expected = try #require(oracle.cases[testCase.id])
       let request = azureRequest(testCase)

@@ -8,6 +8,7 @@ import os
 import re
 from pathlib import Path
 import subprocess
+import tempfile
 import sys
 
 
@@ -357,6 +358,13 @@ def main():
     (build / "report.json").unlink(missing_ok=True)
     scratch = args.build_root.resolve() / "build" if args.build_root else repo / ".build/conformance/swift"
     swift_build = ["swift", "build", "-c", "release", "-Xswiftc", "-enable-testing", "--scratch-path", str(scratch)]
+    catalog_digest = None
+    if review:
+        from candidate import stage_native_package
+        candidate_directory = tempfile.TemporaryDirectory(prefix="pi-native-candidate-")
+        package = Path(candidate_directory.name) / repo.name
+        catalog_digest = stage_native_package(repo, upstream, package)
+        swift_build.extend(["--package-path", str(package)])
     if args.build_root:
         for option, directory in [("--cache-path", "cache"), ("--config-path", "configuration"),
                                   ("--security-path", "security")]:
@@ -458,6 +466,7 @@ def main():
         "upstreamRevision": revision,
         "acceptedRevision": lock["revision"],
         "candidateReview": review,
+        "candidateNativeCatalogSHA256": catalog_digest,
         **identities,
         "sourceStableDuringRun": source_stable,
         "conformant": conformant,

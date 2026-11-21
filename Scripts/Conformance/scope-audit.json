@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
   "contract": {
     "path": "AGENTS.md",
     "sha256": "691ad8d368826c9ae0336f1743784be6f21262993cb452d1790e55627e977943"
@@ -11,8 +11,8 @@
       "reason": "Transforms public catalog publication inputs into generated metadata; Native consumes the pinned generated artifact and validates reproduction, then owns runtime interpretation of that metadata.",
       "existingSuiteRules": [
         {
-          "suite": "generate-models-strict.test.ts",
-          "sha256": "02daf793d9b697da97bfc95dd4d17e58ea487f33a2801f24e6fee239ccf46ef4"
+          "suite": "image-model-data.test.ts",
+          "sha256": "f176f2c8d69c9d8e2bb547573fd09e2da45204e2cf05b4223da96a16b92047ad"
         },
         {
           "suite": "reasoning-options.test.ts",
@@ -153,7 +153,7 @@
         {
           "path": "packages/ai/catalog/providers/fireworks.ts",
           "symbol": "forceAdaptiveThinking",
-          "sha256": "8b54992c69de29ad07b770df87c87814d7e3314572a6c087dbc9f8dab8504b91"
+          "sha256": "d0fe6c4a9ccef7bdc13df8e62d746fd38750ed364ba610ca22faa52f9918c889"
         }
       ]
     },
@@ -182,7 +182,7 @@
         {
           "path": "packages/ai/catalog/providers/fireworks.ts",
           "symbol": "forceAdaptiveThinking",
-          "sha256": "8b54992c69de29ad07b770df87c87814d7e3314572a6c087dbc9f8dab8504b91"
+          "sha256": "d0fe6c4a9ccef7bdc13df8e62d746fd38750ed364ba610ca22faa52f9918c889"
         }
       ]
     },
@@ -211,7 +211,7 @@
         {
           "path": "packages/ai/catalog/providers/fireworks.ts",
           "symbol": "forceAdaptiveThinking",
-          "sha256": "8b54992c69de29ad07b770df87c87814d7e3314572a6c087dbc9f8dab8504b91"
+          "sha256": "d0fe6c4a9ccef7bdc13df8e62d746fd38750ed364ba610ca22faa52f9918c889"
         }
       ]
     },
@@ -331,13 +331,13 @@
       "upstreamTest": "packages/ai/test/classifier-models.test.ts",
       "name": "Models with classifier models > rejects chat models at the classifier entry point at runtime",
       "occurrence": 0,
-      "testSHA256": "9f4c34792441dccf4a7d5f74998e67c292dd2bc67183322a0538d478a88bc265",
+      "testSHA256": "5e8e83b1d4deec3a66bb40b4ee77fc3415f2aa6dc4ce4376d42e53a965d45e65",
       "rule": "caller-model-union",
       "references": [
         {
           "path": "packages/ai/test/classifier-models.test.ts",
           "symbol": "rejects chat models at the classifier entry point at runtime",
-          "sha256": "9f4c34792441dccf4a7d5f74998e67c292dd2bc67183322a0538d478a88bc265"
+          "sha256": "5e8e83b1d4deec3a66bb40b4ee77fc3415f2aa6dc4ce4376d42e53a965d45e65"
         },
         {
           "path": "packages/ai/src/utils/model-operations.ts",
@@ -347,7 +347,7 @@
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "assertClassifierModel",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -366,12 +366,12 @@
         {
           "path": "packages/ai/src/utils/version.ts",
           "symbol": "scripts/sync-versions.js",
-          "sha256": "8b7a126cbf9b5f608edff3fcc0bb0f9cf295e0b243d9ccbcede343275fa2dd4a"
+          "sha256": "c26490762df52de9bf136ec454a7a0cd3ad101d1155049dc47d7b629ac779218"
         },
         {
           "path": "packages/ai/package.json",
           "symbol": "\"version\"",
-          "sha256": "7bb671d180ac55ac52f3e722e47aee15162e8bed06f89c10f2f4684ab1a7f995"
+          "sha256": "d5c0803c4fbabe9559ce471a5adb0a6bc26ebae2e2391130f1de9fc7e97eec48"
         }
       ]
     },
@@ -395,7 +395,7 @@
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "assertClassifierModel",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -414,7 +414,7 @@
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "class ModelsImpl",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -438,7 +438,7 @@
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "assertClassifierModel",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -462,7 +462,7 @@
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "assertClassifierModel",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -481,7 +481,7 @@
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "export function createProvider",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -505,7 +505,7 @@
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "assertClassifierModel",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -513,18 +513,18 @@
       "upstreamTest": "packages/ai/test/models-runtime.test.ts",
       "name": "Models runtime > registers, replaces, and deletes providers",
       "occurrence": 0,
-      "testSHA256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06",
+      "testSHA256": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e",
       "rule": "caller-model-collection",
       "references": [
         {
           "path": "packages/ai/test/models-runtime.test.ts",
           "symbol": "registers, replaces, and deletes providers",
-          "sha256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06"
+          "sha256": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e"
         },
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "class ModelsImpl",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -532,18 +532,18 @@
       "upstreamTest": "packages/ai/test/models-runtime.test.ts",
       "name": "Models runtime > lists and finds models per provider",
       "occurrence": 0,
-      "testSHA256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06",
+      "testSHA256": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e",
       "rule": "caller-model-collection",
       "references": [
         {
           "path": "packages/ai/test/models-runtime.test.ts",
           "symbol": "lists and finds models per provider",
-          "sha256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06"
+          "sha256": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e"
         },
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "class ModelsImpl",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -551,18 +551,18 @@
       "upstreamTest": "packages/ai/test/models-runtime.test.ts",
       "name": "Models runtime > swallows provider source failures for both all-provider and single-provider listing",
       "occurrence": 0,
-      "testSHA256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06",
+      "testSHA256": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e",
       "rule": "caller-model-collection",
       "references": [
         {
           "path": "packages/ai/test/models-runtime.test.ts",
           "symbol": "swallows provider source failures for both all-provider and single-provider listing",
-          "sha256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06"
+          "sha256": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e"
         },
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "class ModelsImpl",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -570,18 +570,18 @@
       "upstreamTest": "packages/ai/test/models-runtime.test.ts",
       "name": "Models runtime > produces an error stream for unknown providers instead of throwing",
       "occurrence": 0,
-      "testSHA256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06",
+      "testSHA256": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e",
       "rule": "caller-model-collection",
       "references": [
         {
           "path": "packages/ai/test/models-runtime.test.ts",
           "symbol": "produces an error stream for unknown providers instead of throwing",
-          "sha256": "8c6a89b2e05919cd0e355e1a6f35b4fa3a0d4953e2c4bf22e5c79c274aa6fe06"
+          "sha256": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e"
         },
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "class ModelsImpl",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -600,7 +600,7 @@
         {
           "path": "packages/ai/src/types.ts",
           "symbol": "KnownApi",
-          "sha256": "e299ef7495e6882baf2d5f3745f26f40c573999ddbeb0e8e0af63f179ec7a23e"
+          "sha256": "8f6b4b9f443708c567dea650d40d247c547e5f3a36481d86acbee545cd038f22"
         }
       ]
     },
@@ -608,18 +608,18 @@
       "upstreamTest": "packages/ai/test/providers.test.ts",
       "name": "createProvider > lazily exposes only declared deferred capabilities",
       "occurrence": 0,
-      "testSHA256": "f2182c8d6783d26973efc141bd7568ec962028b2211438c6508c7037c7dc91d5",
+      "testSHA256": "b7d92f4c1085cda49fa45d617a5d116ef8f693713fd5c0baa00ec32df2415333",
       "rule": "host-lazy-api-module",
       "references": [
         {
           "path": "packages/ai/test/providers.test.ts",
           "symbol": "lazily exposes only declared deferred capabilities",
-          "sha256": "f2182c8d6783d26973efc141bd7568ec962028b2211438c6508c7037c7dc91d5"
+          "sha256": "b7d92f4c1085cda49fa45d617a5d116ef8f693713fd5c0baa00ec32df2415333"
         },
         {
           "path": "packages/ai/src/api/lazy.ts",
           "symbol": "export function lazyApi",
-          "sha256": "4bdd40c003b417318f71da3446cb65ec11c028a82fe816a122d3dba4e3fca708"
+          "sha256": "c96f02c439e513b3b855535578148c167c75008ea406f6da19e2d2671d0c8195"
         }
       ]
     },
@@ -627,18 +627,18 @@
       "upstreamTest": "packages/ai/test/providers.test.ts",
       "name": "createProvider > produces a stream error for a model whose api has no implementation",
       "occurrence": 0,
-      "testSHA256": "f2182c8d6783d26973efc141bd7568ec962028b2211438c6508c7037c7dc91d5",
+      "testSHA256": "b7d92f4c1085cda49fa45d617a5d116ef8f693713fd5c0baa00ec32df2415333",
       "rule": "host-provider-implementation-map",
       "references": [
         {
           "path": "packages/ai/test/providers.test.ts",
           "symbol": "produces a stream error for a model whose api has no implementation",
-          "sha256": "f2182c8d6783d26973efc141bd7568ec962028b2211438c6508c7037c7dc91d5"
+          "sha256": "b7d92f4c1085cda49fa45d617a5d116ef8f693713fd5c0baa00ec32df2415333"
         },
         {
           "path": "packages/ai/src/models.ts",
           "symbol": "export function createProvider",
-          "sha256": "de226bcd332fc660129f87b8c02a12c4862b620201a407998c2cdeacc4f2044a"
+          "sha256": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15"
         }
       ]
     },
@@ -657,7 +657,7 @@
         {
           "path": "packages/ai/src/utils/transcript.ts",
           "symbol": "resolveTranscriptTools",
-          "sha256": "1b20f9436a4f7e60008224d3e22098b2a7731731efdfb9c66f4c78a580cbe1e2"
+          "sha256": "1a99597907e03b3716de601e3beff5b97698f8b1d5ba67f71f37eeea57b92218"
         }
       ]
     }

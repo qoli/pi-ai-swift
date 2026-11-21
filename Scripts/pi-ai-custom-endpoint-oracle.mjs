@@ -1,9 +1,12 @@
 import { readFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { providerStreams } from "./pi-ai-provider-context.mjs";
 const [root, input] = process.argv.slice(2);
 const fixture = JSON.parse(await readFile(input, "utf8"));
+const revision = execFileSync("git", ["-C", root, "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+if (fixture.revision !== revision) throw new Error("Custom endpoint fixture revision mismatch");
 const implementation = await providerStreams(root, await import(pathToFileURL(path.join(root, "packages/ai/src/api/openai-completions.ts"))));
 const cases = [];
 for (const baseURL of fixture.baseURLs) {
@@ -20,4 +23,4 @@ for (const baseURL of fixture.baseURLs) {
   if (!requestURL || result.stopReason === "error") throw new Error(result.errorMessage ?? "No request");
   cases.push({ baseURL, requestURL });
 }
-process.stdout.write(JSON.stringify({ revision: fixture.revision, cases }, null, 2) + "\n");
+process.stdout.write(JSON.stringify({ revision, cases }, null, 2) + "\n");

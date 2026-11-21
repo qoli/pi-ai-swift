@@ -7,8 +7,11 @@ import Testing
 struct OpenAIRequestBranchClosureTests {
   @Test(
     arguments: ["openai-completions", "openai-responses"],
-    ["https://api.openai.com/v1", "https://fixture.invalid/api.openai.com/v1"])
-  func instructionRoleDependsOnExplicitCapability(_ protocolID: String, baseURL: String)
+    [
+      "https://api.openai.com/v1", "https://fixture.invalid/api.openai.com/v1",
+      "https://fixture.invalid/v1",
+    ])
+  func instructionRoleFollowsUpstreamProtocolAndReasoning(_ protocolID: String, baseURL: String)
     async throws
   {
     let messages: [ProviderMessage] = [
@@ -30,8 +33,8 @@ struct OpenAIRequestBranchClosureTests {
           messages: messages)
         let roles = try #require(body.array(messageField))
           .compactMap { $0.objectValue?.string("role") }
-        let documented = protocolID == "openai-responses" && baseURL == "https://api.openai.com/v1"
-        let role = (declaration ?? documented) ? "developer" : "system"
+        let supported = protocolID == "openai-responses" || baseURL.contains("api.openai.com")
+        let role = reasoning && (declaration ?? supported) ? "developer" : "system"
         #expect(roles == [role, "user", role, "user"])
         let effort =
           protocolID == "openai-completions"
@@ -72,8 +75,11 @@ struct OpenAIRequestBranchClosureTests {
   @Test
   func pinnedSourceOracleIsReproducible() throws {
     let root = repositoryRoot()
+    let environment = ProcessInfo.processInfo.environment
+    let candidate = environment["PI_AI_SWIFT_CONFORMANCE_CANDIDATE"]
     let upstream =
-      ProcessInfo.processInfo.environment["PI_AI_SWIFT_UPSTREAM_CACHE"]
+      candidate.flatMap { _ in environment["PI_CONFORMANCE_UPSTREAM"] }
+      ?? environment["PI_AI_SWIFT_UPSTREAM_CACHE"]
       ?? root.appending(path: ".build/upstreams/pi").path
     for stem in ["request-branches", "completions-compat"] {
       let process = Process()
@@ -83,6 +89,9 @@ struct OpenAIRequestBranchClosureTests {
         "node", "Scripts/openai-request-branch-oracle.mjs", upstream,
         "Fixtures/OpenAIRequestBranches/Cases/\(stem).json",
       ]
+      if let candidate {
+        process.arguments?.append(contentsOf: ["--candidate", candidate])
+      }
       let output = Pipe()
       let errors = Pipe()
       process.standardOutput = output
@@ -320,7 +329,8 @@ struct OpenAIRequestBranchClosureTests {
       tool: ProviderToolDefinition(
         name: "sample_tool", description: "Sample tool", inputSchema: schema)
     )
-    #expect(codex.string("instructions") == "System branch fixture")
+    #expect(codex["instructions"] == nil)
+    #expect(codex.array("input")?.first?.objectValue?.string("role") == "developer")
     #expect(codex.bool("parallel_tool_calls") == true)
     #expect(codex.string("prompt_cache_key") == "codex-session")
     #expect(codex.string("service_tier") == "priority")
@@ -995,8 +1005,7 @@ struct OpenAIRequestBranchClosureTests {
           })
       let expected = try #require(oracle.object("cases")?.object(id))
       let upstream = try #require(expected["requestBody"])
-      let expectedBody = try OpenAIInstructionRoleFixtures.expectedBody(upstream, for: id)
-      #expect(JSONValue.object(projected) == expectedBody, Comment(rawValue: id))
+      #expect(JSONValue.object(projected) == upstream, Comment(rawValue: id))
       #expect(headers == expected.object("requestHeaders"), Comment(rawValue: id))
     }
   }
@@ -1041,7 +1050,7 @@ struct OpenAIRequestBranchClosureTests {
     let defaultBody = try decodeJSONObject(
       try fixtureHTTPBody(defaultRequest), providerID: "fixture",
       operation: "codex.default-instructions")
-    #expect(defaultBody.string("instructions") == "You are a helpful assistant.")
+    #expect(defaultBody["instructions"] == nil)
   }
 
   @Test
@@ -1067,9 +1076,8 @@ struct OpenAIRequestBranchClosureTests {
       let body = try await captureCompatTranscript(
         reasoning: reasoning, compat: compat, signature: signature)
       let upstream = try expectedRequestBody(caseID)
-      let expected = try OpenAIInstructionRoleFixtures.expectedBody(.object(upstream), for: caseID)
       #expect(
-        JSONValue.object(["messages": body["messages"] ?? .null]) == expected,
+        JSONValue.object(["messages": body["messages"] ?? .null]) == .object(upstream),
         Comment(rawValue: caseID))
     }
 
@@ -1342,10 +1350,9 @@ private func captureReplay(
       inputTokens: 1, outputTokens: 1, reasoningTokens: 0, cachedInputTokens: 0,
       cacheWriteTokens: 0, totalTokens: 2, providerMetadata: [:]),
     stopReason: toolResult == nil ? .stop : .toolUse, timestampMilliseconds: 1)
-  var messages: [ProviderMessage] =
-    protocolID == "openai-codex-responses"
-    ? [.assistantMessage(assistant)]
-    : [.system("System branch fixture"), .assistantMessage(assistant)]
+  var messages: [ProviderMessage] = [
+    .system("System branch fixture"), .assistantMessage(assistant),
+  ]
   if let toolResult { messages.append(toolResult) }
   let tool = ProviderToolDefinition(
     name: "sample_tool", description: "Sample tool", inputSchema: toolSchema(),
