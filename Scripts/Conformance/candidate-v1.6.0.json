@@ -1,0 +1,48 @@
+{
+  "revision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
+  "version": "1.6.0",
+  "baseRevision": "86dc686cf2fd795b2b24af3d614bb0e1307bcd76",
+  "baseManifestSHA256": "c5667562aec2208ba7b5629681b064ba62788b10f99e7a42203051069b5bf9e9",
+  "baseScopeAuditSHA256": "f19f451412afed07a1e24bffd19e5d0fe1fbe135409e5a0d532e2525e3551a13",
+  "addSuites": [
+    "anthropic-message-threads.test.ts",
+    "clamp-max-tokens.test.ts",
+    "google-stop-reason-continuation.test.ts",
+    "openai-completions-non-null-assistant-content.test.ts",
+    "openai-reasoning-replay-e2e.test.ts",
+    "openai-responses-input-transformations.test.ts",
+    "openai-responses-prompt-cache.test.ts",
+    "strict-tool-limits.test.ts"
+  ],
+  "removeExcludedSuites": [
+    "generate-models-strict.test.ts"
+  ],
+  "excludedSuites": {
+    "azure-models.test.ts": "Outside provider runtime scope: catalog/providers/azure.ts copies pricing tiers during catalog generation. Native consumes the generated catalog.",
+    "validation-probes.test.ts": "Outside provider runtime scope: src/utils/validation.ts validates and coerces tool execution arguments for the caller.",
+    "validation.test.ts": "Outside provider runtime scope: src/utils/validation.ts uses pi-schema for caller-owned tool execution validation and coercion."
+  },
+  "scopeSourceHashes": {
+    "packages/ai/catalog/providers/fireworks.ts": "d0fe6c4a9ccef7bdc13df8e62d746fd38750ed364ba610ca22faa52f9918c889",
+    "packages/ai/package.json": "d5c0803c4fbabe9559ce471a5adb0a6bc26ebae2e2391130f1de9fc7e97eec48",
+    "packages/ai/src/api/lazy.ts": "c96f02c439e513b3b855535578148c167c75008ea406f6da19e2d2671d0c8195",
+    "packages/ai/src/models.ts": "b7e5445c517af3e96f2c7aab733ebdd2beef165a4a78e77aff7100862645ae15",
+    "packages/ai/src/types.ts": "8f6b4b9f443708c567dea650d40d247c547e5f3a36481d86acbee545cd038f22",
+    "packages/ai/src/utils/transcript.ts": "1a99597907e03b3716de601e3beff5b97698f8b1d5ba67f71f37eeea57b92218",
+    "packages/ai/src/utils/version.ts": "c26490762df52de9bf136ec454a7a0cd3ad101d1155049dc47d7b629ac779218",
+    "packages/ai/test/classifier-models.test.ts": "5e8e83b1d4deec3a66bb40b4ee77fc3415f2aa6dc4ce4376d42e53a965d45e65",
+    "packages/ai/test/models-runtime.test.ts": "50c685a8e3537bfa705db92b19dd53064592735be4e9692ad0d679125429e17e",
+    "packages/ai/test/providers.test.ts": "b7d92f4c1085cda49fa45d617a5d116ef8f693713fd5c0baa00ec32df2415333"
+  },
+  "catalogSHA256": "54c7cc11f0051b0b20902e73d6a5cd121b9733c7c0ea365f28164774ab4e634d",
+  "scopeRuleReplacements": {
+    "generate-models-strict.test.ts": {
+      "suite": "image-model-data.test.ts",
+      "sha256": "f176f2c8d69c9d8e2bb547573fd09e2da45204e2cf05b4223da96a16b92047ad"
+    }
+  },
+  "publishedPackage": {
+    "tarball": "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-1.6.0.tgz",
+    "integrity": "sha512-9hL+eygFDEiFp//cydeUfmFsKmEqpmvsNPb10Y1W8+m5K9O+sx1hMStfu6nukrBD5sl6mP4RykCYBBNEgsVLfw=="
+  }
+}

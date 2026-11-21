@@ -40,10 +40,24 @@ def evidence_digests(repo):
     return digests
 
 
-def load_scope_audit(repo, upstream, manifest, revision):
+def load_scope_audit(repo, upstream, manifest, revision, *, candidate=None):
     audit = json.loads((repo / "Scripts/Conformance/scope-audit.json").read_text())
-    if audit["schemaVersion"] != 1 or audit["upstreamRevision"] != revision:
+    if audit["schemaVersion"] != 1 or audit["upstreamRevision"] != (candidate["baseRevision"] if candidate else revision):
         raise ValueError("Conformance scope audit revision/schema drift")
+
+    if candidate:
+        if candidate["baseRevision"] != audit["upstreamRevision"] or candidate["revision"] != revision:
+            raise ValueError("Candidate scope review revision drift")
+        hashes = candidate["scopeSourceHashes"]
+        for case in audit["cases"]:
+            case["testSHA256"] = hashes.get(case["upstreamTest"], case["testSHA256"])
+            for ref in case["references"]:
+                ref["sha256"] = hashes.get(ref["path"], ref["sha256"])
+        for rule in audit["rules"].values():
+            for existing in rule["existingSuiteRules"]:
+                replacement = candidate["scopeRuleReplacements"].get(existing["suite"])
+                if replacement:
+                    existing.update(replacement)
 
     def verify_file(root, reference):
         if hashlib.sha256((root / reference["path"]).read_bytes()).hexdigest() != reference["sha256"]:
@@ -212,7 +226,9 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 "assertionFailures": case.get("failureMessages", []),
                 "scopeAudit": audited_scope,
             }
-            if item["upstreamStatus"] in ["pending", "skipped"] or item["status"] in ["pending", "skipped"]:
+            if not original:
+                item["conformanceStatus"] = "collection_mismatch"
+            elif item["upstreamStatus"] in ["pending", "skipped"] or item["status"] in ["pending", "skipped"]:
                 item["conformanceStatus"] = "not_executed"
             elif item["upstreamStatus"] != "passed":
                 item["conformanceStatus"] = "upstream_failure"
@@ -253,8 +269,7 @@ def evaluate(upstream, reports, invocations, exit_codes, upstream_invocations=()
                 "missingSwiftOperations": [], "protocols": [], "failures": [], "nativeFailures": [],
                 "unrepresentedCapabilities": [],
                 "assertionFailures": ["The reference case was not collected by the Swift run; inspect suiteResults for setup/import failures"],
-                "conformanceStatus": ("not_executed" if original["status"] in ["pending", "skipped"] else
-                                      "bridge_gap" if original["status"] == "passed" else "upstream_failure"),
+                "conformanceStatus": "collection_mismatch",
             })
     conformant = (
         all(code == 0 for code in exit_codes.values()) and bool(cases)
@@ -275,6 +290,10 @@ def offline_conformant(report):
         return False
     if report["reviewedInventoryCounts"]["notYetAdopted"]:
         return False
+    for implementation in ("upstream", "swift"):
+        collected = [item["path"] for item in report.get("suiteResults", {}).get(implementation, [])]
+        if sorted(selected) != sorted(collected):
+            return False
     if not any(case["conformanceStatus"] == "passed" for case in report["cases"]):
         return False
     for case in report["cases"]:
@@ -293,6 +312,7 @@ def offline_conformant(report):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--candidate", help="Full reviewed candidate SHA (requires a prepared candidate checkout)")
     parser.add_argument("--upstream", type=Path)
     parser.add_argument("--test", action="append", dest="tests")
     parser.add_argument("--case", dest="case_pattern")
@@ -304,20 +324,33 @@ def main():
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     manifest = json.loads((repo / "Scripts/Conformance/suites.json").read_text())
-    suites = args.tests or manifest["suites"]
-    for suite in suites:
-        if suite not in manifest["suites"]:
-            raise SystemExit(manifest["excludedSuites"].get(
-                suite, f"Suite is not in the reviewed offline conformance manifest: {suite}"))
     upstream = (args.upstream or repo / ".build/upstreams/pi").resolve()
     lock = json.loads((repo / "Upstream.lock.json").read_text())
     if not (upstream / "node_modules/vitest/vitest.mjs").is_file():
         raise SystemExit("Prepare the pinned upstream and its dependencies with ./Scripts/check-upstream.sh first, or pass --upstream")
     revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=upstream, text=True).strip()
-    if revision != lock["revision"]:
+    if revision != (args.candidate or lock["revision"]):
         raise SystemExit(f"Upstream revision mismatch: {revision}")
-    scope_audit = load_scope_audit(repo, upstream, manifest, revision)
+    review = None
+    if args.candidate:
+        from candidate import catalog_identity, inventory, profile
+        review = profile(repo, revision, lock["revision"])
+        manifest = inventory(upstream, manifest, review)
+        metadata = json.loads((upstream / "packages/ai/package.json").read_text())
+        if metadata["version"] != review["version"]:
+            raise SystemExit("Candidate package version mismatch")
+        if subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=all"], cwd=upstream):
+            raise SystemExit("Candidate requires a clean exact-source checkout")
+        run(["node", "scripts/check-model-data.ts"], cwd=upstream / "packages/ai")
+        if catalog_identity(upstream) != review["catalogSHA256"]:
+            raise SystemExit("Candidate catalog differs from the reviewed release")
+    scope_audit = load_scope_audit(repo, upstream, manifest, revision, candidate=review)
     run(["git", "diff", "--quiet", "HEAD", "--", "packages/ai/src", "packages/ai/test"], cwd=upstream)
+    suites = args.tests or manifest["suites"]
+    for suite in suites:
+        if suite not in manifest["suites"]:
+            raise SystemExit(manifest["excludedSuites"].get(
+                suite, f"Suite is not in the reviewed offline conformance manifest: {suite}"))
     identities = evidence_digests(repo)
     build = (args.output or repo / ".build/conformance").resolve()
     build.mkdir(parents=True, exist_ok=True)
@@ -411,13 +444,20 @@ def main():
         key = (case["upstreamTest"], case["name"])
         occurrence = occurrences[key]
         occurrences[key] += 1
-        if case["conformanceStatus"] == "not_executed":
+        if case["upstreamStatus"] in {"pending", "skipped"} or case["status"] in {"pending", "skipped"}:
             case["skipEvidence"] = skips.get((*key, occurrence), {})
     source_stable = identities == evidence_digests(repo)
+    if review:
+        final_revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=upstream, text=True).strip()
+        source_stable = (source_stable and final_revision == revision and not subprocess.check_output(
+            ["git", "status", "--porcelain", "--untracked-files=all"], cwd=upstream)
+            and catalog_identity(upstream) == review["catalogSHA256"])
     conformant = conformant and source_stable
     report = {
         "schemaVersion": 1,
         "upstreamRevision": revision,
+        "acceptedRevision": lock["revision"],
+        "candidateReview": review,
         **identities,
         "sourceStableDuringRun": source_stable,
         "conformant": conformant,

@@ -34,6 +34,7 @@ class ConformanceReportingTests(unittest.TestCase):
                     "explicitSkips": []}
         return {"sourceStableDuringRun": True, "casePattern": None,
                 "exitCodes": {"upstream": 0, "swift": 0}, "suites": [{"path": "fixture.test.ts"}],
+                "suiteResults": {name: [{"path": "fixture.test.ts"}] for name in ("upstream", "swift")},
                 "reviewedInventoryCounts": {"adoptedByManifest": 1, "notYetAdopted": 0},
                 "cases": [{"conformanceStatus": "passed"},
                           {"conformanceStatus": "not_executed", "upstreamStatus": "skipped", "status": "skipped",
@@ -70,6 +71,17 @@ class ConformanceReportingTests(unittest.TestCase):
                 elif change == "unadopted": report["reviewedInventoryCounts"]["notYetAdopted"] = 1
                 else: report["cases"][0]["conformanceStatus"] = change
                 self.assertFalse(CONFORMANCE.offline_conformant(report))
+
+    def test_offline_acceptance_requires_both_runners_to_collect_every_selected_file(self):
+        report = self.offline_report()
+        self.assertTrue(CONFORMANCE.offline_conformant(report))
+        missing = copy.deepcopy(report)
+        del missing["suiteResults"]
+        self.assertFalse(CONFORMANCE.offline_conformant(missing))
+        for implementation in report["suiteResults"]:
+            partial = copy.deepcopy(report)
+            partial["suiteResults"][implementation].clear()
+            self.assertFalse(CONFORMANCE.offline_conformant(partial))
 
     def test_offline_acceptance_rejects_duplicate_suite_selection(self):
         report = self.offline_report()
@@ -225,7 +237,16 @@ class ConformanceReportingTests(unittest.TestCase):
             self.upstream, self.reports, [self.call], {"upstream": 0, "swift": 0}, original)
         self.assertEqual(len(cases), 2)
         self.assertEqual(cases[-1]["status"], "missing")
-        self.assertEqual(cases[-1]["conformanceStatus"], "bridge_gap")
+        self.assertEqual(cases[-1]["conformanceStatus"], "collection_mismatch")
+
+    def test_swift_only_case_is_a_collection_difference_even_when_skipped(self):
+        self.reports["swift"]["testResults"][0]["assertionResults"].append(
+            {**self.case, "title": "different model", "status": "skipped"})
+        conformant, cases = CONFORMANCE.evaluate(
+            self.upstream, self.reports, [], {"upstream": 0, "swift": 0})
+        self.assertFalse(conformant)
+        self.assertEqual(cases[-1]["upstreamStatus"], "missing")
+        self.assertEqual(cases[-1]["conformanceStatus"], "collection_mismatch")
 
     def test_duplicate_case_cannot_reuse_another_instances_native_evidence(self):
         for implementation in ["upstream", "swift"]:

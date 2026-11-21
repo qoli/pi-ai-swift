@@ -70,6 +70,7 @@ def execute_logged(command, *, cwd, environment, log):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--candidate", help="Test an exact reviewed candidate revision without moving the accepted lock")
     parser.add_argument("--output", type=Path, required=True, help="New evidence directory; must not already exist")
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
@@ -78,11 +79,16 @@ def main():
     logs = output / "logs"
     logs.mkdir()
     lock = json.loads((repo / "Upstream.lock.json").read_text())
+    revision = args.candidate or lock["revision"]
+    if args.candidate:
+        from candidate import profile
+        review = profile(repo, revision, lock["revision"])
     evidence = {
         "schemaVersion": 1,
         "repositoryRevision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip(),
         "worktreeClean": not bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=repo, text=True)),
-        "upstreamRevision": lock["revision"],
+        "upstreamRevision": revision,
+        "acceptedRevision": lock["revision"],
         "cachePolicy": "Fresh upstream, npm, SwiftPM and compiler state for every invocation; Debug and Release share that invocation's SwiftPM dependencies",
         "credentialPolicy": "Allowlisted process environment; no Git helpers, npm user config, SwiftPM Keychain or netrc",
         "executionNetworkPolicy": "Conformance permits mocks and loopback only; public dependency bootstrap requires network",
@@ -119,29 +125,44 @@ def main():
             upstream = root / "upstream"
             run("upstream-init", ["git", "init", str(upstream)])
             run("upstream-origin", ["git", "-C", str(upstream), "remote", "add", "origin", lock["repository"]])
-            run("upstream-fetch", ["git", "-C", str(upstream), "fetch", "--depth", "1", "origin", lock["revision"]])
-            run("upstream-checkout", ["git", "-C", str(upstream), "checkout", "--detach", lock["revision"]])
+            run("upstream-fetch", ["git", "-C", str(upstream), "fetch", "--depth", "1", "origin", revision])
+            run("upstream-checkout", ["git", "-C", str(upstream), "checkout", "--detach", revision])
             run("upstream-dependencies", ["npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund"], cwd=upstream)
-            catalog = output / "exact-source-catalog.json"
-            run("source-catalog", [sys.executable, "-B", "Scripts/replay-schema6-catalog.py", "--upstream", str(upstream),
-                                   "--output", str(catalog), "--generated-data-output",
-                                   str(upstream / "packages/ai/src/providers/data")])
-            environment["SCHEMA6_CATALOG_PATH"] = str(catalog)
-            run("verify-pinned-upstream", ["bash", "Scripts/check-upstream.sh", "--explain", "--candidate", lock["revision"]])
-            run("reporting-tests", [sys.executable, "-B", "-m", "unittest", "discover", "-s", "Scripts/tests"])
-            run("swift-format", ["swift", "format", "lint", "--recursive", "Sources", "Tests", "Package.swift"])
+            if args.candidate:
+                run("build-schema", ["npm", "run", "--workspace", "@earendil-works/pi-schema", "build"], cwd=upstream)
+                tarball = root / "pi-ai-release.tgz"
+                run("release-package", ["curl", "-qfsSL", review["publishedPackage"]["tarball"], "-o", str(tarball)])
+                run("release-catalog", [sys.executable, "-B", "Scripts/Conformance/candidate.py",
+                                        "--upstream", str(upstream), "--candidate", revision,
+                                        "--package-tarball", str(tarball)])
+            else:
+                catalog = output / "exact-source-catalog.json"
+                run("source-catalog", [sys.executable, "-B", "Scripts/replay-schema6-catalog.py", "--upstream", str(upstream),
+                                       "--output", str(catalog), "--generated-data-output",
+                                       str(upstream / "packages/ai/src/providers/data")])
+                environment["SCHEMA6_CATALOG_PATH"] = str(catalog)
+                run("verify-pinned-upstream", ["bash", "Scripts/check-upstream.sh", "--explain", "--candidate", lock["revision"]])
             swift_root = root / "swift"
-            run("native-tests", ["swift", "test", *swift_options(swift_root)])
+            if args.candidate:
+                # The accepted revision's fixture/provenance tests require its own checkout.
+                run("reporting-tests", [sys.executable, "-B", "-m", "unittest", "discover",
+                                        "-s", "Scripts/tests", "-p", "test_conformance*.py"])
+            else:
+                run("reporting-tests", [sys.executable, "-B", "-m", "unittest", "discover", "-s", "Scripts/tests"])
+                run("swift-format", ["swift", "format", "lint", "--recursive", "Sources", "Tests", "Package.swift"])
+                run("native-tests", ["swift", "test", *swift_options(swift_root)])
             run("offline-conformance", [sys.executable, "-B", "Scripts/Conformance/run.py", "--offline", "--upstream",
-                                        str(upstream), "--output", str(output), "--build-root", str(swift_root)])
-            report = json.loads((output / "report.json").read_text())
-            evidence["result"] = {key: report[key] for key in ["offlineConformant", "conformant", "conformanceCounts",
-                                                              "swiftSourceSHA256", "harnessSHA256"]}
+                                        str(upstream), "--output", str(output), "--build-root", str(swift_root),
+                                        *(["--candidate", revision] if args.candidate else [])])
             exit_code = 0
     except subprocess.CalledProcessError as error:
         exit_code = error.returncode if error.returncode > 0 else 1
         print("Offline CI failed; inspect evidence.json and the step logs.", file=sys.stderr)
     finally:
+        if (output / "report.json").is_file():
+            report = json.loads((output / "report.json").read_text())
+            evidence["result"] = {key: report[key] for key in ["offlineConformant", "conformant", "conformanceCounts",
+                                                              "swiftSourceSHA256", "harnessSHA256"]}
         evidence["exitCode"] = exit_code
         write_evidence(output, evidence)
     return exit_code
