@@ -1184,9 +1184,10 @@ private struct AnthropicEventReducer {
         reasoningBlocks[index] = block
         return [.reasoningDelta(text)]
       case "signature_delta":
-        guard let signature = delta.string("signature"), !signature.isEmpty else {
+        guard let signature = delta.string("signature") else {
           throw invalid("signature delta is missing signature")
         }
+        if signature.isEmpty { return [] }
         var block =
           reasoningBlocks[index]
           ?? ReasoningBlock(text: "", signature: "", isRedacted: false)

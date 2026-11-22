@@ -456,6 +456,14 @@ export function streamSimple(model, context, options = {}, requestSource = "api"
 }
 
 async function mockResponse(model, request, body, options, connection) {
+  if (globalThis.piLiveWireFetch) {
+    if (!request.method || !request.transportBody) throw new Error("Missing Native wire request");
+    const response = await globalThis.piLiveWireFetch(request.url, {
+      method: request.method, headers: request.headers,
+      body: Buffer.from(request.transportBody, "base64"), signal: options.signal,
+    });
+    return { status: response.status, headers: Object.fromEntries(response.headers), chunks: responseChunks(response, options.signal) };
+  }
   if (model.api === "bedrock-converse-stream") {
     const client = connection.client ??= new BedrockRuntimeClient({ ...(request.cloudConfiguration ?? {
       endpoint: new URL(request.url).origin,

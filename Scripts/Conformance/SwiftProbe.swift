@@ -1066,6 +1066,8 @@ struct ProbeOutput: Encodable {
     let headers: [String: String]
     let body: JSONValue
     var azureConfiguration: [String: JSONValue]? = nil
+    var method: String? = nil
+    var transportBody: String? = nil
     var rawBody: String? = nil
     var cloudConfiguration: [String: JSONValue]? = nil
   }
@@ -1179,6 +1181,9 @@ private actor InteractiveProbeTransport: ProviderHTTPStreamingTransport {
           ? .null
           : try JSONDecoder().decode(JSONValue.self, from: request.httpBody ?? Data("null".utf8)),
         azureConfiguration: azureConfiguration,
+        method: request.httpMethod,
+        transportBody: ProcessInfo.processInfo.environment["PI_LIVE_ORIGIN"] == nil
+          ? nil : request.httpBody?.base64EncodedString(),
         rawBody: request.value(forHTTPHeaderField: "Content-Encoding") == "zstd"
           ? request.httpBody?.base64EncodedString() : nil, cloudConfiguration: cloudConfiguration)
     }

@@ -311,6 +311,62 @@ def offline_conformant(report):
     return True
 
 
+def build_probe(repo, upstream, build_root, review=None):
+    scratch = build_root.resolve() / "build" if build_root else repo / ".build/conformance/swift"
+    swift_build = ["swift", "build", "-c", "release", "-Xswiftc", "-enable-testing", "--scratch-path", str(scratch)]
+    catalog_digest = None
+    if review:
+        from candidate import stage_native_package
+        candidate_directory = tempfile.TemporaryDirectory(prefix="pi-native-candidate-")
+        package = Path(candidate_directory.name) / repo.name
+        catalog_digest = stage_native_package(repo, upstream, package)
+        swift_build.extend(["--package-path", str(package)])
+    if build_root:
+        for option, directory in [("--cache-path", "cache"), ("--config-path", "configuration"),
+                                  ("--security-path", "security")]:
+            swift_build.extend([option, str(build_root.resolve() / directory)])
+        swift_build.extend(["--disable-keychain", "--disable-netrc", "--force-resolved-versions",
+                            "--disable-dependency-cache", "--manifest-cache", "local"])
+    run(swift_build, cwd=repo)
+    bin_path = Path(subprocess.check_output(
+        [*swift_build, "--show-bin-path"],
+        cwd=repo, text=True).strip())
+    probe = bin_path / "swift-conformance-probe"
+    objects = target_object_files(bin_path, "PiAIProviderRuntime")
+    modules = bin_path / "Modules"
+    if (bin_path / "PiAIProviderRuntime.o").is_file():
+        objects = [bin_path / "PiAIProviderRuntime.o"]
+        modules = bin_path
+    if not objects:
+        raise SystemExit("Swift provider-runtime object files were not produced")
+    zstd_objects = target_object_files(bin_path, "libzstd")
+    if not zstd_objects:
+        raise SystemExit("Native zstd object files were not produced")
+    objects.extend(zstd_objects)
+    dependency_flags = ["-Xcc", "-fmodule-map-file=" + str(scratch / "checkouts/zstd/lib/module.modulemap")]
+    heap_object = bin_path / "heap-observer.o"
+    run(["xcrun", "clang", "-std=c11", "-c",
+         str(repo / "Scripts/Conformance/HeapObserver.c"), "-o", str(heap_object)], cwd=repo)
+    run(["xcrun", "swiftc", "-parse-as-library", "-g", "-enable-testing",
+         "-import-objc-header", str(repo / "Scripts/Conformance/HeapObserver.h"),
+         "-I", str(modules), *dependency_flags,
+         *map(str, sorted((repo / "Scripts/Conformance").glob("*.swift"))),
+         *map(str, objects), str(heap_object), "-o", str(probe)], cwd=repo)
+    native_library = bin_path / "libConformanceStreamingJSON.dylib"
+    run(["xcrun", "swiftc", "-parse-as-library", "-O", "-emit-library", "-enable-testing",
+         "-I", str(modules), *dependency_flags, str(repo / "Scripts/Conformance/StreamingJSONExports.swift"),
+         *map(str, objects), "-o", str(native_library)], cwd=repo)
+    node = Path(subprocess.check_output(["node", "-p", "process.execPath"], text=True).strip()).resolve()
+    node_include = node.parent.parent / "include/node"
+    if not (node_include / "node_api.h").is_file():
+        raise SystemExit(f"Installed Node headers are required for the Native parser bridge: {node_include}")
+    native_module = bin_path / "streaming-json.node"
+    run(["xcrun", "clang++", "-std=c++17", "-O2", "-bundle", "-undefined", "dynamic_lookup",
+         "-I", str(node_include), str(repo / "Scripts/Conformance/StreamingJSONBridge.cc"),
+         str(heap_object), str(native_library), "-o", str(native_module)], cwd=repo)
+    return probe, native_module, catalog_digest
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate", help="Full reviewed candidate SHA (requires a prepared candidate checkout)")
@@ -356,58 +412,7 @@ def main():
     build = (args.output or repo / ".build/conformance").resolve()
     build.mkdir(parents=True, exist_ok=True)
     (build / "report.json").unlink(missing_ok=True)
-    scratch = args.build_root.resolve() / "build" if args.build_root else repo / ".build/conformance/swift"
-    swift_build = ["swift", "build", "-c", "release", "-Xswiftc", "-enable-testing", "--scratch-path", str(scratch)]
-    catalog_digest = None
-    if review:
-        from candidate import stage_native_package
-        candidate_directory = tempfile.TemporaryDirectory(prefix="pi-native-candidate-")
-        package = Path(candidate_directory.name) / repo.name
-        catalog_digest = stage_native_package(repo, upstream, package)
-        swift_build.extend(["--package-path", str(package)])
-    if args.build_root:
-        for option, directory in [("--cache-path", "cache"), ("--config-path", "configuration"),
-                                  ("--security-path", "security")]:
-            swift_build.extend([option, str(args.build_root.resolve() / directory)])
-        swift_build.extend(["--disable-keychain", "--disable-netrc", "--force-resolved-versions",
-                            "--disable-dependency-cache", "--manifest-cache", "local"])
-    run(swift_build, cwd=repo)
-    bin_path = Path(subprocess.check_output(
-        [*swift_build, "--show-bin-path"],
-        cwd=repo, text=True).strip())
-    probe = bin_path / "swift-conformance-probe"
-    objects = target_object_files(bin_path, "PiAIProviderRuntime")
-    modules = bin_path / "Modules"
-    if (bin_path / "PiAIProviderRuntime.o").is_file():
-        objects = [bin_path / "PiAIProviderRuntime.o"]
-        modules = bin_path
-    if not objects:
-        raise SystemExit("Swift provider-runtime object files were not produced")
-    zstd_objects = target_object_files(bin_path, "libzstd")
-    if not zstd_objects:
-        raise SystemExit("Native zstd object files were not produced")
-    objects.extend(zstd_objects)
-    dependency_flags = ["-Xcc", "-fmodule-map-file=" + str(scratch / "checkouts/zstd/lib/module.modulemap")]
-    heap_object = bin_path / "heap-observer.o"
-    run(["xcrun", "clang", "-std=c11", "-c",
-         str(repo / "Scripts/Conformance/HeapObserver.c"), "-o", str(heap_object)], cwd=repo)
-    run(["xcrun", "swiftc", "-parse-as-library", "-g", "-enable-testing",
-         "-import-objc-header", str(repo / "Scripts/Conformance/HeapObserver.h"),
-         "-I", str(modules), *dependency_flags,
-         *map(str, sorted((repo / "Scripts/Conformance").glob("*.swift"))),
-         *map(str, objects), str(heap_object), "-o", str(probe)], cwd=repo)
-    native_library = bin_path / "libConformanceStreamingJSON.dylib"
-    run(["xcrun", "swiftc", "-parse-as-library", "-O", "-emit-library", "-enable-testing",
-         "-I", str(modules), *dependency_flags, str(repo / "Scripts/Conformance/StreamingJSONExports.swift"),
-         *map(str, objects), "-o", str(native_library)], cwd=repo)
-    node = Path(subprocess.check_output(["node", "-p", "process.execPath"], text=True).strip()).resolve()
-    node_include = node.parent.parent / "include/node"
-    if not (node_include / "node_api.h").is_file():
-        raise SystemExit(f"Installed Node headers are required for the Native parser bridge: {node_include}")
-    native_module = bin_path / "streaming-json.node"
-    run(["xcrun", "clang++", "-std=c++17", "-O2", "-bundle", "-undefined", "dynamic_lookup",
-         "-I", str(node_include), str(repo / "Scripts/Conformance/StreamingJSONBridge.cc"),
-         str(heap_object), str(native_library), "-o", str(native_module)], cwd=repo)
+    probe, native_module, catalog_digest = build_probe(repo, upstream, args.build_root, review)
     environment = {
         key: value for key, value in os.environ.items()
         if not re.search(r"TOKEN|API_KEY|SECRET|ACCESS_KEY|CREDENTIAL|PROXY$", key, re.IGNORECASE)

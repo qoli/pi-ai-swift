@@ -109,7 +109,7 @@
       ],
       "upstreamSourceSHA256": "27e9cb83811424727baf97c7872a7edcdffd81707e4434f7cf2125634b502a6d",
       "upstreamTestSHA256": "e1e1c9d122bb93e22e9e6eeb700a045a9311daf05784eaa92cf7671c77424158",
-      "swiftEvidenceSHA256": "8d6cc0a87586f2d2c64aca6f47a1bc27e231c5c7e9bc793628b14a7991ea8c94"
+      "swiftEvidenceSHA256": "17273f6104dfca510acff45b260aeecc4d4fea047da61bfe1825b883c8ba4d1f"
     },
     {
       "protocolID": "azure-openai-responses",
@@ -178,7 +178,7 @@
       ],
       "upstreamSourceSHA256": "00d886113dc3d096c20b84fe5412e814afca385377ec3211d86e57b53da02e31",
       "upstreamTestSHA256": "9b177e435f3aee76a514e9878aba0ecbf45fea9c6449df145c69db8b624569ae",
-      "swiftEvidenceSHA256": "eaa6965d242b6432fde8acff6c0131923196593495a48a62a28580a17d66d30b"
+      "swiftEvidenceSHA256": "234b1f3bd8463c208c1baf4ce90857f36558696b9d9cd1a7b141dca09cc5b7b8"
     },
     {
       "protocolID": "bedrock-converse-stream",
@@ -277,7 +277,7 @@
       ],
       "upstreamSourceSHA256": "5b1f07d4a19a14d5b5e3c73469227fa8a44ec9cda09c2c685adc7fc2fd567a61",
       "upstreamTestSHA256": "00c4380bd301d45c933e98a912963597a8fb5b13957a94da2383db072fdc57b5",
-      "swiftEvidenceSHA256": "1a55c60c2dc3e4e43260661348e0de480c5833a4924da610df498381716741ac"
+      "swiftEvidenceSHA256": "d5a11100cf69d7b92c7bb71f8c18cf597c30032786e7fa7bf6ec5c6482b3c2a0"
     },
     {
       "protocolID": "google-generative-ai",
@@ -484,7 +484,7 @@
       ],
       "upstreamSourceSHA256": "b39b2783ac78272afa07a7e4fc43140cf8e5a518cfcbce1bfb4ac975c16c386e",
       "upstreamTestSHA256": "b18dccde9eb02a9ec7d899e9d09fcf373ce4aceaf72caced2f3d4495e68a2f0f",
-      "swiftEvidenceSHA256": "5cf62ba56b884e0618de1371d2e88e241337f135b88372a7ea2fda58eed2b4d6"
+      "swiftEvidenceSHA256": "3ba2e6fc6865ab0e61366154277bd7377112dd3dd58075421e4cbbed373fd6be"
     },
     {
       "protocolID": "openai-codex-responses",
@@ -560,7 +560,7 @@
       ],
       "upstreamSourceSHA256": "142ed27d47b89b03bb861b7d58cde9779ec851c95991d118288ed93087cfca01",
       "upstreamTestSHA256": "6baeaff816e8841c41d73c166de83b497b66f46cfe5afca1165dbdf9f082ceed",
-      "swiftEvidenceSHA256": "5e91fbf1e5a97898ddbe03167e1b948da1d9e6a9984d5e0bc5a102180e0507bd"
+      "swiftEvidenceSHA256": "7c5d2f2c7713b295879201626e8dcd2d6da201df7cd888fabd7eb62f8e64c1de"
     },
     {
       "protocolID": "openai-completions",
@@ -678,7 +678,7 @@
       ],
       "upstreamSourceSHA256": "004f1c35df792c0805f6d124bd233f954bff18b60ed2a949c5265c8865059970",
       "upstreamTestSHA256": "0bc10b742fb9bf744c18882f4201cc3020562b661f1b10b1c822a12efb2ae0fd",
-      "swiftEvidenceSHA256": "6e9a748a34fa9f1e2e36ef4bc24712b4077f196dbe2833ba6c2100b0421678bc"
+      "swiftEvidenceSHA256": "3590f9de4aecdf63ce358c7aab1c1c8f5eedbac3e11fc70632113f46d2febc18"
     },
     {
       "protocolID": "openai-responses",
@@ -763,7 +763,7 @@
       ],
       "upstreamSourceSHA256": "0f819c7bcb5436ae6700d756ac69bf0e5a0082301a20f34f1583013862d2e839",
       "upstreamTestSHA256": "d78edc0632231e9823d9b128ba1227bd1ff59fc08557f19d8d2174341a21e2b2",
-      "swiftEvidenceSHA256": "000183abafd248c4cd30f9f39955a25579bd18720ce0a9cd0a302bdc01c66443"
+      "swiftEvidenceSHA256": "e9b276295abf6592f4d9b99b4ac97e114a973b1610e24a1293bd23c2c8b6686a"
     },
     {
       "protocolID": "openrouter-images",

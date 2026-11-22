@@ -255,6 +255,8 @@ private func anthropicFixtureChunks() -> [Data] {
         + #"data: {"type":"content_block_delta","index":2,"delta":{"type":"thinking_delta","thinking":"inspect"}}"#,
       "event: content_block_delta\n"
         + #"data: {"type":"content_block_delta","index":2,"delta":{"type":"signature_delta","signature":"opaque-signature"}}"#,
+      "event: content_block_delta\n"
+        + #"data: {"type":"content_block_delta","index":2,"delta":{"type":"signature_delta","signature":""}}"#,
       "event: content_block_stop\n" + #"data: {"type":"content_block_stop","index":2}"#,
       "event: content_block_start\n"
         + #"data: {"type":"content_block_start","index":1,"content_block":{"type":"tool_use","id":"tool-1","name":"weather","input":{}}}"#,

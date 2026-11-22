@@ -1,0 +1,122 @@
+[
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "suite": "responseid.test.ts",
+    "name": "responseId E2E Tests > OpenAI Completions Provider > should expose responseId",
+    "credential": "OPENAI_API_KEY",
+    "origin": "https://api.openai.com"
+  },
+  {
+    "provider": "openai",
+    "model": "gpt-5-mini",
+    "suite": "responseid.test.ts",
+    "name": "responseId E2E Tests > OpenAI Responses Provider > should expose responseId",
+    "credential": "OPENAI_API_KEY",
+    "origin": "https://api.openai.com"
+  },
+  {
+    "provider": "google",
+    "model": "gemini-2.5-flash",
+    "suite": "responseid.test.ts",
+    "name": "responseId E2E Tests > Google Provider > should expose responseId",
+    "credential": "GEMINI_API_KEY",
+    "origin": "https://generativelanguage.googleapis.com"
+  },
+  {
+    "provider": "openai-codex",
+    "model": "gpt-6.1-sol",
+    "suite": "responseid.test.ts",
+    "name": "responseId E2E Tests > OpenAI Codex Provider > should expose responseId",
+    "credential": "PI_LIVE_CODEX_ACCESS_TOKEN",
+    "origin": "https://chatgpt.com"
+  },
+  {
+    "provider": "groq",
+    "model": "openai/gpt-oss-20b",
+    "suite": "stream.test.ts",
+    "name": "Generate E2E Tests > Groq Provider (gpt-oss-20b via OpenAI Completions) > should complete basic text generation",
+    "credential": "GROQ_API_KEY",
+    "origin": "https://api.groq.com"
+  },
+  {
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "suite": "stream.test.ts",
+    "name": "Generate E2E Tests > DeepSeek Provider (deepseek-flash via OpenAI Completions) > should complete basic text generation",
+    "credential": "DEEPSEEK_API_KEY",
+    "origin": "https://api.deepseek.com"
+  },
+  {
+    "provider": "kimi-coding",
+    "model": "kimi-for-coding",
+    "suite": "stream.test.ts",
+    "name": "Generate E2E Tests > Kimi For Coding Provider (kimi-for-coding via OpenAI Completions) > should complete basic text generation",
+    "credential": "KIMI_API_KEY",
+    "origin": "https://api.kimi.com"
+  },
+  {
+    "provider": "opencode-go",
+    "model": "gemini-4-argon",
+    "suite": "zen.test.ts",
+    "name": "OpenCode Models Smoke Test > OpenCode Go: gemini-4-argon",
+    "credential": "OPENCODE_API_KEY",
+    "origin": "https://opencode.ai"
+  },
+  {
+    "provider": "opencode-go",
+    "model": "deepseek-v4.1-flash",
+    "suite": "zen.test.ts",
+    "name": "OpenCode Models Smoke Test > OpenCode Go: deepseek-v4.1-flash",
+    "credential": "OPENCODE_API_KEY",
+    "origin": "https://opencode.ai"
+  },
+  {
+    "provider": "opencode-go",
+    "model": "qwen3.8-flash",
+    "suite": "zen.test.ts",
+    "name": "OpenCode Models Smoke Test > OpenCode Go: qwen3.8-flash",
+    "credential": "OPENCODE_API_KEY",
+    "origin": "https://opencode.ai"
+  },
+  {
+    "provider": "opencode-go",
+    "model": "gpt-5.6-luna",
+    "suite": "zen.test.ts",
+    "name": "OpenCode Models Smoke Test > OpenCode Go: gpt-5.6-luna",
+    "credential": "OPENCODE_API_KEY",
+    "origin": "https://opencode.ai"
+  },
+  {
+    "provider": "groq",
+    "model": "openai/gpt-oss-20b",
+    "suite": "stream.test.ts",
+    "name": "Generate E2E Tests > Groq Provider (gpt-oss-20b via OpenAI Completions) > should handle tool calling",
+    "credential": "GROQ_API_KEY",
+    "origin": "https://api.groq.com"
+  },
+  {
+    "provider": "groq",
+    "model": "openai/gpt-oss-20b",
+    "suite": "stream.test.ts",
+    "name": "Generate E2E Tests > Groq Provider (gpt-oss-20b via OpenAI Completions) > should handle streaming",
+    "credential": "GROQ_API_KEY",
+    "origin": "https://api.groq.com"
+  },
+  {
+    "provider": "groq",
+    "model": "openai/gpt-oss-20b",
+    "suite": "stream.test.ts",
+    "name": "Generate E2E Tests > Groq Provider (gpt-oss-20b via OpenAI Completions) > should handle thinking mode",
+    "credential": "GROQ_API_KEY",
+    "origin": "https://api.groq.com"
+  },
+  {
+    "provider": "groq",
+    "model": "openai/gpt-oss-20b",
+    "suite": "stream.test.ts",
+    "name": "Generate E2E Tests > Groq Provider (gpt-oss-20b via OpenAI Completions) > should handle multi-turn with thinking and tools",
+    "credential": "GROQ_API_KEY",
+    "origin": "https://api.groq.com"
+  }
+]
