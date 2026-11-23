@@ -1297,6 +1297,14 @@ private struct AnthropicEventReducer {
   }
 
   func finish() throws -> [ProviderEvent] {
+    if started && !terminal {
+      throw ProviderRuntimeFailure(
+        code: .incompleteStream,
+        message: "Anthropic stream ended before message_stop",
+        providerID: providerID,
+        operation: "anthropic.event.finish",
+        causeDescription: nil)
+    }
     guard terminal, let finishReason else {
       throw invalid("Anthropic stream ended without message_stop")
     }

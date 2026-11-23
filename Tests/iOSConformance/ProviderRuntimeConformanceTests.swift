@@ -500,6 +500,43 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testAnthropicEOFAndMalformedSSEMatchPinnedSource() async throws {
+    let oracle = try load("Differential/Oracle/response-anthropic-bedrock-pi.json")
+    for name in [
+      "anthropic-missing-terminal", "anthropic-malformed-after-start",
+      "anthropic-complete-terminal",
+    ] {
+      let spec = try XCTUnwrap(oracle.object("scenarios")?.object(name))
+      let retry = try XCTUnwrap(spec.object("retry"))
+      let expected = try XCTUnwrap(spec.object("terminal"))
+      let decoder = try XCTUnwrap(spec.object("decoderInput"))
+      let chunks = try XCTUnwrap(decoder.array("chunksBase64")).map {
+        try XCTUnwrap(Data(base64Encoded: try XCTUnwrap($0.stringValue)))
+      }
+      let (request, context) = inputs(
+        api: "anthropic-messages", providerID: "opencode-go", modelID: "qwen3.8-flash")
+      let result = try await replay(
+        AnthropicMessagesAdapter(), request: request, context: context, chunks: chunks)
+      XCTAssertEqual(result.starts, retry.int("starts"), name)
+      if spec.string("outcome") == "success" {
+        XCTAssertNil(result.failure, name)
+        let snapshot = try XCTUnwrap(result.snapshot, name)
+        XCTAssertEqual(snapshot.finishReason, .stop, name)
+        XCTAssertEqual(snapshot.modelID, request.modelID, name)
+        XCTAssertEqual(content(snapshot), expected.array("content"), name)
+      } else {
+        XCTAssertNil(result.snapshot, name)
+        if retry.bool("retryable") == true {
+          XCTAssertEqual(result.failure?.code, .incompleteStream, name)
+          XCTAssertEqual(result.failure?.message, expected.string("errorMessage"), name)
+        } else {
+          XCTAssertEqual(result.failure?.code, .invalidResponse, name)
+          XCTAssertEqual(result.failure?.operation, "anthropic.event.decode", name)
+        }
+      }
+    }
+  }
+
   func testMistralHTTPMatchesPinnedSource() async throws {
     let fixture = try load("Differential/Cases/mistral-http.json")
     let oracle = try load("Differential/Oracle/mistral-http.json")

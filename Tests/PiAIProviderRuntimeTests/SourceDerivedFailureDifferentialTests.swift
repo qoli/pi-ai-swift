@@ -91,7 +91,8 @@ struct SourceDerivedFailureDifferentialTests {
               failureCase.expectedCategory, protocolCase.protocolID
             ) {
             case ("httpProviderError", _), ("providerDeclaredError", _): .transportFailed
-            case ("missingTerminal", "google-generative-ai"), ("missingTerminal", "google-vertex"):
+            case ("missingTerminal", "anthropic-messages"),
+              ("missingTerminal", "google-generative-ai"), ("missingTerminal", "google-vertex"):
               .incompleteStream
             default: .invalidResponse
             }

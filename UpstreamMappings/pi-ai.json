@@ -2336,6 +2336,8 @@
         "packages/ai/src/api/anthropic-messages.ts",
         "packages/ai/src/api/anthropic-messages.lazy.ts",
         "packages/ai/src/utils/diagnostics.ts",
+        "packages/ai/src/providers/data/opencode-go.json",
+        "packages/ai/src/utils/retry.ts",
         "packages/ai/src/api/strict-tool-limits.ts",
         "packages/ai/src/session-resources.ts"
       ],
@@ -2402,6 +2404,8 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testSignatureReplayMatchesPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicErrorStopReasonsMatchPinnedSource",
         "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#providerErrorsAndInvalidWireDataFailExplicitly",
+        "Tests/PiAIProviderRuntimeTests/AnthropicBedrockPiResponseBranchDifferentialTests.swift#openCodeGoAnthropicEOFExposesIncompleteStreamWithoutProviderRetry",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicEOFAndMalformedSSEMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicInputTransformationsMatchPinnedSource",
         "Scripts/Conformance/SwiftProbe.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testAnthropicRawOptionsMatchPinnedSource",

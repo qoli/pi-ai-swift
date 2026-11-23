@@ -321,14 +321,17 @@
       "variants": [
         "refusal",
         "sse-error-event",
-        "missing-stop-reason"
+        "missing-message-stop",
+        "malformed-after-start"
       ],
       "sourceSymbols": [
         "refusal",
         "event === error",
-        "pending"
+        "sawMessageStart && !sawMessageEnd",
+        "parseJsonWithRepair",
+        "isRetryableAssistantError"
       ],
-      "expected": "Anthropic refusal, SSE error, and missing stop reason map to explicit typed failures.",
+      "expected": "Anthropic refusal and SSE errors remain explicit. EOF after message_start without message_stop is an incomplete stream. Malformed SSE after message_start remains invalid.",
       "status": "covered",
       "cases": [
         {
@@ -355,7 +358,16 @@
             "anthropic-messages"
           ],
           "coversVariants": [
-            "missing-stop-reason"
+            "missing-message-stop"
+          ]
+        },
+        {
+          "caseID": "anthropic-malformed-after-start",
+          "protocols": [
+            "anthropic-messages"
+          ],
+          "coversVariants": [
+            "malformed-after-start"
           ]
         }
       ]

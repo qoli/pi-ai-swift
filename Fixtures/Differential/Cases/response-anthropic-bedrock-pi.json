@@ -49,7 +49,20 @@
     {
       "caseID": "anthropic-missing-terminal",
       "protocolID": "anthropic-messages",
-      "category": "invalidResponse"
+      "category": "incompleteStream",
+      "observeRetry": true
+    },
+    {
+      "caseID": "anthropic-malformed-after-start",
+      "protocolID": "anthropic-messages",
+      "category": "invalidResponse",
+      "observeRetry": true
+    },
+    {
+      "caseID": "anthropic-complete-terminal",
+      "protocolID": "anthropic-messages",
+      "category": "success",
+      "observeRetry": true
     },
     {
       "caseID": "bedrock-redacted-length-usage",

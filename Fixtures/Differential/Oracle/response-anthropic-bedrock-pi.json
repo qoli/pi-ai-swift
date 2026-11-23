@@ -1,6 +1,57 @@
 {
   "caseID": "response-anthropic-bedrock-pi-v1",
   "scenarios": {
+    "anthropic-complete-terminal": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtY29tcGxldGUtdGVybWluYWwiLCJtb2RlbCI6InF3ZW4zLjgtZmxhc2giLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEsIm91dHB1dF90b2tlbnMiOjB9fX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX3N0YXJ0CmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RhcnQiLCJpbmRleCI6MCwiY29udGVudF9ibG9jayI6eyJ0eXBlIjoidGV4dCIsInRleHQiOiIifX0KCmV2ZW50OiBjb250ZW50X2Jsb2NrX2RlbHRhCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfZGVsdGEiLCJpbmRleCI6MCwiZGVsdGEiOnsidHlwZSI6InRleHRfZGVsdGEiLCJ0ZXh0IjoiUmVjb3ZlcmVkIn19CgpldmVudDogY29udGVudF9ibG9ja19zdG9wCmRhdGE6IHsidHlwZSI6ImNvbnRlbnRfYmxvY2tfc3RvcCIsImluZGV4IjowfQoKZXZlbnQ6IG1lc3NhZ2VfZGVsdGEKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9kZWx0YSIsImRlbHRhIjp7InN0b3BfcmVhc29uIjoiZW5kX3R1cm4ifSwidXNhZ2UiOnsib3V0cHV0X3Rva2VucyI6MX19CgpldmVudDogbWVzc2FnZV9zdG9wCmRhdGE6IHsidHlwZSI6Im1lc3NhZ2Vfc3RvcCJ9Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [
+        {
+          "delta": "Recovered",
+          "type": "textDelta"
+        }
+      ],
+      "outcome": "success",
+      "retry": {
+        "outerRequests": 1,
+        "outerStopReason": "stop",
+        "providerRequests": 1,
+        "retryable": false,
+        "starts": 1
+      },
+      "terminal": {
+        "content": [
+          {
+            "text": "Recovered",
+            "type": "text"
+          }
+        ],
+        "errorMessage": null,
+        "modelID": "qwen3.8-flash",
+        "providerID": "opencode-go",
+        "rawStopReason": "end_turn",
+        "responseID": "anthropic-complete-terminal",
+        "responseModel": null,
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 1,
+          "reasoning": null,
+          "totalTokens": 2
+        }
+      }
+    },
     "anthropic-error-event": {
       "decoderInput": {
         "chunksBase64": [
@@ -193,6 +244,47 @@
         "stream": true
       }
     },
+    "anthropic-malformed-after-start": {
+      "decoderInput": {
+        "chunksBase64": [
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtbWFsZm9ybWVkLWFmdGVyLXN0YXJ0IiwibW9kZWwiOiJxd2VuMy44LWZsYXNoIiwidXNhZ2UiOnsiaW5wdXRfdG9rZW5zIjoxLCJvdXRwdXRfdG9rZW5zIjowfX19CgpldmVudDogY29udGVudF9ibG9ja19kZWx0YQpkYXRhOiB7bm90LWpzb259Cgo="
+        ],
+        "headers": {
+          "content-type": "text/event-stream"
+        },
+        "kind": "http-sse",
+        "status": 200
+      },
+      "events": [],
+      "outcome": "failure",
+      "retry": {
+        "outerRequests": 1,
+        "outerStopReason": "error",
+        "providerRequests": 1,
+        "retryable": false,
+        "starts": 1
+      },
+      "terminal": {
+        "content": [],
+        "errorMessage": "Could not parse Anthropic SSE event content_block_delta: Expected property name or '}' in JSON at position 1 (line 1 column 2); data={not-json}; raw=event: content_block_delta\\ndata: {not-json}",
+        "modelID": "qwen3.8-flash",
+        "providerID": "opencode-go",
+        "rawStopReason": null,
+        "responseID": "anthropic-malformed-after-start",
+        "responseModel": null,
+        "stopReason": "error",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cacheWrite1h": 0,
+          "cacheWriteCost": 0,
+          "input": 1,
+          "output": 0,
+          "reasoning": null,
+          "totalTokens": 1
+        }
+      }
+    },
     "anthropic-mid-output-fallback": {
       "decoderInput": {
         "chunksBase64": [
@@ -235,7 +327,7 @@
     "anthropic-missing-terminal": {
       "decoderInput": {
         "chunksBase64": [
-          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRoLXBhcnRpYWwiLCJtb2RlbCI6ImZpeHR1cmUtbW9kZWwiLCJ1c2FnZSI6eyJpbnB1dF90b2tlbnMiOjEsIm91dHB1dF90b2tlbnMiOjB9fX0KCg=="
+          "ZXZlbnQ6IG1lc3NhZ2Vfc3RhcnQKZGF0YTogeyJ0eXBlIjoibWVzc2FnZV9zdGFydCIsIm1lc3NhZ2UiOnsiaWQiOiJhbnRocm9waWMtbWlzc2luZy10ZXJtaW5hbCIsIm1vZGVsIjoicXdlbjMuOC1mbGFzaCIsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MSwib3V0cHV0X3Rva2VucyI6MH19fQoK"
         ],
         "headers": {
           "content-type": "text/event-stream"
@@ -245,13 +337,20 @@
       },
       "events": [],
       "outcome": "failure",
+      "retry": {
+        "outerRequests": 2,
+        "outerStopReason": "stop",
+        "providerRequests": 1,
+        "retryable": true,
+        "starts": 1
+      },
       "terminal": {
         "content": [],
         "errorMessage": "Anthropic stream ended before message_stop",
-        "modelID": "fixture-model",
-        "providerID": "anthropic",
+        "modelID": "qwen3.8-flash",
+        "providerID": "opencode-go",
         "rawStopReason": null,
-        "responseID": "anth-partial",
+        "responseID": "anthropic-missing-terminal",
         "responseModel": null,
         "stopReason": "error",
         "usage": {

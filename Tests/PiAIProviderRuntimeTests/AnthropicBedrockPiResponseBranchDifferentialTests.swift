@@ -107,7 +107,8 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
     #expect(fixture.caseID == oracle.caseID)
     #expect(fixture.upstreamRevision == oracle.upstreamRevision)
 
-    for scenario in fixture.scenarios where scenario.category == "success" {
+    for scenario in fixture.scenarios
+    where scenario.category == "success" && scenario.observeRetry != true {
       let expected = try #require(oracle.scenarios[scenario.caseID])
       let result = try await replay(scenario: scenario, expected: expected)
       #expect(result.events == expected.events, "response event drift for \(scenario.caseID)")
@@ -121,7 +122,9 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
     let fixture = try responseBranchFixture()
     let oracle = try responseBranchOracle()
     for scenario in fixture.scenarios
-    where scenario.category != "success" && scenario.category != "failureDiagnostics" {
+    where scenario.category != "success" && scenario.category != "failureDiagnostics"
+      && scenario.observeRetry != true
+    {
       let expected = try #require(oracle.scenarios[scenario.caseID])
       #expect(expected.outcome == "failure")
       do {
@@ -147,6 +150,86 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
           #expect(error.message == expected.terminal.objectValue?.string("errorMessage"))
         }
       }
+    }
+  }
+
+  @Test
+  func openCodeGoAnthropicEOFExposesIncompleteStreamWithoutProviderRetry() async throws {
+    let fixture = try responseBranchFixture()
+    let oracle = try responseBranchOracle()
+    #expect(fixture.upstreamRevision == oracle.upstreamRevision)
+    for scenario in fixture.scenarios where scenario.observeRetry == true {
+      let expected = try #require(oracle.scenarios[scenario.caseID])
+      let retry = try #require(expected.retry)
+      let recovered = try #require(oracle.scenarios["anthropic-complete-terminal"])
+      let transport = AnthropicRetryTransport(
+        first: expected.decoderInput, next: recovered.decoderInput)
+      let runtime = try BuiltinProviderRuntime(
+        installation: .init(deviceID: nil),
+        credentialStore: InMemoryProviderCredentialStore(credentials: [
+          "opencode-go": .apiKey(.init(key: "fixture-key", metadata: [:]))
+        ]),
+        streamingTransport: transport)
+      let request = ProviderRequest(
+        id: "fixture-request", providerID: "opencode-go", modelID: "qwen3.8-flash",
+        messages: [.user([.text("fixture")])], tools: [],
+        options: .init(
+          maximumOutputTokens: 4096, temperature: nil, reasoningEffort: nil,
+          responseSchema: nil, providerOptions: [:], cacheRetention: .none))
+      var events: [ProviderEvent] = []
+      var failure: ProviderRuntimeFailure?
+      do {
+        for try await event in runtime.stream(request) { events.append(event) }
+      } catch let error as ProviderRuntimeFailure {
+        failure = error
+      }
+
+      let comment = Comment(rawValue: scenario.caseID)
+      let requests = await transport.requests
+      #expect(requests.count == retry.providerRequests, comment)
+      #expect(
+        requests.map { $0.url?.absoluteString } == [
+          "https://opencode.ai/inference/go/anthropic/v1/messages?beta=true"
+        ], comment)
+      let starts = events.compactMap { event -> ProviderResponseMetadata? in
+        guard case .responseStarted(let start) = event else { return nil }
+        return start
+      }
+      #expect(starts.count == retry.starts, comment)
+      #expect(starts.first?.modelID == request.modelID, comment)
+      #expect(starts.first?.providerID == request.providerID, comment)
+      #expect(events.compactMap(canonicalBranchEvent) == expected.events, comment)
+      let snapshots = events.compactMap { event -> ProviderResponseSnapshot? in
+        guard case .responseSnapshot(let snapshot) = event else { return nil }
+        return snapshot
+      }
+      let completions = events.compactMap { event -> ProviderFinishReason? in
+        guard case .completed(let reason) = event else { return nil }
+        return reason
+      }
+      if expected.outcome == "success" {
+        #expect(scenario.category == "success", comment)
+        #expect(failure == nil, comment)
+        #expect(snapshots.count == 1, comment)
+        #expect(
+          try canonicalBranchSnapshot(#require(snapshots.first)) == expected.terminal, comment)
+        #expect(completions == [.stop], comment)
+      } else {
+        let code = try #require(ProviderRuntimeFailure.Code(rawValue: scenario.category))
+        #expect(failure?.code == code, comment)
+        #expect(snapshots.isEmpty && completions.isEmpty, comment)
+        if retry.retryable {
+          #expect(retry.outerRequests == 2 && retry.outerStopReason == "stop", comment)
+          #expect(
+            failure?.message == expected.terminal.objectValue?.string("errorMessage"), comment)
+        } else {
+          #expect(
+            retry.outerRequests == retry.providerRequests && retry.outerStopReason == "error",
+            comment)
+          #expect(failure?.operation == "anthropic.event.decode", comment)
+        }
+      }
+      #expect((failure?.code == .incompleteStream) == retry.retryable, comment)
     }
   }
 
@@ -200,6 +283,23 @@ struct AnthropicBedrockPiResponseBranchDifferentialTests {
       }
     }
     return ResponseBranchResult(events: events, terminal: try #require(terminal))
+  }
+}
+
+private actor AnthropicRetryTransport: ProviderHTTPStreamingTransport {
+  let first: ResponseBranchDecoderInput
+  let next: ResponseBranchDecoderInput
+  private(set) var requests: [URLRequest] = []
+
+  init(first: ResponseBranchDecoderInput, next: ResponseBranchDecoderInput) {
+    self.first = first
+    self.next = next
+  }
+
+  func stream(_ request: URLRequest) async throws -> ProviderHTTPStreamingResponse {
+    let input = requests.isEmpty ? first : next
+    requests.append(request)
+    return try await ResponseBranchTransport(input: input).stream(request)
   }
 }
 
@@ -431,6 +531,7 @@ private struct ResponseBranchScenario: Decodable {
   let cost: [String: JSONValue]?
   let observeWire: Bool?
   let payloadMode: String?
+  let observeRetry: Bool?
 }
 
 private struct ResponseBranchOracle: Decodable {
@@ -445,6 +546,15 @@ private struct ResponseBranchExpected: Decodable {
   let terminal: JSONValue
   let decoderInput: ResponseBranchDecoderInput
   let wire: JSONValue?
+  let retry: Retry?
+
+  struct Retry: Decodable {
+    let starts: Int
+    let retryable: Bool
+    let providerRequests: Int
+    let outerRequests: Int
+    let outerStopReason: String
+  }
 }
 
 private actor AnthropicWireCapture {

@@ -6,6 +6,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import http from "node:http";
 import path from "node:path";
+import assert from "node:assert/strict";
 import { installEmissionSnapshots, emissionSnapshot } from "./pi-ai-emission-snapshots.mjs";
 import { providerStreams } from "./pi-ai-provider-context.mjs";
 
@@ -57,7 +58,9 @@ for (const scenario of fixture.scenarios) {
   const input = scenario.decoderInput ?? stimulus(scenario.caseID);
   const projected = scenario.protocolID === "bedrock-converse-stream"
     ? await runBedrock(scenario, input)
-    : await runSSE(scenario, input);
+    : scenario.observeRetry
+      ? await runAnthropicRetry(input)
+      : await runSSE(scenario, input);
   results[scenario.caseID] = { ...projected, decoderInput: input };
 }
 const rendered = `${JSON.stringify({
@@ -100,6 +103,57 @@ async function runSSE(scenario, input) {
   });
   const result = await project(stream);
   return { ...result, ...(scenario.observeWire ? { wire } : {}) };
+}
+
+async function runAnthropicRetry(input) {
+  const implementation = await providerStreams(
+    upstreamRoot, await import(pathToFileURL(path.join(apiRoot, "anthropic-messages.ts")).href),
+  );
+  const { isRetryableAssistantError, retryAssistantCall } = await import(
+    pathToFileURL(path.join(upstreamRoot, "packages/ai/src/utils/retry.ts")).href
+  );
+  const catalog = JSON.parse(await readFile(
+    path.join(upstreamRoot, "packages/ai/src/providers/data/opencode-go.json"), "utf8",
+  ));
+  const route = catalog["anthropic-messages"]["chat:qwen3.8-flash"];
+  const recovery = stimulus("anthropic-complete-terminal");
+  const attempts = [];
+  let requests = 0;
+
+  async function produce() {
+    const body = attempts.length === 0 ? input : recovery;
+    const stream = implementation.stream(route, context(), {
+      apiKey: "fixture-key", cacheRetention: "none",
+      fetch: async (url, init) => {
+        assert.equal(String(url), route.baseUrl + "/v1/messages?beta=true");
+        assert.equal(JSON.parse(init.body).model, route.id);
+        requests++;
+        return fakeFetch(body)(url, init);
+      },
+    });
+    let starts = 0;
+    const projected = await project(stream, () => { starts++; });
+    const assistant = await stream.result();
+    attempts.push({ starts, projected, retryable: isRetryableAssistantError(assistant) });
+    return assistant;
+  }
+
+  await produce();
+  const first = attempts[0];
+  const providerRequests = requests;
+  attempts.length = 0;
+  requests = 0;
+  await retryAssistantCall(produce, { enabled: true, maxRetries: 1, baseDelayMs: 0 }, undefined);
+  return {
+    ...first.projected,
+    retry: {
+      starts: first.starts,
+      retryable: first.retryable,
+      providerRequests,
+      outerRequests: requests,
+      outerStopReason: attempts.at(-1).projected.terminal.stopReason,
+    },
+  };
 }
 
 async function runBedrock(scenario, input) {
@@ -159,13 +213,14 @@ async function runBedrock(scenario, input) {
   }
 }
 
-async function project(stream) {
+async function project(stream, onStart) {
   const events = [];
   let terminal;
   const streamedText = new Map();
   const streamedReasoning = new Map();
   for await (const sourceEvent of stream) {
     const event = emissionSnapshot(sourceEvent);
+    if (event.type === "start") onStart?.();
     if (event.type === "text_delta") {
       streamedText.set(event.contentIndex, `${streamedText.get(event.contentIndex) ?? ""}${event.delta}`);
       events.push(canonicalEvent(event));
@@ -360,9 +415,25 @@ function stimulus(caseID) {
     case "anthropic-error-event": return sse([
       anth("error", { type: "error", error: { type: "overloaded_error", message: "fixture overloaded" } }),
     ]);
-    case "anthropic-missing-terminal": return sse([
-      anth("message_start", { type: "message_start", message: { id: "anth-partial", model: "fixture-model", usage: { input_tokens: 1, output_tokens: 0 } } }),
-    ]);
+    case "anthropic-missing-terminal":
+    case "anthropic-malformed-after-start":
+    case "anthropic-complete-terminal": {
+      const start = anth("message_start", { type: "message_start", message: {
+        id: caseID, model: "qwen3.8-flash", usage: { input_tokens: 1, output_tokens: 0 },
+      } });
+      if (caseID === "anthropic-missing-terminal") return sse([start]);
+      if (caseID === "anthropic-malformed-after-start") {
+        return sse([start, "event: content_block_delta\ndata: {not-json}"]);
+      }
+      return sse([
+        start,
+        anth("content_block_start", { type: "content_block_start", index: 0, content_block: { type: "text", text: "" } }),
+        anth("content_block_delta", { type: "content_block_delta", index: 0, delta: { type: "text_delta", text: "Recovered" } }),
+        anth("content_block_stop", { type: "content_block_stop", index: 0 }),
+        anth("message_delta", { type: "message_delta", delta: { stop_reason: "end_turn" }, usage: { output_tokens: 1 } }),
+        anth("message_stop", { type: "message_stop" }),
+      ]);
+    }
     case "bedrock-cache-write-1h-before-stop":
     case "bedrock-cache-write-1h-after-stop":
     case "bedrock-cache-write-1h-repeated": {
