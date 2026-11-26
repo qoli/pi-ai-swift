@@ -3,6 +3,10 @@ import Testing
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 @Suite
 struct OpenAIRequestBranchClosureTests {
   @Test(
@@ -92,19 +96,8 @@ struct OpenAIRequestBranchClosureTests {
       if let candidate {
         process.arguments?.append(contentsOf: ["--candidate", candidate])
       }
-      let output = Pipe()
-      let errors = Pipe()
-      process.standardOutput = output
-      process.standardError = errors
-      try process.run()
-      process.waitUntilExit()
-      let errorText =
-        String(
-          data: errors.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-      #expect(process.terminationStatus == 0, Comment(rawValue: errorText))
-
       let observed = try decodeJSONObject(
-        output.fileHandleForReading.readDataToEndOfFile(),
+        runOracle(process),
         providerID: "fixture", operation: "openai-request-branch.oracle")
       let expected = try decodeJSONObject(
         Data(

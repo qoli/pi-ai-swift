@@ -1,6 +1,16 @@
-import CryptoKit
 import Foundation
-import Security
+
+#if canImport(CryptoKit)
+  import CryptoKit
+#else
+  import Crypto
+#endif
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+#if canImport(Security)
+  import Security
+#endif
 
 struct OAuthPKCE: Sendable, Equatable {
   let verifier: String
@@ -16,14 +26,21 @@ struct OAuthPKCE: Sendable, Equatable {
 
   static func randomValue() throws -> String {
     var bytes = [UInt8](repeating: 0, count: 32)
-    guard SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes) == errSecSuccess else {
-      throw oauthFailure(
-        .authorizationFailed,
-        providerID: nil,
-        operation: "oauth.pkce",
-        message: "Secure PKCE randomness is unavailable"
-      )
-    }
+    #if canImport(Security)
+      guard SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes) == errSecSuccess else {
+        throw oauthFailure(
+          .authorizationFailed,
+          providerID: nil,
+          operation: "oauth.pkce",
+          message: "Secure PKCE randomness is unavailable"
+        )
+      }
+    #else
+      var generator = SystemRandomNumberGenerator()
+      for index in bytes.indices {
+        bytes[index] = UInt8.random(in: .min ... .max, using: &generator)
+      }
+    #endif
     return base64URL(Data(bytes))
   }
 }

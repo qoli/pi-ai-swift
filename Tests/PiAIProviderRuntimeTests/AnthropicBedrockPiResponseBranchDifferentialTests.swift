@@ -1,8 +1,16 @@
-import CryptoKit
 import Foundation
 import Testing
 
 @testable import PiAIProviderRuntime
+
+#if canImport(CryptoKit)
+  import CryptoKit
+#else
+  import Crypto
+#endif
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
 @Suite
 struct AnthropicBedrockPiResponseBranchDifferentialTests {

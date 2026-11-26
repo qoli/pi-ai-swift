@@ -3,6 +3,10 @@ import Testing
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 @Suite
 struct OpenAIResponseEventBranchTests {
   @Test
@@ -18,19 +22,7 @@ struct OpenAIResponseEventBranchTests {
       "node", "Scripts/openai-response-event-oracle.mjs", upstream,
       "Fixtures/OpenAIRequestBranches/Cases/response-event-branches.json",
     ]
-    let output = Pipe()
-    let errors = Pipe()
-    process.standardOutput = output
-    process.standardError = errors
-    try process.run()
-    let outputData = output.fileHandleForReading.readDataToEndOfFile()
-    process.waitUntilExit()
-    let errorText =
-      String(
-        data: errors.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-    #expect(process.terminationStatus == 0, Comment(rawValue: errorText))
-    let observed = try JSONDecoder().decode(
-      JSONValue.self, from: outputData)
+    let observed = try JSONDecoder().decode(JSONValue.self, from: runOracle(process))
     let expected = try JSONDecoder().decode(
       JSONValue.self,
       from: Data(

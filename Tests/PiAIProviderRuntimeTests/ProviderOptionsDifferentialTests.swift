@@ -3,6 +3,10 @@ import Testing
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 @Suite
 struct ProviderOptionsDifferentialTests {
   @Test(arguments: ["openai-completions", "openai-responses"])

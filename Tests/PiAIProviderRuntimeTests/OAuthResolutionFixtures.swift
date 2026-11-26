@@ -2,6 +2,10 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum OAuthResolutionFixtures {
   static func replay(_ spec: [String: JSONValue]) async throws -> JSONValue {
     let now = Date(timeIntervalSince1970: Double(spec.int("now")!) / 1_000)

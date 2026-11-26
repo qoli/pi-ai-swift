@@ -1,5 +1,11 @@
 import Foundation
-import OSLog
+
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+#if canImport(OSLog)
+  import OSLog
+#endif
 
 private func rewriteGoogleConst(_ value: JSONValue, nameMap: Bool = false) -> JSONValue {
   if case .array(let values) = value { return .array(values.map { rewriteGoogleConst($0) }) }
@@ -862,7 +868,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
 }
 
 private struct GoogleEventReducer {
-  private static let logger = Logger(subsystem: "com.ronnie.pi-ai-swift", category: "GoogleSSE")
+  #if canImport(OSLog)
+    private static let logger = Logger(subsystem: "com.ronnie.pi-ai-swift", category: "GoogleSSE")
+  #endif
 
   let providerID: String
   let protocolID: String
@@ -1023,9 +1031,14 @@ private struct GoogleEventReducer {
         finishReasonFieldSeen=\(sawFinishReasonField) usageMetadataSeen=\(usage != nil)
         """
       let correlationID = UUID(uuidString: requestID)?.uuidString ?? "unavailable"
-      Self.logger.warning(
-        "event=google.sse.incomplete requestID=\(correlationID, privacy: .public) \(diagnostic, privacy: .public)"
-      )
+      #if canImport(OSLog)
+        Self.logger.warning(
+          "event=google.sse.incomplete requestID=\(correlationID, privacy: .public) \(diagnostic, privacy: .public)"
+        )
+      #else
+        FileHandle.standardError.write(
+          Data("event=google.sse.incomplete requestID=\(correlationID) \(diagnostic)\n".utf8))
+      #endif
       throw ProviderRuntimeFailure(
         code: .incompleteStream,
         message: "Google stream ended without a finish reason",

@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct ResolvedAzureOpenAIResponsesConfiguration: Sendable, Equatable {
   let baseURL: String
   let apiVersion: String

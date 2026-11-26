@@ -2,6 +2,10 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum CopilotDeviceURLFixtures {
   // github-copilot-oauth.test.ts: normalizes verification_uri before onDeviceCode.
   static let verificationURI = "https://github.com/login/\u{1b}]8;;evil"

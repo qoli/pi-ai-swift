@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public struct OpenAICodexDeviceAuthorization: Sendable, Equatable {
   public let userCode: String
   public let verificationURL: URL

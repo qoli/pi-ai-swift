@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct RadiusOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
   static let providerID = "radius"
   static let defaultGateway = "https://radius.pi.dev"

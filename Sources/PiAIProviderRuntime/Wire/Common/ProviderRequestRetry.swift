@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct RetryingProviderHTTPTransport: ProviderHTTPStreamingTransport {
   let request: ProviderRequest
   let context: WireProtocolContext

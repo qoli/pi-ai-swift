@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 func codexTimeout<T: Sendable>(
   milliseconds: Double?, clock: any ProviderOAuthClock, message: String,
   operation: @escaping @Sendable () async throws -> T

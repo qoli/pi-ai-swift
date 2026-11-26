@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
   static let providerID = "github-copilot"
   private static let clientID = "Iv1.b507a08c87ecfe98"

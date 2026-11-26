@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct BedrockConverseStreamAdapter: WireProtocolAdapter {
   let protocolID = "bedrock-converse-stream"
   private let signingDate: Date?

@@ -2,6 +2,10 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum ProviderAdaptationFixtures {
   static func replay(_ spec: [String: JSONValue], addChatRoute: Bool = false) async throws
     -> [String: JSONValue]

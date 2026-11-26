@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct PiMessagesAdapter: WireProtocolAdapter {
   let protocolID = "pi-messages"
 

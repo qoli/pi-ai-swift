@@ -2,6 +2,10 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum CloudAuthorizationFixtures {
   static func repeatedFederationSourceCount() async throws -> Int {
     let sources = ProviderCloudCredentialSources()

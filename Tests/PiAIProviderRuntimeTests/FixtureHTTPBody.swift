@@ -3,6 +3,10 @@ import libzstd
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 func fixtureHTTPBody(_ request: URLRequest?) throws -> Data {
   guard let request, let body = request.httpBody else {
     throw ProviderRuntimeFailure(

@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 /// The exact provider rejection transition, explicitly adopted for this sync.
 /// It is confined to the initial HTTP request, before any stream is consumed.
 enum PreferredStrictToolFallback {

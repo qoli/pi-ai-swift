@@ -2,6 +2,10 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum OpenRouterPersonalizationFixtures {
   static func credential(_ spec: [String: JSONValue]) -> ProviderCredential? {
     guard let raw = spec.object("credential") else { return nil }

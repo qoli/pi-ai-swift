@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct OpenAIChatGPTAuthorizationAdapter: ProviderAuthorizationAdapter {
   static let providerID = "openai"
   private static let redirect = "http://127.0.0.1:1455/auth/callback"

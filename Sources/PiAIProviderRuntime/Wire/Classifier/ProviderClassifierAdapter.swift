@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct ProviderClassifierAdapter: WireProtocolAdapter {
   static let protocolIDs: Set<String> = [
     "typesafe-system-one", "cloudflare-workers-ai-system-one", "openai-decisions",

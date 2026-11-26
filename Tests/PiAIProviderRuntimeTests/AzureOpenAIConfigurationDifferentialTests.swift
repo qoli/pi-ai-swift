@@ -3,6 +3,10 @@ import Testing
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 @Suite
 struct AzureOpenAIConfigurationDifferentialTests {
   @Test
@@ -12,8 +16,6 @@ struct AzureOpenAIConfigurationDifferentialTests {
       ProcessInfo.processInfo.environment["PI_AI_SWIFT_UPSTREAM_CACHE"]
       ?? root.appending(path: ".build/upstreams/pi").path
     let process = Process()
-    let output = Pipe()
-    let errors = Pipe()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
     process.arguments = [
       "node",
@@ -21,17 +23,8 @@ struct AzureOpenAIConfigurationDifferentialTests {
       upstream,
       root.appending(path: "Fixtures/AzureOpenAIConfiguration/Cases/configuration.json").path,
     ]
-    process.standardOutput = output
-    process.standardError = errors
-    try process.run()
-    process.waitUntilExit()
-    let stderr =
-      String(
-        data: errors.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-    #expect(process.terminationStatus == 0, Comment(rawValue: stderr))
     let generated = try #require(
-      JSONSerialization.jsonObject(
-        with: output.fileHandleForReading.readDataToEndOfFile()) as? NSDictionary)
+      JSONSerialization.jsonObject(with: runOracle(process)) as? NSDictionary)
     let expectedData = try Data(
       contentsOf: root.appending(
         path: "Fixtures/AzureOpenAIConfiguration/Oracle/configuration.json"))

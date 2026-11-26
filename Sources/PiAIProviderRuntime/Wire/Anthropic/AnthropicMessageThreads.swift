@@ -1,5 +1,13 @@
-import CryptoKit
 import Foundation
+
+#if canImport(CryptoKit)
+  import CryptoKit
+#else
+  import Crypto
+#endif
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
 /// Session state shared by the Anthropic and Bedrock adapters.
 public enum ProviderSessionResources {

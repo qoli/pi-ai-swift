@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum ProviderClockSleepPurpose: String, Sendable { case timeout, background }
 
 protocol ProviderOAuthClock: Sendable {

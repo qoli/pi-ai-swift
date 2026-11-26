@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct CodexStreamCallbackError: Error {
   let underlying: any Error
 }

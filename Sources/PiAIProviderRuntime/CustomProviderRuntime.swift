@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 /// A host-declared model belonging to a custom provider.
 public struct CustomProviderModel: Sendable, Equatable, Codable {
   public let id: String

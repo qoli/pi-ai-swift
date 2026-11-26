@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 struct OpenRouterImagesAdapter: WireProtocolAdapter {
   let protocolID = "openrouter-images"
   private let maximumResponseBytes = 32 * 1_024 * 1_024

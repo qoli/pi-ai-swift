@@ -3,6 +3,10 @@ import Testing
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 @Suite
 struct BedrockConverseStreamAdapterTests {
   @Test(arguments: [[:], ["x-amzn-requestid": ""], ["X-Amzn-RequestId": "transport-1"]])

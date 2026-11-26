@@ -3,6 +3,10 @@ import Testing
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 @Suite struct ProviderAuthorizationResolutionTests {
   @Test func explicitRequestKeyUsesThePublicSeamWithoutReadingStoredOAuth() async throws {
     let expected = try sourceCases().first {

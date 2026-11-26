@@ -2,6 +2,10 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum RadiusCatalogFixtures {
   static func replay(_ spec: [String: JSONValue]) async throws -> JSONValue {
     let store = InMemoryProviderCredentialStore()

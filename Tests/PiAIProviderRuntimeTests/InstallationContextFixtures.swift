@@ -2,6 +2,10 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum InstallationContextFixtures {
   static let existingID = "11111111-2222-4333-8444-555555555555"
 

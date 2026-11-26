@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public struct BuiltinProviderRuntime: ProviderRuntime {
   private let registry: BuiltinProviderRegistry
   private let kernel: ProviderRuntimeKernel

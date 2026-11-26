@@ -2,6 +2,10 @@ import Foundation
 
 @testable import PiAIProviderRuntime
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 enum CodexTransportFixtures {
   static func replay(_ spec: [String: JSONValue], rejectToolCallback: Bool = false) async throws
     -> JSONValue

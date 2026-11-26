@@ -1,8 +1,15 @@
 import Foundation
-import Network
 import Testing
 
 @testable import PiAIProviderRuntime
+
+#if canImport(Network)
+  import Network
+#endif
+
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
 
 @Suite(.serialized)
 struct ProviderHTTPTransportTests {
@@ -71,31 +78,34 @@ struct ProviderHTTPTransportTests {
     #expect(TransportURLProtocolState.shared.requestCount(path: "/fragmented") == 1)
   }
 
-  @Test
-  func cancellingBodyConsumerCancelsTheUnderlyingURLSessionTask() async throws {
-    let server = try LoopbackStreamingServer()
-    try await server.start()
-    let session = URLSession(configuration: .ephemeral)
-    let transport = URLSessionProviderHTTPStreamingTransport(session: session)
-    defer {
-      session.invalidateAndCancel()
-      server.stop()
-    }
-
-    let response = try await transport.stream(server.request())
-    let consumer = Task {
-      for try await _ in response.body {
-        server.recordConsumerChunk()
+  #if canImport(Network)
+    @Test
+    func cancellingBodyConsumerCancelsTheUnderlyingURLSessionTask() async throws {
+      let server = try LoopbackStreamingServer()
+      try await server.start()
+      let session = URLSession(configuration: .ephemeral)
+      let transport = URLSessionProviderHTTPStreamingTransport(session: session)
+      defer {
+        session.invalidateAndCancel()
+        server.stop()
       }
-    }
-    defer { consumer.cancel() }
-    try await server.waitUntilConsumerChunk()
-    consumer.cancel()
-    try await server.waitUntilClientClosed()
-    _ = await consumer.result
 
-    #expect(server.acceptedConnectionCount() == 1)
-  }
+      let response = try await transport.stream(server.request())
+      let consumer = Task {
+        for try await _ in response.body {
+          server.recordConsumerChunk()
+        }
+      }
+      defer { consumer.cancel() }
+      try await server.waitUntilConsumerChunk()
+      consumer.cancel()
+      try await server.waitUntilClientClosed()
+      _ = await consumer.result
+
+      #expect(server.acceptedConnectionCount() == 1)
+    }
+
+  #endif
 
   @Test
   func urlSessionErrorsRemainTheThrownCauseAndAreNotRetried() async {
@@ -262,119 +272,122 @@ private struct TransportFixtureTimeout: Error {
   let message: String
 }
 
-private final class LoopbackStreamingServer: @unchecked Sendable {
-  private let queue = DispatchQueue(label: "PiAIProviderRuntimeTests.LoopbackStreamingServer")
-  private let lock = NSLock()
-  private let listener: NWListener
-  private var connection: NWConnection?
-  private var port: UInt16?
-  private var connections = 0
-  private var consumerChunks = 0
-  private var clientClosed = false
-  private var startupError: (any Error)?
+#if canImport(Network)
+  private final class LoopbackStreamingServer: @unchecked Sendable {
+    private let queue = DispatchQueue(label: "PiAIProviderRuntimeTests.LoopbackStreamingServer")
+    private let lock = NSLock()
+    private let listener: NWListener
+    private var connection: NWConnection?
+    private var port: UInt16?
+    private var connections = 0
+    private var consumerChunks = 0
+    private var clientClosed = false
+    private var startupError: (any Error)?
 
-  init() throws {
-    listener = try NWListener(using: .tcp, on: .any)
-    listener.newConnectionHandler = { [weak self] connection in
-      self?.accept(connection)
-    }
-    listener.stateUpdateHandler = { [weak self] state in
-      guard let self else { return }
-      switch state {
-      case .ready:
-        self.lock.withLock { self.port = self.listener.port?.rawValue }
-      case .failed(let error):
-        self.lock.withLock { self.startupError = error }
-      default:
-        break
+    init() throws {
+      listener = try NWListener(using: .tcp, on: .any)
+      listener.newConnectionHandler = { [weak self] connection in
+        self?.accept(connection)
+      }
+      listener.stateUpdateHandler = { [weak self] state in
+        guard let self else { return }
+        switch state {
+        case .ready:
+          self.lock.withLock { self.port = self.listener.port?.rawValue }
+        case .failed(let error):
+          self.lock.withLock { self.startupError = error }
+        default:
+          break
+        }
       }
     }
-  }
 
-  func start() async throws {
-    listener.start(queue: queue)
-    try await waitUntil("loopback listener did not start") {
-      self.lock.withLock { self.port != nil || self.startupError != nil }
+    func start() async throws {
+      listener.start(queue: queue)
+      try await waitUntil("loopback listener did not start") {
+        self.lock.withLock { self.port != nil || self.startupError != nil }
+      }
+      if let error = lock.withLock({ startupError }) { throw error }
     }
-    if let error = lock.withLock({ startupError }) { throw error }
-  }
 
-  func stop() {
-    let connection = lock.withLock { self.connection }
-    connection?.cancel()
-    listener.cancel()
-  }
-
-  func request() -> URLRequest {
-    let port = lock.withLock { self.port! }
-    return URLRequest(url: URL(string: "http://127.0.0.1:\(port)/stream")!)
-  }
-
-  func recordConsumerChunk() {
-    lock.withLock { consumerChunks += 1 }
-  }
-
-  func acceptedConnectionCount() -> Int {
-    lock.withLock { connections }
-  }
-
-  func waitUntilConsumerChunk() async throws {
-    try await waitUntil("stream consumer received no loopback chunk") {
-      self.lock.withLock { self.consumerChunks > 0 }
+    func stop() {
+      let connection = lock.withLock { self.connection }
+      connection?.cancel()
+      listener.cancel()
     }
-  }
 
-  func waitUntilClientClosed() async throws {
-    try await waitUntil("cancelling the body consumer did not close the URLSession connection") {
-      self.lock.withLock { self.clientClosed }
+    func request() -> URLRequest {
+      let port = lock.withLock { self.port! }
+      return URLRequest(url: URL(string: "http://127.0.0.1:\(port)/stream")!)
     }
-  }
 
-  private func accept(_ connection: NWConnection) {
-    lock.withLock {
-      self.connection = connection
-      connections += 1
+    func recordConsumerChunk() {
+      lock.withLock { consumerChunks += 1 }
     }
-    connection.start(queue: queue)
-    connection.receive(minimumIncompleteLength: 1, maximumLength: 16_384) {
-      [weak self, weak connection] _, _, _, error in
-      guard let self, let connection, error == nil else { return }
-      let response = Data(
-        "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n5\r\nready\r\n"
-          .utf8
-      )
-      connection.send(
-        content: response,
-        completion: .contentProcessed { [weak self] error in
-          guard let self, error == nil else { return }
+
+    func acceptedConnectionCount() -> Int {
+      lock.withLock { connections }
+    }
+
+    func waitUntilConsumerChunk() async throws {
+      try await waitUntil("stream consumer received no loopback chunk") {
+        self.lock.withLock { self.consumerChunks > 0 }
+      }
+    }
+
+    func waitUntilClientClosed() async throws {
+      try await waitUntil("cancelling the body consumer did not close the URLSession connection") {
+        self.lock.withLock { self.clientClosed }
+      }
+    }
+
+    private func accept(_ connection: NWConnection) {
+      lock.withLock {
+        self.connection = connection
+        connections += 1
+      }
+      connection.start(queue: queue)
+      connection.receive(minimumIncompleteLength: 1, maximumLength: 16_384) {
+        [weak self, weak connection] _, _, _, error in
+        guard let self, let connection, error == nil else { return }
+        let response = Data(
+          "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n5\r\nready\r\n"
+            .utf8
+        )
+        connection.send(
+          content: response,
+          completion: .contentProcessed { [weak self] error in
+            guard let self, error == nil else { return }
+            self.observeClientClosure(connection)
+          })
+      }
+    }
+
+    private func observeClientClosure(_ connection: NWConnection) {
+      connection.receive(minimumIncompleteLength: 1, maximumLength: 1) {
+        [weak self, weak connection] data, _, complete, error in
+        guard let self else { return }
+        if complete || error != nil {
+          self.lock.withLock { self.clientClosed = true }
+        } else if data?.isEmpty == false, let connection {
           self.observeClientClosure(connection)
-        })
+        } else if let connection {
+          self.observeClientClosure(connection)
+        }
+      }
     }
-  }
 
-  private func observeClientClosure(_ connection: NWConnection) {
-    connection.receive(minimumIncompleteLength: 1, maximumLength: 1) {
-      [weak self, weak connection] data, _, complete, error in
-      guard let self else { return }
-      if complete || error != nil {
-        self.lock.withLock { self.clientClosed = true }
-      } else if data?.isEmpty == false, let connection {
-        self.observeClientClosure(connection)
-      } else if let connection {
-        self.observeClientClosure(connection)
+    private func waitUntil(
+      _ message: String,
+      predicate: @escaping @Sendable () -> Bool
+    ) async throws {
+      let clock = ContinuousClock()
+      let deadline = clock.now.advanced(by: .seconds(2))
+      while !predicate() {
+        guard clock.now < deadline else { throw TransportFixtureTimeout(message: message) }
+        try await Task.sleep(for: .milliseconds(10))
       }
     }
   }
 
-  private func waitUntil(
-    _ message: String,
-    predicate: @escaping @Sendable () -> Bool
-  ) async throws {
-    let clock = ContinuousClock()
-    let deadline = clock.now.advanced(by: .seconds(2))
-    while !predicate() {
-      guard clock.now < deadline else { throw TransportFixtureTimeout(message: message) }
-      try await Task.sleep(for: .milliseconds(10))
-    }
-  }
-}
+#endif

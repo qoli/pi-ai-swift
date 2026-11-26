@@ -1,5 +1,9 @@
 import Foundation
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 public protocol ProviderWebSocketConnection: Sendable {
   func isOpen() async -> Bool
   func send(_ text: String) async throws
