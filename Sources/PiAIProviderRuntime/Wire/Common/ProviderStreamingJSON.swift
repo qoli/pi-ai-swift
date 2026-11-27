@@ -39,6 +39,12 @@ final class ProviderJSONNode {
     private var first: ProviderJSONNode?
     private var remaining: [ProviderJSONNode] = []
 
+    init() {}
+
+    init(first: ProviderJSONNode) {
+      self.first = first
+    }
+
     var count: Int { first == nil ? 0 : 1 + remaining.count }
 
     var elements: [ProviderJSONNode] {
@@ -319,10 +325,21 @@ final class ProviderStreamingJSONParser {
     var childSlot: Slot?
     for depth in stack.indices.reversed() {
       let frame = stack[depth]
-      let copy = frame.container.copiedContainer()
-      if depth == stack.count - 1, let pending { set(copy, pending.0, pending.1) }
-      if let child, let childSlot { set(copy, childSlot, child) }
-      child = copy
+      let replacement: (Slot, ProviderJSONNode)?
+      if let child, let childSlot {
+        replacement = (childSlot, child)
+      } else {
+        replacement = depth == stack.count - 1 ? pending : nil
+      }
+      if frame.container.kind == .array, frame.size <= 1,
+        case .some((.element(0), let element)) = replacement
+      {
+        child = pool.node(.array(.init(first: element)), isSnapshotContainer: true)
+      } else {
+        let copy = frame.container.copiedContainer()
+        if let replacement { set(copy, replacement.0, replacement.1) }
+        child = copy
+      }
       childSlot = frame.slot
     }
     if case .root = childSlot { lastSnapshot = child } else { lastSnapshot = root }
