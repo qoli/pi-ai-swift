@@ -30,7 +30,15 @@ enum RetryConformanceProbe {
             maximumRetries: input.int("maximumRetries"),
             maximumDelayMilliseconds: double(input["maximumDelay"]),
             noRetryStatuses: (input.array("noRetryStatuses") ?? []).compactMap(\.integerValue),
-            clock: server.clock
+            clock: server.clock,
+            onErrorResponse: { status, headers in
+              _ = try await channel.request(
+                kind: "retryResponse",
+                payload: .object([
+                  "status": .integer(Int64(status)),
+                  "headers": .object(headers.mapValues(JSONValue.string)),
+                ]))
+            }
           ) {
             try await channel.request()
           }
@@ -77,12 +85,14 @@ enum RetryConformanceProbe {
 
   private actor RetryChannel {
     private var pending: CheckedContinuation<JSONValue, any Error>?
-    func request() async throws -> JSONValue {
+    func request(kind: String = "retryRequest", payload: JSONValue = .object([:])) async throws
+      -> JSONValue
+    {
       try await withTaskCancellationHandler {
         try Task.checkCancellation()
         return try await withCheckedThrowingContinuation { continuation in
           pending = continuation
-          do { try ProbeChannel().write("retryRequest", [String: String]()) } catch { fail(error) }
+          do { try ProbeChannel().write(kind, payload) } catch { fail(error) }
         }
       } onCancel: {
         Task { await self.fail(CancellationError()) }

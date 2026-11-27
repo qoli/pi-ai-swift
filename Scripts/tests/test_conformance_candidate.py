@@ -23,7 +23,14 @@ class CandidateConformanceTests(unittest.TestCase):
                 path.write_text("{}")
                 data[key] = CANDIDATE.sha256(path)
             (manifests / "candidate-v1.6.0.json").write_text(json.dumps(data))
+            other = {**data, "revision": "f" * 40}
+            (manifests / "candidate-v1.6.1.json").write_text(json.dumps(other))
             self.assertEqual(CANDIDATE.profile(repo, data["revision"], data["baseRevision"]), data)
+            self.assertEqual(CANDIDATE.profile(repo, other["revision"], other["baseRevision"]), other)
+            (manifests / "candidate-v1.6.2.json").write_text(json.dumps(other))
+            with self.assertRaisesRegex(ValueError, "unique"):
+                CANDIDATE.profile(repo, other["revision"], other["baseRevision"])
+            (manifests / "candidate-v1.6.2.json").unlink()
             for revision, base in [(data["revision"][:8], data["baseRevision"]), (data["revision"], "0" * 40)]:
                 with self.assertRaisesRegex(ValueError, "exact candidate"):
                     CANDIDATE.profile(repo, revision, base)

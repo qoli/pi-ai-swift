@@ -54,7 +54,7 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
               }
               return result
             })
-          try await observation.response(response)
+          if (200..<300).contains(response.statusCode) { try await observation.response(response) }
           var reducer = AnthropicEventReducer(
             providerID: request.providerID,
             requestedModelID: request.modelID,
@@ -601,7 +601,9 @@ struct AnthropicMessagesAdapter: WireProtocolAdapter {
       "properties": object["properties"]?.objectValue.map(JSONValue.object) ?? .object([:]),
       "required": object["required"]?.arrayValue.map(JSONValue.array) ?? .array([]),
     ]
-    for key in ["additionalProperties", "$defs", "definitions"] { legacy[key] = object[key] }
+    for key in ["additionalProperties", "$schema", "$defs", "definitions"] {
+      legacy[key] = object[key]
+    }
     guard strict else { return .object(legacy) }
     for (key, value) in legacy { object[key] = value }
     return .object(object)

@@ -1,0 +1,52 @@
+{
+  "revision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe",
+  "version": "1.6.1",
+  "baseRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
+  "baseManifestSHA256": "db4268cf028a94009487e216e5e5037a1cbc8f0114f501f0142f991a748f3a88",
+  "baseScopeAuditSHA256": "384727ddce329ff7b48403fcd0872a340ee37fcf9f50d582af5bdc4b2ba4220f",
+  "addSuites": [
+    "bedrock-proxy-credentials.test.ts",
+    "claude-model-generation.test.ts",
+    "google-stream-errors.test.ts",
+    "openai-responses-tool-call-replay.test.ts",
+    "pi-decision.test.ts",
+    "provider-error-response.test.ts",
+    "sse.test.ts"
+  ],
+  "removeExcludedSuites": [],
+  "excludedSuites": {},
+  "scopeRuleReplacements": {},
+  "scopeSourceHashes": {
+    "packages/ai/catalog/generate.ts": "216abe76de82ca57c3e4b425d088c0cca8eafd28ebaa2a33bc8bba825d617cd5",
+    "packages/ai/catalog/providers/fireworks.ts": "d0fe6c4a9ccef7bdc13df8e62d746fd38750ed364ba610ca22faa52f9918c889",
+    "packages/ai/catalog/sources/models-dev.ts": "f38a1444c6a8ea57e964101769d1d8d2dd4b3f4a158c2fb94f3b8be91d16d09e",
+    "packages/ai/catalog/sources/openrouter.ts": "76384062de99774492a916a267591cfb8775f3a36a590a4423cdd11a65bc67cc",
+    "packages/ai/package.json": "cf39bc446454510bad7ec8941865673a90e594c0bdfce1d8a23e3e53dd8a0add",
+    "packages/ai/src/api/lazy.ts": "c96f02c439e513b3b855535578148c167c75008ea406f6da19e2d2671d0c8195",
+    "packages/ai/src/models.ts": "37fd44114b7dffc9bfdd52c7c568345ccdf529eb7df6c682fc978c127b5f81d7",
+    "packages/ai/src/oauth.ts": "1250a2a276dc310849e64a0fd306a896d42e47ad0fc8d9394279eaee4e11cdff",
+    "packages/ai/src/types.ts": "ea5d25815614d32fdecd81fe046da359cc3ae304a391137ea6c1628cc6550d1a",
+    "packages/ai/src/utils/model-operations.ts": "d8a7bb663ad3b97253f03b424c6d9e821ed066c8c0449aa00e1f06b75f41115b",
+    "packages/ai/src/utils/overflow.ts": "83ad73ee48451efca308bad01ed84a2e37dbe14bc9dfca1ce404b75126b9130b",
+    "packages/ai/src/utils/transcript.ts": "1a99597907e03b3716de601e3beff5b97698f8b1d5ba67f71f37eeea57b92218",
+    "packages/ai/src/utils/version.ts": "4925708935ae4cd3b1123544478dace1e1ade5423a6cd05f452549b099f407cf",
+    "packages/ai/test/classifier-models.test.ts": "56334a82e5263cd74cebb8bfe17f095f68f6d191f0d0c78b5869fb3c565fa13c",
+    "packages/ai/test/fireworks-model-generation.test.ts": "009bab2e1548ad5d2882ddfabb430c034141c823cc6581faa9d16fdd4af3a4d1",
+    "packages/ai/test/identity.test.ts": "cf6766b2cb95e805cff3c4fd12afc99eb588a6cce6fa9b8472ded0f06def3293",
+    "packages/ai/test/images-models.test.ts": "8739d53df9b6d50ad1211b52590ab7488917636e43e2b7b12ef751583206f780",
+    "packages/ai/test/model-types.test.ts": "cc934baaea086f058fdba2cc7cccaf57045092843cfec8fba6eea0b5fa5aa3ee",
+    "packages/ai/test/models-runtime.test.ts": "63af21773d8ef01a62eb6682296ce8b8f26a24b9be51bdaa52e7b644416c0d39",
+    "packages/ai/test/oauth-auth.test.ts": "cf48a806cd38f76c5cb3a38921672acc8d665fab57d6beb7111ca51e4bc43991",
+    "packages/ai/test/openrouter-reasoning-options.test.ts": "75358f2a0014328d3818bad2fa429c32aeddc60ce41a4e236d5a7ecf3902bc2f",
+    "packages/ai/test/overflow.test.ts": "93ef1d8b722edc3b744263e9c03ca7b186d3affb11d85692bf7b7ad9d31e9b0a",
+    "packages/ai/test/pi-messages.test.ts": "32b5010505812ed8d27fb33319d322d14f720b81de4c384eb98b170047f29125",
+    "packages/ai/test/providers.test.ts": "bdff6b3294c74b4433e22972e25c46b398e06bf8cd5fe2ddd63db48fb64ffd16",
+    "packages/ai/test/transcript-tool-changes.test.ts": "95e287e77f81bcbd4fb48cc9d18fc7ff48769221d0e40589a994a97cdd84a24c"
+  },
+  "catalogSHA256": "e2ae5730da853ceba0f3e883292a07d0fc7d614b053576eab7dca5b2821b2427",
+  "publishedPackage": {
+    "tarball": "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-1.6.1.tgz",
+    "integrity": "sha512-EyorgVyA2s4MxNl7YOapzOpdxrc8HUgxHEIOo8QRMK35P7PCOsSiWzMLf6ixKl3/obkg7I3wGJWHq+FdbUz43g=="
+  },
+  "repository": "https://github.com/earendil-works/pi.git"
+}

@@ -1,14 +1,14 @@
 {
   "schemaVersion": 4,
   "repository": "https://github.com/earendil-works/pi.git",
-  "revision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
-  "syncedAt": "2026-11-22",
+  "revision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe",
+  "syncedAt": "2026-11-27",
   "package": {
     "path": "packages/ai",
     "name": "@earendil-works/pi-ai",
-    "version": "1.6.0"
+    "version": "1.6.1"
   },
-  "generatedCatalogSHA256": "b138f059e697af3196a03592bce3306b2c062e47fcc925c6617c74ddbbad9b98",
+  "generatedCatalogSHA256": "b6068435a14b871beb7038b19299d6b381017d0df8c5436c00b6e048304b46cd",
   "trackedBuiltinProviders": [
     "amazon-bedrock",
     "ant-ling",
@@ -150,6 +150,8 @@
     "packages/ai/src/api/openai-responses.ts",
     "packages/ai/src/api/openrouter-images.lazy.ts",
     "packages/ai/src/api/openrouter-images.ts",
+    "packages/ai/src/api/pi-decision.lazy.ts",
+    "packages/ai/src/api/pi-decision.ts",
     "packages/ai/src/api/pi-messages.lazy.ts",
     "packages/ai/src/api/pi-messages.ts",
     "packages/ai/src/api/simple-options.ts",
@@ -352,12 +354,14 @@
     "packages/ai/src/utils/node-http-proxy.ts",
     "packages/ai/src/utils/oauth-page.ts",
     "packages/ai/src/utils/openrouter-cost.ts",
+    "packages/ai/src/utils/openrouter-finish-reason.ts",
     "packages/ai/src/utils/overflow.ts",
     "packages/ai/src/utils/provider-env.ts",
     "packages/ai/src/utils/provider-retry.ts",
     "packages/ai/src/utils/retry.ts",
     "packages/ai/src/utils/sanitize-unicode.ts",
     "packages/ai/src/utils/sleep.ts",
+    "packages/ai/src/utils/sse.ts",
     "packages/ai/src/utils/streaming-json.ts",
     "packages/ai/src/utils/string-enum.ts",
     "packages/ai/src/utils/text.ts",
@@ -400,6 +404,7 @@
     "packages/ai/test/bedrock-endpoint-resolution.test.ts",
     "packages/ai/test/bedrock-error-metadata.test.ts",
     "packages/ai/test/bedrock-models.test.ts",
+    "packages/ai/test/bedrock-proxy-credentials.test.ts",
     "packages/ai/test/bedrock-raw-stop-reason.test.ts",
     "packages/ai/test/bedrock-redacted-reasoning.test.ts",
     "packages/ai/test/bedrock-response-headers.test.ts",
@@ -410,6 +415,7 @@
     "packages/ai/test/cache-retention.test.ts",
     "packages/ai/test/clamp-max-tokens.test.ts",
     "packages/ai/test/classifier-models.test.ts",
+    "packages/ai/test/claude-model-generation.test.ts",
     "packages/ai/test/cloudflare-stream.test.ts",
     "packages/ai/test/cloudflare-utils.ts",
     "packages/ai/test/cloudflare-workers-ai-system-one.test.ts",
@@ -433,6 +439,7 @@
     "packages/ai/test/google-shared-retry.test.ts",
     "packages/ai/test/google-shared-signed-empty-blocks.test.ts",
     "packages/ai/test/google-stop-reason-continuation.test.ts",
+    "packages/ai/test/google-stream-errors.test.ts",
     "packages/ai/test/google-thinking-disable.test.ts",
     "packages/ai/test/google-thinking-level-map.test.ts",
     "packages/ai/test/google-thinking-signature.test.ts",
@@ -493,6 +500,7 @@
     "packages/ai/test/openai-responses-prompt-cache.test.ts",
     "packages/ai/test/openai-responses-reasoning-replay-e2e.test.ts",
     "packages/ai/test/openai-responses-terminal-event.test.ts",
+    "packages/ai/test/openai-responses-tool-call-replay.test.ts",
     "packages/ai/test/openai-responses-tool-result-images.test.ts",
     "packages/ai/test/openai-responses-usage-limit.test.ts",
     "packages/ai/test/opencode-provider-headers.test.ts",
@@ -503,10 +511,12 @@
     "packages/ai/test/openrouter-reasoning-options.test.ts",
     "packages/ai/test/openrouter-user-models.test.ts",
     "packages/ai/test/overflow.test.ts",
+    "packages/ai/test/pi-decision.test.ts",
     "packages/ai/test/pi-messages.test.ts",
     "packages/ai/test/pre-generation-error.test.ts",
     "packages/ai/test/provider-error-body-passthrough.test.ts",
     "packages/ai/test/provider-error-body-regression.test.ts",
+    "packages/ai/test/provider-error-response.test.ts",
     "packages/ai/test/provider-retry.test.ts",
     "packages/ai/test/providers.test.ts",
     "packages/ai/test/qwen-token-plan-models.test.ts",
@@ -515,6 +525,7 @@
     "packages/ai/test/radius-thinking-replay-e2e.test.ts",
     "packages/ai/test/responseid.test.ts",
     "packages/ai/test/sampling-options.test.ts",
+    "packages/ai/test/sse.test.ts",
     "packages/ai/test/stream.test.ts",
     "packages/ai/test/streaming-json.test.ts",
     "packages/ai/test/streaming-tool-arguments.test.ts",
@@ -542,8 +553,8 @@
   ],
   "sourceArtifact": {
     "kind": "published-provider-data",
-    "tarball": "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-1.6.0.tgz",
-    "integrity": "sha512-9hL+eygFDEiFp//cydeUfmFsKmEqpmvsNPb10Y1W8+m5K9O+sx1hMStfu6nukrBD5sl6mP4RykCYBBNEgsVLfw=="
+    "tarball": "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-1.6.1.tgz",
+    "integrity": "sha512-EyorgVyA2s4MxNl7YOapzOpdxrc8HUgxHEIOo8QRMK35P7PCOsSiWzMLf6ixKl3/obkg7I3wGJWHq+FdbUz43g=="
   },
-  "sourceArtifactManifest": "Fixtures/Catalog/Releases/v1.6.0.json"
+  "sourceArtifactManifest": "Fixtures/Catalog/Releases/v1.6.1.json"
 }

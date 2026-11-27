@@ -95,10 +95,20 @@ public struct ProviderClassifierUsage: Sendable, Equatable, Codable {
   public let inputTokens: Double
   public let outputTokens: Double
   public let cost: ProviderUsageCost
-  public init(inputTokens: Double, outputTokens: Double, cost: ProviderUsageCost) {
+  public let cacheReadTokens: Double?
+  public let cacheWriteTokens: Double?
+  public let totalTokens: Double?
+  public init(
+    inputTokens: Double, outputTokens: Double, cost: ProviderUsageCost,
+    cacheReadTokens: Double = 0, cacheWriteTokens: Double = 0, totalTokens: Double? = nil
+  ) {
     self.inputTokens = inputTokens
     self.outputTokens = outputTokens
     self.cost = cost
+    self.cacheReadTokens = cacheReadTokens
+    self.cacheWriteTokens = cacheWriteTokens
+    self.totalTokens =
+      totalTokens ?? inputTokens + outputTokens + cacheReadTokens + cacheWriteTokens
   }
 }
 
@@ -110,12 +120,14 @@ public struct ProviderClassifierResult: Sendable, Equatable, Codable {
   public let usage: ProviderClassifierUsage?
   public let finishReason: ProviderFinishReason
   public let errorMessage: String?
+  public let responseID: String?
   public let timestampMilliseconds: Int64
 
   public init(
     protocolID: String, providerID: String, modelID: String,
     answers: [String: ProviderClassifierAnswer], usage: ProviderClassifierUsage? = nil,
-    finishReason: ProviderFinishReason, errorMessage: String? = nil, timestampMilliseconds: Int64
+    finishReason: ProviderFinishReason, errorMessage: String? = nil, responseID: String? = nil,
+    timestampMilliseconds: Int64
   ) {
     self.protocolID = protocolID
     self.providerID = providerID
@@ -124,6 +136,7 @@ public struct ProviderClassifierResult: Sendable, Equatable, Codable {
     self.usage = usage
     self.finishReason = finishReason
     self.errorMessage = errorMessage
+    self.responseID = responseID
     self.timestampMilliseconds = timestampMilliseconds
   }
 }

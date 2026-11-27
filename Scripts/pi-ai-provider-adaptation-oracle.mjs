@@ -13,7 +13,7 @@ const oldNow = Date.now;
 Date.now = () => now;
 const cases = [];
 const api = {};
-for (const name of ["typesafe-system-one", "cloudflare-workers-ai-system-one", "openai-decisions", "llama-cpp-classify"]) {
+for (const name of ["typesafe-system-one", "cloudflare-workers-ai-system-one", "openai-decisions", "llama-cpp-classify", "pi-decision"]) {
   api[name] = await import(pathToFileURL(path.join(root, "packages/ai/src/api", name + ".ts")));
 }
 const { metaOAuth } = await import(pathToFileURL(path.join(root, "packages/ai/src/auth/oauth/meta.ts")));

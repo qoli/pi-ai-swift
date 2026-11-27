@@ -13,7 +13,7 @@ export function projectBuiltinProvider(provider, args, factory) {
   if (factory === "radiusProvider") return nativeRadiusProvider(provider, args[0]);
   const result = { ...provider };
   if (provider.id === "github-copilot" && provider.classify) {
-    result.classify = (model, context, options) => model.api === "typesafe-system-one"
+    result.classify = (model, context, options) => ["typesafe-system-one", "openai-decisions"].includes(model.api)
       ? classify(model.api, model, context, options) : provider.classify(model, context, options);
   }
   if (!args.length && provider.id !== "radius") {

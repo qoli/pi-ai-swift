@@ -1,5 +1,255 @@
 {
   "cases": {
+    "google-finish-escalation": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "ESCALATION"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: ESCALATION",
+          "kind": "failure",
+          "rawStopReason": "ESCALATION",
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "ESCALATION"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: ESCALATION",
+          "kind": "failure",
+          "rawStopReason": "ESCALATION",
+          "stopReason": "error"
+        }
+      }
+    },
+    "google-finish-malformed-response": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "MALFORMED_RESPONSE"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: MALFORMED_RESPONSE",
+          "kind": "failure",
+          "rawStopReason": "MALFORMED_RESPONSE",
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "MALFORMED_RESPONSE"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: MALFORMED_RESPONSE",
+          "kind": "failure",
+          "rawStopReason": "MALFORMED_RESPONSE",
+          "stopReason": "error"
+        }
+      }
+    },
+    "google-finish-missing-thought-signature": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "MISSING_THOUGHT_SIGNATURE"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: MISSING_THOUGHT_SIGNATURE",
+          "kind": "failure",
+          "rawStopReason": "MISSING_THOUGHT_SIGNATURE",
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "MISSING_THOUGHT_SIGNATURE"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: MISSING_THOUGHT_SIGNATURE",
+          "kind": "failure",
+          "rawStopReason": "MISSING_THOUGHT_SIGNATURE",
+          "stopReason": "error"
+        }
+      }
+    },
+    "google-finish-model-armor": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "MODEL_ARMOR"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: MODEL_ARMOR",
+          "kind": "failure",
+          "rawStopReason": "MODEL_ARMOR",
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "MODEL_ARMOR"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: MODEL_ARMOR",
+          "kind": "failure",
+          "rawStopReason": "MODEL_ARMOR",
+          "stopReason": "error"
+        }
+      }
+    },
+    "google-finish-pup-limited-disabled": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "PUP_LIMITED_DISABLED"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: PUP_LIMITED_DISABLED",
+          "kind": "failure",
+          "rawStopReason": "PUP_LIMITED_DISABLED",
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "candidates": [
+                {
+                  "content": {
+                    "parts": []
+                  },
+                  "finishReason": "PUP_LIMITED_DISABLED"
+                }
+              ]
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Provider stopped with: PUP_LIMITED_DISABLED",
+          "kind": "failure",
+          "rawStopReason": "PUP_LIMITED_DISABLED",
+          "stopReason": "error"
+        }
+      }
+    },
     "google-max-tokens": {
       "google-generative-ai": {
         "decoderInput": {
@@ -157,7 +407,7 @@
           "status": 200
         },
         "sourceOutcome": {
-          "errorMessage": "Google stream ended without a finish reason",
+          "errorMessage": "Google stream ended without a finish reason after receiving 1 chunk",
           "kind": "failure",
           "rawStopReason": null,
           "stopReason": "error"
@@ -175,7 +425,7 @@
           "status": 200
         },
         "sourceOutcome": {
-          "errorMessage": "Google Vertex stream ended without a finish reason",
+          "errorMessage": "Google Vertex stream ended without a finish reason after receiving 1 chunk",
           "kind": "failure",
           "rawStopReason": null,
           "stopReason": "error"
@@ -735,6 +985,110 @@
             "event"
           ],
           "temperature": 0.5
+        }
+      }
+    },
+    "google-prompt-blocked-empty-message": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "promptFeedback": {
+                "blockReason": "SAFETY",
+                "blockReasonMessage": ""
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Google prompt blocked: SAFETY",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "promptFeedback": {
+                "blockReason": "SAFETY",
+                "blockReasonMessage": ""
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Google Vertex prompt blocked: SAFETY",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      }
+    },
+    "google-prompt-blocked-message-and-ratings": {
+      "google-generative-ai": {
+        "decoderInput": {
+          "events": [
+            {
+              "promptFeedback": {
+                "blockReason": "SAFETY",
+                "blockReasonMessage": "Synthetic policy block",
+                "safetyRatings": [
+                  {
+                    "category": "HARM_CATEGORY_HATE_SPEECH",
+                    "probability": "MEDIUM"
+                  },
+                  {
+                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                    "probability": "LOW"
+                  }
+                ]
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Google prompt blocked: SAFETY. Synthetic policy block. Safety ratings: HARM_CATEGORY_HATE_SPEECH (MEDIUM), HARM_CATEGORY_DANGEROUS_CONTENT (LOW)",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
+        }
+      },
+      "google-vertex": {
+        "decoderInput": {
+          "events": [
+            {
+              "promptFeedback": {
+                "blockReason": "SAFETY",
+                "blockReasonMessage": "Synthetic policy block",
+                "safetyRatings": [
+                  {
+                    "category": "HARM_CATEGORY_HATE_SPEECH",
+                    "probability": "MEDIUM"
+                  },
+                  {
+                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                    "probability": "LOW"
+                  }
+                ]
+              }
+            }
+          ],
+          "kind": "decoded-sdk-events",
+          "status": 200
+        },
+        "sourceOutcome": {
+          "errorMessage": "Google Vertex prompt blocked: SAFETY. Synthetic policy block. Safety ratings: HARM_CATEGORY_HATE_SPEECH (MEDIUM), HARM_CATEGORY_DANGEROUS_CONTENT (LOW)",
+          "kind": "failure",
+          "rawStopReason": null,
+          "stopReason": "error"
         }
       }
     },
@@ -1309,7 +1663,7 @@
           "status": 200
         },
         "sourceOutcome": {
-          "errorMessage": "Provider stopped with: error (server error)",
+          "errorMessage": "Provider stopped with: error",
           "kind": "failure",
           "rawStopReason": "error",
           "stopReason": "error"
@@ -2273,5 +2627,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe"
 }

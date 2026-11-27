@@ -16,7 +16,7 @@ import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { mistralSDKPayload, mistralWirePayload } from "./mistral-payload.mjs";
 import { bedrockSDKPayload, bedrockWirePayload } from "./bedrock-payload.mjs";
 import { codexProbeChild } from "./native-session.mjs";
-import { resolveFixtureCloud, FixtureAnthropic } from "./cloud-authorization.mjs";
+import { resolveFixtureCloud, FixtureAnthropic, bedrockSDKConfiguration } from "./cloud-authorization.mjs";
 import { normalizeProviderError } from "./error-body.mjs";
 import { invokeNative as invoke, recordNative as record } from "./native-operations.mjs";
 import { getEnvApiKey } from "./environment.mjs";
@@ -260,7 +260,7 @@ export async function generateImages(model, context, options = {}) {
 
 async function nativeStream(model, context, options, emitEvent, requestSource, generationMode, credential = fixtureCredential(model, options)) {
   const heapSamples = heapObservations.getStore();
-  const connection = { credential, providerEvents: [] };
+  const connection = { credential, providerEvents: [], baseURL: model.baseUrl };
   const argumentUpdates = new Map();
   const child = ["openai-codex-responses", "anthropic-messages", "google-vertex", "bedrock-converse-stream"].includes(model.api) || (model.api === "openai-completions" && options.maxRetries !== undefined) ? codexProbeChild()
     : spawn(process.env.PI_CONFORMANCE_PROBE, ["--stream"], { stdio: ["pipe", "pipe", "pipe"] });
@@ -465,12 +465,12 @@ async function mockResponse(model, request, body, options, connection) {
     return { status: response.status, headers: Object.fromEntries(response.headers), chunks: responseChunks(response, options.signal) };
   }
   if (model.api === "bedrock-converse-stream") {
-    const client = connection.client ??= new BedrockRuntimeClient({ ...(request.cloudConfiguration ?? {
+    const client = connection.client ??= new BedrockRuntimeClient(bedrockSDKConfiguration({ ...(request.cloudConfiguration ?? {
       endpoint: new URL(request.url).origin,
       region: options.region ?? connection.credential.metadata.AWS_REGION ?? "us-east-1",
       credentials: { accessKeyId: "synthetic-sdk-fixture-key", secretAccessKey: "synthetic-sdk-fixture-secret" },
     }), ...(options.env?.AWS_BEDROCK_FORCE_HTTP1 === "1" ? { requestHandler: new NodeHttpHandler() } : {}),
-    });
+    }, options, model.baseUrl));
     if (!connection.headersRegistered) {
       connection.headersRegistered = true;
       if (options.onResponse) {
@@ -544,7 +544,7 @@ async function mockResponse(model, request, body, options, connection) {
       headers: connection.rawResponse?.headers ??
         (response.$metadata.requestId ? { "x-amzn-requestid": response.$metadata.requestId } : {}) };
   }
-  if (options.fetch || ["mistral-conversations", "pi-messages", "openai-codex-responses"].includes(model.api)) {
+  if (options.fetch || ["localhost", "127.0.0.1", "[::1]"].includes(new URL(request.url).hostname) || ["mistral-conversations", "pi-messages", "openai-codex-responses"].includes(model.api)) {
     const response = await (options.fetch ?? globalThis.fetch)(request.url, {
       method: "POST", headers: model.api === "openai-codex-responses" ? new Headers(request.headers) : request.headers,
       body: request.rawBody ? new Uint8Array(Buffer.from(request.rawBody, "base64")) : JSON.stringify(body), signal: options.signal,

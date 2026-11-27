@@ -6,10 +6,10 @@ export async function retryProviderRequest(request, options = {}) {
   return nativeCallbackOperation("provider.retry", request, {
     maximumRetries: options.maxRetries, maximumDelay: options.maxRetryDelayMs,
     noRetryStatuses: options.noRetryStatuses,
-  }, options.signal);
+  }, options.signal, options.onErrorResponse);
 }
 
-export async function nativeCallbackOperation(operation, request, input, signal) {
+export async function nativeCallbackOperation(operation, request, input, signal, onErrorResponse) {
   const child = codexProbeChild();
   const errors = new Map();
   let nextError = 0;
@@ -22,8 +22,9 @@ export async function nativeCallbackOperation(operation, request, input, signal)
   try {
     for await (const line of lines) {
       const frame = JSON.parse(line);
-      if (frame.kind === "retryRequest") {
-        void Promise.resolve().then(request).then(value => send({ kind: "retryReply", value }), error => {
+      if (frame.kind === "retryRequest" || frame.kind === "retryResponse") {
+        const action = frame.kind === "retryRequest" ? request : () => onErrorResponse?.(frame.payload);
+        void Promise.resolve().then(action).then(value => send({ kind: "retryReply", value }), error => {
           const reference = String(++nextError);
           errors.set(reference, error);
           send({ kind: "retryReply", error: { reference,

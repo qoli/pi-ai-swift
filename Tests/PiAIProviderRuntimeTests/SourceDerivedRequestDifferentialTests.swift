@@ -597,10 +597,13 @@ private func oracleRevision(repository: URL) throws -> String {
     let baseRevision: String
     let revision: String
   }
-  let review = try decode(
-    Review.self, at: repository.appending(path: "Scripts/Conformance/candidate-v1.6.0.json"))
-  try #require(review.baseRevision == lock.revision && review.revision == revision)
-  return review.revision
+  let reviews = try FileManager.default.contentsOfDirectory(
+    at: repository.appending(path: "Scripts/Conformance"), includingPropertiesForKeys: nil
+  ).filter { $0.lastPathComponent.hasPrefix("candidate-v") && $0.pathExtension == "json" }
+    .map { try decode(Review.self, at: $0) }
+    .filter { $0.baseRevision == lock.revision && $0.revision == revision }
+  try #require(reviews.count == 1)
+  return reviews[0].revision
 }
 
 func firstRequestDifference(

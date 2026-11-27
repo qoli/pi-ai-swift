@@ -4,30 +4,35 @@ struct ServerSentEvent: Sendable, Equatable {
   let event: String?
   let data: String
   let id: String?
+  var raw: [String] = []
 }
 
-struct ServerSentEventDecoder: Sendable {
+struct ServerSentEventDecoder: Sendable, Codable {
   private var buffer = Data()
+  private var skipLeadingLF = false
   private var eventName: String?
   private var eventID: String?
   private var dataLines: [String] = []
+  private var rawLines: [String] = []
 
   var pendingLineBytes: Int { buffer.count }
 
   mutating func append(_ chunk: Data) throws -> [ServerSentEvent] {
-    buffer.append(chunk)
     var events: [ServerSentEvent] = []
-    while let newline = buffer.firstIndex(of: 0x0A) {
-      var line = buffer[..<newline]
-      buffer.removeSubrange(...newline)
-      if line.last == 0x0D {
-        line = line.dropLast()
+    for byte in chunk {
+      if skipLeadingLF {
+        skipLeadingLF = false
+        if byte == 0x0A { continue }
       }
-      guard let string = String(data: line, encoding: .utf8) else {
-        throw failure("event stream contains invalid UTF-8")
-      }
-      if let event = processLine(string) {
-        events.append(event)
+      if byte == 0x0D || byte == 0x0A {
+        guard let line = String(data: buffer, encoding: .utf8) else {
+          throw failure("event stream contains invalid UTF-8")
+        }
+        buffer.removeAll(keepingCapacity: true)
+        if let event = processLine(line) { events.append(event) }
+        skipLeadingLF = byte == 0x0D
+      } else {
+        buffer.append(byte)
       }
     }
     return events
@@ -40,29 +45,21 @@ struct ServerSentEventDecoder: Sendable {
         throw failure("event stream contains invalid trailing UTF-8")
       }
       buffer.removeAll()
-      if let event = processLine(line) {
-        events.append(event)
-      }
+      if let event = processLine(line) { events.append(event) }
     }
-    if let event = dispatch() {
-      events.append(event)
-    }
+    skipLeadingLF = false
+    if let event = dispatch() { events.append(event) }
     return events
   }
 
   private mutating func processLine(_ line: String) -> ServerSentEvent? {
-    if line.isEmpty {
-      return dispatch()
-    }
-    if line.first == ":" {
-      return nil
-    }
+    if line.isEmpty { return dispatch() }
+    rawLines.append(line)
+    if line.first == ":" { return nil }
     let components = line.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false)
     let field = String(components[0])
     var value = components.count == 2 ? String(components[1]) : ""
-    if value.first == " " {
-      value.removeFirst()
-    }
+    if value.first == " " { value.removeFirst() }
     switch field {
     case "event": eventName = value
     case "data": dataLines.append(value)
@@ -73,18 +70,15 @@ struct ServerSentEventDecoder: Sendable {
   }
 
   private mutating func dispatch() -> ServerSentEvent? {
-    guard !dataLines.isEmpty else {
+    defer {
       eventName = nil
-      return nil
+      dataLines.removeAll(keepingCapacity: true)
+      rawLines.removeAll(keepingCapacity: true)
     }
-    let event = ServerSentEvent(
-      event: eventName,
-      data: dataLines.joined(separator: "\n"),
-      id: eventID
-    )
-    eventName = nil
-    dataLines.removeAll(keepingCapacity: true)
-    return event
+    guard eventName?.isEmpty == false || !dataLines.isEmpty else { return nil }
+    return ServerSentEvent(
+      event: eventName, data: dataLines.joined(separator: "\n"),
+      id: eventID, raw: rawLines)
   }
 
   private func failure(_ message: String) -> ProviderRuntimeFailure {

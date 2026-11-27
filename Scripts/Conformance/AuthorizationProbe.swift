@@ -296,6 +296,10 @@ enum AuthorizationConformanceProbe {
       metadata["availableModelIDsJSON"] = String(
         decoding: try JSONEncoder().encode(ids), as: UTF8.self)
     }
+    if let ids = raw["availableClassifierModelIds"] {
+      metadata["availableClassifierModelIDsJSON"] = String(
+        decoding: try JSONEncoder().encode(ids), as: UTF8.self)
+    }
     return .oauth(
       .init(
         accessToken: raw.string("access") ?? "", refreshToken: raw.string("refresh") ?? "",

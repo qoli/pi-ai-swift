@@ -123,7 +123,7 @@ enum ClassifierConformanceProbe {
         maximumOutputTokens: nil,
         temperature: options["temperature"].flatMap { ProviderClassifierAdapter.number($0) },
         reasoningEffort: nil, responseSchema: nil, providerOptions: [:],
-        outputModality: .classification),
+        outputModality: .classification, sessionID: options.string("sessionId")),
       connectionOptions: .init(
         headers: options.object("headers")?.mapValues(\.stringValue),
         timeoutMilliseconds: options["timeoutMs"].flatMap { ProviderClassifierAdapter.number($0) },
@@ -152,18 +152,21 @@ enum ClassifierConformanceProbe {
       "stopReason": .string(
         result.finishReason == .cancelled ? "aborted" : result.finishReason.rawValue),
     ]
+    output["responseId"] = result.responseID.map(JSONValue.string)
     output["errorMessage"] = result.errorMessage.map(JSONValue.string)
     if let usage = result.usage {
+      var cost: [String: JSONValue] = [
+        "input": .number(usage.cost.input), "output": .number(usage.cost.output),
+        "cacheRead": .number(usage.cost.cacheRead),
+        "cacheWrite": .number(usage.cost.cacheWrite), "total": .number(usage.cost.total),
+      ]
+      cost["totalFromProvider"] = usage.cost.totalFromProvider.map(JSONValue.bool)
       output["usage"] = .object([
         "input": .number(usage.inputTokens), "output": .number(usage.outputTokens),
-        "cacheRead": .integer(0), "cacheWrite": .integer(0),
-        "totalTokens": .number(usage.inputTokens + usage.outputTokens),
-        "cost": .object([
-          "input": .number(usage.cost.input), "output": .number(usage.cost.output),
-          "cacheRead": .integer(0),
-          "cacheWrite": .integer(0), "total": .number(usage.cost.total),
-          "totalFromProvider": .bool(usage.cost.totalFromProvider ?? false),
-        ]),
+        "cacheRead": .number(usage.cacheReadTokens ?? 0),
+        "cacheWrite": .number(usage.cacheWriteTokens ?? 0),
+        "totalTokens": .number(usage.totalTokens ?? usage.inputTokens + usage.outputTokens),
+        "cost": .object(cost),
       ])
     }
     try ProbeChannel().write("classifierFinished", output)
@@ -186,7 +189,14 @@ private struct ClassifierProbeTransport: ProviderHTTPStreamingTransport {
       headers: (reply.object("headers") ?? [:]).compactMapValues(\.stringValue),
       body: AsyncThrowingStream {
         $0.yield(data)
-        $0.finish()
+        if let message = reply.string("bodyError") {
+          $0.finish(
+            throwing: ProviderRuntimeFailure(
+              code: .transportFailed, message: message,
+              providerID: nil, operation: "conformance.body", causeDescription: nil))
+        } else {
+          $0.finish()
+        }
       })
   }
 }

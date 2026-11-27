@@ -26,11 +26,13 @@ registerHooks({
           IMAGE_PROHIBITED_CONTENT: "IMAGE_PROHIBITED_CONTENT", IMAGE_RECITATION: "IMAGE_RECITATION",
           IMAGE_OTHER: "IMAGE_OTHER", RECITATION: "RECITATION", FINISH_REASON_UNSPECIFIED: "FINISH_REASON_UNSPECIFIED",
           OTHER: "OTHER", LANGUAGE: "LANGUAGE", MALFORMED_FUNCTION_CALL: "MALFORMED_FUNCTION_CALL",
-          UNEXPECTED_TOOL_CALL: "UNEXPECTED_TOOL_CALL", NO_IMAGE: "NO_IMAGE"
+          UNEXPECTED_TOOL_CALL: "UNEXPECTED_TOOL_CALL", NO_IMAGE: "NO_IMAGE",
+          MISSING_THOUGHT_SIGNATURE: "MISSING_THOUGHT_SIGNATURE", MALFORMED_RESPONSE: "MALFORMED_RESPONSE",
+          ESCALATION: "ESCALATION", PUP_LIMITED_DISABLED: "PUP_LIMITED_DISABLED", MODEL_ARMOR: "MODEL_ARMOR"
         });
         export const FunctionCallingConfigMode = Object.freeze({ AUTO: "AUTO", NONE: "NONE", ANY: "ANY", VALIDATED: "VALIDATED" });
         export const ResourceScope = Object.freeze({ COLLECTION: "COLLECTION" });
-        export const ThinkingLevel = Object.freeze({ MINIMAL: "MINIMAL", LOW: "LOW", MEDIUM: "MEDIUM", HIGH: "HIGH" });
+        export const ThinkingLevel = Object.freeze({ MINIMAL: "MINIMAL", LOW: "LOW", MEDIUM: "MEDIUM", HIGH: "HIGH", XHIGH: "XHIGH" });
         export class GoogleGenAI {
           models = {
             generateContentStream: async function* (params) {

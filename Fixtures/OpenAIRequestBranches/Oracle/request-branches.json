@@ -104,6 +104,7 @@
             "input": "abc",
             "name": "sample_tool",
             "namespace": "dynamic_tools",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -125,6 +126,7 @@
             "arguments": "{\"payload\":\"abc\"}",
             "call_id": "call_1_fc_item",
             "name": "sample_tool",
+            "status": "completed",
             "type": "function_call"
           },
           {
@@ -1620,6 +1622,7 @@
             "input": "abc",
             "name": "sample_tool",
             "namespace": "dynamic_tools",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -1641,6 +1644,7 @@
             "arguments": "{\"payload\":\"abc\"}",
             "call_id": "call_1",
             "name": "sample_tool",
+            "status": "completed",
             "type": "function_call"
           },
           {
@@ -1848,6 +1852,7 @@
             "input": "abc",
             "name": "sample_tool",
             "namespace": "dynamic_tools",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -1869,6 +1874,7 @@
             "arguments": "{\"payload\":\"abc\"}",
             "call_id": "call_1",
             "name": "sample_tool",
+            "status": "completed",
             "type": "function_call"
           },
           {
@@ -2035,6 +2041,7 @@
             "input": "abc",
             "name": "sample_tool",
             "namespace": "dynamic_tools",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -2052,6 +2059,7 @@
             "arguments": "{\"payload\":\"abc\"}",
             "call_id": "call_1",
             "name": "sample_tool",
+            "status": "completed",
             "type": "function_call"
           },
           {
@@ -2096,5 +2104,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe"
 }

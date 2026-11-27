@@ -120,7 +120,8 @@ enum ProviderAdaptationFixtures {
         id: "fixture-classify", providerID: provider, modelID: id, messages: [], tools: [],
         options: .init(
           maximumOutputTokens: nil, temperature: nil, reasoningEffort: nil, responseSchema: nil,
-          providerOptions: [:], outputModality: .classification),
+          providerOptions: [:], outputModality: .classification,
+          sessionID: options.string("sessionId")),
         connectionOptions: .init(maximumRetries: options.int("maxRetries")), classifier: classifier)
       var observed: ProviderClassifierResult?
       for try await event in runtime.stream(request) {
@@ -135,18 +136,27 @@ enum ProviderAdaptationFixtures {
         "stopReason": .string(value.finishReason.rawValue),
       ]
       fields["errorMessage"] = value.errorMessage.map(JSONValue.string)
+      fields["responseId"] = value.responseID.map(JSONValue.string)
       if let usage = value.usage {
         fields["usage"] = .object([
           "input": .number(usage.inputTokens), "output": .number(usage.outputTokens),
-          "cacheRead": .integer(0), "cacheWrite": .integer(0),
-          "totalTokens": .number(usage.inputTokens + usage.outputTokens),
+          "cacheRead": .number(usage.cacheReadTokens ?? 0),
+          "cacheWrite": .number(usage.cacheWriteTokens ?? 0),
+          "totalTokens": .number(usage.totalTokens ?? usage.inputTokens + usage.outputTokens),
           "cost": .object([
             "input": .number(usage.cost.input), "output": .number(usage.cost.output),
-            "cacheRead": .integer(0),
-            "cacheWrite": .integer(0), "total": .number(usage.cost.total),
-            "totalFromProvider": .bool(usage.cost.totalFromProvider ?? false),
+            "cacheRead": .number(usage.cost.cacheRead),
+            "cacheWrite": .number(usage.cost.cacheWrite), "total": .number(usage.cost.total),
+
           ]),
         ])
+      }
+      if let authoritative = value.usage?.cost.totalFromProvider {
+        var usage = fields["usage"]!.objectValue!
+        var cost = usage["cost"]!.objectValue!
+        cost["totalFromProvider"] = .bool(authoritative)
+        usage["cost"] = .object(cost)
+        fields["usage"] = .object(usage)
       }
       result = .object(fields)
     }

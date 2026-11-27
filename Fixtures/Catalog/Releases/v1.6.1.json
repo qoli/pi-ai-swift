@@ -1,0 +1,11 @@
+{
+  "version": "1.6.1",
+  "repository": "https://github.com/earendil-works/pi.git",
+  "revision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe",
+  "publishedPackage": {
+    "tarball": "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-1.6.1.tgz",
+    "integrity": "sha512-EyorgVyA2s4MxNl7YOapzOpdxrc8HUgxHEIOo8QRMK35P7PCOsSiWzMLf6ixKl3/obkg7I3wGJWHq+FdbUz43g=="
+  },
+  "catalogSHA256": "e2ae5730da853ceba0f3e883292a07d0fc7d614b053576eab7dca5b2821b2427",
+  "archive": "pi-ai-1.6.1.tgz"
+}

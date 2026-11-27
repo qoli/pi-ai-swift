@@ -27,6 +27,7 @@ enum StandardWireProtocols {
       ProviderClassifierAdapter(protocolID: "cloudflare-workers-ai-system-one"),
       ProviderClassifierAdapter(protocolID: "openai-decisions"),
       ProviderClassifierAdapter(protocolID: "llama-cpp-classify"),
+      ProviderClassifierAdapter(protocolID: "pi-decision"),
     ]
   }
 }

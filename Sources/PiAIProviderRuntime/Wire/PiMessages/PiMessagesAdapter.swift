@@ -495,7 +495,11 @@ private struct PiMessagesEventReducer {
   mutating func reduce(_ event: ServerSentEvent, observation: ProviderWireObservation) async throws
     -> [ProviderEvent]
   {
-    if event.data == "[DONE]" { return [] }
+    if event.data == "[DONE]"
+      || event.data.trimmingCharacters(in: .whitespacesAndNewlines) == "null"
+    {
+      return []
+    }
     guard !isTerminal else {
       throw invalid("pi-messages emitted data after its terminal event")
     }

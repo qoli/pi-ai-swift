@@ -363,7 +363,7 @@ actor ProviderModelStore {
       providerID: providerID,
       allowsHTTP: true
     )
-    let records = try config.models.map { raw in
+    var records = try config.models.map { raw in
       guard !raw.id.isEmpty, !raw.name.isEmpty,
         !raw.input.isEmpty,
         Set(raw.input).isSubset(of: ["text", "image"])
@@ -404,6 +404,20 @@ actor ProviderModelStore {
         baseURL: config.baseUrl,
         metadata: raw.metadata
       )
+    }
+    for raw in config.classifiers ?? [] {
+      guard var value = raw.objectValue, value.string("id") != nil, value.string("name") != nil,
+        value.array("input") != nil, value.object("cost") != nil, value.int("contextWindow") != nil
+      else { continue }
+      value["type"] = .string("classifier")
+      value["api"] = .string("pi-decision")
+      value["provider"] = .string(providerID)
+      value["baseUrl"] = .string(config.baseUrl)
+      if let record = try decodeBundledRecord(
+        .object(value), providerID: providerID, providerBaseURL: config.baseUrl)
+      {
+        records.append(record)
+      }
     }
     try validateUnique(records, providerID: providerID)
     return ProviderModelStoreEntry(
@@ -640,6 +654,7 @@ private struct BundledProviderDocument: Decodable {
 private struct RadiusGatewayConfigDocument: Decodable {
   let baseUrl: String
   let models: [RadiusGatewayModelDocument]
+  let classifiers: [JSONValue]?
 }
 
 private struct RadiusGatewayModelDocument: Decodable {

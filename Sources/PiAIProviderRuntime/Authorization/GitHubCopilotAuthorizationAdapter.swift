@@ -242,6 +242,8 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     }
     var metadata = [
       "baseURL": baseURL.absoluteString,
+      "availableClassifierModelIDsJSON": String(
+        decoding: try JSONEncoder().encode(models.classifiers), as: UTF8.self),
       "availableModelIDs": available.joined(separator: ","),
       "availableModelIDsJSON": String(decoding: try JSONEncoder().encode(available), as: UTF8.self),
     ]
@@ -258,7 +260,7 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
     token: String,
     baseURL: URL,
     maximumRetries: Int
-  ) async throws -> (available: [String], policy: [String]) {
+  ) async throws -> (available: [String], classifiers: [String], policy: [String]) {
     var request = URLRequest(url: baseURL.appending(path: "models"))
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -298,7 +300,14 @@ struct GitHubCopilotOAuthAuthorizationAdapter: ProviderAuthorizationAdapter {
       : Set(
         try BuiltinProviderRegistry.load().providers.first { $0.id == Self.providerID }?.models.map(
           \.id) ?? [])
-    return (available, unconfigured.compactMap { $0.string("id") }.filter { known.contains($0) })
+    let classifiers = data.compactMap { $0.objectValue }.filter {
+      $0.object("capabilities")?.string("type") == "decisions"
+        && $0.object("policy")?.string("state") != "disabled"
+    }.compactMap { $0.string("id") }
+    return (
+      available, classifiers,
+      unconfigured.compactMap { $0.string("id") }.filter { known.contains($0) }
+    )
   }
 
   private func rateLimited(_ original: URLRequest, maximumRetries: Int) async throws

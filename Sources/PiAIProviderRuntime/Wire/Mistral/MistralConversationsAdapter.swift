@@ -868,7 +868,7 @@ private struct MistralEventReducer {
     default:
       throw ProviderRuntimeFailure(
         code: .transportFailed,
-        message: "Provider stopped with: \(value)\(value == "error" ? " (server error)" : "")",
+        message: "Provider stopped with: \(value)",
         providerID: providerID,
         operation: "mistral.event.finish",
         causeDescription: value,

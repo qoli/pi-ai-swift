@@ -841,7 +841,339 @@
           "totalTokens": 14
         }
       }
+    },
+    {
+      "auxiliary": [],
+      "delays": [],
+      "id": "pi-decision-success",
+      "requests": [
+        {
+          "body": {
+            "context": {
+              "questions": {
+                "approved": {
+                  "criteria": {
+                    "false": "No",
+                    "true": "Yes"
+                  },
+                  "instructions": "Approve?",
+                  "type": "bool"
+                }
+              },
+              "state": {
+                "alpha": "synthetic state",
+                "zeta": 1
+              }
+            },
+            "model": "system-one-bool",
+            "options": {
+              "sessionId": "fixture-decision-session"
+            }
+          },
+          "headers": {
+            "authorization": "Bearer fixture-key",
+            "content-type": "application/json"
+          },
+          "url": "https://radius.example/v1/decision"
+        }
+      ],
+      "result": {
+        "answers": {
+          "approved": {
+            "probability": 0.8,
+            "type": "bool"
+          }
+        },
+        "api": "pi-decision",
+        "model": "system-one-bool",
+        "provider": "radius",
+        "responseId": "fixture-decision-response",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 3,
+          "cacheWrite": 1,
+          "cost": {
+            "cacheRead": 0.3,
+            "cacheWrite": 0.4,
+            "input": 0.1,
+            "output": 0.2,
+            "total": 1,
+            "totalFromProvider": true
+          },
+          "input": 12,
+          "output": 2,
+          "totalTokens": 18
+        }
+      }
+    },
+    {
+      "auxiliary": [],
+      "delays": [],
+      "id": "pi-decision-images",
+      "requests": [
+        {
+          "body": {
+            "context": {
+              "images": [
+                {
+                  "data": "AAAA",
+                  "mimeType": "image/png",
+                  "type": "image"
+                }
+              ],
+              "questions": {
+                "approved": {
+                  "criteria": {
+                    "false": "No",
+                    "true": "Yes"
+                  },
+                  "instructions": "Approve?",
+                  "type": "bool"
+                }
+              },
+              "state": {
+                "alpha": "synthetic state",
+                "zeta": 1
+              }
+            },
+            "model": "system-one-bool",
+            "options": {
+              "sessionId": "fixture-decision-session"
+            }
+          },
+          "headers": {
+            "authorization": "Bearer fixture-key",
+            "content-type": "application/json"
+          },
+          "url": "https://radius.example/v1/decision"
+        }
+      ],
+      "result": {
+        "answers": {
+          "approved": {
+            "probability": 0.8,
+            "type": "bool"
+          }
+        },
+        "api": "pi-decision",
+        "model": "system-one-bool",
+        "provider": "radius",
+        "stopReason": "stop"
+      }
+    },
+    {
+      "auxiliary": [],
+      "delays": [],
+      "id": "pi-decision-catalog-cost",
+      "requests": [
+        {
+          "body": {
+            "context": {
+              "questions": {
+                "approved": {
+                  "criteria": {
+                    "false": "No",
+                    "true": "Yes"
+                  },
+                  "instructions": "Approve?",
+                  "type": "bool"
+                }
+              },
+              "state": {
+                "alpha": "synthetic state",
+                "zeta": 1
+              }
+            },
+            "model": "system-one-bool",
+            "options": {
+              "sessionId": "fixture-decision-session"
+            }
+          },
+          "headers": {
+            "authorization": "Bearer fixture-key",
+            "content-type": "application/json"
+          },
+          "url": "https://radius.example/v1/decision"
+        }
+      ],
+      "result": {
+        "answers": {
+          "approved": {
+            "probability": 0.8,
+            "type": "bool"
+          }
+        },
+        "api": "pi-decision",
+        "model": "system-one-bool",
+        "provider": "radius",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 3,
+          "cacheWrite": 1,
+          "cost": {
+            "cacheRead": 1.5e-06,
+            "cacheWrite": 7e-07,
+            "input": 1.2e-05,
+            "output": 4e-06,
+            "total": 1.82e-05,
+            "totalFromProvider": false
+          },
+          "input": 12,
+          "output": 2,
+          "totalTokens": 18
+        }
+      }
+    },
+    {
+      "auxiliary": [],
+      "delays": [],
+      "id": "pi-decision-negative-cost",
+      "requests": [
+        {
+          "body": {
+            "context": {
+              "questions": {
+                "approved": {
+                  "criteria": {
+                    "false": "No",
+                    "true": "Yes"
+                  },
+                  "instructions": "Approve?",
+                  "type": "bool"
+                }
+              },
+              "state": {
+                "alpha": "synthetic state",
+                "zeta": 1
+              }
+            },
+            "model": "system-one-bool",
+            "options": {
+              "sessionId": "fixture-decision-session"
+            }
+          },
+          "headers": {
+            "authorization": "Bearer fixture-key",
+            "content-type": "application/json"
+          },
+          "url": "https://radius.example/v1/decision"
+        }
+      ],
+      "result": {
+        "answers": {
+          "approved": {
+            "probability": 0.8,
+            "type": "bool"
+          }
+        },
+        "api": "pi-decision",
+        "model": "system-one-bool",
+        "provider": "radius",
+        "stopReason": "stop",
+        "usage": {
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "cost": {
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "input": 0,
+            "output": 0,
+            "total": 0
+          },
+          "input": 12,
+          "output": 2,
+          "totalTokens": 14
+        }
+      }
+    },
+    {
+      "auxiliary": [],
+      "delays": [],
+      "id": "pi-decision-invalid-probability",
+      "requests": [
+        {
+          "body": {
+            "context": {
+              "questions": {
+                "approved": {
+                  "criteria": {
+                    "false": "No",
+                    "true": "Yes"
+                  },
+                  "instructions": "Approve?",
+                  "type": "bool"
+                }
+              },
+              "state": {
+                "alpha": "synthetic state",
+                "zeta": 1
+              }
+            },
+            "model": "system-one-bool",
+            "options": {
+              "sessionId": "fixture-decision-session"
+            }
+          },
+          "headers": {
+            "authorization": "Bearer fixture-key",
+            "content-type": "application/json"
+          },
+          "url": "https://radius.example/v1/decision"
+        }
+      ],
+      "result": {
+        "answers": {},
+        "api": "pi-decision",
+        "errorMessage": "Pi Decision returned out-of-range probability for approved: 1.1",
+        "model": "system-one-bool",
+        "provider": "radius",
+        "stopReason": "error"
+      }
+    },
+    {
+      "auxiliary": [],
+      "delays": [],
+      "id": "pi-decision-missing-answer",
+      "requests": [
+        {
+          "body": {
+            "context": {
+              "questions": {
+                "approved": {
+                  "criteria": {
+                    "false": "No",
+                    "true": "Yes"
+                  },
+                  "instructions": "Approve?",
+                  "type": "bool"
+                }
+              },
+              "state": {
+                "alpha": "synthetic state",
+                "zeta": 1
+              }
+            },
+            "model": "system-one-bool",
+            "options": {
+              "sessionId": "fixture-decision-session"
+            }
+          },
+          "headers": {
+            "authorization": "Bearer fixture-key",
+            "content-type": "application/json"
+          },
+          "url": "https://radius.example/v1/decision"
+        }
+      ],
+      "result": {
+        "answers": {},
+        "api": "pi-decision",
+        "errorMessage": "Pi Decision did not return an answer for approved",
+        "model": "system-one-bool",
+        "provider": "radius",
+        "stopReason": "error"
+      }
     }
   ],
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe"
 }

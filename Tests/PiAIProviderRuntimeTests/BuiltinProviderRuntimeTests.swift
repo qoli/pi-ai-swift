@@ -20,7 +20,7 @@ struct BuiltinProviderRuntimeTests {
     )
     let catalog = try await runtime.catalog()
     #expect(catalog.providers.count == 43)
-    #expect(catalog.providers.flatMap(\.models).count == 1_847)
+    #expect(catalog.providers.flatMap(\.models).count == 1_845)
     #expect(catalog.providers.contains { $0.id == "meta" })
     #expect(
       catalog.providers.first { $0.id == "openai" }?.authorizationMethods.map(\.id) == [

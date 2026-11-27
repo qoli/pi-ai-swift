@@ -18,8 +18,11 @@ struct ServerSentEventsTests {
     events += try decoder.finish()
     #expect(
       events == [
-        ServerSentEvent(event: "message", data: "{\"a\":1}\ntwo", id: nil),
-        ServerSentEvent(event: nil, data: "tail", id: "final"),
+        ServerSentEvent(
+          event: "message", data: "{\"a\":1}\ntwo", id: nil,
+          raw: ["event: message", "data: {\"a\":1}", "data: two"]),
+        ServerSentEvent(
+          event: nil, data: "tail", id: "final", raw: [": ping", "id: final", "data: tail"]),
       ]
     )
   }

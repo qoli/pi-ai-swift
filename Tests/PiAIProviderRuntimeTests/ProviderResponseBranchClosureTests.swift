@@ -119,10 +119,15 @@ struct ProviderResponseBranchClosureTests {
             "mistral-unknown-stop",
             "mistral-http-error", "openrouter-provider-error", "openrouter-http-error":
             #expect(failure.code == .transportFailed)
+          case let id where id.hasPrefix("google-finish-"):
+            #expect(failure.code == .transportFailed)
           default:
             #expect(failure.code == .invalidResponse)
           }
-          if ["mistral-error-stop", "mistral-unknown-stop"].contains(scenario.caseID) {
+          if ["mistral-error-stop", "mistral-unknown-stop"].contains(scenario.caseID)
+            || scenario.caseID.hasPrefix("google-prompt-blocked-")
+            || scenario.caseID.hasPrefix("google-finish-")
+          {
             #expect(failure.message == expected.sourceOutcome.errorMessage)
             #expect(
               failure.providerMetadata?.string("rawStopReason")

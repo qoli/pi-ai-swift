@@ -37,6 +37,7 @@ class ConformanceCITests(unittest.TestCase):
             "OPENAI_API_KEY": "synthetic-key", "AWS_PROFILE": "synthetic-profile",
             "GOOGLE_APPLICATION_CREDENTIALS": "/fixture/credential-file",
             "UNRELATED_SESSION": "synthetic-session", "npm_config_userconfig": "/fixture/npmrc",
+            "HOME": "/original-home", "CFFIXED_USER_HOME": "/original-xcode-home",
             "GIT_CONFIG_COUNT": "3", "GIT_CONFIG_KEY_0": "http.proxy",
             "GIT_CONFIG_VALUE_0": "http://proxy.example.test:1234",
             "GIT_CONFIG_KEY_1": "http.version", "GIT_CONFIG_VALUE_1": "HTTP/1.1",
@@ -51,7 +52,7 @@ class ConformanceCITests(unittest.TestCase):
         self.assertEqual(environment["GIT_CONFIG_VALUE_0"], "")
         self.assertEqual(environment["GIT_CONFIG_KEY_1"], "http.proxy")
         self.assertEqual(environment["GIT_CONFIG_KEY_2"], "http.version")
-        for key in ["npm_config_userconfig", "npm_config_globalconfig", "npm_config_cache",
+        for key in ["HOME", "CFFIXED_USER_HOME", "npm_config_userconfig", "npm_config_globalconfig", "npm_config_cache",
                     "CLANG_MODULE_CACHE_PATH", "SWIFTPM_MODULECACHE_OVERRIDE", "PI_AI_SWIFT_UPSTREAM_CACHE"]:
             self.assertTrue(Path(environment[key]).is_relative_to(root))
 

@@ -36,7 +36,9 @@ export async function classify(selectedAPI, model, context, options = {}) {
               child.waiting?.();
               const response = await (options.fetch ?? globalThis.fetch)(value.url, { method: "POST", headers: value.headers,
                 body: Buffer.from(value.body, "base64").toString("utf8"), signal: controller.signal });
-              reply = { status: response.status, headers: Object.fromEntries(response.headers), body: Buffer.from(await response.arrayBuffer()).toString("base64") };
+              reply = { status: response.status, headers: Object.fromEntries(response.headers), body: "" };
+              try { reply.body = Buffer.from(await response.arrayBuffer()).toString("base64"); }
+              catch (error) { reply.bodyError = error.message; }
             } finally { requests.delete(requestID); }
           } else if (stage === "payload") {
             const replacement = await options.onPayload?.(value.payload, model);

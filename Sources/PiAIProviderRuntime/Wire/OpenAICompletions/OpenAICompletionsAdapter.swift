@@ -31,7 +31,7 @@ struct OpenAICompletionsAdapter: WireProtocolAdapter {
               cause: body
             )
           }
-          try await observation.response(response)
+          if (200..<300).contains(response.statusCode) { try await observation.response(response) }
           var decoder = ServerSentEventDecoder()
           var reducer = OpenAICompletionsReducer(
             providerID: request.providerID,
@@ -812,6 +812,7 @@ private struct OpenAICompletionsReducer {
   private var responseModelID: String?
   private var text = ""
   private var reasoning = ""
+  private var nativeFinishReason: String?
   private var rawFinishReason: String?
   private var finishReason: ProviderFinishReason?
   private var toolCalls: [Int: ToolCallState] = [:]
@@ -923,6 +924,9 @@ private struct OpenAICompletionsReducer {
     for (choiceIndex, choiceValue) in (object.array("choices") ?? []).enumerated() {
       guard let choice = choiceValue.objectValue else {
         throw invalid("completion choice is not an object")
+      }
+      if isOpenRouter, let native = choice.string("native_finish_reason"), !native.isEmpty {
+        nativeFinishReason = native
       }
       if let reason = choice.string("finish_reason"), !reason.isEmpty {
         rawFinishReason = reason
@@ -1049,6 +1053,20 @@ private struct OpenAICompletionsReducer {
       finishReason = toolCalls.isEmpty ? .stop : .toolCalls
       rawFinishReason = nil
     }
+    if finishReason == .stop, let nativeFinishReason,
+      ![
+        "stop", "end_turn", "stop_sequence", "eos", "complete", "completed", "pause_turn",
+        "compaction", "end_of_stream",
+      ].contains(nativeFinishReason.lowercased()),
+      toolCalls.isEmpty, text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    {
+      throw ProviderRuntimeFailure(
+        code: .transportFailed,
+        message:
+          "OpenRouter returned an empty response (native_finish_reason: \(nativeFinishReason))",
+        providerID: providerID, operation: "openai-completions.event.finish", causeDescription: nil,
+        providerMetadata: failureMetadata())
+    }
     guard let finishReason else { return events }
     if let usage { events.append(.usage(usage)) }
     events.append(responseSnapshot(finishReason, completedTools: events))
@@ -1070,7 +1088,10 @@ private struct OpenAICompletionsReducer {
     if let rawFinishReason {
       throw ProviderRuntimeFailure(
         code: .transportFailed,
-        message: "Provider finish_reason: \(rawFinishReason)",
+        message: "Provider finish_reason: \(rawFinishReason)"
+          + (nativeFinishReason.flatMap {
+            $0 != rawFinishReason ? " (native_finish_reason: \($0))" : nil
+          } ?? ""),
         providerID: providerID,
         operation: "openai-completions.event.finish",
         causeDescription: rawFinishReason,
@@ -1080,11 +1101,21 @@ private struct OpenAICompletionsReducer {
     throw invalid("Stream ended without finish_reason")
   }
 
+  private var combinedFinishReason: String? {
+    guard let rawFinishReason else { return nil }
+    guard let nativeFinishReason, nativeFinishReason != rawFinishReason else {
+      return rawFinishReason
+    }
+    return rawFinishReason + "." + nativeFinishReason
+  }
+
   private func failureMetadata() -> [String: JSONValue]? {
     var result: [String: JSONValue] = [:]
     if let responseID { result["responseId"] = .string(responseID) }
     if let responseModelID { result["responseModel"] = .string(responseModelID) }
-    if let rawFinishReason { result["rawStopReason"] = .string(rawFinishReason) }
+    if let rawFinishReason {
+      result["rawStopReason"] = .string(combinedFinishReason ?? rawFinishReason)
+    }
     return result.isEmpty ? nil : result
   }
 
@@ -1130,7 +1161,7 @@ private struct OpenAICompletionsReducer {
         content: content,
         usage: usage,
         finishReason: reason,
-        rawFinishReason: rawFinishReason,
+        rawFinishReason: combinedFinishReason,
         timestampMilliseconds: Int64(Date().timeIntervalSince1970 * 1_000)
       ))
   }

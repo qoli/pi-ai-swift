@@ -1,5 +1,5 @@
 {
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe",
   "cases": [
     {
       "id": "system-one-bool",
@@ -680,6 +680,357 @@
           "input_tokens": 12,
           "output_tokens": 2
         }
+      }
+    },
+    {
+      "id": "pi-decision-success",
+      "kind": "classifier",
+      "model": {
+        "api": "pi-decision",
+        "provider": "radius",
+        "baseUrl": "https://radius.example/v1",
+        "id": "system-one-bool",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0,
+        "sessionId": "fixture-decision-session"
+      },
+      "response": {
+        "answers": {
+          "approved": {
+            "type": "bool",
+            "probability": 0.8
+          }
+        },
+        "responseId": "fixture-decision-response",
+        "usage": {
+          "input": 12,
+          "output": 2,
+          "cacheRead": 3,
+          "cacheWrite": 1,
+          "totalTokens": 18,
+          "cost": {
+            "input": 0.1,
+            "output": 0.2,
+            "cacheRead": 0.3,
+            "cacheWrite": 0.4,
+            "total": 1,
+            "totalFromProvider": true
+          }
+        }
+      }
+    },
+    {
+      "id": "pi-decision-images",
+      "kind": "classifier",
+      "model": {
+        "api": "pi-decision",
+        "provider": "radius",
+        "baseUrl": "https://radius.example/v1",
+        "id": "system-one-bool",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text",
+          "image"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        },
+        "images": [
+          {
+            "type": "image",
+            "data": "AAAA",
+            "mimeType": "image/png"
+          }
+        ]
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0,
+        "sessionId": "fixture-decision-session"
+      },
+      "response": {
+        "answers": {
+          "approved": {
+            "type": "bool",
+            "probability": 0.8
+          }
+        }
+      }
+    },
+    {
+      "id": "pi-decision-catalog-cost",
+      "kind": "classifier",
+      "model": {
+        "api": "pi-decision",
+        "provider": "radius",
+        "baseUrl": "https://radius.example/v1",
+        "id": "system-one-bool",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "tiers": [
+            {
+              "inputTokensAbove": 10,
+              "input": 1,
+              "output": 2,
+              "cacheRead": 0.5,
+              "cacheWrite": 0.7
+            }
+          ]
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0,
+        "sessionId": "fixture-decision-session"
+      },
+      "response": {
+        "answers": {
+          "approved": {
+            "type": "bool",
+            "probability": 0.8
+          }
+        },
+        "usage": {
+          "input": 12,
+          "output": 2,
+          "cacheRead": 3,
+          "cacheWrite": 1
+        }
+      }
+    },
+    {
+      "id": "pi-decision-negative-cost",
+      "kind": "classifier",
+      "model": {
+        "api": "pi-decision",
+        "provider": "radius",
+        "baseUrl": "https://radius.example/v1",
+        "id": "system-one-bool",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0,
+        "sessionId": "fixture-decision-session"
+      },
+      "response": {
+        "answers": {
+          "approved": {
+            "type": "bool",
+            "probability": 0.8
+          }
+        },
+        "usage": {
+          "input": 12,
+          "output": 2,
+          "cost": {
+            "input": -0.1,
+            "output": -0.2,
+            "cacheRead": -0.3,
+            "cacheWrite": -0.4,
+            "total": -1
+          }
+        }
+      }
+    },
+    {
+      "id": "pi-decision-invalid-probability",
+      "kind": "classifier",
+      "model": {
+        "api": "pi-decision",
+        "provider": "radius",
+        "baseUrl": "https://radius.example/v1",
+        "id": "system-one-bool",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0,
+        "sessionId": "fixture-decision-session"
+      },
+      "response": {
+        "answers": {
+          "approved": {
+            "type": "bool",
+            "probability": 1.1
+          }
+        }
+      }
+    },
+    {
+      "id": "pi-decision-missing-answer",
+      "kind": "classifier",
+      "model": {
+        "api": "pi-decision",
+        "provider": "radius",
+        "baseUrl": "https://radius.example/v1",
+        "id": "system-one-bool",
+        "name": "Fixture",
+        "type": "classifier",
+        "input": [
+          "text"
+        ],
+        "contextWindow": 1000,
+        "cost": {
+          "input": 0.2,
+          "output": 0.4,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        }
+      },
+      "context": {
+        "state": {
+          "zeta": 1,
+          "alpha": "synthetic state"
+        },
+        "questions": {
+          "approved": {
+            "type": "bool",
+            "instructions": "Approve?",
+            "criteria": {
+              "true": "Yes",
+              "false": "No"
+            }
+          }
+        }
+      },
+      "options": {
+        "apiKey": "fixture-key",
+        "maxRetries": 0,
+        "sessionId": "fixture-decision-session"
+      },
+      "response": {
+        "answers": {}
       }
     }
   ]

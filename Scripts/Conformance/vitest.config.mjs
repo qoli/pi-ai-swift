@@ -36,7 +36,7 @@ export default defineConfig({
       { find: /^@earendil-works\/pi-telemetry$/, replacement: path.join(upstream, "packages/telemetry/src/index.ts") },
       { find: /^vitest$/, replacement: path.join(path.dirname(require.resolve("vitest/package.json")), "dist/index.js") },
       { find: /^@vitest\/runner$/, replacement: require.resolve("@vitest/runner") },
-      ...["openai", "@anthropic-ai/sdk", "@google/genai", "@aws-sdk/client-bedrock-runtime", "@smithy/core/event-streams", "@smithy/node-http-handler"].map(name => ({
+      ...["openai", "@anthropic-ai/sdk", "@google/genai", "@aws-sdk/client-bedrock-runtime", "@smithy/core/event-streams", "@smithy/node-http-handler", "@aws-sdk/credential-provider-node", "http-proxy-agent", "https-proxy-agent"].map(name => ({
         find: name, replacement: require.resolve(name),
       })),
     ],
@@ -65,6 +65,14 @@ export default defineConfig({
       if (implementation === "swift" && id === path.join(upstream, "packages/ai/src/api/bedrock-converse-stream.lazy.ts")) {
         return { code: `import {stream as __piStream, streamSimple as __piStreamSimple} from ${JSON.stringify(bridge)};\n`
           + code + `\nsetBedrockProviderModule({stream: __piStream, streamSimple: __piStreamSimple});`, map: null };
+      }
+      if (implementation === "upstream" && id.endsWith("/utils/sse.ts")) {
+        return { code: `import {trace} from ${JSON.stringify(path.join(directory, "upstream-trace.mjs"))};\n`
+          + code.replace("export class SseDecoder", "class OriginalSseDecoder")
+          + `\nexport class SseDecoder extends OriginalSseDecoder {
+            push(bytes) { return trace("sse", undefined, () => super.push(bytes)); }
+            end() { return trace("sse", undefined, () => super.end()); }
+          }`, map: null };
       }
       const factory = builtinFactories.get(id);
       if (factory) {
@@ -222,6 +230,9 @@ export default defineConfig({
         return path.join(directory, "offline-credentials.mjs");
       }
       if (implementation !== "swift") return;
+      if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/utils/sse.ts")) {
+        return path.join(directory, "sse.mjs");
+      }
       if (importer && path.resolve(path.dirname(importer), source) === path.join(upstream, "packages/ai/src/auth/resolve.ts")) {
         return path.join(directory, "auth-resolution.mjs");
       }
@@ -298,7 +309,7 @@ export default defineConfig({
       if (!importer) return;
       const absolute = path.resolve(path.dirname(importer), source);
       if (absolute.startsWith(path.join(upstream, "packages/ai/src/api/")) &&
-        ["typesafe-system-one.ts", "cloudflare-workers-ai-system-one.ts", "openai-decisions.ts", "llama-cpp-classify.ts"].includes(path.basename(absolute))) {
+        ["typesafe-system-one.ts", "cloudflare-workers-ai-system-one.ts", "openai-decisions.ts", "llama-cpp-classify.ts", "pi-decision.ts"].includes(path.basename(absolute))) {
         return "\0pi-native-classifier/" + path.basename(absolute, ".ts");
       }
       if (absolute === path.join(upstream, "packages/ai/src/providers/opencode-headers.ts")) return path.join(directory, "opencode-headers.mjs");

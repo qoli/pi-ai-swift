@@ -76,7 +76,7 @@ enum ProviderReasoning {
       }
       if ["google-generative-ai", "google-vertex"].contains(protocolID), effort != .off,
         let mapped = map[effort.rawValue]?.stringValue,
-        !["minimal", "low", "medium", "high"].contains(mapped.lowercased())
+        !["minimal", "low", "medium", "high", "xhigh"].contains(mapped.lowercased())
       {
         return false
       }

@@ -921,6 +921,7 @@
               "arguments": "{\"city\":\"Tokyo\"}",
               "call_id": "call-second",
               "name": "weather2",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -929,6 +930,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -1498,6 +1500,7 @@
               "arguments": "{\"city\":\"Tokyo\"}",
               "call_id": "call-second",
               "name": "weather2",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -1506,6 +1509,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -1709,6 +1713,7 @@
               "arguments": "{\"city\":\"Tokyo\"}",
               "call_id": "call-second",
               "name": "weather2",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -1717,6 +1722,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -2012,6 +2018,7 @@
               "arguments": "{\"city\":\"Taipei\"}",
               "call_id": "call_prior_fc_prior",
               "name": "weather",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -2378,6 +2385,7 @@
               "call_id": "call_prior",
               "id": "fc_16b5ynxwq506d",
               "name": "weather",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -2514,6 +2522,7 @@
               "arguments": "{\"city\":\"Taipei\"}",
               "call_id": "call_prior_fc_prior",
               "name": "weather",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -2753,6 +2762,7 @@
               "arguments": "{\"city\":\"Taipei\"}",
               "call_id": "call_prior_fc_prior",
               "name": "weather",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -3119,6 +3129,7 @@
               "call_id": "call_prior",
               "id": "fc_16b5ynxwq506d",
               "name": "weather",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -3255,6 +3266,7 @@
               "arguments": "{\"city\":\"Taipei\"}",
               "call_id": "call_prior_fc_prior",
               "name": "weather",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -3530,6 +3542,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -3717,6 +3730,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -4044,6 +4058,7 @@
               "arguments": "{\"city\":\"Tokyo\"}",
               "call_id": "call-second",
               "name": "weather2",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -4052,6 +4067,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -4659,6 +4675,7 @@
               "arguments": "{\"city\":\"Tokyo\"}",
               "call_id": "call-second",
               "name": "weather2",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -4667,6 +4684,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -4895,6 +4913,7 @@
               "arguments": "{\"city\":\"Tokyo\"}",
               "call_id": "call-second",
               "name": "weather2",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -4903,6 +4922,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -5159,6 +5179,7 @@
               "input": "Taipei",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "custom_tool_call"
             },
             {
@@ -5245,6 +5266,7 @@
               "input": "Taipei",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "custom_tool_call"
             },
             {
@@ -5332,6 +5354,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -5483,6 +5506,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -5651,6 +5675,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -6062,6 +6087,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -6216,6 +6242,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -6488,6 +6515,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -6897,6 +6925,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -7049,6 +7078,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -7319,6 +7349,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -7730,6 +7761,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -7884,6 +7916,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -8144,6 +8177,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -8553,6 +8587,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -8704,6 +8739,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -8973,6 +9009,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -9420,6 +9457,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -9596,6 +9634,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -9886,6 +9925,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -10329,6 +10369,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -10496,6 +10537,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -10763,6 +10805,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -11172,6 +11215,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -11323,6 +11367,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -11573,6 +11618,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -11995,6 +12041,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -12150,6 +12197,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -12418,6 +12466,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -12840,6 +12889,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -12995,6 +13045,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -13263,6 +13314,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -13685,6 +13737,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -13840,6 +13893,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -14108,6 +14162,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -14530,6 +14585,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -14685,6 +14741,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -14947,6 +15004,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -15365,6 +15423,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -15516,6 +15575,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -15783,6 +15843,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -16217,6 +16278,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -16378,6 +16440,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -16644,6 +16707,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -17046,6 +17110,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -17197,6 +17262,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -17455,6 +17521,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -17864,6 +17931,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -18015,6 +18083,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -18281,6 +18350,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -18692,6 +18762,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -18844,6 +18915,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -19103,6 +19175,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -19513,6 +19586,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -19666,6 +19740,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -19934,6 +20009,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -20368,6 +20444,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -20529,6 +20606,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -20725,6 +20803,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -20809,6 +20888,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -20899,6 +20979,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -21058,6 +21139,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -21472,6 +21554,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -21625,6 +21708,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -21887,6 +21971,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -22311,6 +22396,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -22463,6 +22549,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -22725,6 +22812,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -23123,6 +23211,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -23275,6 +23364,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -23534,6 +23624,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -23943,6 +24034,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -24094,6 +24186,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -24355,6 +24448,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -24801,6 +24895,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -24965,6 +25060,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -25223,6 +25319,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -25632,6 +25729,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -25783,6 +25881,7 @@
               "id": "fc_prior",
               "name": "weather",
               "namespace": "fixture.namespace",
+              "status": "completed",
               "type": "function_call"
             },
             {
@@ -25920,5 +26019,5 @@
   },
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/earendil-works/pi.git",
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe"
 }

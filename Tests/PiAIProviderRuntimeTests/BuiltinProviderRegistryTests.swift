@@ -26,9 +26,9 @@ struct BuiltinProviderRegistryTests {
   @Test
   func bundledCatalogPreservesPinnedProviderAndModelInventory() throws {
     let registry = try BuiltinProviderRegistry.load()
-    #expect(registry.upstreamRevision == "faac585884ae2c013a6b1400f3e9e77f10b34bac")
+    #expect(registry.upstreamRevision == "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe")
     #expect(registry.providers.count == 43)
-    #expect(registry.providers.flatMap(\.models).count == 1_847)
+    #expect(registry.providers.flatMap(\.models).count == 1_845)
 
     let kimi = try #require(
       registry.providers.first { $0.id == "kimi-coding" }
@@ -58,8 +58,8 @@ struct BuiltinProviderRegistryTests {
     let openRouter = try #require(
       registry.providers.first { $0.id == "openrouter" }
     )
-    #expect(openRouter.models.count == 530)
-    #expect(openRouter.modelConfigurations.count == 535)
+    #expect(openRouter.models.count == 525)
+    #expect(openRouter.modelConfigurations.count == 530)
     let overlapping = try #require(
       openRouter.models.first { $0.id == "google/gemini-3-pro-image" }
     )

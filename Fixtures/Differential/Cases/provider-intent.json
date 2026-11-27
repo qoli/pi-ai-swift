@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe",
   "cases": [
     {
       "id": "bedrock.openai.gpt-oss-120b-1:0.minimal",
@@ -4329,8 +4329,7 @@
       },
       "options": {
         "reasoningEffort": "xhigh"
-      },
-      "expectError": true
+      }
     },
     {
       "id": "google-generative-ai.thinking-invalid-disabled-mapping",
@@ -9803,7 +9802,7 @@
       "userContent": [
         {
           "type": "text",
-          "text": "\ufeff"
+          "text": "﻿"
         }
       ]
     },
@@ -9835,7 +9834,7 @@
       "userContent": [
         {
           "type": "text",
-          "text": "\u0085"
+          "text": ""
         }
       ]
     },
@@ -9876,7 +9875,7 @@
       "toolResultContent": [
         {
           "type": "text",
-          "text": "\ufeff"
+          "text": "﻿"
         }
       ],
       "omitFollowup": true
@@ -9918,7 +9917,7 @@
       "toolResultContent": [
         {
           "type": "text",
-          "text": "\u0085"
+          "text": ""
         }
       ],
       "omitFollowup": true
@@ -9948,7 +9947,7 @@
       "assistantContent": [
         {
           "type": "text",
-          "text": "\ufeff"
+          "text": "﻿"
         },
         {
           "type": "text",
@@ -9986,7 +9985,7 @@
       "assistantContent": [
         {
           "type": "text",
-          "text": "\u0085"
+          "text": ""
         },
         {
           "type": "text",

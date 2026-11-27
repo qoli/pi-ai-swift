@@ -1817,19 +1817,24 @@
         "Sources/PiAIProviderRuntime/BuiltinProviderRuntime.swift",
         "Sources/PiAIProviderRuntime/Catalog/BuiltinProviderRegistry.swift",
         "Sources/PiAIProviderRuntime/Catalog/ProviderModelStore.swift",
-        "Sources/PiAIProviderRuntime/Authorization/RadiusAuthorizationAdapter.swift"
+        "Sources/PiAIProviderRuntime/Authorization/RadiusAuthorizationAdapter.swift",
+        "Sources/PiAIProviderRuntime/Wire/Classifier/ProviderClassifierAdapter.swift",
+        "Sources/PiAIProviderRuntime/Runtime/StandardWireProtocols.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/auth/oauth/radius.ts",
         "packages/ai/src/providers/radius-config.ts",
         "packages/ai/src/providers/radius.models.ts",
-        "packages/ai/src/providers/radius.ts"
+        "packages/ai/src/providers/radius.ts",
+        "packages/ai/src/api/pi-decision.ts",
+        "packages/ai/src/api/pi-decision.lazy.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/providers.test.ts",
         "packages/ai/test/radius-provider.test.ts",
-        "packages/ai/test/radius-oauth.test.ts"
+        "packages/ai/test/radius-oauth.test.ts",
+        "packages/ai/test/pi-decision.test.ts"
       ],
       "dependsOn": [
         "builtin-provider-registry",
@@ -1852,7 +1857,8 @@
         "Tests/PiAIProviderRuntimeTests/RadiusCatalogTests.swift",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testRadiusCatalogMatchesPinnedSource",
         "Scripts/Conformance/RadiusCatalogProbe.swift",
-        "Scripts/Conformance/radius-provider.mjs"
+        "Scripts/Conformance/radius-provider.mjs",
+        "Tests/PiAIProviderRuntimeTests/ProviderAdaptationTests.swift#nativeRuntimeMatchesPinnedAdaptationOracle"
       ],
       "requiredGates": [
         "swift-test"
@@ -2339,7 +2345,8 @@
         "packages/ai/src/providers/data/opencode-go.json",
         "packages/ai/src/utils/retry.ts",
         "packages/ai/src/api/strict-tool-limits.ts",
-        "packages/ai/src/session-resources.ts"
+        "packages/ai/src/session-resources.ts",
+        "packages/ai/src/utils/sse.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/anthropic-empty-thinking-signature-compat.test.ts",
@@ -2670,7 +2677,8 @@
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderStreamingJSON.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderRequestRetry.swift",
         "Sources/PiAIProviderRuntime/Wire/Common/ProviderToolDeclarationMode.swift",
-        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift"
+        "Sources/PiAIProviderRuntime/ProviderToolArgumentsUpdate.swift",
+        "Tests/PiAIProviderRuntimeTests/OracleProcess.swift"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
@@ -2700,7 +2708,9 @@
         "packages/ai/src/utils/transcript.ts",
         "packages/ai/src/utils/uuid.ts",
         "packages/ai/src/utils/version.ts",
-        "packages/ai/src/utils/string-enum.ts"
+        "packages/ai/src/utils/string-enum.ts",
+        "packages/ai/src/utils/sse.ts",
+        "packages/ai/src/utils/openrouter-finish-reason.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/abort.test.ts",
@@ -2808,7 +2818,8 @@
         "packages/ai/test/opencode-provider-headers.test.ts",
         "packages/ai/test/stream.test.ts",
         "packages/ai/test/streaming-tool-arguments.test.ts",
-        "packages/ai/test/google-stop-reason-continuation.test.ts"
+        "packages/ai/test/google-stop-reason-continuation.test.ts",
+        "packages/ai/test/google-stream-errors.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2853,7 +2864,8 @@
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testClientIdentityHeadersMatchPinnedSource",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGoogleSignedToolCallMatchesStreamAndSnapshot",
         "Scripts/Conformance/StreamLifetime.swift",
-        "Scripts/Conformance/memory-observer.mjs"
+        "Scripts/Conformance/memory-observer.mjs",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGooglePromptBlocksAndAdditionalStopReasonsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -2885,7 +2897,8 @@
         "packages/ai/test/google-thinking-level-map.test.ts",
         "packages/ai/test/google-thinking-signature.test.ts",
         "packages/ai/test/stream.test.ts",
-        "packages/ai/test/streaming-tool-arguments.test.ts"
+        "packages/ai/test/streaming-tool-arguments.test.ts",
+        "packages/ai/test/google-stream-errors.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -2939,7 +2952,8 @@
         "Scripts/Conformance/CloudProbe.swift",
         "Scripts/Conformance/cloud-authorization.mjs",
         "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testFederationReusesTheNativeCredentialSource",
-        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource"
+        "Tests/PiAIProviderRuntimeTests/CloudAuthorizationTests.swift#federationReusesOnlyTheCurrentCredentialSource",
+        "Tests/iOSConformance/ProviderRuntimeConformanceTests.swift#testGooglePromptBlocksAndAdditionalStopReasonsMatchPinnedSource"
       ],
       "requiredGates": [
         "swift-test"
@@ -3321,7 +3335,8 @@
         "packages/ai/test/streaming-tool-arguments.test.ts",
         "packages/ai/test/transcript-tool-changes.test.ts",
         "packages/ai/test/openai-responses-input-transformations.test.ts",
-        "packages/ai/test/openai-responses-prompt-cache.test.ts"
+        "packages/ai/test/openai-responses-prompt-cache.test.ts",
+        "packages/ai/test/openai-responses-tool-call-replay.test.ts"
       ],
       "dependsOn": [
         "canonical-request-event-dtos",
@@ -3499,7 +3514,7 @@
     {
       "id": "provider-typesafe-classifiers",
       "providerID": "typesafe",
-      "responsibility": "Native ordered classifier questions, images, answers, usage, catalog routes and four classifier protocols. Host Models registry and availability remain caller-owned.",
+      "responsibility": "Native ordered classifier questions, images, answers, usage, catalog routes and five classifier protocols. Host Models registry and availability remain caller-owned.",
       "status": "partial",
       "swiftPaths": [
         "Sources/PiAIProviderRuntime/ProviderClassifier.swift",
@@ -3522,20 +3537,24 @@
         "packages/ai/src/api/llama-cpp-classify.lazy.ts",
         "packages/ai/src/api/openai-decisions.ts",
         "packages/ai/src/api/openai-decisions.lazy.ts",
-        "packages/ai/src/api/classifier-shared.ts"
+        "packages/ai/src/api/classifier-shared.ts",
+        "packages/ai/src/api/pi-decision.ts",
+        "packages/ai/src/api/pi-decision.lazy.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/typesafe-system-one.test.ts",
         "packages/ai/test/cloudflare-workers-ai-system-one.test.ts",
         "packages/ai/test/classifier-models.test.ts",
         "packages/ai/test/llama-cpp-classify.test.ts",
-        "packages/ai/test/openai-decisions.test.ts"
+        "packages/ai/test/openai-decisions.test.ts",
+        "packages/ai/test/pi-decision.test.ts"
       ],
       "classifierProtocolIDs": [
         "typesafe-system-one",
         "cloudflare-workers-ai-system-one",
         "llama-cpp-classify",
-        "openai-decisions"
+        "openai-decisions",
+        "pi-decision"
       ],
       "dependsOn": [],
       "evidence": [
@@ -3560,7 +3579,7 @@
       ],
       "supportDisposition": "supported",
       "liveVerificationStatus": "notRun",
-      "conformanceBoundary": "Six original classifier suites are adopted. Live image cases keep their upstream credential skips. Classifier routes are verified separately from chat/image stream branch inventories; caller-only Models assertions are not counted as Native classifier behavior."
+      "conformanceBoundary": "Original classifier suites are adopted. Live image cases keep their upstream credential skips. Classifier routes are verified separately from chat/image stream branch inventories; caller-only Models assertions are not counted as Native classifier behavior."
     },
     {
       "id": "optional-client-identity-and-login",
@@ -3650,12 +3669,18 @@
       "responsibility": "Review the complete pinned upstream suite inventory and compare unchanged original assertions with actual Native operations and dispatch, keeping omissions, skips, bridge/interface gaps and mismatches explicit.",
       "status": "partial",
       "swiftPaths": [
-        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift"
+        "Sources/PiAIProviderRuntime/Runtime/ProviderRuntimeKernel.swift",
+        "Sources/PiAIProviderRuntime/Wire/Classifier/ProviderClassifierAdapter.swift",
+        "Sources/PiAIProviderRuntime/ProviderClassifier.swift",
+        "Scripts/Conformance/sse.mjs"
       ],
       "plannedSwiftPaths": [],
       "upstreamPaths": [
         "packages/ai/src/models.ts",
-        "packages/ai/src/types.ts"
+        "packages/ai/src/types.ts",
+        "packages/ai/src/api/pi-decision.ts",
+        "packages/ai/src/api/classifier-shared.ts",
+        "packages/ai/src/api/system-one-shared.ts"
       ],
       "upstreamTestPaths": [
         "packages/ai/test/provider-error-body-regression.test.ts",
@@ -3804,7 +3829,14 @@
         "packages/ai/test/zai-coding-plan-models.test.ts",
         "packages/ai/test/zen.test.ts",
         "packages/ai/test/streaming-json.test.ts",
-        "packages/ai/test/oauth-device-code.test.ts"
+        "packages/ai/test/oauth-device-code.test.ts",
+        "packages/ai/test/bedrock-proxy-credentials.test.ts",
+        "packages/ai/test/claude-model-generation.test.ts",
+        "packages/ai/test/google-stream-errors.test.ts",
+        "packages/ai/test/openai-responses-tool-call-replay.test.ts",
+        "packages/ai/test/pi-decision.test.ts",
+        "packages/ai/test/provider-error-response.test.ts",
+        "packages/ai/test/sse.test.ts"
       ],
       "dependsOn": [
         "differential-fixture-harness"

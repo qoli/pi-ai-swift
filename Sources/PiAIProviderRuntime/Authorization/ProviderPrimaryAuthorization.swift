@@ -181,17 +181,20 @@ struct ProviderPrimaryAuthorization: Sendable {
     guard case .oauth(let oauth) = credential else { return models }
     if providerID == "openai" { return models.filter { $0.outputModality != .classification } }
     guard providerID == "github-copilot" else { return models }
-    let ids: [String]
-    if let raw = oauth.metadata["availableModelIDsJSON"] {
-      guard let value = try? JSONValue(jsonData: Data(raw.utf8)), let values = value.arrayValue,
+    func ids(_ key: String) -> [String]? {
+      if let raw = oauth.metadata[key + "JSON"],
+        let value = try? JSONValue(jsonData: Data(raw.utf8)), let values = value.arrayValue,
         values.allSatisfy({ $0.stringValue != nil })
-      else { return models }
-      ids = values.compactMap(\.stringValue)
-    } else if let raw = oauth.metadata["availableModelIDs"] {
-      ids = raw.isEmpty ? [] : raw.components(separatedBy: ",")
-    } else {
-      return models
+      {
+        return values.compactMap(\.stringValue)
+      }
+      return oauth.metadata[key].map { $0.isEmpty ? [] : $0.components(separatedBy: ",") }
     }
-    return models.filter { ids.contains($0.modelID) }
+    let chat = ids("availableModelIDs")
+    let classifiers = ids("availableClassifierModelIDs")
+    return models.filter {
+      let available = $0.outputModality == .classification ? classifiers : chat
+      return available?.contains($0.modelID) ?? true
+    }
   }
 }

@@ -7,7 +7,7 @@ import Foundation
 struct ProviderClassifierAdapter: WireProtocolAdapter {
   static let protocolIDs: Set<String> = [
     "typesafe-system-one", "cloudflare-workers-ai-system-one", "openai-decisions",
-    "llama-cpp-classify",
+    "llama-cpp-classify", "pi-decision",
   ]
   let protocolID: String
 
@@ -15,6 +15,7 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
     switch protocolID {
     case "cloudflare-workers-ai-system-one": "Cloudflare Workers AI"
     case "openai-decisions": "OpenAI Decisions"
+    case "pi-decision": "Pi Decision"
     case "llama-cpp-classify": "llama.cpp"
     default: "System One API"
     }
@@ -41,6 +42,7 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
   ) async -> ProviderClassifierResult {
     let timestamp = Int64(context.clock.now().timeIntervalSince1970 * 1_000)
     var usage: ProviderClassifierUsage?
+    var responseID: String?
     do {
       guard context.model.protocolID == protocolID else {
         throw error("Unsupported classifier API: " + context.model.protocolID)
@@ -57,7 +59,33 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
       }
       var body: [String: JSONValue]
       var headers: [String: String] = [:]
-      if protocolID == "openai-decisions" {
+      if protocolID == "pi-decision" {
+        guard input.images.isEmpty || context.model.capabilities.imageInput else {
+          throw error("\(label) model \(request.modelID) does not support image input")
+        }
+        var inner: [String: JSONValue] = [
+          "state": input.state,
+          "questions": .orderedObject(
+            input.questions.map {
+              var value = $0.systemOneQuestion.objectValue!
+              if case .bool = $0.kind { value["type"] = .string("bool") }
+              return .init($0.id, .object(value))
+            }),
+        ]
+        if !input.images.isEmpty {
+          inner["images"] = .array(
+            input.images.map {
+              .object([
+                "type": .string("image"), "data": .string($0.data),
+                "mimeType": .string($0.mimeType),
+              ])
+            })
+        }
+        body = ["model": .string(request.modelID), "context": .object(inner)]
+        if let session = request.options.sessionID {
+          body["options"] = .object(["sessionId": .string(session)])
+        }
+      } else if protocolID == "openai-decisions" {
         body = [
           "model": .string(request.modelID), "input": try decisionInput(input),
           "questions": .array(input.questions.map(decisionQuestion)),
@@ -94,22 +122,30 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
         }
       }
       let baseURL =
-        protocolID == "typesafe-system-one" && request.providerID == "github-copilot"
+        ["typesafe-system-one", "openai-decisions"].contains(protocolID)
+          && request.providerID == "github-copilot"
         ? context.baseURL.appending(path: "v1") : context.baseURL
       let endpoint = baseURL.appending(
-        path: protocolID == "openai-decisions"
-          ? "decisions" : protocolID == "cloudflare-workers-ai-system-one" ? "run" : "systemone")
+        path: protocolID == "pi-decision"
+          ? "decision"
+          : protocolID == "openai-decisions"
+            ? "decisions" : protocolID == "cloudflare-workers-ai-system-one" ? "run" : "systemone")
       let raw = try await post(
         endpoint, body: .object(body), request: request, context: context,
         transport: transport, observe: true, defaultHeaders: headers,
         noRetryStatuses: protocolID == "openai-decisions" ? [504] : [])
       let output = try unwrap(raw)
-      usage = try parseUsage(output["usage"], context: context)
+      let reportedID = output.string(protocolID == "pi-decision" ? "responseId" : "id")
+      responseID = reportedID?.isEmpty == false ? reportedID : nil
+      usage =
+        try protocolID == "pi-decision"
+        ? piUsage(output["usage"], context: context) : parseUsage(output["usage"], context: context)
       let answers = try parseAnswers(output["answers"], questions: input.questions)
       return .init(
         protocolID: context.model.protocolID, providerID: request.providerID,
         modelID: request.modelID,
-        answers: answers, usage: usage, finishReason: .stop, timestampMilliseconds: timestamp)
+        answers: answers, usage: usage, finishReason: .stop, responseID: responseID,
+        timestampMilliseconds: timestamp)
     } catch {
       let message: String
       if protocolID == "openai-decisions", (error as? ClassifierHTTPFailure)?.retryStatus == 504 {
@@ -132,7 +168,7 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
         modelID: request.modelID,
         answers: [:], usage: usage,
         finishReason: Task.isCancelled || error is CancellationError ? .cancelled : .error,
-        errorMessage: message, timestampMilliseconds: timestamp)
+        errorMessage: message, responseID: responseID, timestampMilliseconds: timestamp)
     }
   }
 
@@ -179,6 +215,7 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
         return try await withThrowingTaskGroup(of: ClassifierHTTPResult.self) { group in
           group.addTask {
             let response = try await transport.stream(captured)
+            if observe { try await observation.response(response) }
             var data = Data()
             for try await chunk in response.body { data.append(chunk) }
             if !(200..<300).contains(response.statusCode) {
@@ -210,7 +247,6 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
           body: "")
       }
     }
-    if observe { try await observation.response(response.0) }
     return response.1
   }
 
@@ -365,9 +401,12 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
         throw error("\(label) refused to answer \(id)")
       }
       switch question.kind {
-      case .choice:
+      case .choice(let choices):
         guard value.string("type") == "choice", let choice = value.string("choice") else {
           throw error("\(label) did not return a choice answer for \(id)")
+        }
+        if protocolID == "pi-decision", !choices.contains(where: { $0.value == choice }) {
+          throw error("\(label) returned unknown choice \"\(choice)\" for \(id)")
         }
         let probabilities: [String: JSONValue]
         if decisions {
@@ -391,27 +430,37 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
         }
         var converted: [String: Double] = [:]
         for (name, probability) in probabilities {
+          if protocolID == "pi-decision", case .choice(let choices) = question.kind,
+            !choices.contains(where: { $0.value == name })
+          {
+            throw error("\(label) returned unknown choice \"\(name)\" in probabilities for \(id)")
+          }
           converted[name] = try requiredNumber(probability, "probability for \(id).\(name)")
         }
         answers[id] = .choice(
           choice, probabilities: converted,
           confidence: try requiredNumber(value["confidence"], "confidence for \(id)"))
-      case .score:
+      case .score(let criteria):
         guard value.string("type") == "score" else {
           throw error("\(label) did not return a score answer for \(id)")
         }
+        let score = try requiredNumber(value["score"], "score for \(id)")
+        if protocolID == "pi-decision", score < 0 || score > Double(max(0, criteria.count - 1)) {
+          throw error("\(label) returned out-of-range score for \(id): \(Self.numberText(score))")
+        }
         answers[id] = .score(
-          try requiredNumber(value["score"], "score for \(id)"),
+          score,
           confidence: try requiredNumber(value["confidence"], "confidence for \(id)"))
       case .bool:
-        let expected = decisions ? "predicate" : "noul"
+        let expected = protocolID == "pi-decision" ? "bool" : decisions ? "predicate" : "noul"
         guard value.string("type") == expected else {
           throw error(
             "\(label) did not return a \(decisions ? "predicate" : "bool") answer for \(id)")
         }
         answers[id] = .bool(
           probability: try requiredNumber(
-            value[decisions ? "probability" : "noul"], "probability for \(id)"))
+            value[decisions || protocolID == "pi-decision" ? "probability" : "noul"],
+            "probability for \(id)"))
       }
     }
     return answers
@@ -420,6 +469,9 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
   private func requiredNumber(_ value: JSONValue?, _ field: String) throws -> Double {
     guard let number = Self.number(value), number.isFinite else {
       throw error("\(label) returned an invalid \(field)")
+    }
+    if protocolID == "pi-decision", !field.hasPrefix("score for "), number < 0 || number > 1 {
+      throw error("\(label) returned out-of-range \(field): \(Self.numberText(number))")
     }
     return number
   }
@@ -433,25 +485,80 @@ struct ProviderClassifierAdapter: WireProtocolAdapter {
       guard let number = Self.number(value), number.isFinite, number > 0 else { return 0 }
       return number
     }
-    let input = count(object["input_tokens"])
+    let totalInput = count(object["input_tokens"])
+    let cacheRead = min(count(object.object("input_tokens_details")?["cached_tokens"]), totalInput)
+    let cacheWrite = min(
+      count(object.object("input_tokens_details")?["cache_write_tokens"]), totalInput - cacheRead)
+    let input = totalInput - cacheRead - cacheWrite
     let output = count(object["output_tokens"])
+    let catalogCost = try catalogCost(
+      input: input, output: output, cacheRead: cacheRead, cacheWrite: cacheWrite, context: context)
+    let usage = ProviderUsage(
+      inputTokens: nil, outputTokens: nil, reasoningTokens: nil,
+      cachedInputTokens: nil, cacheWriteTokens: nil, totalTokens: nil, providerMetadata: [:],
+      cost: catalogCost
+    )
+    .applyingOpenRouterCost(
+      object,
+      enabled: OpenAICompletionsCompatibility.isOpenRouter(
+        provider: context.model.providerID, baseURL: context.baseURL.absoluteString))
+    return .init(
+      inputTokens: input, outputTokens: output, cost: usage.cost!,
+      cacheReadTokens: cacheRead, cacheWriteTokens: cacheWrite)
+  }
+
+  private func piUsage(_ raw: JSONValue?, context: WireProtocolContext) throws
+    -> ProviderClassifierUsage?
+  {
+    guard let value = raw?.objectValue,
+      Self.number(value["input"]) != nil || Self.number(value["output"]) != nil
+    else { return nil }
+    func count(_ raw: JSONValue?) -> Double {
+      let number = Self.number(raw) ?? 0
+      return number.isFinite && number >= 0 ? number : 0
+    }
+    let input = count(value["input"])
+    let output = count(value["output"])
+    let read = count(value["cacheRead"])
+    let write = count(value["cacheWrite"])
+    let total = Self.number(value["totalTokens"]).flatMap { $0.isFinite && $0 >= 0 ? $0 : nil }
+    let cost = value.object("cost") ?? [:]
+    if let authoritative = Self.number(cost["total"]), authoritative.isFinite {
+      return .init(
+        inputTokens: input, outputTokens: output,
+        cost: .init(
+          input: count(cost["input"]), output: count(cost["output"]),
+          cacheRead: count(cost["cacheRead"]), cacheWrite: count(cost["cacheWrite"]),
+          total: count(cost["total"]), totalFromProvider: cost.bool("totalFromProvider")),
+        cacheReadTokens: read, cacheWriteTokens: write, totalTokens: total)
+    }
+    return .init(
+      inputTokens: input, outputTokens: output,
+      cost: try catalogCost(
+        input: input, output: output, cacheRead: read, cacheWrite: write, context: context),
+      cacheReadTokens: read, cacheWriteTokens: write, totalTokens: total)
+  }
+
+  private func catalogCost(
+    input: Double, output: Double, cacheRead: Double, cacheWrite: Double,
+    context: WireProtocolContext
+  ) throws -> ProviderUsageCost {
     let pricing = try ProviderUsagePricing.parse(
       metadata: context.modelConfiguration.metadata,
       providerID: context.model.providerID, operation: "classifier.usage.pricing")
-    var rates = pricing?.base
-    if let tier = pricing?.tiers.filter({ input > Double($0.inputTokensAbove) }).max(by: {
-      $0.inputTokensAbove < $1.inputTokensAbove
-    }) {
-      rates = tier.rates
-    }
-    let inputCost = (rates?.input ?? 0) / 1_000_000 * input
-    let outputCost = (rates?.output ?? 0) / 1_000_000 * output
+    let totalInput = input + cacheRead + cacheWrite
+    let rates =
+      pricing?.tiers.filter { totalInput > Double($0.inputTokensAbove) }
+      .max { $0.inputTokensAbove < $1.inputTokensAbove }?.rates ?? pricing?.base
+    let i = (rates?.input ?? 0) / 1_000_000 * input
+    let o = (rates?.output ?? 0) / 1_000_000 * output
+    let r = (rates?.cacheRead ?? 0) / 1_000_000 * cacheRead
+    let w = (rates?.cacheWrite ?? 0) / 1_000_000 * cacheWrite
     return .init(
-      inputTokens: input, outputTokens: output,
-      cost: .init(
-        input: inputCost, output: outputCost, cacheRead: 0, cacheWrite: 0,
-        total: inputCost + outputCost, totalFromProvider: false))
+      input: i, output: o, cacheRead: r, cacheWrite: w, total: i + o + r + w,
+      totalFromProvider: false)
   }
+
   static func number(_ value: JSONValue?) -> Double? {
     switch value {
     case .number(let n): n

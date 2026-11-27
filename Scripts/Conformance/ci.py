@@ -15,6 +15,8 @@ def isolated_environment(parent, root):
     environment = {key: parent[key] for key in ["PATH", "TMPDIR", "DEVELOPER_DIR", "SDKROOT", "LANG", "LC_ALL"]
                    if key in parent}
     environment.update({
+        "HOME": str(root / "home"),
+        "CFFIXED_USER_HOME": str(root / "home"),
         "PYTHONDONTWRITEBYTECODE": "1",
         "GIT_CONFIG_GLOBAL": os.devnull,
         "GIT_CONFIG_NOSYSTEM": "1",
@@ -90,7 +92,7 @@ def main():
         "upstreamRevision": revision,
         "acceptedRevision": lock["revision"],
         "cachePolicy": "Fresh upstream, npm, SwiftPM and compiler state for every invocation; Debug and Release share that invocation's SwiftPM dependencies",
-        "credentialPolicy": "Allowlisted process environment; no Git helpers, npm user config, SwiftPM Keychain or netrc",
+        "credentialPolicy": "Allowlisted process environment and disposable home/Keychain; no Git helpers, npm user config, SwiftPM Keychain or netrc",
         "executionNetworkPolicy": "Conformance permits mocks and loopback only; public dependency bootstrap requires network",
         "tools": {},
         "steps": [],
@@ -101,6 +103,8 @@ def main():
         with tempfile.TemporaryDirectory(prefix="pi-ai-offline-", dir=os.environ.get("RUNNER_TEMP")) as directory:
             root = Path(directory)
             environment = isolated_environment(os.environ, root)
+            isolated_home = Path(environment["HOME"])
+            isolated_home.mkdir()
 
             def run(name, command, *, capture=False, cwd=repo):
                 log = logs / f"{name}.log"
@@ -116,6 +120,15 @@ def main():
                     raise subprocess.CalledProcessError(exit_code, command)
                 if capture:
                     return log.read_text().strip()
+
+            if sys.platform == "darwin":
+                keychain = isolated_home / "Library/Keychains/offline-fixture.keychain-db"
+                keychain.parent.mkdir(parents=True)
+                run("fixture-keychain-create", ["security", "create-keychain", "-p", "offline-fixture", str(keychain)])
+                keychain.with_name("login.keychain-db").symlink_to(keychain)
+                run("fixture-keychain-unlock", ["security", "unlock-keychain", "-p", "offline-fixture", str(keychain)])
+                run("fixture-keychain-default", ["security", "default-keychain", "-d", "user", "-s", str(keychain)])
+                run("fixture-keychain-search", ["security", "list-keychains", "-d", "user", "-s", str(keychain)])
 
             for name, command in [("xcode", ["xcodebuild", "-version"]), ("swift", ["swift", "--version"]),
                                   ("node", ["node", "--version"]), ("npm", ["npm", "--version"]),

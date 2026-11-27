@@ -98,7 +98,8 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     case "BLOCKLIST", "PROHIBITED_CONTENT", "SPII", "SAFETY", "IMAGE_SAFETY",
       "IMAGE_PROHIBITED_CONTENT", "IMAGE_RECITATION", "IMAGE_OTHER", "RECITATION",
       "FINISH_REASON_UNSPECIFIED", "OTHER", "LANGUAGE", "MALFORMED_FUNCTION_CALL",
-      "UNEXPECTED_TOOL_CALL", "TOO_MANY_TOOL_CALLS", "NO_IMAGE":
+      "UNEXPECTED_TOOL_CALL", "TOO_MANY_TOOL_CALLS", "NO_IMAGE", "MISSING_THOUGHT_SIGNATURE",
+      "MALFORMED_RESPONSE", "ESCALATION", "PUP_LIMITED_DISABLED", "MODEL_ARMOR":
       return .error
     default: return nil
     }
@@ -129,9 +130,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       let task = Task {
         do {
           let observation = ProviderWireObservation(request: request, wire: context)
-          let response = try await transport.stream(
-            try await observation.payload(makeURLRequest(request, context: context))
-          )
+          let response = try await ProviderRequestRetry.stream(
+            try await observation.payload(makeURLRequest(request, context: context)),
+            request: request, context: context, transport: transport)
           guard (200..<300).contains(response.statusCode) else {
             let body = try await collectErrorBody(from: response.body)
             throw failure(
@@ -380,7 +381,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
         config["includeThoughts"] = .bool(true)
         if let level = thinking["level"] {
           if let level = level.stringValue,
-            ["MINIMAL", "LOW", "MEDIUM", "HIGH"].contains(level)
+            ["MINIMAL", "LOW", "MEDIUM", "HIGH", "XHIGH"].contains(level)
           {
             config["thinkingLevel"] = .string(level)
           }
@@ -416,7 +417,9 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     }
 
     if !request.tools.isEmpty {
-      let supportsStrictMode = supportsStrictToolSampling(request.modelID)
+      let supportsStrictMode =
+        context.modelConfiguration.metadata.object("compat")?.bool("supportsStrictMode")
+        ?? supportsStrictToolSampling(request.modelID)
       let projection = try GoogleToolProjection.declarations(
         request.tools, supportsStrictMode: supportsStrictMode, providerID: request.providerID)
       body["tools"] = projection.tools
@@ -668,7 +671,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
   ) throws -> String {
     let mapped = metadata.object("thinkingLevelMap")?[requested.rawValue]
     let effort = (mapped?.stringValue ?? requested.rawValue).lowercased()
-    guard ["minimal", "low", "medium", "high"].contains(effort) else {
+    guard ["minimal", "low", "medium", "high", "xhigh"].contains(effort) else {
       let mapping = mapped?.stringValue ?? (mapped == .null ? "null" : "undefined")
       throw ProviderRuntimeFailure(
         code: .invalidRequest,
@@ -724,7 +727,8 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
       ]
     }
 
-    if let customBudget = customBudgets?[ProviderReasoningEffort(rawValue: effort)!] {
+    let budgetEffort = effort == "xhigh" ? "high" : effort
+    if let customBudget = customBudgets?[ProviderReasoningEffort(rawValue: budgetEffort)!] {
       return [
         "includeThoughts": .bool(true),
         "thinkingBudget": .integer(Int64(customBudget)),
@@ -733,7 +737,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     let budgets: [String: Int]
     if lower.contains("2.5-pro") {
       budgets = ["minimal": 128, "low": 2_048, "medium": 8_192, "high": 32_768]
-    } else if flavor == .generativeAI, lower.contains("2.5-flash-lite") {
+    } else if lower.contains("2.5-flash-lite") {
       budgets = ["minimal": 512, "low": 2_048, "medium": 8_192, "high": 24_576]
     } else if lower.contains("2.5-flash") {
       budgets = ["minimal": 128, "low": 2_048, "medium": 8_192, "high": 24_576]
@@ -742,7 +746,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
     }
     return [
       "includeThoughts": .bool(true),
-      "thinkingBudget": .integer(Int64(budgets[effort]!)),
+      "thinkingBudget": .integer(Int64(budgets[budgetEffort]!)),
     ]
   }
 
@@ -763,7 +767,7 @@ struct GoogleGenerativeAIAdapter: WireProtocolAdapter {
   private func geminiMajorVersion(_ modelID: String) -> Int? {
     guard
       let match = modelID.lowercased().range(
-        of: #"^gemini(?:-live)?-([0-9]+)"#,
+        of: #"gemini(?:-live)?-([0-9]+)"#,
         options: .regularExpression
       )
     else { return nil }
@@ -877,6 +881,7 @@ private struct GoogleEventReducer {
   let requestedModelID: String
   let pricing: ProviderUsagePricing?
   private var responseID: String?
+  private var promptBlockError: String?
   private var finishReason: String?
   private var usage: ProviderUsage?
   private var sawToolCall = false
@@ -924,6 +929,29 @@ private struct GoogleEventReducer {
       )
     }
 
+    if promptBlockError == nil, let feedback = object.object("promptFeedback"),
+      let reason = feedback.string("blockReason"), !reason.isEmpty
+    {
+      let name = protocolID == "google-vertex" ? "Google Vertex" : "Google"
+      var details = ["\(name) prompt blocked: \(reason)"]
+      if let message = feedback.string("blockReasonMessage"), !message.isEmpty {
+        details.append(message)
+      }
+      if let ratings = feedback.array("safetyRatings"), !ratings.isEmpty {
+        let values = ratings.compactMap { raw -> String? in
+          guard let rating = raw.objectValue, let category = rating.string("category"),
+            !category.isEmpty
+          else { return nil }
+          return category
+            + (rating.string("probability").flatMap { $0.isEmpty ? nil : " (" + $0 + ")" } ?? "")
+        }
+        if !values.isEmpty {
+          details.append(
+            "Safety rating" + (values.count == 1 ? ": " : "s: ") + values.joined(separator: ", "))
+        }
+      }
+      promptBlockError = details.joined(separator: ". ")
+    }
     var normalized: [ProviderEvent] = []
     if responseID == nil || responseID?.isEmpty == true {
       responseID = object.string("responseId")
@@ -1024,6 +1052,7 @@ private struct GoogleEventReducer {
     requestID: String, httpStatus: Int, pendingLineBytes: Int, flushedEventCount: Int
   ) throws -> [ProviderEvent] {
     guard let finishReason else {
+      if let promptBlockError { throw invalid(promptBlockError) }
       let diagnostic = """
         end=eof httpStatus=\(httpStatus) sseEvents=\(sseEventCount) \
         eofPendingLineBytes=\(pendingLineBytes) eofFlushedEvents=\(flushedEventCount) \
@@ -1041,7 +1070,8 @@ private struct GoogleEventReducer {
       #endif
       throw ProviderRuntimeFailure(
         code: .incompleteStream,
-        message: "Google stream ended without a finish reason",
+        message:
+          "\(protocolID == "google-vertex" ? "Google Vertex" : "Google") stream ended without a finish reason after receiving \(sseEventCount) \(sseEventCount == 1 ? "chunk" : "chunks")",
         providerID: providerID,
         operation: "google.event.finish",
         causeDescription: diagnostic)

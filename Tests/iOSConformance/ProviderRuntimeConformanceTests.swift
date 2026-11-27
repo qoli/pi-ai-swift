@@ -972,6 +972,40 @@ final class ProviderRuntimeConformanceTests: XCTestCase {
     }
   }
 
+  func testGooglePromptBlocksAndAdditionalStopReasonsMatchPinnedSource() async throws {
+    let cases = try XCTUnwrap(
+      load("Differential/Oracle/response-provider-branches.json").object("cases"))
+    for name in cases.keys.sorted()
+    where name.hasPrefix("google-prompt-blocked-") || name.hasPrefix("google-finish-") {
+      for (api, value) in try XCTUnwrap(cases.object(name)) {
+        let source = try XCTUnwrap(value.objectValue)
+        let expected = try XCTUnwrap(source.object("sourceOutcome"))
+        let chunks = try XCTUnwrap(source.object("decoderInput")?.array("events")).map {
+          Data(
+            ("data: " + String(decoding: try JSONEncoder().encode($0), as: UTF8.self) + "\n\n").utf8
+          )
+        }
+        let (request, context) = inputs(
+          api: api, providerID: api == "google-vertex" ? "google-vertex" : "google")
+        let result = try await replay(
+          GoogleGenerativeAIAdapter(
+            protocolID: api, flavor: api == "google-vertex" ? .vertex : .generativeAI),
+          request: request, context: context, chunks: chunks)
+        XCTAssertEqual(expected.string("kind"), "failure", name)
+        XCTAssertEqual(
+          result.failure?.code,
+          name.hasPrefix("google-finish-") ? .transportFailed : .invalidResponse,
+          name)
+        XCTAssertEqual(result.failure?.message, expected.string("errorMessage"), name)
+        XCTAssertEqual(
+          result.failure?.providerMetadata?.string("rawStopReason"),
+          expected.string("rawStopReason"),
+          name)
+        XCTAssertNil(result.snapshot, name)
+      }
+    }
+  }
+
   func testBedrockFailureDiagnosticsMatchPinnedHTTPAndStreamErrors() async throws {
     let oracle = try load("Differential/Oracle/response-anthropic-bedrock-pi.json")
     for (name, value) in try XCTUnwrap(oracle.object("scenarios")) where name.hasPrefix("bedrock") {

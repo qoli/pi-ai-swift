@@ -7,7 +7,7 @@ import { providerStreams } from './pi-ai-provider-context.mjs';
 const [root] = process.argv.slice(2);
 const sourcePath = 'packages/ai/src/api/openai-completions.ts';
 const sourceSHA256 = createHash('sha256').update(readFileSync(path.join(root,sourcePath))).digest('hex');
-if (sourceSHA256 !== '0a45961174b9be7018bb013f674c24209ee16860d65aa60aad8909c2433b35da') throw Error('candidate source hash mismatch');
+if (sourceSHA256 !== 'c5c10b87532165123d57403e29550448b913bd6df1aa3b0fc0fa5938f8f280a4') throw Error('candidate source hash mismatch');
 const implementation = await providerStreams(root, await import(pathToFileURL(path.resolve(root, sourcePath)).href));
 const cases = [];
 for (const strict of [null, false, true]) {

@@ -1641,6 +1641,7 @@
             "call_id": "call_test_ctc_test",
             "input": "hello",
             "name": "query",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -1657,6 +1658,7 @@
             "call_id": "call_test_ctc_test",
             "input": "hello",
             "name": "query",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -1673,6 +1675,7 @@
             "call_id": "call_test",
             "input": "hello",
             "name": "query",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -1689,6 +1692,7 @@
             "call_id": "call_test",
             "input": "hello",
             "name": "query",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -1713,6 +1717,7 @@
             "input": "select *",
             "name": "query",
             "namespace": "dynamic_tools",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -1731,6 +1736,7 @@
             "input": "hello",
             "name": "query",
             "namespace": "dynamic_tools",
+            "status": "completed",
             "type": "custom_tool_call"
           },
           {
@@ -1748,6 +1754,7 @@
             "call_id": "call_test",
             "name": "query",
             "namespace": "dynamic_tools",
+            "status": "completed",
             "type": "function_call"
           },
           {
@@ -3241,9 +3248,17 @@
         "events": [],
         "models": [],
         "outcome": "error",
-        "responses": [],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "application/json"
+            },
+            "status": 400
+          }
+        ],
         "stages": [
-          "payload"
+          "payload",
+          "response"
         ]
       },
       "azure-openai-responses.stream-error": {
@@ -3416,9 +3431,17 @@
         "events": [],
         "models": [],
         "outcome": "error",
-        "responses": [],
+        "responses": [
+          {
+            "headers": {
+              "content-type": "application/json"
+            },
+            "status": 400
+          }
+        ],
         "stages": [
-          "payload"
+          "payload",
+          "response"
         ]
       },
       "openai-responses.stream-error": {
@@ -3441,5 +3464,5 @@
     }
   },
   "schemaVersion": 1,
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe"
 }

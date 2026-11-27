@@ -63,8 +63,8 @@ export function convertTools(tools, useParameters = false, supportsStrictMode = 
   return result ?? undefined;
 }
 
-export function supportsGoogleStrictToolSampling(modelId) {
-  const body = googleRequest(googleModel(modelId), { messages: [], tools: [{ name: "probe",
+export function supportsGoogleStrictToolSampling(model) {
+  const body = googleRequest(model, { messages: [], tools: [{ name: "probe",
     description: "", parameters: { type: "object", properties: {} },
     constrainedSampling: { type: "json_schema", strict: "prefer" },
   }] }, "google.strict-tools");

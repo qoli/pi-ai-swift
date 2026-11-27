@@ -1,7 +1,7 @@
 {
   "cases": {
     "bun-precedence": {
-      "User-Agent": "pi/1.6.0 (darwin; bun/1.3.0; arm64)"
+      "User-Agent": "pi/1.6.1 (darwin; bun/1.3.0; arm64)"
     },
     "custom": {
       "User-Agent": "Fixture Client"
@@ -10,39 +10,39 @@
       "User-Agent": "pi/ (darwin; node/v26.0.0; arm64)"
     },
     "no-attribution": {
-      "User-Agent": "pi/1.6.0 (darwin; node/v26.0.0; arm64)"
+      "User-Agent": "pi/1.6.1 (darwin; node/v26.0.0; arm64)"
     },
     "node-default": {
-      "User-Agent": "pi/1.6.0 (darwin; node/v26.0.0; arm64)"
+      "User-Agent": "pi/1.6.1 (darwin; node/v26.0.0; arm64)"
     },
     "non-node-runtime": {
-      "User-Agent": "pi/1.6.0 (browser)"
+      "User-Agent": "pi/1.6.1 (browser)"
     },
     "nvidia": {
-      "User-Agent": "pi/1.6.0 (darwin; node/v26.0.0; arm64)",
+      "User-Agent": "pi/1.6.1 (darwin; node/v26.0.0; arm64)",
       "X-BILLING-INVOKE-ORIGIN": "Fixture"
     },
     "nvidia-host": {
-      "User-Agent": "pi/1.6.0 (darwin; node/v26.0.0; arm64)",
+      "User-Agent": "pi/1.6.1 (darwin; node/v26.0.0; arm64)",
       "X-BILLING-INVOKE-ORIGIN": "Fixture"
     },
     "opencode": {
-      "User-Agent": "pi/1.6.0 (darwin; node/v26.0.0; arm64)",
+      "User-Agent": "pi/1.6.1 (darwin; node/v26.0.0; arm64)",
       "x-opencode-client": "fixture"
     },
     "opencode-host": {
-      "User-Agent": "pi/1.6.0 (darwin; node/v26.0.0; arm64)",
+      "User-Agent": "pi/1.6.1 (darwin; node/v26.0.0; arm64)",
       "x-opencode-client": "fixture"
     },
     "openrouter": {
       "HTTP-Referer": "https://fixture.invalid/app",
-      "User-Agent": "pi/1.6.0 (darwin; node/v26.0.0; arm64)",
+      "User-Agent": "pi/1.6.1 (darwin; node/v26.0.0; arm64)",
       "X-OpenRouter-Categories": "cli-agent,testing",
       "X-OpenRouter-Title": "fixture"
     },
     "openrouter-url": {
       "HTTP-Referer": "https://fixture.invalid/app",
-      "User-Agent": "pi/1.6.0 (darwin; node/v26.0.0; arm64)",
+      "User-Agent": "pi/1.6.1 (darwin; node/v26.0.0; arm64)",
       "X-OpenRouter-Categories": "cli-agent,testing",
       "X-OpenRouter-Title": "fixture"
     },
@@ -53,5 +53,5 @@
       "User-Agent": "pi/3.2.1 (darwin; node/v26.0.0; arm64)"
     }
   },
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe"
 }

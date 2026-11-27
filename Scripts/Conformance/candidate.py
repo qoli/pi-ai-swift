@@ -1,4 +1,4 @@
-"""Offline inputs for the reviewed v1.6.0 lock candidate."""
+"""Offline inputs for exact reviewed upstream lock candidates."""
 import base64
 import hashlib
 import json
@@ -14,9 +14,11 @@ def sha256(path):
 
 def profile(repo, revision, accepted):
     directory = repo / "Scripts/Conformance"
-    data = json.loads((directory / "candidate-v1.6.0.json").read_text())
-    if data["revision"] != revision or data["baseRevision"] != accepted:
-        raise ValueError("No reviewed candidate profile for this exact candidate and accepted revision")
+    matches = [json.loads(path.read_text()) for path in directory.glob("candidate-v*.json")]
+    matches = [item for item in matches if item["revision"] == revision and item["baseRevision"] == accepted]
+    if len(matches) != 1:
+        raise ValueError("No unique reviewed candidate profile for this exact candidate and accepted revision")
+    data = matches[0]
     for name, key in [("suites.json", "baseManifestSHA256"), ("scope-audit.json", "baseScopeAuditSHA256")]:
         if sha256(directory / name) != data[key]:
             raise ValueError(f"Candidate review needs rebasing: {name}")
@@ -42,7 +44,7 @@ def catalog_identity(upstream):
     return hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
-def stage_native_package(repo, upstream, destination):
+def stage_native_package(repo, upstream, destination, review):
     """Build the candidate with its real SwiftPM resource, leaving the accepted bundle intact."""
     destination.mkdir()
     for name in ("Package.swift", "Package.resolved"):
@@ -50,8 +52,10 @@ def stage_native_package(repo, upstream, destination):
     shutil.copytree(repo / "Sources", destination / "Sources")
     (destination / "Tests").symlink_to(repo / "Tests", target_is_directory=True)
     resource = destination / "Sources/PiAIProviderRuntime/Resources/BuiltinCatalog.json"
+    evidence = destination / "candidate.json"
+    evidence.write_text(json.dumps(review))
     subprocess.run(["node", str(repo / "Scripts/generate-source-catalog.mjs"), str(upstream),
-                    str(repo / "Scripts/Conformance/candidate-v1.6.0.json"), str(resource)], check=True)
+                    str(evidence), str(resource)], check=True)
     return sha256(resource)
 
 

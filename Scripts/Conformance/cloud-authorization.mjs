@@ -2,6 +2,22 @@ import Anthropic from "@anthropic-ai/sdk";
 import { GoogleGenAI } from "@google/genai";
 import { BedrockRuntimeClient } from "@aws-sdk/client-bedrock-runtime";
 import { afterEach } from "vitest";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
+import { defaultProvider } from "@aws-sdk/credential-provider-node";
+import { HttpProxyAgent } from "http-proxy-agent";
+import { HttpsProxyAgent } from "https-proxy-agent";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+const { resolveHttpProxyUrlForTarget } = await import(pathToFileURL(path.join(
+  process.env.PI_CONFORMANCE_UPSTREAM, "packages/ai/src/utils/node-http-proxy.ts")));
+
+export function bedrockSDKConfiguration(config, options, baseURL) {
+  const proxy = resolveHttpProxyUrlForTarget(baseURL, options.env);
+  if (!proxy) return config;
+  const requestHandler = new NodeHttpHandler({ httpAgent: new HttpProxyAgent(proxy), httpsAgent: new HttpsProxyAgent(proxy) });
+  return { ...config, requestHandler, credentialDefaultProvider: init =>
+    defaultProvider({ ...init, clientConfig: { ...init.clientConfig, requestHandler } }) };
+}
 
 export class FixtureAnthropic extends Anthropic {
   _shouldResolveDefaultCredentials() { return false; }
@@ -38,7 +54,7 @@ export async function resolveFixtureCloud(stage, value, options, connection) {
   if (request.googleApplicationDefaultCredentials) {
     sources.set(id, { kind: "vertex", client: new GoogleGenAI({ ...config, httpOptions: { ...config.httpOptions, fetch: options.fetch ?? globalThis.fetch } }) });
   } else if (request.awsCredentials) {
-    sources.set(id, { kind: "aws", region: request.awsCredentials.region, client: new BedrockRuntimeClient(config) });
+    sources.set(id, { kind: "aws", region: request.awsCredentials.region, client: new BedrockRuntimeClient(bedrockSDKConfiguration(config, options, connection.baseURL)) });
   } else if (request.anthropicFederation) {
     sources.set(id, { kind: "federation", client: new FixtureAnthropic({ ...config,
       baseURL: request.anthropicFederation._0.baseURL, dangerouslyAllowBrowser: true, fetch: options.fetch }) });

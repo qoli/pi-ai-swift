@@ -319,7 +319,7 @@ def build_probe(repo, upstream, build_root, review=None):
         from candidate import stage_native_package
         candidate_directory = tempfile.TemporaryDirectory(prefix="pi-native-candidate-")
         package = Path(candidate_directory.name) / repo.name
-        catalog_digest = stage_native_package(repo, upstream, package)
+        catalog_digest = stage_native_package(repo, upstream, package, review)
         swift_build.extend(["--package-path", str(package)])
     if build_root:
         for option, directory in [("--cache-path", "cache"), ("--config-path", "configuration"),

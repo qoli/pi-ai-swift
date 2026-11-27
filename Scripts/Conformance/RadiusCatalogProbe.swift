@@ -24,7 +24,11 @@ enum RadiusCatalogConformanceProbe {
         ?? RadiusOAuthAuthorizationAdapter.normalizeGateway(
           gateway ?? RadiusOAuthAuthorizationAdapter.defaultGateway)
       let data = try JSONEncoder().encode(
-        JSONValue.object(["baseUrl": .string(baseURL), "models": .array(models)]))
+        JSONValue.object([
+          "baseUrl": .string(baseURL),
+          "models": .array(models.filter { $0.objectValue?.string("type") != "classifier" }),
+          "classifiers": .array(models.filter { $0.objectValue?.string("type") == "classifier" }),
+        ]))
       let store = try ProviderModelStore(
         expectedRevision: revision, radiusGateway: gateway, persistenceURL: persistence)
       _ = try await store.refreshRadius { .init(data: data, checkedAt: Date()) }
@@ -51,7 +55,10 @@ enum RadiusCatalogConformanceProbe {
       value["baseUrl"] = record.baseURL.map(JSONValue.string)
       return .object(value)
     }
-    var result: [String: JSONValue] = ["models": .array(models)]
+    var result: [String: JSONValue] = [
+      "models": .array(models.filter { $0.objectValue?.string("type") != "classifier" }),
+      "allModels": .array(models),
+    ]
     if FileManager.default.fileExists(atPath: persistence.path) {
       result["state"] = .string(try Data(contentsOf: persistence).base64EncodedString())
     }

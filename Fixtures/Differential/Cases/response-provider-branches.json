@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac",
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe",
   "stopReasonApplicability": {
     "google-generative-ai": [
       "stop",
@@ -759,6 +759,148 @@
             "candidatesTokenCount": 1,
             "totalTokenCount": 3
           }
+        }
+      ]
+    },
+    {
+      "caseID": "google-prompt-blocked-empty-message",
+      "protocolIDs": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "driver": "decoded-sdk-events",
+      "events": [
+        {
+          "promptFeedback": {
+            "blockReason": "SAFETY",
+            "blockReasonMessage": ""
+          }
+        }
+      ]
+    },
+    {
+      "caseID": "google-prompt-blocked-message-and-ratings",
+      "protocolIDs": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "driver": "decoded-sdk-events",
+      "events": [
+        {
+          "promptFeedback": {
+            "blockReason": "SAFETY",
+            "blockReasonMessage": "Synthetic policy block",
+            "safetyRatings": [
+              {
+                "category": "HARM_CATEGORY_HATE_SPEECH",
+                "probability": "MEDIUM"
+              },
+              {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "probability": "LOW"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "caseID": "google-finish-missing-thought-signature",
+      "protocolIDs": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "driver": "decoded-sdk-events",
+      "events": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": []
+              },
+              "finishReason": "MISSING_THOUGHT_SIGNATURE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseID": "google-finish-malformed-response",
+      "protocolIDs": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "driver": "decoded-sdk-events",
+      "events": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": []
+              },
+              "finishReason": "MALFORMED_RESPONSE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseID": "google-finish-escalation",
+      "protocolIDs": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "driver": "decoded-sdk-events",
+      "events": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": []
+              },
+              "finishReason": "ESCALATION"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseID": "google-finish-pup-limited-disabled",
+      "protocolIDs": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "driver": "decoded-sdk-events",
+      "events": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": []
+              },
+              "finishReason": "PUP_LIMITED_DISABLED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseID": "google-finish-model-armor",
+      "protocolIDs": [
+        "google-generative-ai",
+        "google-vertex"
+      ],
+      "driver": "decoded-sdk-events",
+      "events": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "parts": []
+              },
+              "finishReason": "MODEL_ARMOR"
+            }
+          ]
         }
       ]
     }

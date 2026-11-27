@@ -180,7 +180,9 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
               cause: body
             )
           }
-          if flavor != .codex { try await observation.response(response) }
+          if flavor != .codex, (200..<300).contains(response.statusCode) {
+            try await observation.response(response)
+          }
           var decoder = ServerSentEventDecoder()
           var reducer = OpenAIResponsesReducer(
             providerID: request.providerID,
@@ -356,7 +358,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
                   grammarInputProperties: grammarInputProperties(request, context: context),
                   deferredTools: [:], deferredToolsMode: nil, supportsStrictMode: true
                 )
-                .filter {
+                .items.filter {
                   !["function_call_output", "custom_tool_call_output"].contains(
                     $0.objectValue?.string("type") ?? "")
                 }
@@ -862,19 +864,15 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       }
     }
 
+    let prompt = try makeInput(
+      request.messages.insertingMissingToolResults(), includeSystem: true, context: context,
+      grammarInputProperties: try grammarInputProperties(request, context: context),
+      deferredTools: toolPlacement.deferred, deferredToolsMode: nil,
+      supportsStrictMode: supportsStrictMode,
+      configurationEffort: configurationEffort)
     var body: [String: JSONValue] = [
       "model": .string(try resolvedModelID(request, context: context)),
-      "input": .array(
-        try makeInput(
-          request.messages.insertingMissingToolResults(),
-          includeSystem: true,
-          context: context,
-          grammarInputProperties: try grammarInputProperties(request, context: context),
-          deferredTools: toolPlacement.deferred,
-          deferredToolsMode: nil,
-          supportsStrictMode: supportsStrictMode,
-          configurationEffort: configurationEffort
-        )),
+      "input": .array(prompt.items),
       "stream": .bool(true),
       "store": .bool(false),
     ]
@@ -937,7 +935,9 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       if effort == .off {
         if levelMap["off"] != .null {
           var reasoning: [String: JSONValue] = [
-            "effort": .string(configurationEffort == nil ? (mapped ?? "none") : "medium")
+            "effort": .string(
+              configurationEffort == nil || flavor == .codex
+                ? (prompt.effortBaseline ?? mapped ?? "none") : "medium")
           ]
           if flavor == .codex {
             reasoning["summary"] = .string(request.options.reasoningSummary ?? "auto")
@@ -947,7 +947,9 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
         }
       } else {
         body["reasoning"] = .object([
-          "effort": .string(configurationEffort == nil ? (mapped ?? effort.rawValue) : "medium"),
+          "effort": .string(
+            configurationEffort == nil || flavor == .codex
+              ? (prompt.effortBaseline ?? mapped ?? effort.rawValue) : "medium"),
           "summary": .string(request.options.reasoningSummary ?? "auto"),
         ])
         body["include"] = .array([.string("reasoning.encrypted_content")])
@@ -1095,10 +1097,23 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
     deferredToolsMode: String?,
     supportsStrictMode: Bool,
     configurationEffort: String? = nil
-  ) throws -> [JSONValue] {
+  ) throws -> (items: [JSONValue], effortBaseline: String?) {
     let target = ProviderMessageSource(
       api: protocolID, providerID: context.provider.id, modelID: context.model.id)
     var result: [JSONValue] = []
+    var effortBaseline: String?
+    var previousEffort: String?
+    func appendEffort(_ effort: String, at index: Int? = nil) {
+      if flavor == .codex {
+        if previousEffort == effort { return }
+        previousEffort = effort
+        if effortBaseline == nil {
+          effortBaseline = effort
+          return
+        }
+      }
+      result.insert(configurationUpdate(effort), at: index ?? result.count)
+    }
     var replayMessageIndex = 0
     var normalizedToolIDs: [String: String] = [:]
     let compat = context.modelConfiguration.metadata.object("compat") ?? [:]
@@ -1311,6 +1326,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
                 "arguments": .string(try responseJSONString(call.arguments)),
               ]
             }
+            object["status"] = .string("completed")
             if let itemID { object["id"] = .string(itemID) }
             if assistant.source == target || deferredTools[call.name] != nil,
               let namespace = call.namespace
@@ -1324,7 +1340,7 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
           result.count > outputStart,
           let previous = assistant.providerMetadata["providerThinkingLevel"]?.stringValue
         {
-          result.insert(configurationUpdate(previous), at: outputStart)
+          appendEffort(previous, at: outputStart)
         }
       case .toolResult(let toolResult):
         let normalizedID = normalizedToolIDs[toolResult.toolCallID] ?? toolResult.toolCallID
@@ -1343,8 +1359,8 @@ struct OpenAIResponsesAdapter: WireProtocolAdapter {
       }
       replayMessageIndex += 1
     }
-    if let configurationEffort { result.append(configurationUpdate(configurationEffort)) }
-    return result
+    if let configurationEffort { appendEffort(configurationEffort) }
+    return (result, effortBaseline)
   }
 
   private func responseTool(

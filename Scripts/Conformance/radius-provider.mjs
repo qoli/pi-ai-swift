@@ -11,6 +11,11 @@ export function nativeRadiusProvider(provider, options = {}) {
       recordNative("catalog.radius", "*");
       return result.models;
     },
+    getAllModels() {
+      const result = invokeNative({ operation: "catalog.radius", ...configuration() });
+      recordNative("catalog.radius", "*");
+      return result.allModels;
+    },
     async refreshModels(context) {
       if (context.stored) {
         const result = await resolveRadiusCatalog({ ...configuration(), cachedModels: context.stored.models }, context.signal);
@@ -18,7 +23,7 @@ export function nativeRadiusProvider(provider, options = {}) {
       }
       if (!context.allowNetwork || context.signal.aborted) return;
       const result = await resolveRadiusCatalog({ ...configuration(), credential: context.credential }, context.signal);
-      await context.publish({ persist: { models: result.models, checkedAt: Date.now() }, update: () => { state = result.state; } });
+      await context.publish({ persist: { models: result.allModels, checkedAt: Date.now() }, update: () => { state = result.state; } });
     },
   };
 }

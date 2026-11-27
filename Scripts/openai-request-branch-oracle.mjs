@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
@@ -22,8 +22,11 @@ const revision = execFileSync("git", ["-C", upstreamRoot, "rev-parse", "HEAD"], 
 }).trim();
 let target = lock.revision;
 if (option !== undefined) {
-  const review = JSON.parse(await readFile(path.join(repositoryRoot, "Scripts/Conformance/candidate-v1.6.0.json"), "utf8"));
-  if (option !== "--candidate" || candidate !== review.revision || review.baseRevision !== lock.revision) {
+  const directory = path.join(repositoryRoot, "Scripts/Conformance");
+  const reviews = await Promise.all((await readdir(directory)).filter(name => /^candidate-v.*\.json$/.test(name))
+    .map(async name => JSON.parse(await readFile(path.join(directory, name), "utf8"))));
+  const matches = reviews.filter(review => review.revision === candidate && review.baseRevision === lock.revision);
+  if (option !== "--candidate" || matches.length !== 1) {
     throw new Error("Unreviewed request oracle candidate");
   }
   target = candidate;

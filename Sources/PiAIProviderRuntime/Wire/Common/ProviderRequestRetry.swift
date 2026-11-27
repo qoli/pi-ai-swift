@@ -26,6 +26,7 @@ enum ProviderRequestRetry {
     maximumRetries: Int?, maximumDelayMilliseconds: Double?, noRetryStatuses: [Int] = [],
     clock: any ProviderOAuthClock,
     random: @Sendable () -> Double = { Double.random(in: 0..<1) },
+    onErrorResponse: (@Sendable (Int, [String: String]) async throws -> Void)? = nil,
     request: () async throws -> Value
   ) async throws -> Value {
     let maximumRetries = maximumRetries ?? 0
@@ -33,6 +34,9 @@ enum ProviderRequestRetry {
     while true {
       do { return try await request() } catch {
         try Task.checkCancellation()
+        if let failure = error as? any ProviderRetryableError, let status = failure.retryStatus {
+          try await onErrorResponse?(status, failure.retryHeaders ?? [:])
+        }
         guard remaining > 0, let providerError = error as? any ProviderRetryableError,
           isRetryable(providerError),
           providerError.retryStatus.map({ !noRetryStatuses.contains($0) }) ?? true
@@ -66,6 +70,12 @@ enum ProviderRequestRetry {
             response: nil, underlying: error)
         }
         guard !(200..<300).contains(response.statusCode) else { return response }
+        let observed =
+          context.model.protocolID.hasPrefix("google-")
+          ? ProviderHTTPStreamingResponse(
+            statusCode: response.statusCode, headers: [:], body: response.body)
+          : response
+        try await ProviderWireObservation(request: request, wire: context).response(observed)
         let body = try await collectErrorBody(from: response.body)
         let saved = ProviderHTTPStreamingResponse(
           statusCode: response.statusCode, headers: response.headers,

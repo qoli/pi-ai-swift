@@ -103,7 +103,7 @@
       "outcome": "failure",
       "partialEventTypes": [],
       "rawStopReason": "error",
-      "sourceErrorMessage": "Provider stopped with: error (server error)",
+      "sourceErrorMessage": "Provider stopped with: error",
       "sourceTerminal": {
         "reason": "error",
         "type": "error"
@@ -201,5 +201,5 @@
   },
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/earendil-works/pi.git",
-  "upstreamRevision": "faac585884ae2c013a6b1400f3e9e77f10b34bac"
+  "upstreamRevision": "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe"
 }

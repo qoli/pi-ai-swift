@@ -104,7 +104,7 @@ struct DifferentialFixtureTests {
   }
 }
 
-private let fixtureRevision = "faac585884ae2c013a6b1400f3e9e77f10b34bac"
+private let fixtureRevision = "ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe"
 
 private func fixturePayload() -> DifferentialFixturePayload {
   let request = ProviderRequest(

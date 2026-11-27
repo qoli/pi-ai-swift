@@ -423,7 +423,7 @@ struct ContractTests {
     #expect(lock.schemaVersion == 4)
     #expect(lock.revision.count == 40)
     #expect(lock.package.name == "@earendil-works/pi-ai")
-    #expect(lock.package.version == "1.6.0")
+    #expect(lock.package.version == "1.6.1")
     #expect(lock.trackedBuiltinProviders.count == 43)
     #expect(lock.trackedBuiltinProviders.contains("github-copilot"))
     #expect(lock.trackedBuiltinProviders.contains("xai"))

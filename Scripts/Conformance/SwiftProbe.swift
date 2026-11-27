@@ -51,6 +51,28 @@ struct SwiftConformanceProbe {
     lifetime: ProbeStreamLifetime = .shared
   ) async throws -> ProbeOutput? {
     let envelope = try JSONValue(jsonData: data).objectValue ?? [:]
+    if envelope.string("operation") == "sse" {
+      var decoder =
+        try envelope["state"].map {
+          try JSONDecoder().decode(ServerSentEventDecoder.self, from: JSONEncoder().encode($0))
+        } ?? ServerSentEventDecoder()
+      let events =
+        try envelope.bool("finish") == true
+        ? decoder.finish()
+        : decoder.append(Data(base64Encoded: envelope.string("chunk") ?? "") ?? Data())
+      let value = JSONValue.object([
+        "state": try JSONValue(jsonData: JSONEncoder().encode(decoder)),
+        "events": .array(
+          events.map {
+            .object([
+              "event": $0.event.map(JSONValue.string) ?? .null, "data": .string($0.data),
+              "raw": .array($0.raw.map(JSONValue.string)),
+            ])
+          }),
+      ])
+      FileHandle.standardOutput.write(try JSONEncoder().encode(value))
+      return nil
+    }
     if envelope.string("operation") == "catalog.radius" {
       let result = try await RadiusCatalogConformanceProbe.resolve(
         envelope, transport: RadiusProbeUnexpectedTransport())

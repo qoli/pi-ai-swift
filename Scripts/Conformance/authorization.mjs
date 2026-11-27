@@ -236,6 +236,7 @@ async function authorize(provider, action, credential, options, configuration) {
           if (metadata.enterpriseDomain) value.enterpriseDomain = metadata.enterpriseDomain;
           if (provider === "github-copilot" && metadata.enterpriseDomain) value.enterpriseUrl = metadata.enterpriseUrl ?? metadata.enterpriseDomain;
           if (metadata.availableModelIDs !== undefined) value.availableModelIds = metadata.availableModelIDs ? metadata.availableModelIDs.split(",") : [];
+          if (metadata.availableClassifierModelIDsJSON !== undefined) value.availableClassifierModelIds = JSON.parse(metadata.availableClassifierModelIDsJSON);
           if (metadata.scope) value.scope = metadata.scope;
           if (metadata.clientID) value.clientId = metadata.clientID;
           if (metadata.scopes) value.scopes = JSON.parse(metadata.scopes);
